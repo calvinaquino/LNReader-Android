@@ -12,6 +12,8 @@ public class PageModel {
 	private String title;
 	private String type;
 	private Date lastUpdate;
+	private String parent;
+	private Date lastCheck;
 	
 	public String getPage() {
 		return page;
@@ -40,6 +42,18 @@ public class PageModel {
 	
 	public String toString() {
 		return "Page: " + page + "; Title: " + title;
+	}
+	public String getParent() {
+		return parent;
+	}
+	public void setParent(String parent) {
+		this.parent = parent;
+	}
+	public Date getLastCheck() {
+		return lastCheck;
+	}
+	public void setLastCheck(Date lastCheck) {
+		this.lastCheck = lastCheck;
 	}
 	
 }
