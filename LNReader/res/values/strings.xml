@@ -1,0 +1,14 @@
+<resources>
+
+    <string name="app_name">LNReader</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="light_novels">Light Novels</string>
+    <string name="watch_list">Watch List</string>
+    <string name="options">Options</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_display_light_novels">LightNovels</string>
+    <string name="title_activity_display_watch_list">WatchList</string>
+    <string name="title_activity_display_options">Options</string>
+
+</resources>
