@@ -7,24 +7,26 @@ package com.erakk.lnreader;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-//import org.jsoup.nodes.Document;
-//import org.jsoup.nodes.Element;
-
-//nadaka.bakareaderclone original
-import com.erakk.lnreader.dao.NovelsDao;
-//import com.erakk.lnreader.helper.DownloadPageTask;
-import com.erakk.lnreader.model.PageModel;
-
-import android.os.Bundle;
 import android.annotation.SuppressLint;
-//import android.app.Activity;
 import android.app.ListActivity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
-//import android.widget.ListView;
+import android.widget.ListView;
 import android.widget.Toast;
-import android.support.v4.app.NavUtils;
+
+import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.model.PageModel;
+//import org.jsoup.nodes.Document;
+//import org.jsoup.nodes.Element;
+//nadaka.bakareaderclone original
+//import com.erakk.lnreader.helper.DownloadPageTask;
+//import android.app.Activity;
+//import android.widget.ListView;
 
 /*
  * Author: Nandaka
@@ -33,6 +35,7 @@ import android.support.v4.app.NavUtils;
 
 public class DisplayLightNovelsActivity extends ListActivity {
 
+	public final static String EXTRA_MESSAGE = "com.erakk.lnreader.NOVEL";
 	ArrayList<String> listItems=new ArrayList<String>();
 	ArrayAdapter<String> adapter;
 	NovelsDao dao = new NovelsDao(this);
@@ -62,6 +65,20 @@ public class DisplayLightNovelsActivity extends ListActivity {
 			Toast t = Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT);
 			t.show();					
 		}
+    }
+    
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        // Get the item that was clicked
+        Object o = this.getListAdapter().getItem(position);
+        String novel = o.toString();
+        //Toast just for testing
+        Toast.makeText(this, "You selected: " + novel, Toast.LENGTH_LONG).show();
+        //Create new intent
+        Intent intent = new Intent(this, LightNovelChaptersActivity.class);
+        intent.putExtra(EXTRA_MESSAGE, novel);
+        startActivity(intent);
     }
 
     @Override
