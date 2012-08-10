@@ -39,6 +39,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.DownloadPageTask;
 import com.erakk.lnreader.model.PageModel;
@@ -96,8 +97,15 @@ public class NovelsDao {
 		Log.d(TAG, "Downloading: " + Constants.BaseURL);
 		
 		URL url = new URL(Constants.BaseURL);
-		AsyncTask<URL, Void, Document> task = new DownloadPageTask().execute(new URL[] {url});
-		Document doc = task.get();
+		AsyncTask<URL, Void, AsyncTaskResult<Document>> task = new DownloadPageTask().execute(new URL[] {url});
+		
+		AsyncTaskResult<Document> result = task.get();
+		
+		if(result.getError() != null) {
+			throw result.getError();
+		}
+		
+		Document doc = result.getResult();
 		Log.d(TAG, "Completed: " + Constants.BaseURL);
 		
 		Element stage = doc.select("#p-Light_Novels").first();

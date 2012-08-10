@@ -61,8 +61,7 @@ public class DisplayLightNovelsActivity extends ListActivity {
 	    	setListAdapter(adapter);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			Toast t = Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT);
+			Toast t = Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
 			t.show();					
 		}
     }

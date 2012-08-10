@@ -9,19 +9,16 @@ import org.jsoup.nodes.Document;
 
 import android.os.AsyncTask;
 
-public class DownloadPageTask extends AsyncTask<URL, Void, Document> {
-
+public class DownloadPageTask extends AsyncTask<URL, Void, AsyncTaskResult<Document>> {
 	@Override
-	protected Document doInBackground(URL... arg0) {
+	protected AsyncTaskResult<Document> doInBackground(URL... arg0) {
 		try {
 			Response response = Jsoup.connect(arg0[0].toString())
 									 .timeout(7000)
 									 .execute();
-			return response.parse();
+			return new AsyncTaskResult<Document>(response.parse());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+			return new AsyncTaskResult<Document>(e);
+		}		
 	}
 }
