@@ -80,9 +80,9 @@ public class LightNovelChaptersActivity extends Activity {
 			
 			textViewSynopsys.setText(details);
 			
-			ImageView img = (ImageView) findViewById(R.id.cover);
-			// TODO: getCoverUri not in NovelCollectionModel
-			//img.setImageURI(novelCol.getCoverUri());
+			// Removed the old way. was causing URL to URI conflict.
+			ImageView ImageViewCover = (ImageView) findViewById(R.id.cover);
+	        ImageViewCover.setImageBitmap(novelCol.getCoverBitmap() );
 		} catch (Exception e) {
 			//e.printStackTrace();
 			Log.e("NovelDetails", e.getMessage());

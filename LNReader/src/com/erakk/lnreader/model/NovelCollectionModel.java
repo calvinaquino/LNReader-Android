@@ -2,15 +2,15 @@
 
 package com.erakk.lnreader.model;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-
-import com.erakk.lnreader.helper.AsyncTaskResult;
-import com.erakk.lnreader.helper.DownloadImageTask;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
+
+import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.helper.DownloadImageTask;
 
 public class NovelCollectionModel {
 	private PageModel page;	
@@ -42,6 +42,7 @@ public class NovelCollectionModel {
 	public URL getCoverUrl() {
 		return coverUrl;
 	}
+	
 	public void setCoverUrl(URL coverUri) {
 		this.coverUrl = coverUri;
 	}
