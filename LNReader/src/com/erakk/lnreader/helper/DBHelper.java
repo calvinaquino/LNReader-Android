@@ -30,7 +30,7 @@ public class DBHelper extends SQLiteOpenHelper {
 															 COLUMN_LAST_UPDATE,
 															 COLUMN_LAST_CHECK};
 	private static final String DATABASE_NAME = "pages.db";
-	private static final int DATABASE_VERSION = 3;
+	private static final int DATABASE_VERSION = 4;
 	
 	private SQLiteDatabase database;
 	
@@ -40,7 +40,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			  				 + COLUMN_TITLE + " text not null, "
 			  				 + COLUMN_TYPE + " text not null, "
 			  				 + COLUMN_PARENT + " text, "
-			  				 + COLUMN_LAST_UPDATE + " integer"
+			  				 + COLUMN_LAST_UPDATE + " integer, "
 			  				 + COLUMN_LAST_CHECK + " integer);";
 
 	public DBHelper(Context context) {
@@ -59,6 +59,13 @@ public class DBHelper extends SQLiteOpenHelper {
 		            + newVersion + ", which will destroy all old data");
 	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_PAGE);
 	    onCreate(db);
+	}
+	
+	public void deleteDB() {
+		database = this.getWritableDatabase();
+		database.execSQL("delete from " + TABLE_PAGE);
+		database.close();
+		Log.w(TAG,"Database Deleted.");
 	}
 	
 	public ArrayList<PageModel> selectAll() {
@@ -85,7 +92,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		PageModel page = null;
 		database = this.getWritableDatabase();
 		
-		Cursor cursor = database.rawQuery("select * from " + TABLE_PAGE + " where " + column + " = ?", new String[] {value});
+		Cursor cursor = database.rawQuery("select * from " + TABLE_PAGE + " where " + column + " = ? ", new String[] {value});
+		//Cursor cursor = database.rawQuery("select * from " + TABLE_PAGE + " where " + column + " = '" + value + "'", null);
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	page = cursorTopage(cursor);
@@ -100,7 +108,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public String insertOrUpdate(PageModel page){
 		Log.d(TAG, page.toString());
 		
-		PageModel temp = selectFirstBy(COLUMN_PAGE, page.getTitle());
+		PageModel temp = selectFirstBy(COLUMN_PAGE, page.getPage());
 		
 		database = this.getWritableDatabase();
 		if(temp == null) {
@@ -111,15 +119,15 @@ public class DBHelper extends SQLiteOpenHelper {
 			cv.put(COLUMN_TYPE, page.getType());
 			cv.put(COLUMN_PARENT, page.getParent());
 			cv.put(COLUMN_LAST_UPDATE, "" + page.getLastUpdate().getSeconds());
-			cv.put(COLUMN_LAST_CHECK, "" + page.getLastCheck().getSeconds());
+			cv.put(COLUMN_LAST_CHECK, "" + new Date().getSeconds());
 			database.insertOrThrow(TABLE_PAGE, null, cv);
 		}
 		else {
 			database.rawQuery("update " + TABLE_PAGE + " set " + COLUMN_TITLE + " = ?, " +
 					   											 COLUMN_TYPE + " = ?, " +
 					   											 COLUMN_PARENT + " = ?, " +
-					   											 COLUMN_LAST_UPDATE + " = ?" +
-					   											 COLUMN_LAST_CHECK + " = ?" +
+					   											 COLUMN_LAST_UPDATE + " = ?, " +
+					   											 COLUMN_LAST_CHECK + " = ? " +
 					   		  " where " + COLUMN_PAGE + " = ?",
 					   		  new String[] {page.getTitle(), 
 					                        page.getType(),

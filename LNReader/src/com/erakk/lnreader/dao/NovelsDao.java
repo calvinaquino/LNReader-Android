@@ -39,6 +39,7 @@ public class NovelsDao {
 	  
 	public ArrayList<PageModel> getNovels() throws Exception{
 		boolean refresh = false;
+		//dbh.deleteDB();
 		PageModel page = dbh.selectFirstBy(DBHelper.COLUMN_PAGE, "Main_Page");
 		if(page == null) {
 			refresh = true;
@@ -49,23 +50,37 @@ public class NovelsDao {
 			// compare if less than x day
 		}
 		
+		refresh = true; //debug only
+		
 		if(refresh){
 			list = getNovelsFromInternet();
 			page = new PageModel();
 			page.setPage("Main_Page");
 			page.setTitle("Main Page");
 			page.setType(PageModel.TYPE_OTHER);
+			page.setParent("");
 			page.setLastUpdate(new Date());
 			page.setLastCheck(new Date());
-			dbh.insertOrUpdate(page);
+			try{
+				dbh.insertOrUpdate(page);
+			}catch(Exception e) {
+				Log.e(TAG, "Failed to insert: " + page.toString() + ", " +e.getMessage());
+			}
+			Log.d(TAG, "Updated Main_Page");
 			
 			for(Iterator<PageModel> i = list.iterator(); i.hasNext();){
 				PageModel p = i.next();
-				dbh.insertOrUpdate(p);
+				try{
+					dbh.insertOrUpdate(p);
+				}catch(Exception e) {
+					Log.e(TAG, "Failed to insert: " + p.toString());
+					e.printStackTrace();
+				}
 			}			
 		}
 		else {
 			list = dbh.selectAllByColumn(DBHelper.COLUMN_TYPE, PageModel.TYPE_NOVEL);
+			Log.d(TAG, "Found: " + list.size());
 		}
 		return list;
 

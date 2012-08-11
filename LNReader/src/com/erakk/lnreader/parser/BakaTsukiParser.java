@@ -48,6 +48,7 @@ public class BakaTsukiParser {
 				page.setType(PageModel.TYPE_NOVEL);
 				page.setTitle(link.text());
 				page.setLastUpdate(new Date());
+				page.setLastCheck(new Date());
 				page.setParent("Main_Page");
 				
 				result.add(page);
