@@ -61,7 +61,7 @@ public class LightNovelChaptersActivity extends Activity {
         }
         
         /*
-         * Maye here i'll implement the code to check if the user wants to load from the internet
+         * Maybe here i'll implement the code to check if the user wants to load from the internet
          * or from the cache (the images)
          * to get prefs:
          * 
@@ -81,7 +81,8 @@ public class LightNovelChaptersActivity extends Activity {
 			textViewSynopsys.setText(details);
 			
 			ImageView img = (ImageView) findViewById(R.id.cover);
-			img.setImageURI(novelCol.getCoverUri());
+			// TODO: getCoverUri not in NovelCollectionModel
+			//img.setImageURI(novelCol.getCoverUri());
 		} catch (Exception e) {
 			//e.printStackTrace();
 			Log.e("NovelDetails", e.getMessage());
