@@ -36,8 +36,9 @@ import com.erakk.lnreader.model.PageModel;
 public class DisplayLightNovelsActivity extends ListActivity {
 
 	public final static String EXTRA_MESSAGE = "com.erakk.lnreader.NOVEL";
-	ArrayList<String> listItems=new ArrayList<String>();
-	ArrayAdapter<String> adapter;
+	public final static String EXTRA_PAGE = "com.erakk.lnreader.page";
+	ArrayList<PageModel> listItems=new ArrayList<PageModel>();
+	ArrayAdapter<PageModel> adapter;
 	NovelsDao dao = new NovelsDao(this);
 
     @SuppressLint("NewApi")
@@ -48,14 +49,14 @@ public class DisplayLightNovelsActivity extends ListActivity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         
         try {
-        	ArrayList<PageModel> pages = dao.getNovels();
-        	for(Iterator<PageModel> i = pages.iterator(); i
-					.hasNext();){
-        		PageModel p = i.next();
-        		listItems.add(p.getTitle());
-        	}
+        	listItems = dao.getNovels();
+//        	for(Iterator<PageModel> i = pages.iterator(); i
+//					.hasNext();){
+//        		PageModel p = i.next();
+//        		listItems.add(p.getTitle());
+//        	}
         	
-	        adapter=new ArrayAdapter<String>(this,
+	        adapter=new ArrayAdapter<PageModel>(this,
 	        		android.R.layout.simple_list_item_1,
 	        		listItems);
 	    	setListAdapter(adapter);
@@ -70,13 +71,14 @@ public class DisplayLightNovelsActivity extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         // Get the item that was clicked
-        Object o = this.getListAdapter().getItem(position);
+        PageModel o = adapter.getItem(position);
         String novel = o.toString();
         //Toast just for testing
         Toast.makeText(this, "You selected: " + novel, Toast.LENGTH_LONG).show();
         //Create new intent
         Intent intent = new Intent(this, LightNovelChaptersActivity.class);
         intent.putExtra(EXTRA_MESSAGE, novel);
+        intent.putExtra(EXTRA_PAGE, o.getPage());
         startActivity(intent);
     }
 

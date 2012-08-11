@@ -11,6 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.net.Uri;
 import android.util.Log;
 
 import com.erakk.lnreader.model.NovelCollectionModel;
@@ -58,13 +59,53 @@ public class BakaTsukiParser {
 		return result;
 	}
 	
-	public static NovelCollectionModel ParseNovelDetails(Document Doc) {
+	public static NovelCollectionModel ParseNovelDetails(Document doc) {
 		NovelCollectionModel novel = new NovelCollectionModel();
-		
+		if(doc == null) throw new NullPointerException("Document cannot be null.");
+				
 		// parse the synopsis
+		String synopsis = "";
+		String source = "#Story_Synopsis";
+		// from Story_Synopsis id
+		Elements stage = doc.select(source);//.first().parent().nextElementSibling();
+		// from main text
+		if(stage == null) {
+			source = "#mw-content-text";
+			stage = doc.select(source);
+		}
+		
+		if(stage.size() > 0) {
+			Element synopsisE = stage.first();
+			if(source == "#Story_Synopsis") synopsisE = synopsisE.parent().nextElementSibling();
+		
+			int i = 0;
+			do{
+				if(synopsisE.tagName() != "p") continue;
+				i++;
+				synopsis += synopsisE.text() + "\n";
+				synopsisE = synopsisE.nextElementSibling();
+				if(synopsisE.tagName() != "p" && i > 0) break;
+				
+				if (i > 10) break;	// limit only first 10 paragraph.
+			}while(true);
+		}
+
+		novel.setSynopsis(synopsis);
+		Log.d(TAG, novel.getSynopsis());
 		
 		// parse the cover image
-		
+		String imageUrl = "";
+		Elements images = doc.select(".thumbimage");
+		if(images.size() > 0){
+			imageUrl = images.first().attr("src");
+			if(!imageUrl.startsWith("http")) {
+				imageUrl = "http://www.baka-tsuki.org" + imageUrl;
+			}
+		}
+		novel.setCover(imageUrl);
+		novel.setCoverUri(Uri.parse(imageUrl));
+		Log.d(TAG, novel.getCover());
+				
 		// parse the collection
 		
 		return novel;

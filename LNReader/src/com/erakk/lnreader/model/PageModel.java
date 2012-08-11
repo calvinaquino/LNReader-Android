@@ -41,7 +41,7 @@ public class PageModel {
 	}
 	
 	public String toString() {
-		return "Page: " + page + "; Title: " + title;
+		return title;
 	}
 	public String getParent() {
 		return parent;

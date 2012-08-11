@@ -1,16 +1,24 @@
 package com.erakk.lnreader;
 
+import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.model.NovelCollectionModel;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class LightNovelChaptersActivity extends Activity {
-
+	NovelsDao dao;
+	
     @SuppressLint({ "NewApi", "NewApi" })
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -18,17 +26,35 @@ public class LightNovelChaptersActivity extends Activity {
         //Get intent and message
         Intent intent = getIntent();
         String novel = intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_MESSAGE) + " Chapters";
+        String page = intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_PAGE);
         
         setContentView(R.layout.activity_light_novel_chapters);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         
-     // Create the text view
-        TextView textView = new TextView(this);
+        // get the textView
+        TextView textView = (TextView) findViewById(R.id.synopsis);
         textView.setTextSize(20);
-        textView.setText(novel);
-
-        // Set the text view as the activity layout
-        setContentView(textView);
+        textView.setText(novel);        
+        
+        dao = new NovelsDao(this);
+        NovelCollectionModel novelCol;
+		try {
+			// TODO: change to proper ui elements :)
+			novelCol = dao.getNovelDetailsFromInternet(page);
+			String details = "";
+			details += "\n Synopsys:\n" + novelCol.getSynopsis();
+			details += "\n Cover Image:\n" + novelCol.getCover();
+			
+			textView.setText(novel + details);
+			
+			ImageView img = (ImageView) findViewById(R.id.cover);
+			img.setImageURI(novelCol.getCoverUri());
+		} catch (Exception e) {
+			//e.printStackTrace();
+			Log.e("NovelDetails", e.getMessage());
+			Toast t = Toast.makeText(this, e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT);
+			t.show();
+		}
         
     }
 

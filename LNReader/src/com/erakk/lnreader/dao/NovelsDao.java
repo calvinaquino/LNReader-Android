@@ -3,6 +3,7 @@
  */
 package com.erakk.lnreader.dao;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,6 +19,7 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.DownloadPageTask;
+import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.parser.BakaTsukiParser;
 
@@ -50,7 +52,7 @@ public class NovelsDao {
 			// compare if less than x day
 		}
 		
-		refresh = true; //debug only
+		//refresh = true; //debug only
 		
 		if(refresh){
 			list = getNovelsFromInternet();
@@ -86,7 +88,7 @@ public class NovelsDao {
 
 	}
 	
-	private ArrayList<PageModel> getNovelsFromInternet() throws Exception {
+	public ArrayList<PageModel> getNovelsFromInternet() throws Exception {
 		list = new ArrayList<PageModel>();
 		Log.d(TAG, "Downloading: " + Constants.BaseURL);
 		
@@ -108,4 +110,21 @@ public class NovelsDao {
 		return list;
 	}
 
+	public NovelCollectionModel getNovelDetailsFromInternet(String page) throws Exception{
+		NovelCollectionModel novel = null;
+		URL url = new URL(Constants.BaseURL + "index.php?title=" + page);
+		Log.d(TAG, "Downloading: " + url.toString());
+		AsyncTask<URL, Void, AsyncTaskResult<Document>> task = new DownloadPageTask().execute(new URL[] {url});
+		AsyncTaskResult<Document> result = task.get();
+		if(result.getError() != null) {
+			throw result.getError();
+		}
+		Document doc = result.getResult();
+		Log.d(TAG, "Completed: " + url.toString());
+		
+		novel = BakaTsukiParser.ParseNovelDetails(doc);
+	
+		return novel;
+	}
+	
 }

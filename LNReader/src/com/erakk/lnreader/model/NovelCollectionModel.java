@@ -4,6 +4,8 @@ package com.erakk.lnreader.model;
 
 import java.util.ArrayList;
 
+import android.net.Uri;
+
 public class NovelCollectionModel {
 	private PageModel page;	
 	public PageModel getPage() {
@@ -30,7 +32,16 @@ public class NovelCollectionModel {
 	public void setBookCollections(ArrayList<BookModel> bookCollections) {
 		this.bookCollections = bookCollections;
 	}
+	
+	public Uri getCoverUri() {
+		return coverUri;
+	}
+	public void setCoverUri(Uri coverUri) {
+		this.coverUri = coverUri;
+	}
+
 	private String cover;
+	private Uri coverUri;
 	private String synopsis;	
 	private ArrayList<BookModel> bookCollections; 
 	
