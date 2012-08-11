@@ -53,6 +53,22 @@ public class DisplaySettingsActivity extends PreferenceActivity {
                 return true;
             }
         });
+        Preference clearImages = (Preference)  findPreference("clear_image_cache");
+        clearImages.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        	@Override
+            public boolean onPreferenceClick(Preference p) {
+                // TODO stuff              
+        		
+        		/*
+        		 * CODE TO CLEAR IMAGE CACHE HERE
+        		 */
+        		
+        		Toast t = Toast.makeText(getApplicationContext(), "Image cache cleared!", Toast.LENGTH_LONG);
+    			t.show();		
+        		
+                return true;
+            }
+        });
         
     }
     

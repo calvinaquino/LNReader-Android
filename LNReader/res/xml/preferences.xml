@@ -25,8 +25,8 @@
     </PreferenceCategory>
  
     <PreferenceCategory
-        android:title="Text and fonts"
-        android:key="text_and_fonts_category">
+        android:title="Text and Images"
+        android:key="text_and_Images_category">
  
         <CheckBoxPreference
             android:key="invert_colors"
@@ -35,18 +35,18 @@
             android:defaultValue="false"
         />
         
-        <EditTextPreference
-            android:key="welcome_message"
-            android:title="Welcome Message"
-            android:summary="Define the Welcome message to be shown"
-            android:dialogTitle="Welcome Message"
-            android:dialogMessage="Provide a message"   
-            android:defaultValue="Default welcome message" />
  
     </PreferenceCategory>
      <PreferenceCategory
         android:title="Storage"
         android:key="storage_category">
+        
+         <CheckBoxPreference
+            android:key="store_images"
+            android:summary="Stores downloaded novel images for faster loading"
+            android:title="Store Images"
+            android:defaultValue="true"
+        />
  
         <Preference
             android:key="clear_database"
@@ -57,6 +57,11 @@
             android:key="clear_cache"
             android:summary="Clears cached novels"
             android:title="Clear Cache"
+        />
+        <Preference
+            android:key="clear_image_cache"
+            android:summary="Clears cached images"
+            android:title="Clear Image Cache"
         />
     </PreferenceCategory>
      

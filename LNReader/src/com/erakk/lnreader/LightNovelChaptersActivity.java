@@ -3,11 +3,15 @@ package com.erakk.lnreader;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,16 +28,46 @@ public class LightNovelChaptersActivity extends Activity {
         super.onCreate(savedInstanceState);
         //Get intent and message
         Intent intent = getIntent();
-        String novel = intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_MESSAGE) + " Chapters";
+        String novel = intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_MESSAGE);
         String page = intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_PAGE);
         
         setContentView(R.layout.activity_light_novel_chapters);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         
+        View NovelView = findViewById(R.id.ligh_novel_chapter_screen);
+
         // get the textView
-        TextView textView = (TextView) findViewById(R.id.synopsis);
-        textView.setTextSize(20);
-        textView.setText(novel);        
+        TextView textViewTitle = (TextView) findViewById(R.id.title);
+        TextView textViewSynopsys = (TextView) findViewById(R.id.synopsys);
+        
+        textViewTitle.setTextSize(20);
+        textViewSynopsys.setTextSize(16);
+        textViewTitle.setText(novel);        
+        
+        // TODO: get image Cover and put in ImageView :)
+        //ImageView ImageViewCover = (ImageView) findViewById(R.id.cover);
+        //ImageViewCover.setImageBitmap( <TheImage> );
+        
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
+        
+        if (invertColors == true) {
+        	textViewSynopsys.setBackgroundColor(Color.TRANSPARENT);
+        	textViewSynopsys.setTextColor(Color.WHITE);
+        	textViewTitle.setBackgroundColor(Color.TRANSPARENT);
+        	textViewTitle.setTextColor(Color.WHITE);
+        	NovelView.setBackgroundColor(Color.BLACK);
+        	
+        }
+        
+        /*
+         * Maye here i'll implement the code to check if the user wants to load from the internet
+         * or from the cache (the images)
+         * to get prefs:
+         * 
+         * SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+         * sharedPrefs.getBoolean("store_images", false);
+         */
         
         dao = new NovelsDao(this);
         NovelCollectionModel novelCol;
@@ -42,16 +76,15 @@ public class LightNovelChaptersActivity extends Activity {
 			novelCol = dao.getNovelDetailsFromInternet(page);
 			String details = "";
 			details += "\n Synopsys:\n" + novelCol.getSynopsis();
-			details += "\n Cover Image:\n" + novelCol.getCover();
+			//details += "\n Cover Image:\n" + novelCol.getCover();
 			
-			textView.setText(novel + details);
+			textViewSynopsys.setText(details);
 			
 			ImageView img = (ImageView) findViewById(R.id.cover);
-			img.setImageBitmap(novelCol.getCoverBitmap());
-			
+			img.setImageURI(novelCol.getCoverUri());
 		} catch (Exception e) {
-			e.printStackTrace();
-			Log.e("NovelDetails", e.getClass().toString() + ": " + e.getMessage());
+			//e.printStackTrace();
+			Log.e("NovelDetails", e.getMessage());
 			Toast t = Toast.makeText(this, e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT);
 			t.show();
 		}
