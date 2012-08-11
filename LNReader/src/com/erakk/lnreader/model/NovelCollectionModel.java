@@ -2,8 +2,14 @@
 
 package com.erakk.lnreader.model;
 
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
+import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.helper.DownloadImageTask;
+
+import android.graphics.Bitmap;
 import android.net.Uri;
 
 public class NovelCollectionModel {
@@ -33,15 +39,34 @@ public class NovelCollectionModel {
 		this.bookCollections = bookCollections;
 	}
 	
-	public Uri getCoverUri() {
-		return coverUri;
+	public URL getCoverUrl() {
+		return coverUrl;
 	}
-	public void setCoverUri(Uri coverUri) {
-		this.coverUri = coverUri;
+	public void setCoverUrl(URL coverUri) {
+		this.coverUrl = coverUri;
+	}
+
+	public Bitmap getCoverBitmap() {
+		if(coverBitmap == null) {
+			DownloadImageTask t = new DownloadImageTask(); 
+			t.execute(new URL[] {coverUrl});
+			
+			try {
+				AsyncTaskResult<Bitmap> result = t.get();
+				if(result.getError() == null) {
+					coverBitmap = result.getResult();
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 			
+		}
+		return coverBitmap;
 	}
 
 	private String cover;
-	private Uri coverUri;
+	private URL coverUrl;
+	private Bitmap coverBitmap;
 	private String synopsis;	
 	private ArrayList<BookModel> bookCollections; 
 	

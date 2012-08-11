@@ -1,7 +1,6 @@
 //package com.nandaka.bakareaderclone.helper;
 package com.erakk.lnreader.helper;
 
-import java.io.IOException;
 import java.net.URL;
 import org.jsoup.Jsoup;
 import org.jsoup.Connection.Response;
@@ -17,7 +16,7 @@ public class DownloadPageTask extends AsyncTask<URL, Void, AsyncTaskResult<Docum
 									 .timeout(7000)
 									 .execute();
 			return new AsyncTaskResult<Document>(response.parse());
-		} catch (IOException e) {
+		} catch (Exception e) {
 			return new AsyncTaskResult<Document>(e);
 		}		
 	}

@@ -3,6 +3,8 @@
  */
 package com.erakk.lnreader.parser;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -69,22 +71,29 @@ public class BakaTsukiParser {
 		// from Story_Synopsis id
 		Elements stage = doc.select(source);//.first().parent().nextElementSibling();
 		// from main text
-		if(stage == null) {
-			source = "#mw-content-text";
+		if(stage == null || stage.size() <= 0) {
+			source = "#mw-content-text,p";
 			stage = doc.select(source);
+			Log.d(TAG, "From: " + source);
 		}
 		
 		if(stage.size() > 0) {
-			Element synopsisE = stage.first();
-			if(source == "#Story_Synopsis") synopsisE = synopsisE.parent().nextElementSibling();
+			Element synopsisE;
+			if(source == "#Story_Synopsis") synopsisE = stage.first().parent().nextElementSibling();
+			else synopsisE = stage.first().children().first();
 		
 			int i = 0;
 			do{
-				if(synopsisE.tagName() != "p") continue;
+				if(synopsisE == null) break;
+				if(synopsisE.tagName() != "p") {
+					synopsisE = synopsisE.nextElementSibling();
+					Log.d(TAG, synopsisE.html());
+					continue;
+				}
 				i++;
 				synopsis += synopsisE.text() + "\n";
 				synopsisE = synopsisE.nextElementSibling();
-				if(synopsisE.tagName() != "p" && i > 0) break;
+				if(synopsisE != null && synopsisE.tagName() != "p" && i > 0) break;
 				
 				if (i > 10) break;	// limit only first 10 paragraph.
 			}while(true);
@@ -103,7 +112,12 @@ public class BakaTsukiParser {
 			}
 		}
 		novel.setCover(imageUrl);
-		novel.setCoverUri(Uri.parse(imageUrl));
+		try {
+			novel.setCoverUrl(new URL(imageUrl));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Log.d(TAG, novel.getCover());
 				
 		// parse the collection
