@@ -1,3 +1,6 @@
+## Android
+*/bin/*
+
 #################
 ## Eclipse
 #################
@@ -162,6 +165,3 @@ pip-log.txt
 # Mac crap
 .DS_Store
 
-
-## Android
-LNReader/bin/*
