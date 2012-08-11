@@ -1,12 +1,8 @@
 package com.erakk.lnreader;
 
-import com.erakk.lnreader.dao.NovelsDao;
-import com.erakk.lnreader.model.NovelCollectionModel;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
@@ -15,6 +11,9 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.model.NovelCollectionModel;
 
 public class LightNovelChaptersActivity extends Activity {
 	NovelsDao dao;

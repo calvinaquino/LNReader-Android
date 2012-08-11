@@ -23,6 +23,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_TYPE = "type";
 	public static final String COLUMN_PARENT = "parent";
 	
+	@SuppressWarnings("unused")
 	private static final String[] ALL_COLUMS = new String[] {COLUMN_PAGE,
 															 COLUMN_TITLE,
 															 COLUMN_TYPE, 

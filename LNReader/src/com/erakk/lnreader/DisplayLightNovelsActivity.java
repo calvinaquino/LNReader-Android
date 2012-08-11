@@ -5,7 +5,6 @@ package com.erakk.lnreader;
 //import java.io.IOException;
 //import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import android.annotation.SuppressLint;
 import android.app.ListActivity;
