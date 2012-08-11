@@ -30,8 +30,8 @@ public class MainActivity extends Activity {
     	startActivity(intent);
     }
     
-    public void openOptions(View view) {
-    	Intent intent = new Intent(this, DisplayOptionsActivity.class);
+    public void openSettings(View view) {
+    	Intent intent = new Intent(this, DisplaySettingsActivity.class);
     	startActivity(intent);
     }
 }

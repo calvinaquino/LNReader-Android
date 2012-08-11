@@ -37,14 +37,14 @@
                 android:value="com.erakk.lnreader.MainActivity" />
         </activity>
         <activity
-            android:name=".DisplayOptionsActivity"
-            android:label="@string/title_activity_display_options" >
+            android:name=".DisplaySettingsActivity"
+            android:label="@string/title_activity_display_settings" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.erakk.lnreader.MainActivity" />
         </activity>
         <activity
-            android:name="LightNovelChaptersActivity"
+            android:name=".LightNovelChaptersActivity"
             android:label="@string/title_activity_light_novel_chapters" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+ 
+    <PreferenceCategory
+        android:title="Update"
+        android:key="update_category">
+         
+        <CheckBoxPreference
+            android:key="perform_updates"
+            android:summary="Enable or disable update verification"
+            android:title="Enable updates"
+            android:defaultValue="true"
+        />
+         
+        <ListPreference
+            android:key="updates_interval"
+            android:title="Updates interval"
+            android:summary="Define how often updates will be verified"
+            android:defaultValue="1000"
+            android:entries="@array/updateInterval"
+            android:entryValues="@array/updateIntervalValues"
+            android:dependency="perform_updates"
+        />   
+             
+    </PreferenceCategory>
+ 
+    <PreferenceCategory
+        android:title="Text and fonts"
+        android:key="text_and_fonts_category">
+ 
+        <CheckBoxPreference
+            android:key="invert_colors"
+            android:summary="Changes the font color with the background color"
+            android:title="Invert Colors"
+            android:defaultValue="false"
+        />
+        
+        <EditTextPreference
+            android:key="welcome_message"
+            android:title="Welcome Message"
+            android:summary="Define the Welcome message to be shown"
+            android:dialogTitle="Welcome Message"
+            android:dialogMessage="Provide a message"   
+            android:defaultValue="Default welcome message" />
+ 
+    </PreferenceCategory>
+     <PreferenceCategory
+        android:title="Storage"
+        android:key="storage_category">
+ 
+        <Preference
+            android:key="clear_database"
+            android:summary="Erases light novel database"
+            android:title="Clear Database"
+        />
+        <Preference
+            android:key="clear_cache"
+            android:summary="Clears cached novels"
+            android:title="Clear Cache"
+        />
+    </PreferenceCategory>
+     
+</PreferenceScreen>

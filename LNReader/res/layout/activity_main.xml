@@ -7,6 +7,8 @@
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minWidth="192dp"
+        android:minHeight="66dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:onClick="openWatchList"
@@ -17,18 +19,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/button2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="48dp"
+        android:layout_alignLeft="@+id/button2"
+        android:layout_marginBottom="35dp"
+        android:minHeight="66dp"
+        android:minWidth="192dp"
         android:onClick="openNovelList"
         android:text="@string/light_novels" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/button2"
         android:layout_below="@+id/button2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="49dp"
-        android:onClick="openOptions"
-        android:text="@string/options" />
+        android:layout_marginTop="35dp"
+        android:minHeight="66dp"
+        android:minWidth="192dp"
+        android:onClick="openSettings"
+        android:text="@string/settings" />
 
 </RelativeLayout>
