@@ -72,8 +72,6 @@ public class DisplayLightNovelsActivity extends ListActivity {
         // Get the item that was clicked
         PageModel o = adapter.getItem(position);
         String novel = o.toString();
-        //Toast just for testing
-        Toast.makeText(this, "You selected: " + novel, Toast.LENGTH_LONG).show();
         //Create new intent
         Intent intent = new Intent(this, LightNovelChaptersActivity.class);
         intent.putExtra(EXTRA_MESSAGE, novel);
