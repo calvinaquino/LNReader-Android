@@ -22,6 +22,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_TITLE = "title";	
 	public static final String COLUMN_TYPE = "type";
 	public static final String COLUMN_PARENT = "parent";
+	public static final String COLUMN_IS_WATCHED = "is_watched";
 	
 	@SuppressWarnings("unused")
 	private static final String[] ALL_COLUMS = new String[] {COLUMN_PAGE,
@@ -29,20 +30,22 @@ public class DBHelper extends SQLiteOpenHelper {
 															 COLUMN_TYPE, 
 															 COLUMN_PARENT, 
 															 COLUMN_LAST_UPDATE,
-															 COLUMN_LAST_CHECK};
+															 COLUMN_LAST_CHECK,
+															 COLUMN_IS_WATCHED};
 	private static final String DATABASE_NAME = "pages.db";
-	private static final int DATABASE_VERSION = 4;
+	private static final int DATABASE_VERSION = 5;
 	
 	private SQLiteDatabase database;
 	
-	// Database creation sql statement
+	// Database creation SQL statement
 	private static final String DATABASE_CREATE_PAGES = "create table "
 	      + TABLE_PAGE + "(" + COLUMN_PAGE + " text primary key not null, "
 			  				 + COLUMN_TITLE + " text not null, "
 			  				 + COLUMN_TYPE + " text not null, "
 			  				 + COLUMN_PARENT + " text, "
 			  				 + COLUMN_LAST_UPDATE + " integer, "
-			  				 + COLUMN_LAST_CHECK + " integer);";
+			  				 + COLUMN_LAST_CHECK + " integer, "
+			  				 + COLUMN_IS_WATCHED + " boolean);";
 
 	public DBHelper(Context context) {
 	    super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -121,6 +124,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			cv.put(COLUMN_PARENT, page.getParent());
 			cv.put(COLUMN_LAST_UPDATE, "" + page.getLastUpdate().getSeconds());
 			cv.put(COLUMN_LAST_CHECK, "" + new Date().getSeconds());
+			cv.put(COLUMN_IS_WATCHED, page.isWatched());
 			database.insertOrThrow(TABLE_PAGE, null, cv);
 		}
 		else {
@@ -128,13 +132,15 @@ public class DBHelper extends SQLiteOpenHelper {
 					   											 COLUMN_TYPE + " = ?, " +
 					   											 COLUMN_PARENT + " = ?, " +
 					   											 COLUMN_LAST_UPDATE + " = ?, " +
-					   											 COLUMN_LAST_CHECK + " = ? " +
+					   											 COLUMN_LAST_CHECK + " = ?, " +
+					   											 COLUMN_IS_WATCHED + " = ? " +
 					   		  " where " + COLUMN_PAGE + " = ?",
 					   		  new String[] {page.getTitle(), 
 					                        page.getType(),
 					                        page.getParent(),
 					                        "" + page.getLastUpdate().getSeconds(),
-					                        "" + page.getLastCheck().getSeconds(), 
+					                        "" + page.getLastCheck().getSeconds(),
+					                        page.isWatched() ? "1" : "0", 
 					                        temp.getPage()});
 			Log.d(TAG, "Updating: " + page.toString());
 		}
@@ -150,6 +156,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		page.setParent(cursor.getString(3));
 		page.setLastUpdate(new Date(cursor.getLong(4)*1000));
 		page.setLastCheck(new Date(cursor.getLong(5)*1000));
+		page.setWatched(cursor.getInt(6) == 1 ? true : false);
 	    return page;
 	}
 }

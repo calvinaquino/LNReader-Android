@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.jsoup.Jsoup;
+import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
 
 import android.content.Context;
@@ -43,6 +45,7 @@ public class NovelsDao {
 		//dbh.deleteDB();
 		PageModel page = dbh.selectFirstBy(DBHelper.COLUMN_PAGE, "Main_Page");
 		if(page == null) {
+			Log.d(TAG, "No Main_Page data!");
 			refresh = true;
 		}
 		else {
@@ -89,19 +92,11 @@ public class NovelsDao {
 	
 	public ArrayList<PageModel> getNovelsFromInternet() throws Exception {
 		list = new ArrayList<PageModel>();
-		Log.d(TAG, "Downloading: " + Constants.BaseURL);
-		
-		URL url = new URL(Constants.BaseURL);
-		AsyncTask<URL, Void, AsyncTaskResult<Document>> task = new DownloadPageTask().execute(new URL[] {url});
-		
-		AsyncTaskResult<Document> result = task.get();
-		
-		if(result.getError() != null) {
-			throw result.getError();
-		}
-		
-		Document doc = result.getResult();
-		Log.d(TAG, "Completed: " + Constants.BaseURL);
+
+		Response response = Jsoup.connect(Constants.BaseURL)
+				 .timeout(7000)
+				 .execute();
+		Document doc = response.parse();//result.getResult();
 		
 		list = BakaTsukiParser.ParseNovelList(doc);
 		
@@ -112,14 +107,14 @@ public class NovelsDao {
 	public NovelCollectionModel getNovelDetailsFromInternet(String page) throws Exception{
 		NovelCollectionModel novel = null;
 		URL url = new URL(Constants.BaseURL + "index.php?title=" + page);
-		Log.d(TAG, "Downloading: " + url.toString());
+
 		AsyncTask<URL, Void, AsyncTaskResult<Document>> task = new DownloadPageTask().execute(new URL[] {url});
 		AsyncTaskResult<Document> result = task.get();
 		if(result.getError() != null) {
+			result.getError().printStackTrace();
 			throw result.getError();
 		}
 		Document doc = result.getResult();
-		Log.d(TAG, "Completed: " + url.toString());
 		
 		novel = BakaTsukiParser.ParseNovelDetails(doc);
 	

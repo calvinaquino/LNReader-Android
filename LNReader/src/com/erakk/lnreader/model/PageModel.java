@@ -14,6 +14,7 @@ public class PageModel {
 	private Date lastUpdate;
 	private String parent;
 	private Date lastCheck;
+	private boolean isWatched;
 	
 	public String getPage() {
 		return page;
@@ -54,6 +55,12 @@ public class PageModel {
 	}
 	public void setLastCheck(Date lastCheck) {
 		this.lastCheck = lastCheck;
+	}
+	public boolean isWatched() {
+		return isWatched;
+	}
+	public void setWatched(boolean isWatched) {
+		this.isWatched = isWatched;
 	}
 	
 }

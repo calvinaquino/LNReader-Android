@@ -85,7 +85,7 @@ public class LightNovelChaptersActivity extends Activity {
 	        ImageViewCover.setImageBitmap(novelCol.getCoverBitmap() );
 		} catch (Exception e) {
 			//e.printStackTrace();
-			Log.e("NovelDetails", e.getMessage());
+			Log.e("NovelDetails", e.getClass().toString() + ": " + e.getMessage());
 			Toast t = Toast.makeText(this, e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT);
 			t.show();
 		}

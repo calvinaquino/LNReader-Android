@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
@@ -16,9 +17,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.PageModel;
 //import org.jsoup.nodes.Document;
 //import org.jsoup.nodes.Element;
@@ -48,16 +51,11 @@ public class DisplayLightNovelsActivity extends ListActivity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         
         try {
-        	listItems = dao.getNovels();
-//        	for(Iterator<PageModel> i = pages.iterator(); i
-//					.hasNext();){
-//        		PageModel p = i.next();
-//        		listItems.add(p.getTitle());
-//        	}
-        	
 	        adapter=new ArrayAdapter<PageModel>(this,
 	        		android.R.layout.simple_list_item_1,
 	        		listItems);
+	    	//listItems = new LoadNovelsTask().execute(adapter).get().getResult();
+	        new LoadNovelsTask().execute(new Void[] {});
 	    	setListAdapter(adapter);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -95,6 +93,35 @@ public class DisplayLightNovelsActivity extends ListActivity {
         return super.onOptionsItemSelected(item);
     }
     
+     public class LoadNovelsTask extends AsyncTask<Void, ProgressBar, AsyncTaskResult<ArrayList<PageModel>>> {
+
+		@SuppressLint("NewApi")
+		@Override
+		protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(Void... arg0) {
+			ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar1);
+	    	pb.setIndeterminate(true);
+	    	pb.setActivated(true);
+	    	pb.animate();
+	    	
+			try {
+				listItems = dao.getNovels();
+				return new AsyncTaskResult<ArrayList<PageModel>>(listItems);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return new AsyncTaskResult<ArrayList<PageModel>>(e);
+			}
+		}
+		
+		@SuppressLint("NewApi")
+		protected void onPostExecute(AsyncTaskResult<ArrayList<PageModel>> result) {
+	         ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar1);
+	         pb.setActivated(false);
+	         pb.setVisibility(ProgressBar.GONE);
+	         adapter.addAll(result.getResult());
+	     }
+    	 
+     }
     
 }
 

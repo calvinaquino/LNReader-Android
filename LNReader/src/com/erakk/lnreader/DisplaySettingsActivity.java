@@ -1,5 +1,7 @@
 package com.erakk.lnreader;
 
+import com.erakk.lnreader.helper.DBHelper;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -46,7 +48,8 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         		/*
         		 * CODE TO CLEAR DATABASE HERE
         		 */
-        		
+        		DBHelper helper = new DBHelper(getApplicationContext());
+        		helper.deleteDB();
         		Toast t = Toast.makeText(getApplicationContext(), "Database cleared!", Toast.LENGTH_LONG);
     			t.show();		
         		
