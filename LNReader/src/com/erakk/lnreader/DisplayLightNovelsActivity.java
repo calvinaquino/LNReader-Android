@@ -100,7 +100,7 @@ public class DisplayLightNovelsActivity extends ListActivity {
 		@SuppressLint("NewApi")
 		@Override
 		protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(Void... arg0) {
-			ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar1);
+			ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
 	    	pb.setIndeterminate(true);
 	    	pb.setActivated(true);
 	    	pb.animate();
@@ -119,7 +119,7 @@ public class DisplayLightNovelsActivity extends ListActivity {
 		
 		@SuppressLint("NewApi")
 		protected void onPostExecute(AsyncTaskResult<ArrayList<PageModel>> result) {
-	         ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar1);
+	         ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
 	         pb.setActivated(false);
 	         pb.setVisibility(ProgressBar.GONE);
 	         ArrayList<PageModel> list = result.getResult();
