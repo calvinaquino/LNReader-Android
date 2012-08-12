@@ -58,7 +58,7 @@ public class DisplayLightNovelsActivity extends ListActivity {
 //        	adapter=new ArrayAdapter<PageModel>(this,
 //	        		R.layout.novel_list_item,
 //	        		listItems);
-	    	//listItems = new LoadNovelsTask().execute(adapter).get().getResult();
+//	    	listItems = new LoadNovelsTask().execute(adapter).get().getResult();
 	        new LoadNovelsTask().execute(new Void[] {});
 	    	setListAdapter(adapter);
 		} catch (Exception e) {
