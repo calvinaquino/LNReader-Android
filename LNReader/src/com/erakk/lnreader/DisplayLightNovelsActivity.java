@@ -110,6 +110,8 @@ public class DisplayLightNovelsActivity extends ListActivity {
 				return new AsyncTaskResult<ArrayList<PageModel>>(listItems);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				Toast t = Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT);
+				t.show();
 				e.printStackTrace();
 				return new AsyncTaskResult<ArrayList<PageModel>>(e);
 			}
@@ -120,7 +122,8 @@ public class DisplayLightNovelsActivity extends ListActivity {
 	         ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar1);
 	         pb.setActivated(false);
 	         pb.setVisibility(ProgressBar.GONE);
-	         adapter.addAll(result.getResult());
+	         ArrayList<PageModel> list = result.getResult();
+	         if(list != null) adapter.addAll(list);
 	     }
     	 
      }

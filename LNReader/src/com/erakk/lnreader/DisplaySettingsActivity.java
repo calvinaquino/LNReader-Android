@@ -49,7 +49,7 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         		 * CODE TO CLEAR DATABASE HERE
         		 */
         		DBHelper helper = new DBHelper(getApplicationContext());
-        		helper.deleteDB();
+        		helper.deletePagesDB();
         		Toast t = Toast.makeText(getApplicationContext(), "Database cleared!", Toast.LENGTH_LONG);
     			t.show();		
         		

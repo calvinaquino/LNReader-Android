@@ -66,7 +66,8 @@ public class BakaTsukiParser {
 	public static NovelCollectionModel ParseNovelDetails(Document doc, PageModel page) {
 		NovelCollectionModel novel = new NovelCollectionModel();
 		if(doc == null) throw new NullPointerException("Document cannot be null.");
-				
+		novel.setPage(page.getPage());
+		novel.setPageModel(page);
 		parseNovelSynopsis(doc, novel);		
 		parseNovelCover(doc, novel);				
 		parseNovelChapters(doc, novel);
@@ -131,6 +132,8 @@ public class BakaTsukiParser {
 											PageModel p = new PageModel();
 											p.setTitle(link.text());
 											p.setPage(link.attr("href").replace("project/index.php?title=",""));
+											p.setParent(novel.getPage() + "%" + book.getTitle());
+											p.setType(PageModel.TYPE_CONTENT);
 											Log.d(TAG, "chapter: " + link.text());
 											chapterCollection.add(p);
 										}										
@@ -177,6 +180,8 @@ public class BakaTsukiParser {
 												PageModel p = new PageModel();
 												p.setTitle(link.text());
 												p.setPage(link.attr("href").replace("project/index.php?title=",""));
+												p.setParent(novel.getPage() + "%" + book.getTitle());
+												p.setType(PageModel.TYPE_CONTENT);
 												Log.d(TAG, "chapter: " + link.text());
 												chapterCollection.add(p);
 											}										

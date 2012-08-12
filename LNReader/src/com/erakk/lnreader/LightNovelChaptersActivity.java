@@ -80,7 +80,7 @@ public class LightNovelChaptersActivity extends Activity {
         NovelCollectionModel novelCol;
 		try {
 			// TODO: change to proper ui elements :)
-			novelCol = dao.getNovelDetailsFromInternet(page);
+			novelCol = dao.getNovelDetails(page);
 			String details = "";
 			details += "\nSynopsis:\n" + novelCol.getSynopsis();
 			

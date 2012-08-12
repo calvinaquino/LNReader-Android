@@ -2,23 +2,26 @@
 
 package com.erakk.lnreader.model;
 
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 
 import android.graphics.Bitmap;
-import android.net.Uri;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
+import android.util.Log;
 
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.DownloadImageTask;
 
 public class NovelCollectionModel {
-	private PageModel page;	
-	public PageModel getPage() {
-		return page;
+	
+	public PageModel getPageModel() {
+		return pageModel;
 	}
-	public void setPage(PageModel page) {
-		this.page = page;
+	public void setPageModel(PageModel pageModel) {
+		this.pageModel = pageModel;
 	}
 	public String getCover() {
 		return cover;
@@ -40,6 +43,14 @@ public class NovelCollectionModel {
 	}
 	
 	public URL getCoverUrl() {
+		if(this.coverUrl == null) {
+			try {
+				this.coverUrl = new URL(this.cover);
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return coverUrl;
 	}
 	
@@ -49,26 +60,64 @@ public class NovelCollectionModel {
 
 	public Bitmap getCoverBitmap() {
 		if(coverBitmap == null) {
-			DownloadImageTask t = new DownloadImageTask(); 
-			t.execute(new URL[] {coverUrl});
-			
-			try {
-				AsyncTaskResult<Bitmap> result = t.get();
-				if(result.getError() == null) {
-					coverBitmap = result.getResult();
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
+			try{
+			String filepath = Environment.getExternalStorageDirectory() + "/.cache" + getCoverUrl().getFile();
+			Log.d("GetCover", filepath);
+			this.coverBitmap = BitmapFactory.decodeFile(filepath);
+			}catch(Exception e){
 				e.printStackTrace();
-			} 			
+				Log.e("GetCover", e.getClass().toString() + ": " + e.getMessage());
+			}
+//			DownloadImageTask t = new DownloadImageTask(); 
+//			t.execute(new URL[] {coverUrl});
+//			
+//			try {
+//				AsyncTaskResult<Bitmap> result = t.get();
+//				if(result.getError() == null) {
+//					coverBitmap = result.getResult();
+//				}
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} 			
 		}
 		return coverBitmap;
 	}
+	
+	public Date getLastUpdate() {
+		return lastUpdate;
+	}
+	public void setLastUpdate(Date lastUpdate) {
+		this.lastUpdate = lastUpdate;
+	}
 
+	public Date getLastCheck() {
+		return lastCheck;
+	}
+	public void setLastCheck(Date lastCheck) {
+		this.lastCheck = lastCheck;
+	}
+
+	public void setPage(String page) {
+		this.page = page;
+	}
+	public String getPage() {
+		return this.page;
+	}
+
+	private PageModel pageModel;	
+	private String page;
 	private String cover;
 	private URL coverUrl;
 	private Bitmap coverBitmap;
 	private String synopsis;	
 	private ArrayList<BookModel> bookCollections; 
+	
+	private Date lastUpdate;
+	private Date lastCheck;
+	
+	public String toString() {
+		return page;
+	}
 	
 }

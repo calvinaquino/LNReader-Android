@@ -19,7 +19,9 @@ import android.util.Log;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.DBHelper;
+import com.erakk.lnreader.helper.DownloadFileTask;
 import com.erakk.lnreader.helper.DownloadPageTask;
+import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.parser.BakaTsukiParser;
@@ -104,7 +106,17 @@ public class NovelsDao {
 		return list;
 	}
 
-	public NovelCollectionModel getNovelDetailsFromInternet(PageModel page) throws Exception{
+	public NovelCollectionModel getNovelDetails(PageModel page) throws Exception {
+		NovelCollectionModel novel = dbh.getNovelDetails(page.getPage());
+		
+		if(novel == null) {
+			novel = getNovelDetailsFromInternet(page);
+		}
+		
+		return novel;
+	}
+	
+	public NovelCollectionModel getNovelDetailsFromInternet(PageModel page) throws Exception {
 		NovelCollectionModel novel = null;
 		URL url = new URL(Constants.BaseURL + "index.php?title=" + page.getPage());
 
@@ -117,7 +129,20 @@ public class NovelsDao {
 		Document doc = result.getResult();
 		
 		novel = BakaTsukiParser.ParseNovelDetails(doc, page);
-	
+		dbh.insertNovelDetails(novel);
+		
+		// download cover image
+		if(novel.getCoverUrl() != null) {
+			AsyncTask<URL, Integer, AsyncTaskResult<ImageModel>> download = new DownloadFileTask().execute(new URL[] {novel.getCoverUrl()});
+			AsyncTaskResult<ImageModel> result2 = download.get();
+			if(result2.getError() != null) {
+				result2.getError().printStackTrace();
+				throw result2.getError();
+			}
+			ImageModel image = result2.getResult();
+			Log.d("Image", image.toString());
+		}
+		
 		return novel;
 	}
 	
