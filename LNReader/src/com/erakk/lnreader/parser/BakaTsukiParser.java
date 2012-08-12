@@ -68,19 +68,40 @@ public class BakaTsukiParser {
 		if(doc == null) throw new NullPointerException("Document cannot be null.");
 				
 		parseNovelSynopsis(doc, novel);		
-		parseNovelCover(doc, novel);
-				
+		parseNovelCover(doc, novel);				
+		parseNovelChapters(doc, novel);
+		
+		return novel;
+	}
+
+	private static ArrayList<BookModel> parseNovelChapters(Document doc, NovelCollectionModel novel) {
+		Log.d(TAG, "Start parsing book collections");
 		// parse the collection
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
 		try{
 			Elements h2s = doc.select("h2");
 			for(Iterator<Element> i = h2s.iterator(); i.hasNext();){
 				Element h2 = i.next();
-				Elements span = h2.select("span");
-				if(span.size() > 0 && span.first().id().contains("_by_")) {
-					Log.d(TAG, "h2: " +h2.text());
+				//Log.d(TAG, "checking h2: " +h2.text() + "\n" + h2.id());
+				Elements spans = h2.select("span");
+				if(spans.size() > 0) {
+					// find span with id containing "_by_"
+					boolean containsBy = false;
+					for(Iterator<Element> iSpan = spans.iterator(); iSpan.hasNext(); ) {
+						Element s = iSpan.next();
+						if(s.id().contains("_by")) {
+							containsBy = true;
+							break;
+						}
+					}
+					if(!containsBy) continue;
 					
-					// parse book
+					Log.d(TAG, "Found h2: " +h2.text());
+					
+					/*
+					 * parse book method 1:
+					 * Look for <h3> after <h2> containing the volume list.
+					 */
 					Element bookElement = h2;
 					boolean walkBook = true;
 					do{
@@ -98,7 +119,9 @@ public class BakaTsukiParser {
 							do{
 								chapterElement = chapterElement.nextElementSibling();
 								if(chapterElement.tagName() == "h3") walkChapter = false;
-								else if(chapterElement.tagName() == "dl") {
+								else if(chapterElement.tagName() == "dl" ||
+										chapterElement.tagName() == "ul" ||
+										chapterElement.tagName() == "div") {
 									Elements chapters = chapterElement.select("li");
 									for(Iterator<Element> i2 = chapters.iterator(); i2.hasNext();) {
 										Element chapter = i2.next();
@@ -115,19 +138,78 @@ public class BakaTsukiParser {
 								}
 								book.setChapterCollection(chapterCollection);
 							}while(walkChapter);
-							
 							books.add(book);
-						}
-						
+						}						
 					}while(walkBook);
+					
+					/*
+					 * parse book method 2:
+					 * Look for <p> after <h2> containing the chapter list, usually only have 1 book.
+					 * See 7_Nights
+					 */
+					if(books.size() == 0) {
+						Log.d(TAG, "No books found, use method 2");
+						bookElement = h2;
+						walkBook = true;
+						do{
+							bookElement = bookElement.nextElementSibling();
+							if(bookElement.tagName() == "h2") walkBook = false;
+							else if(bookElement.tagName() == "p") {
+								Log.d(TAG, "Found: " +bookElement.text());
+								BookModel book = new BookModel();
+								book.setTitle(bookElement.text());
+								ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
+								
+								// parse the chapters.
+								boolean walkChapter = true;
+								Element chapterElement = bookElement;
+								do{	
+									chapterElement = chapterElement.nextElementSibling();
+									if(chapterElement == null) walkChapter = false;
+									else if(chapterElement.tagName() == "p") walkChapter = false;
+									else if(chapterElement.tagName() == "dl") {
+										Elements chapters = chapterElement.select("li");
+										for(Iterator<Element> i2 = chapters.iterator(); i2.hasNext();) {
+											Element chapter = i2.next();
+											Elements links = chapter.select("a");
+											if(links.size() > 0) {
+												Element link = links.first();
+												PageModel p = new PageModel();
+												p.setTitle(link.text());
+												p.setPage(link.attr("href").replace("project/index.php?title=",""));
+												Log.d(TAG, "chapter: " + link.text());
+												chapterCollection.add(p);
+											}										
+										}
+									}
+									// no subchapter
+									if(chapterCollection.size() == 0 ) {
+										Elements links = bookElement.select("a");
+										if(links.size() > 0) {
+											Element link = links.first();
+											PageModel p = new PageModel();
+											p.setTitle(link.text());
+											p.setPage(link.attr("href").replace("project/index.php?title=",""));
+											Log.d(TAG, "chapter: " + link.text());
+											chapterCollection.add(p);
+										}
+									}
+									book.setChapterCollection(chapterCollection);
+								}while(walkChapter);
+								books.add(book);
+							}							
+						}while(walkBook);
+					}
 				}
 			}			
 			novel.setBookCollections(books);
 		} catch(Exception e) {e.printStackTrace();}
-		return novel;
+		Log.d(TAG, "Complete parsing book collections: " + books.size());
+		return books;
 	}
 
-	private static void parseNovelCover(Document doc, NovelCollectionModel novel) {
+	private static String parseNovelCover(Document doc, NovelCollectionModel novel) {
+		Log.d(TAG, "Start parsing cover image");
 		// parse the cover image
 		String imageUrl = "";
 		Elements images = doc.select(".thumbimage");
@@ -139,16 +221,18 @@ public class BakaTsukiParser {
 		}
 		novel.setCover(imageUrl);
 		try {
-			novel.setCoverUrl(new URL(imageUrl));
+			URL url = new URL(imageUrl);
+			novel.setCoverUrl(url);
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Log.d(TAG, novel.getCover());
+		Log.d(TAG, "Complete parsing cover image");
+		return imageUrl;
 	}
 
-	private static void parseNovelSynopsis(Document doc,
-			NovelCollectionModel novel) {
+	private static String parseNovelSynopsis(Document doc, NovelCollectionModel novel) {
+		Log.d(TAG, "Start parsing synopsis");
 		// parse the synopsis
 		String synopsis = "";
 		String source = "#Story_Synopsis";
@@ -184,6 +268,7 @@ public class BakaTsukiParser {
 		}
 
 		novel.setSynopsis(synopsis);
-		Log.d(TAG, novel.getSynopsis());
+		Log.d(TAG, "Completed parsing synopsis.");
+		return synopsis;
 	}
 }
