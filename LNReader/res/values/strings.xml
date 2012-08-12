@@ -14,5 +14,6 @@
     <string name="novel_cover">cover</string>
     <string name="novel_synopsys">synopsys</string>
     <string name="loading">Loading content...</string>
+    <string name="last_novel">Jump to last read novel</string>
 
 </resources>
