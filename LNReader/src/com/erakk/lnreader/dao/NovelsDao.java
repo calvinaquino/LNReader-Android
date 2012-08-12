@@ -94,7 +94,7 @@ public class NovelsDao {
 		list = new ArrayList<PageModel>();
 
 		Response response = Jsoup.connect(Constants.BaseURL)
-				 .timeout(7000)
+				 .timeout(60000)
 				 .execute();
 		Document doc = response.parse();//result.getResult();
 		
@@ -104,9 +104,9 @@ public class NovelsDao {
 		return list;
 	}
 
-	public NovelCollectionModel getNovelDetailsFromInternet(String page) throws Exception{
+	public NovelCollectionModel getNovelDetailsFromInternet(PageModel page) throws Exception{
 		NovelCollectionModel novel = null;
-		URL url = new URL(Constants.BaseURL + "index.php?title=" + page);
+		URL url = new URL(Constants.BaseURL + "index.php?title=" + page.getPage());
 
 		AsyncTask<URL, Void, AsyncTaskResult<Document>> task = new DownloadPageTask().execute(new URL[] {url});
 		AsyncTaskResult<Document> result = task.get();
@@ -116,7 +116,7 @@ public class NovelsDao {
 		}
 		Document doc = result.getResult();
 		
-		novel = BakaTsukiParser.ParseNovelDetails(doc);
+		novel = BakaTsukiParser.ParseNovelDetails(doc, page);
 	
 		return novel;
 	}

@@ -1,5 +1,8 @@
 package com.erakk.lnreader;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -17,7 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
+import com.erakk.lnreader.model.PageModel;
 
 public class LightNovelChaptersActivity extends Activity {
 	NovelsDao dao;
@@ -29,7 +34,9 @@ public class LightNovelChaptersActivity extends Activity {
         //Get intent and message
         Intent intent = getIntent();
         String novel = intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_MESSAGE);
-        String page = intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_PAGE);
+        PageModel page = new PageModel(); 
+        page.setPage(intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_PAGE));
+        page.setTitle(intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_TITLE));
         
         setContentView(R.layout.activity_light_novel_chapters);
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -75,7 +82,19 @@ public class LightNovelChaptersActivity extends Activity {
 			// TODO: change to proper ui elements :)
 			novelCol = dao.getNovelDetailsFromInternet(page);
 			String details = "";
-			details += "\n Synopsys:\n" + novelCol.getSynopsis();
+			details += "\nSynopsis:\n" + novelCol.getSynopsis();
+			
+			// test only for listing books BookModelers
+			details += "\n\nListing: "; 
+			for(Iterator<BookModel> i = novelCol.getBookCollections().iterator(); i.hasNext();) {
+				BookModel book = i.next();
+				details += "\n" + book.getTitle();
+				for(Iterator<PageModel> i2 = book.getChapterCollection().iterator(); i2.hasNext();){
+					PageModel chapter = i2.next();
+					details += "\n\t" + chapter.getTitle() + " (" + chapter.getPage() + ")";
+				}
+				details += "\n";
+			}
 			//details += "\n Cover Image:\n" + novelCol.getCover();
 			
 			textViewSynopsys.setText(details);
@@ -84,7 +103,7 @@ public class LightNovelChaptersActivity extends Activity {
 			ImageView ImageViewCover = (ImageView) findViewById(R.id.cover);
 	        ImageViewCover.setImageBitmap(novelCol.getCoverBitmap() );
 		} catch (Exception e) {
-			//e.printStackTrace();
+			e.printStackTrace();
 			Log.e("NovelDetails", e.getClass().toString() + ": " + e.getMessage());
 			Toast t = Toast.makeText(this, e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT);
 			t.show();

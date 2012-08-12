@@ -39,6 +39,7 @@ public class DisplayLightNovelsActivity extends ListActivity {
 
 	public final static String EXTRA_MESSAGE = "com.erakk.lnreader.NOVEL";
 	public final static String EXTRA_PAGE = "com.erakk.lnreader.page";
+	public static final String EXTRA_TITLE = "com.erakk.lnreader.title";
 	ArrayList<PageModel> listItems=new ArrayList<PageModel>();
 	ArrayAdapter<PageModel> adapter;
 	NovelsDao dao = new NovelsDao(this);
@@ -74,6 +75,7 @@ public class DisplayLightNovelsActivity extends ListActivity {
         Intent intent = new Intent(this, LightNovelChaptersActivity.class);
         intent.putExtra(EXTRA_MESSAGE, novel);
         intent.putExtra(EXTRA_PAGE, o.getPage());
+        intent.putExtra(EXTRA_TITLE, o.getTitle());
         startActivity(intent);
     }
 

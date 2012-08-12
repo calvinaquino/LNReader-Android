@@ -14,8 +14,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import android.net.Uri;
+import android.provider.Browser.BookmarkColumns;
 import android.util.Log;
 
+import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 
@@ -61,10 +63,92 @@ public class BakaTsukiParser {
 		return result;
 	}
 	
-	public static NovelCollectionModel ParseNovelDetails(Document doc) {
+	public static NovelCollectionModel ParseNovelDetails(Document doc, PageModel page) {
 		NovelCollectionModel novel = new NovelCollectionModel();
 		if(doc == null) throw new NullPointerException("Document cannot be null.");
 				
+		parseNovelSynopsis(doc, novel);		
+		parseNovelCover(doc, novel);
+				
+		// parse the collection
+		ArrayList<BookModel> books = new ArrayList<BookModel>();
+		try{
+			Elements h2s = doc.select("h2");
+			for(Iterator<Element> i = h2s.iterator(); i.hasNext();){
+				Element h2 = i.next();
+				Elements span = h2.select("span");
+				if(span.size() > 0 && span.first().id().contains("_by_")) {
+					Log.d(TAG, "h2: " +h2.text());
+					
+					// parse book
+					Element bookElement = h2;
+					boolean walkBook = true;
+					do{
+						bookElement = bookElement.nextElementSibling();
+						if(bookElement.tagName() == "h2") walkBook = false;
+						else if(bookElement.tagName() == "h3") {
+							Log.d(TAG, "Found: " +bookElement.text());
+							BookModel book = new BookModel();
+							book.setTitle(bookElement.text()); // TODO: need to sanitize the title.
+							ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
+							
+							// parse the chapters.
+							boolean walkChapter = true;
+							Element chapterElement = bookElement;
+							do{
+								chapterElement = chapterElement.nextElementSibling();
+								if(chapterElement.tagName() == "h3") walkChapter = false;
+								else if(chapterElement.tagName() == "dl") {
+									Elements chapters = chapterElement.select("li");
+									for(Iterator<Element> i2 = chapters.iterator(); i2.hasNext();) {
+										Element chapter = i2.next();
+										Elements links = chapter.select("a");
+										if(links.size() > 0) {
+											Element link = links.first();
+											PageModel p = new PageModel();
+											p.setTitle(link.text());
+											p.setPage(link.attr("href").replace("project/index.php?title=",""));
+											Log.d(TAG, "chapter: " + link.text());
+											chapterCollection.add(p);
+										}										
+									}
+								}
+								book.setChapterCollection(chapterCollection);
+							}while(walkChapter);
+							
+							books.add(book);
+						}
+						
+					}while(walkBook);
+				}
+			}			
+			novel.setBookCollections(books);
+		} catch(Exception e) {e.printStackTrace();}
+		return novel;
+	}
+
+	private static void parseNovelCover(Document doc, NovelCollectionModel novel) {
+		// parse the cover image
+		String imageUrl = "";
+		Elements images = doc.select(".thumbimage");
+		if(images.size() > 0){
+			imageUrl = images.first().attr("src");
+			if(!imageUrl.startsWith("http")) {
+				imageUrl = "http://www.baka-tsuki.org" + imageUrl;
+			}
+		}
+		novel.setCover(imageUrl);
+		try {
+			novel.setCoverUrl(new URL(imageUrl));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Log.d(TAG, novel.getCover());
+	}
+
+	private static void parseNovelSynopsis(Document doc,
+			NovelCollectionModel novel) {
 		// parse the synopsis
 		String synopsis = "";
 		String source = "#Story_Synopsis";
@@ -101,27 +185,5 @@ public class BakaTsukiParser {
 
 		novel.setSynopsis(synopsis);
 		Log.d(TAG, novel.getSynopsis());
-		
-		// parse the cover image
-		String imageUrl = "";
-		Elements images = doc.select(".thumbimage");
-		if(images.size() > 0){
-			imageUrl = images.first().attr("src");
-			if(!imageUrl.startsWith("http")) {
-				imageUrl = "http://www.baka-tsuki.org" + imageUrl;
-			}
-		}
-		novel.setCover(imageUrl);
-		try {
-			novel.setCoverUrl(new URL(imageUrl));
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Log.d(TAG, novel.getCover());
-				
-		// parse the collection
-		
-		return novel;
 	}
 }
