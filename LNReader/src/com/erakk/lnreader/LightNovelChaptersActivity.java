@@ -67,14 +67,6 @@ public class LightNovelChaptersActivity extends Activity {
         	
         }
         
-        /*
-         * Maybe here i'll implement the code to check if the user wants to load from the internet
-         * or from the cache (the images)
-         * to get prefs:
-         * 
-         * SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-         * sharedPrefs.getBoolean("store_images", false);
-         */
         
         dao = new NovelsDao(this);
         NovelCollectionModel novelCol;

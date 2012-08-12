@@ -40,13 +40,6 @@
      <PreferenceCategory
         android:title="Storage"
         android:key="storage_category">
-        
-         <CheckBoxPreference
-            android:key="store_images"
-            android:summary="Stores downloaded novel images for faster loading"
-            android:title="Store Images"
-            android:defaultValue="true"
-        />
  
         <Preference
             android:key="clear_database"

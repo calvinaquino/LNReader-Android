@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.dao.NovelsDao;
@@ -123,6 +124,8 @@ public class DisplayLightNovelsActivity extends ListActivity {
 		@SuppressLint("NewApi")
 		protected void onPostExecute(AsyncTaskResult<ArrayList<PageModel>> result) {
 	         ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
+			 TextView tv = (TextView) findViewById(R.id.loading);
+			 tv.setVisibility(TextView.GONE);
 	         pb.setActivated(false);
 	         pb.setVisibility(ProgressBar.GONE);
 	         ArrayList<PageModel> list = result.getResult();
