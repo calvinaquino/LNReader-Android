@@ -3,11 +3,9 @@ Android SDK
 eclipse + ADT
 JSoup (Nandaka)
 
-//WARNING:
-Creating activity for Novels is sometimes slow.
-Solution, maybe:
-Maybe put the chapter loading in a separate thread
-So it can load the View and then populate it?
+//WARNING
+Bitmap is returning empty on chapterActivity
+Implement AsyncLoading on ChapterActivity (maybe)
 
 //TODO:
 get LN chapters and update info
