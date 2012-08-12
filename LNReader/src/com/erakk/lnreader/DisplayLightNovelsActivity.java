@@ -130,9 +130,9 @@ public class DisplayLightNovelsActivity extends ListActivity {
 	         pb.setVisibility(ProgressBar.GONE);
 	         ArrayList<PageModel> list = result.getResult();
 	         if(list != null) adapter.addAll(list);
-	     }
+	    }
     	 
-     }
+    }
     
 }
 

@@ -67,7 +67,6 @@ public class LightNovelChaptersActivity extends Activity {
         	
         }
         
-        
         dao = new NovelsDao(this);
         NovelCollectionModel novelCol;
 		try {
