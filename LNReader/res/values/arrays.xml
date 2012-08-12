@@ -19,4 +19,11 @@
         <item name="86400000">86400000</item>
     </string-array>
     
+    <string-array name="novel_context_menu">
+        <item name="add_to_watch">Add to Watch List</item>
+        <item name="download_full">Download Novel</item>
+        <item name="test3">Just a test</item>
+        
+    </string-array>
+    
 </resources>

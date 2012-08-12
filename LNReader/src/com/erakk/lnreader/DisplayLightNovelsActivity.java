@@ -12,9 +12,13 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -51,6 +55,10 @@ public class DisplayLightNovelsActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_light_novels);
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        // TODO: Add listener for long press to open context menu (Not working)
+        /*ListView lv = (ListView) findViewById(android.R.id.list);
+        registerForContextMenu(lv);*/
+        
         
         try {
         	adapter=new ArrayAdapter<PageModel>(this,
@@ -92,11 +100,28 @@ public class DisplayLightNovelsActivity extends ListActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+        	case R.id.menu_settings:
+        		Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
+        		startActivity(launchNewIntent);
+        		return true;
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+        ContextMenuInfo menuInfo) {
+      if (v.getId()==android.R.layout.activity_list_item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+        menu.setHeaderTitle("Quick Menu");
+        String[] menuItems = getResources().getStringArray(R.array.novel_context_menu);
+        for (int i = 0; i<menuItems.length; i++) {
+          menu.add(Menu.NONE, i, i, menuItems[i]);
+        }
+      }
     }
     
      public class LoadNovelsTask extends AsyncTask<Void, ProgressBar, AsyncTaskResult<ArrayList<PageModel>>> {

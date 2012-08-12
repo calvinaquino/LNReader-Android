@@ -81,6 +81,8 @@ public class NovelCollectionModel {
 //				e.printStackTrace();
 //			} 			
 		}
+		// Redimension image so they all have a constant size
+		//coverBitmap = Bitmap.createScaledBitmap(coverBitmap, 200, 300, true); 
 		return coverBitmap;
 	}
 	
