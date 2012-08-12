@@ -52,9 +52,12 @@ public class DisplayLightNovelsActivity extends ListActivity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         
         try {
-	        adapter=new ArrayAdapter<PageModel>(this,
+        	adapter=new ArrayAdapter<PageModel>(this,
 	        		android.R.layout.simple_list_item_1,
 	        		listItems);
+//        	adapter=new ArrayAdapter<PageModel>(this,
+//	        		R.layout.novel_list_item,
+//	        		listItems);
 	    	//listItems = new LoadNovelsTask().execute(adapter).get().getResult();
 	        new LoadNovelsTask().execute(new Void[] {});
 	    	setListAdapter(adapter);

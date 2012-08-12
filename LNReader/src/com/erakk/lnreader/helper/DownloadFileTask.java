@@ -37,6 +37,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 	         URLConnection connection = url.openConnection();
 	         connection.connect();
 	         // this will be useful so that you can show a typical 0-100% progress bar
+	         // I'm not using it AT them moment, but don't remove, might be useful for real.
 	         int fileLength = connection.getContentLength();
 	
 	         // download the file
