@@ -13,8 +13,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import android.net.Uri;
-import android.provider.Browser.BookmarkColumns;
 import android.util.Log;
 
 import com.erakk.lnreader.model.BookModel;
