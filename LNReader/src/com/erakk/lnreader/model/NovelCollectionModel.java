@@ -77,7 +77,7 @@ public class NovelCollectionModel {
 //					coverBitmap = result.getResult();
 //				}
 //			} catch (Exception e) {
-//				// TODO Auto-generated catch block
+//				 TODO Auto-generated catch block
 //				e.printStackTrace();
 //			} 			
 		}

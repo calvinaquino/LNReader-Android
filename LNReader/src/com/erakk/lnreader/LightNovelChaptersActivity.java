@@ -82,7 +82,7 @@ public class LightNovelChaptersActivity extends Activity {
 			// TODO: change to proper ui elements :)
 			novelCol = dao.getNovelDetails(page);
 			String details = "";
-			details += "\nSynopsis:\n" + novelCol.getSynopsis();
+			details += novelCol.getSynopsis();
 			
 			// test only for listing books BookModelers
 			details += "\n\nListing: "; 
@@ -102,6 +102,13 @@ public class LightNovelChaptersActivity extends Activity {
 			// Removed the old way. was causing URL to URI conflict.
 			ImageView ImageViewCover = (ImageView) findViewById(R.id.cover);
 	        ImageViewCover.setImageBitmap(novelCol.getCoverBitmap() );
+	        
+	        if (novelCol.getCoverBitmap() == null) {
+	        	// IN app test, is returning empty bitmap
+	        	Toast tst = Toast.makeText(this, "Bitmap empty", Toast.LENGTH_LONG);
+	        	tst.show();
+	        }
+	        
 		} catch (Exception e) {
 			e.printStackTrace();
 			Log.e("NovelDetails", e.getClass().toString() + ": " + e.getMessage());
