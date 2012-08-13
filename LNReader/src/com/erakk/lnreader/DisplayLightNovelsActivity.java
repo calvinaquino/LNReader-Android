@@ -55,9 +55,6 @@ public class DisplayLightNovelsActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_light_novels);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        // TODO: Add listener for long press to open context menu (Not working)
-        /*ListView lv = (ListView) findViewById(android.R.id.list);
-        registerForContextMenu(lv);*/
         
         
         try {
