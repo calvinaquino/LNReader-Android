@@ -123,6 +123,29 @@ public class DBHelper extends SQLiteOpenHelper {
 		Log.w(TAG,"Database Deleted.");
 	}
 	
+	public PageModel getMainPage() {
+		Log.d(TAG, "Select Main_Page");
+		PageModel page = null;
+		database = this.getWritableDatabase();
+		
+		Cursor cursor = database.rawQuery("select * from " + TABLE_PAGE + " where " + COLUMN_PAGE + " = ? ", new String[] {"Main_Page"});
+		cursor.moveToFirst();
+	    while (!cursor.isAfterLast()) {
+	    	page = cursorTopage(cursor);
+	    	Log.d(TAG, "Found Main_Page " + page.toString());
+	    	break;
+	    }		
+		database.close();
+		return page;
+	}
+
+	public void insertAllNovel(ArrayList<PageModel> list) {
+		for(Iterator<PageModel> i = list.iterator(); i.hasNext();){
+			PageModel p = i.next();
+			insertOrUpdate(p);
+		}	
+	}
+	
 	public ArrayList<PageModel> selectAllNovels() {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
 		database = this.getWritableDatabase();
@@ -184,26 +207,35 @@ public class DBHelper extends SQLiteOpenHelper {
 			cv.put(COLUMN_TITLE, page.getTitle());
 			cv.put(COLUMN_TYPE, page.getType());
 			cv.put(COLUMN_PARENT, page.getParent());
-			cv.put(COLUMN_LAST_UPDATE, "" + page.getLastUpdate().getSeconds());
-			cv.put(COLUMN_LAST_CHECK, "" + new Date().getSeconds());
+			cv.put(COLUMN_LAST_UPDATE, "" + (int) (page.getLastUpdate().getTime()/ 1000));
+			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			cv.put(COLUMN_IS_WATCHED, page.isWatched());
 			database.insertOrThrow(TABLE_PAGE, null, cv);
 		}
 		else {
-			database.rawQuery("update " + TABLE_PAGE + " set " + COLUMN_TITLE + " = ?, " +
-					   											 COLUMN_TYPE + " = ?, " +
-					   											 COLUMN_PARENT + " = ?, " +
-					   											 COLUMN_LAST_UPDATE + " = ?, " +
-					   											 COLUMN_LAST_CHECK + " = ?, " +
-					   											 COLUMN_IS_WATCHED + " = ? " +
-					   		  " where " + COLUMN_PAGE + " = ?",
-					   		  new String[] {page.getTitle(), 
-					                        page.getType(),
-					                        page.getParent(),
-					                        "" + page.getLastUpdate().getSeconds(),
-					                        "" + page.getLastCheck().getSeconds(),
-					                        page.isWatched() ? "1" : "0", 
-					                        temp.getPage()});
+			ContentValues cv = new ContentValues();
+			cv.put(COLUMN_PAGE, page.getPage());
+			cv.put(COLUMN_TITLE, page.getTitle());
+			cv.put(COLUMN_TYPE, page.getType());
+			cv.put(COLUMN_PARENT, page.getParent());
+			cv.put(COLUMN_LAST_UPDATE, "" + (int) (page.getLastUpdate().getTime() / 1000));
+			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
+			cv.put(COLUMN_IS_WATCHED, page.isWatched());
+			database.update(TABLE_PAGE, cv, "page = ?", new String[] {page.getPage()});
+//			database.rawQuery("update " + TABLE_PAGE + " set " + COLUMN_TITLE + " = ?, " +
+//					   											 COLUMN_TYPE + " = ?, " +
+//					   											 COLUMN_PARENT + " = ?, " +
+//					   											 COLUMN_LAST_UPDATE + " = ?, " +
+//					   											 COLUMN_LAST_CHECK + " = ?, " +
+//					   											 COLUMN_IS_WATCHED + " = ? " +
+//					   		  " where " + COLUMN_PAGE + " = ?",
+//					   		  new String[] {page.getTitle(), 
+//					                        page.getType(),
+//					                        page.getParent(),
+//					                        "" + page.getLastUpdate().getSeconds(),
+//					                        "" + page.getLastCheck().getSeconds(),
+//					                        page.isWatched() ? "1" : "0", 
+//					                        temp.getPage()});
 			Log.d(TAG, "Updating: " + page.toString());
 		}
 		database.close();
@@ -231,8 +263,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_PAGE, novelDetails.getPage());
 		cv.put(COLUMN_SYNOPSIS, novelDetails.getSynopsis());
 		cv.put(COLUMN_IMAGE, novelDetails.getCover());
-		cv.put(COLUMN_LAST_UPDATE, "" + new Date().getSeconds());
-		cv.put(COLUMN_LAST_CHECK, "" + new Date().getSeconds());
+		cv.put(COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000));
+		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 		database.insertOrThrow(TABLE_NOVEL_DETAILS, null, cv);
 		
 		for(Iterator<BookModel> iBooks = novelDetails.getBookCollections().iterator(); iBooks.hasNext();){
@@ -241,8 +273,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			ContentValues cv2 = new ContentValues();
 			cv2.put(COLUMN_PAGE, novelDetails.getPage());
 			cv2.put(COLUMN_TITLE , book.getTitle());
-			cv2.put(COLUMN_LAST_UPDATE, "" + new Date().getSeconds());
-			cv2.put(COLUMN_LAST_CHECK, "" + new Date().getSeconds());
+			cv2.put(COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000));
+			cv2.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			database.insertOrThrow(TABLE_NOVEL_BOOK, null, cv2);
 			
 			for(Iterator<PageModel> iPage = book.getChapterCollection().iterator(); iPage.hasNext();) {
@@ -253,8 +285,8 @@ public class DBHelper extends SQLiteOpenHelper {
 				cv3.put(COLUMN_TITLE, page.getTitle());
 				cv3.put(COLUMN_TYPE, page.getType());
 				cv3.put(COLUMN_PARENT, page.getParent());
-				cv3.put(COLUMN_LAST_UPDATE, "" + new Date().getSeconds());
-				cv3.put(COLUMN_LAST_CHECK, "" + new Date().getSeconds());
+				cv3.put(COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000)); // TODO: get actual page revision
+				cv3.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 				cv3.put(COLUMN_IS_WATCHED, false);
 				database.insertOrThrow(TABLE_PAGE, null, cv3);
 			}
@@ -304,6 +336,9 @@ public class DBHelper extends SQLiteOpenHelper {
 			}		
 			novelDetails.setBookCollections(bookCollection);
 	    }
+	    else {
+	    	Log.d(TAG, "No Data for Novel Details: " + page);
+	    }
 		database.close();
 		
 		Log.d(TAG, "Complete Selecting Novel Details: " + page);
@@ -339,8 +374,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_IMAGE, image.getName());
 		cv.put(COLUMN_FILEPATH, image.getPath());
 		cv.put(COLUMN_URL, image.getUrl().toString());
-		cv.put(COLUMN_LAST_UPDATE, "" + new Date().getSeconds());
-		cv.put(COLUMN_LAST_CHECK, "" + new Date().getSeconds());
+		cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
+		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 		database.insertOrThrow(TABLE_IMAGE, null, cv);
 		Log.d(TAG, "Complete Insert Images: " + image.toString());
 		database.close();

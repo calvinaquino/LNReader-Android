@@ -135,9 +135,6 @@ public class DisplayLightNovelsActivity extends ListActivity {
 				listItems = dao.getNovels();
 				return new AsyncTaskResult<ArrayList<PageModel>>(listItems);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				Toast t = Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT);
-				t.show();
 				e.printStackTrace();
 				return new AsyncTaskResult<ArrayList<PageModel>>(e);
 			}
@@ -152,6 +149,12 @@ public class DisplayLightNovelsActivity extends ListActivity {
 	         pb.setVisibility(ProgressBar.GONE);
 	         ArrayList<PageModel> list = result.getResult();
 	         if(list != null) adapter.addAll(list);
+	         if(result.getError() != null) {
+        	 	Exception e = result.getError();
+        	 	Toast t = Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT);
+				t.show();
+				Log.e(this.getClass().toString(), e.getClass().toString() + ": " + e.getMessage());
+	         }
 	    }
     	 
     }

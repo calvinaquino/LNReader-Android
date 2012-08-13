@@ -3,7 +3,9 @@
  */
 package com.erakk.lnreader.dao;
 
+import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -41,48 +43,40 @@ public class NovelsDao {
 		if(dbh == null)
 			dbh = new DBHelper(context);	
 	}
-	  
+	
+
 	public ArrayList<PageModel> getNovels() throws Exception{
 		boolean refresh = false;
-		//dbh.deleteDB();
-		PageModel page = dbh.selectFirstBy(DBHelper.COLUMN_PAGE, "Main_Page");
+		PageModel page = dbh.getMainPage();
+		
+		// check if have main page data
 		if(page == null) {
-			Log.d(TAG, "No Main_Page data!");
 			refresh = true;
+			Log.d(TAG, "No Main_Page data!");
 		}
 		else {
-			// get last updated page revision from internet
-			
-			// compare if less than x day
+			Log.d(TAG, "Found Main_Page (" + page.getLastUpdate().toString() + "), last check: " + page.getLastCheck().toString());
+			// compare if less than 7 day
+			Date today = new Date();			
+			if(today.getTime() - page.getLastCheck().getTime() > (7 * 3600 * 1000)) {				
+				refresh = true;
+				Log.d(TAG, "Last check is over 7 days, checking online status");
+			}
 		}
 		
-		//refresh = true; //debug only
-		
 		if(refresh){
-			list = getNovelsFromInternet();
-			page = new PageModel();
-			page.setPage("Main_Page");
-			page.setTitle("Main Page");
-			page.setType(PageModel.TYPE_OTHER);
-			page.setParent("");
-			page.setLastUpdate(new Date());
-			page.setLastCheck(new Date());
-			try{
-				dbh.insertOrUpdate(page);
-			}catch(Exception e) {
-				Log.e(TAG, "Failed to insert: " + page.toString() + ", " +e.getMessage());
-			}
+			// get last updated page revision from internet
+			PageModel mainPage = getPageModelFromInternet("Main_Page");
+			mainPage.setType(PageModel.TYPE_OTHER);
+			mainPage.setParent("");
+			if(page!= null) mainPage.setId(page.getId());
+			dbh.insertOrUpdate(mainPage);
 			Log.d(TAG, "Updated Main_Page");
 			
-			for(Iterator<PageModel> i = list.iterator(); i.hasNext();){
-				PageModel p = i.next();
-				try{
-					dbh.insertOrUpdate(p);
-				}catch(Exception e) {
-					Log.e(TAG, "Failed to insert: " + p.toString());
-					e.printStackTrace();
-				}
-			}			
+			// get updated novel list from internet
+			list = getNovelsFromInternet();
+			dbh.insertAllNovel(list);
+			Log.d(TAG, "Updated Novel List");
 		}
 		else {
 			list = dbh.selectAllByColumn(DBHelper.COLUMN_TYPE, PageModel.TYPE_NOVEL);
@@ -90,6 +84,13 @@ public class NovelsDao {
 		}
 		return list;
 
+	}
+	
+	public PageModel getPageModelFromInternet(String page) throws Exception {
+		Response response = Jsoup.connect("http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&titles=" + page)
+				 .timeout(60000)
+				 .execute();
+		return BakaTsukiParser.parsePageAPI(page, response.parse());
 	}
 	
 	public ArrayList<PageModel> getNovelsFromInternet() throws Exception {
@@ -117,32 +118,27 @@ public class NovelsDao {
 	}
 	
 	public NovelCollectionModel getNovelDetailsFromInternet(PageModel page) throws Exception {
+		Log.d(TAG, "Getting Novel Details from internet: " + page.getPage());
 		NovelCollectionModel novel = null;
-		URL url = new URL(Constants.BaseURL + "index.php?title=" + page.getPage());
-
-		AsyncTask<URL, Void, AsyncTaskResult<Document>> task = new DownloadPageTask().execute(new URL[] {url});
-		AsyncTaskResult<Document> result = task.get();
-		if(result.getError() != null) {
-			result.getError().printStackTrace();
-			throw result.getError();
-		}
-		Document doc = result.getResult();
+		
+		Response response = Jsoup.connect(Constants.BaseURL + "index.php?title=" + page.getPage())
+				 .timeout(60000)
+				 .execute();
+		Document doc = response.parse();
 		
 		novel = BakaTsukiParser.ParseNovelDetails(doc, page);
+		PageModel novelPage = getPageModelFromInternet(page.getPage());
+		novel.setLastUpdate(novelPage.getLastUpdate());
+		
 		dbh.insertNovelDetails(novel);
 		
 		// download cover image
 		if(novel.getCoverUrl() != null) {
-			AsyncTask<URL, Integer, AsyncTaskResult<ImageModel>> download = new DownloadFileTask().execute(new URL[] {novel.getCoverUrl()});
-			AsyncTaskResult<ImageModel> result2 = download.get();
-			if(result2.getError() != null) {
-				result2.getError().printStackTrace();
-				throw result2.getError();
-			}
-			ImageModel image = result2.getResult();
+			DownloadFileTask task = new DownloadFileTask();
+			ImageModel image = task.downloadImage(novel.getCoverUrl());
 			Log.d("Image", image.toString());
 		}
-		
+		Log.d(TAG, "Complete getting Novel Details from internet: " + page.getPage());
 		return novel;
 	}
 	

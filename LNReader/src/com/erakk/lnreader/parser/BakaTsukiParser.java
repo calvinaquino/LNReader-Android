@@ -5,6 +5,9 @@ package com.erakk.lnreader.parser;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -28,6 +31,23 @@ public class BakaTsukiParser {
 	
 	private static final String TAG = "Parser";
 
+	/**
+	 * @param pageName page name
+	 * @param doc parsed page for given pageName
+	 * @return PageModel status, no parent and type defined
+	 */
+	public static PageModel parsePageAPI(String pageName, Document doc) throws Exception {
+		PageModel mainPage = new PageModel();
+		mainPage.setPage(pageName);
+		mainPage.setTitle(doc.select("page").first().attr("title"));
+		Log.d(TAG, "parsePageAPI Title: " + mainPage.getTitle());
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); 		//2012-08-03T02:41:50Z
+		Date lastUpdate = formatter.parse(doc.select("page").first().attr("touched"));
+		mainPage.setLastUpdate(lastUpdate);
+		Log.d(TAG, "parsePageAPI Last Update: " + mainPage.getLastUpdate());
+		return mainPage;				
+	}
+	
 	/**
 	 * @param doc parsed page from Main_Page
 	 * @return list of novels in PageModel
@@ -61,11 +81,18 @@ public class BakaTsukiParser {
 		return result;
 	}
 	
+	
+	/**
+	 * @param doc
+	 * @param page
+	 * @return
+	 */
 	public static NovelCollectionModel ParseNovelDetails(Document doc, PageModel page) {
 		NovelCollectionModel novel = new NovelCollectionModel();
 		if(doc == null) throw new NullPointerException("Document cannot be null.");
 		novel.setPage(page.getPage());
 		novel.setPageModel(page);
+		
 		parseNovelSynopsis(doc, novel);		
 		parseNovelCover(doc, novel);				
 		parseNovelChapters(doc, novel);
