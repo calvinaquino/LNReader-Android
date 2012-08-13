@@ -4,6 +4,23 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class BookModel {
+	private int id;
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	private String page;
+	public String getPage() {
+		return page;
+	}
+	public void setPage(String page) {
+		this.page = page;
+	}
+	
 	private String title;
 	private ArrayList<PageModel> chapterCollection;
 	

@@ -212,6 +212,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	private PageModel cursorTopage(Cursor cursor) {
 		PageModel page = new PageModel();
+		page.setId(cursor.getInt(0));
 		page.setPage(cursor.getString(1));
 		page.setTitle(cursor.getString(2));
 		page.setType(cursor.getString(3));
@@ -311,6 +312,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	private BookModel cursorToBookModel(Cursor cursor) {
 		BookModel book = new BookModel();
+		book.setId(cursor.getInt(0));
+		book.setPage(cursor.getString(1));
 		book.setTitle(cursor.getString(2));
 		book.setLastUpdate(new Date(cursor.getInt(3)*1000));
 		book.setLastCheck(new Date(cursor.getInt(4)*1000));
@@ -319,6 +322,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	private NovelCollectionModel cursorToNovelCollection(Cursor cursor) {
 		NovelCollectionModel novelDetails = new NovelCollectionModel();
+		novelDetails.setId(cursor.getInt(0));
 		novelDetails.setPage(cursor.getString(1));
 		novelDetails.setSynopsis(cursor.getString(2));
 		novelDetails.setCover(cursor.getString(3));
@@ -362,6 +366,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	private ImageModel cursorToImage(Cursor cursor) {
 		ImageModel image = new ImageModel();
+		image.setId(cursor.getInt(0));
 		image.setName(cursor.getString(1));
 		image.setPath(cursor.getString(21));
 		try {

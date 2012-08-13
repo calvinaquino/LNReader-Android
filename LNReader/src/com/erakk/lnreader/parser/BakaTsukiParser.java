@@ -124,15 +124,16 @@ public class BakaTsukiParser {
 									Elements chapters = chapterElement.select("li");
 									for(Iterator<Element> i2 = chapters.iterator(); i2.hasNext();) {
 										Element chapter = i2.next();
+										if(chapter.tagName() != "li") break;
 										Elements links = chapter.select("a");
 										if(links.size() > 0) {
 											Element link = links.first();
 											PageModel p = new PageModel();
 											p.setTitle(link.text());
-											p.setPage(link.attr("href").replace("project/index.php?title=",""));
+											p.setPage(link.attr("href").replace("/project/index.php?title=",""));
 											p.setParent(novel.getPage() + "%" + book.getTitle());
 											p.setType(PageModel.TYPE_CONTENT);
-											Log.d(TAG, "chapter: " + link.text());
+											Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 											chapterCollection.add(p);
 										}										
 									}
@@ -168,19 +169,22 @@ public class BakaTsukiParser {
 									chapterElement = chapterElement.nextElementSibling();
 									if(chapterElement == null) walkChapter = false;
 									else if(chapterElement.tagName() == "p") walkChapter = false;
-									else if(chapterElement.tagName() == "dl") {
+									else if(chapterElement.tagName() == "dl" ||
+											chapterElement.tagName() == "ul" ||
+											chapterElement.tagName() == "div") {
 										Elements chapters = chapterElement.select("li");
 										for(Iterator<Element> i2 = chapters.iterator(); i2.hasNext();) {
 											Element chapter = i2.next();
+											if(chapter.tagName() != "li") break;
 											Elements links = chapter.select("a");
 											if(links.size() > 0) {
 												Element link = links.first();
 												PageModel p = new PageModel();
 												p.setTitle(link.text());
-												p.setPage(link.attr("href").replace("project/index.php?title=",""));
+												p.setPage(link.attr("href").replace("/project/index.php?title=",""));
 												p.setParent(novel.getPage() + "%" + book.getTitle());
 												p.setType(PageModel.TYPE_CONTENT);
-												Log.d(TAG, "chapter: " + link.text());
+												Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 												chapterCollection.add(p);
 											}										
 										}
@@ -192,8 +196,10 @@ public class BakaTsukiParser {
 											Element link = links.first();
 											PageModel p = new PageModel();
 											p.setTitle(link.text());
-											p.setPage(link.attr("href").replace("project/index.php?title=",""));
-											Log.d(TAG, "chapter: " + link.text());
+											p.setPage(link.attr("href").replace("/project/index.php?title=",""));
+											p.setParent(novel.getPage() + "%" + book.getTitle());
+											p.setType(PageModel.TYPE_CONTENT);
+											Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 											chapterCollection.add(p);
 										}
 									}

@@ -4,6 +4,13 @@ import java.net.URL;
 import java.util.Date;
 
 public class ImageModel {
+	private int id;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	private String name;
 	private String path;
 	private URL url;

@@ -16,7 +16,13 @@ import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.DownloadImageTask;
 
 public class NovelCollectionModel {
-	
+	private int id;
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public PageModel getPageModel() {
 		return pageModel;
 	}
