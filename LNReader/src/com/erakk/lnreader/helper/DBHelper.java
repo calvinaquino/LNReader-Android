@@ -232,7 +232,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_IMAGE, novelDetails.getCover());
 		cv.put(COLUMN_LAST_UPDATE, "" + new Date().getSeconds());
 		cv.put(COLUMN_LAST_CHECK, "" + new Date().getSeconds());
-		database.insertOrThrow(TABLE_NOVEL_DETAILS, null, cv);		
+		database.insertOrThrow(TABLE_NOVEL_DETAILS, null, cv);
+		
 		for(Iterator<BookModel> iBooks = novelDetails.getBookCollections().iterator(); iBooks.hasNext();){
 			BookModel book = iBooks.next();
 			Log.d(TAG, "Inserting Novel Details Books: " + book.toString());

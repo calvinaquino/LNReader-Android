@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-
+
+
     <ProgressBar
         android:id="@+id/progressBar2"
         style="?android:attr/progressBarStyleLarge"
@@ -18,7 +19,8 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/progressBar2"
         android:layout_marginTop="20dp" />
-    
+    
+
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
