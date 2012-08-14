@@ -12,7 +12,7 @@
     <string name="title_activity_light_novel_chapters">Light Novel Chapters</string>
     <string name="novel_title">title</string>
     <string name="novel_cover">cover</string>
-    <string name="novel_synopsys">synopsys</string>
+    <string name="novel_synopsys"></string>
     <string name="loading">Loading content...</string>
     <string name="last_novel">Jump to last read novel</string>
 

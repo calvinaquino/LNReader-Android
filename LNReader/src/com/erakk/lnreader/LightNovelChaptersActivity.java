@@ -132,6 +132,13 @@ public class LightNovelChaptersActivity extends Activity {
 
 			novelCol = result.getResult();
 			if(novelCol != null) {
+				
+				//Clear progressBar and string
+				 TextView tv = (TextView) findViewById(R.id.loading);
+				 tv.setVisibility(TextView.GONE);
+		         pb.setActivated(false);
+		         pb.setVisibility(ProgressBar.GONE);
+				
 				String details = "";
 				details += novelCol.getSynopsis();
 				
@@ -148,7 +155,7 @@ public class LightNovelChaptersActivity extends Activity {
 					details += "\n";
 				}
 				//details += "\n Cover Image:\n" + novelCol.getCover();
-
+				
 		        TextView textViewSynopsys = (TextView) findViewById(R.id.synopsys);
 				textViewSynopsys.setText(details);
 				
