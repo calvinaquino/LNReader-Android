@@ -8,6 +8,7 @@
             android:layout_height="50dp"
             android:layout_width="260dp"
             android:gravity="center_vertical"
+            android:onClick="onListItemClick"
         />
     
     <CheckBox 
@@ -15,6 +16,7 @@
         android:checked="false"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:gravity="center_vertical" />
+        android:gravity="center_vertical"
+        android:focusable="false" />
         
 </LinearLayout>

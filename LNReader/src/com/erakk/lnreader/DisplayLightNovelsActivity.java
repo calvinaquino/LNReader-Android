@@ -65,7 +65,7 @@ public class DisplayLightNovelsActivity extends ListActivity {
         boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
 
         View NovelView = findViewById(R.id.light_novel_list_screen);
-        ListView NovelList = (ListView) findViewById(android.R.id.list);
+        //ListView NovelList = (ListView) findViewById(android.R.id.list);
         //CheckBox isWatched = (CheckBox) findViewById(R.id.novel_is_watched);
         //TextView ListText = (TextView) findViewById(R.id.novel_name);
         
