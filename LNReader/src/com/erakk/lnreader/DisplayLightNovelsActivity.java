@@ -9,8 +9,11 @@ import java.util.ArrayList;
 import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -20,8 +23,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,10 +61,26 @@ public class DisplayLightNovelsActivity extends ListActivity {
         setContentView(R.layout.activity_display_light_novels);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
+
+        View NovelView = findViewById(R.id.light_novel_list_screen);
+        ListView NovelList = (ListView) findViewById(android.R.id.list);
+        //CheckBox isWatched = (CheckBox) findViewById(R.id.novel_is_watched);
+        //TextView ListText = (TextView) findViewById(R.id.novel_name);
         
+        
+        if (invertColors == true) {
+        	//NovelList.setBackgroundColor(Color.TRANSPARENT);
+        	//ListText.setTextColor(Color.WHITE);
+        	//isWatched
+        	NovelView.setBackgroundColor(Color.BLACK);
+        	
+        }
+        //R.layout.list_black_text,R.id.list_content
         try {
         	adapter=new ArrayAdapter<PageModel>(this,
-	        		android.R.layout.simple_list_item_1,
+	        		R.layout.novel_list_item,R.id.novel_name,
 	        		listItems);
 //        	adapter=new ArrayAdapter<PageModel>(this,
 //	        		R.layout.novel_list_item,
