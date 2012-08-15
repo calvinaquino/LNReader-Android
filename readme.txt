@@ -4,12 +4,16 @@ eclipse + ADT
 JSoup (Nandaka)
 
 //WARNING
-Bitmap is returning empty on chapterActivity
-Implement AsyncLoading on ChapterActivity (maybe)
+Sometimes loading a novel (entering chapter activity crashes - SOMEtimes)
+Adding checkBox disabled the hability to start the chapters activity screen for now
+
 
 //TODO:
-get LN chapters and update info
-Download and save
+get LN chapters and update info - Working
+Download and save - Working
 Remodel UI - Working
-Create icons,change colors. - Colors working
-MAYBE Rename work. - Gotta ask for a better name maybe
+Create icons,change colors. - Colors working/Icons later
+MAYBE Rename work. - Baka-Tsuki Reader / TsukiReader or another
+
+//CHECK
+File format problem - I just redid the changes to UTF-8 and UNIX line breaks. lets hope it wont bother again
