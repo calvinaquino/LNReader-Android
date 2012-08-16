@@ -78,9 +78,7 @@ public class LightNovelChaptersActivity extends Activity {
         }
         try {
         	ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
-        	//Error on this line.. =S
         	ExpListItems = SetStandardGroups();
-        	Log.d("TRY", "setGroupOK");
         	ExpAdapter = new ExpandListAdapter(LightNovelChaptersActivity.this, ExpListItems);
         	ExpandList.setAdapter(ExpAdapter);
 		} catch (Exception e) {
@@ -122,22 +120,38 @@ public class LightNovelChaptersActivity extends Activity {
     }
     
     public ArrayList<ExpandListGroup> SetStandardGroups() {
+    	Log.d("TRY", "SetStandardGroup");
     	        ArrayList<ExpandListGroup> list = new ArrayList<ExpandListGroup>();
+            	Log.d("TRY", "Set list1");
     	        ArrayList<ExpandListChild> list2 = new ArrayList<ExpandListChild>();
-    	        
+            	Log.d("TRY", "Set list2");
+    	        //Error here
     	        for(Iterator<BookModel> i = novelCol.getBookCollections().iterator(); i.hasNext();) {
+    	        	Log.d("TRY", "iterator books/volume");
 					BookModel book = i.next();
+		        	Log.d("TRY", "set next");
 					ExpandListGroup volume = new ExpandListGroup();
+		        	Log.d("TRY", "alloc volume");
 					volume.setName(book.getTitle());
+		        	Log.d("TRY", "setName");
 	    	        list.add(volume);
+	            	Log.d("TRY", "add to list1");
 					for(Iterator<PageModel> i2 = book.getChapterCollection().iterator(); i2.hasNext();){
+			        	Log.d("TRY", "iterator chapters");
 						PageModel chapter = i2.next();
+			        	Log.d("TRY", "set next");
 		    	        ExpandListChild chapter_page = new ExpandListChild();
+		            	Log.d("TRY", "alloc chapter");
 		    	        chapter_page.setName(chapter.getTitle() + " (" + chapter.getPage() + ")");
+		            	Log.d("TRY", "setName+page");
 		    	        chapter_page.setTag(null);
+		            	Log.d("TRY", "setTag");
 		    	        list2.add(chapter_page);
+		            	Log.d("TRY", "add to list2");
 					}
-				}   	        
+					volume.setItems(list2);
+				}   	      
+            	Log.d("TRY", "return list");  
     	        return list;
     	    }
 
