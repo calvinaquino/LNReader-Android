@@ -16,12 +16,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.erakk.lnreader.DisplayLightNovelsActivity.LoadNovelsTask;
+import com.erakk.lnreader.adapter.ExpandListAdapter;
+import com.erakk.lnreader.classes.ExpandListChild;
+import com.erakk.lnreader.classes.ExpandListGroup;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.BookModel;
@@ -31,11 +34,15 @@ import com.erakk.lnreader.model.PageModel;
 public class LightNovelChaptersActivity extends Activity {
 	NovelsDao dao;
 	NovelCollectionModel novelCol;
-	
+    private ExpandListAdapter ExpAdapter;
+    private ArrayList<ExpandListGroup> ExpListItems;
+    private ExpandableListView ExpandList;
+    
     @SuppressLint({ "NewApi", "NewApi" })
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         
         //Get intent and message
         Intent intent = getIntent();
@@ -69,6 +76,19 @@ public class LightNovelChaptersActivity extends Activity {
         	NovelView.setBackgroundColor(Color.BLACK);
         	
         }
+        try {
+        	ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
+        	//Error on this line.. =S
+        	ExpListItems = SetStandardGroups();
+        	Log.d("TRY", "setGroupOK");
+        	ExpAdapter = new ExpandListAdapter(LightNovelChaptersActivity.this, ExpListItems);
+        	ExpandList.setAdapter(ExpAdapter);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			Toast t = Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
+			//Toast t = Toast.makeText(this, "expandable list error simple", Toast.LENGTH_SHORT);
+			t.show();					
+		}
         
         dao = new NovelsDao(this);
         try {
@@ -100,6 +120,63 @@ public class LightNovelChaptersActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+    
+    public ArrayList<ExpandListGroup> SetStandardGroups() {
+    	        ArrayList<ExpandListGroup> list = new ArrayList<ExpandListGroup>();
+    	        ArrayList<ExpandListChild> list2 = new ArrayList<ExpandListChild>();
+    	        
+    	        for(Iterator<BookModel> i = novelCol.getBookCollections().iterator(); i.hasNext();) {
+					BookModel book = i.next();
+					ExpandListGroup volume = new ExpandListGroup();
+					volume.setName(book.getTitle());
+	    	        list.add(volume);
+					for(Iterator<PageModel> i2 = book.getChapterCollection().iterator(); i2.hasNext();){
+						PageModel chapter = i2.next();
+		    	        ExpandListChild chapter_page = new ExpandListChild();
+		    	        chapter_page.setName(chapter.getTitle() + " (" + chapter.getPage() + ")");
+		    	        chapter_page.setTag(null);
+		    	        list2.add(chapter_page);
+					}
+				}
+    	        
+    	        
+    	        /*ExpandListGroup gru1 = new ExpandListGroup();
+    	        gru1.setName("Comedy");
+    	        ExpandListChild ch1_1 = new ExpandListChild();
+    	        ch1_1.setName("A movie");
+    	        ch1_1.setTag(null);
+    	        list2.add(ch1_1);
+    	        ExpandListChild ch1_2 = new ExpandListChild();
+    	        ch1_2.setName("An other movie");
+    	        ch1_2.setTag(null);
+    	        list2.add(ch1_2);
+    	        ExpandListChild ch1_3 = new ExpandListChild();
+    	        ch1_3.setName("And an other movie");
+    	        ch1_3.setTag(null);
+    	        list2.add(ch1_3);
+    	        gru1.setItems(list2);
+    	        list2 = new ArrayList<ExpandListChild>();
+    	        ExpandListGroup gru2 = new ExpandListGroup();
+    	        gru2.setName("Action");
+    	        ExpandListChild ch2_1 = new ExpandListChild();
+    	        ch2_1.setName("A movie");
+    	        ch2_1.setTag(null);
+    	        list2.add(ch2_1);
+    	        ExpandListChild ch2_2 = new ExpandListChild();
+    	        ch2_2.setName("An other movie");
+    	        ch2_2.setTag(null);
+    	        list2.add(ch2_2);
+    	        ExpandListChild ch2_3 = new ExpandListChild();
+    	        ch2_3.setName("And an other movie");
+    	        ch2_3.setTag(null);
+    	        list2.add(ch2_3);
+    	        gru2.setItems(list2);
+    	        list.add(gru1);
+    	        list.add(gru2);*/
+    	        
+    	        return list;
+    	    }
+
     
     public class LoadNovelDetailsTask extends AsyncTask<PageModel, ProgressBar, AsyncTaskResult<NovelCollectionModel>> {
 
@@ -148,7 +225,7 @@ public class LightNovelChaptersActivity extends Activity {
 				
 				// TODO: change to proper ui elements :)
 				// test only for listing books BookModelers
-				details += "\n\nListing: "; 
+				/*details += "\n\nListing: "; 
 				for(Iterator<BookModel> i = novelCol.getBookCollections().iterator(); i.hasNext();) {
 					BookModel book = i.next();
 					details += "\n" + book.getTitle();
@@ -157,7 +234,7 @@ public class LightNovelChaptersActivity extends Activity {
 						details += "\n\t" + chapter.getTitle() + " (" + chapter.getPage() + ")";
 					}
 					details += "\n";
-				}
+				}*/
 				//details += "\n Cover Image:\n" + novelCol.getCover();
 				
 		        TextView textViewSynopsys = (TextView) findViewById(R.id.synopsys);
