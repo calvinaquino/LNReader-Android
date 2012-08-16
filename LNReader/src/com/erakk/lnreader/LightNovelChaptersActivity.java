@@ -137,43 +137,7 @@ public class LightNovelChaptersActivity extends Activity {
 		    	        chapter_page.setTag(null);
 		    	        list2.add(chapter_page);
 					}
-				}
-    	        
-    	        
-    	        /*ExpandListGroup gru1 = new ExpandListGroup();
-    	        gru1.setName("Comedy");
-    	        ExpandListChild ch1_1 = new ExpandListChild();
-    	        ch1_1.setName("A movie");
-    	        ch1_1.setTag(null);
-    	        list2.add(ch1_1);
-    	        ExpandListChild ch1_2 = new ExpandListChild();
-    	        ch1_2.setName("An other movie");
-    	        ch1_2.setTag(null);
-    	        list2.add(ch1_2);
-    	        ExpandListChild ch1_3 = new ExpandListChild();
-    	        ch1_3.setName("And an other movie");
-    	        ch1_3.setTag(null);
-    	        list2.add(ch1_3);
-    	        gru1.setItems(list2);
-    	        list2 = new ArrayList<ExpandListChild>();
-    	        ExpandListGroup gru2 = new ExpandListGroup();
-    	        gru2.setName("Action");
-    	        ExpandListChild ch2_1 = new ExpandListChild();
-    	        ch2_1.setName("A movie");
-    	        ch2_1.setTag(null);
-    	        list2.add(ch2_1);
-    	        ExpandListChild ch2_2 = new ExpandListChild();
-    	        ch2_2.setName("An other movie");
-    	        ch2_2.setTag(null);
-    	        list2.add(ch2_2);
-    	        ExpandListChild ch2_3 = new ExpandListChild();
-    	        ch2_3.setName("And an other movie");
-    	        ch2_3.setTag(null);
-    	        list2.add(ch2_3);
-    	        gru2.setItems(list2);
-    	        list.add(gru1);
-    	        list.add(gru2);*/
-    	        
+				}   	        
     	        return list;
     	    }
 
