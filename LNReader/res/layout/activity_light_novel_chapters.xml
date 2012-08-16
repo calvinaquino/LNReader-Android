@@ -1,67 +1,76 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="800dp"
 	android:id="@+id/ligh_novel_chapter_screen" >
 
+	 <ScrollView android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:minHeight="800dp"
+		android:id="@+id/ligh_novel_chapter_screen_scroll" >
     
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content" >
+		<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		    xmlns:tools="http://schemas.android.com/tools"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content" > 
     
-	<ProgressBar
-        android:id="@+id/progressBar2"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="200dp"
-        android:layout_centerHorizontal="true" />
-	<TextView 
-        android:id="@+id/loading"
-        android:text="@string/loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/progressBar2"
-        android:layout_marginTop="20dp" />
-	
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:text="@string/novel_title"
-        tools:context=".LightNovelChaptersActivity" />
+			<ProgressBar
+		        android:id="@+id/progressBar2"
+		        style="?android:attr/progressBarStyleLarge"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_marginTop="200dp"
+		        android:layout_centerHorizontal="true" />
+			<TextView 
+		        android:id="@+id/loading"
+		        android:text="@string/loading"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_centerHorizontal="true"
+		        android:layout_below="@+id/progressBar2"
+		        android:layout_marginTop="20dp" />
+			
+		    <TextView
+		        android:id="@+id/title"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_centerHorizontal="true"
+		        android:layout_marginTop="20dp"
+		        android:layout_marginLeft="8dp"
+		        android:layout_marginRight="8dp"
+		        android:text="@string/novel_title"
+		        tools:context=".LightNovelChaptersActivity" />
+		
+		    <ImageView
+		        android:id="@+id/cover"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_below="@+id/title"
+		        android:layout_centerHorizontal="true"
+		        android:layout_marginTop="20dp"
+		        android:contentDescription="@string/novel_cover" />
+		
+		    <TextView
+		
+		        android:id="@+id/synopsys"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentLeft="true"
+		        android:layout_below="@+id/cover"
+		        android:layout_marginTop="20dp"
+		        android:layout_marginLeft="8dp"
+		        android:layout_marginRight="8dp"
+		        android:text="@string/novel_synopsys"
+		        tools:context=".LightNovelChaptersActivity" />
+		    
+			
+		</RelativeLayout>
 
-    <ImageView
-        android:id="@+id/cover"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/title"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:contentDescription="@string/novel_cover" />
+	 </ScrollView>
 
-    <TextView
-
-        android:id="@+id/synopsys"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/cover"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:text="@string/novel_synopsys"
-        tools:context=".LightNovelChaptersActivity" />
-    
-    <ExpandableListView 
+	<ExpandableListView 
         android:id="@+id/chapter_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -72,7 +81,5 @@
         android:layout_below="@+id/synopsys" >
         
     </ExpandableListView>
-	
+    
 </RelativeLayout>
-
-</ScrollView>

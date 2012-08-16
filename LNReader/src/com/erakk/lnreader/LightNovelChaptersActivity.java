@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -13,12 +14,16 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,9 +57,18 @@ public class LightNovelChaptersActivity extends Activity {
         page.setTitle(intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_TITLE));
         
         setContentView(R.layout.activity_light_novel_chapters);
+        
+        
         getActionBar().setDisplayHomeAsUpEnabled(true);
         
         View NovelView = findViewById(R.id.ligh_novel_chapter_screen);
+        
+//        LayoutInflater layoutInflater = (LayoutInflater)LightNovelChaptersActivity.this.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+//        Log.d("LayoutInflater", "Gone through1");
+//        RelativeLayout headerLayout = (RelativeLayout)layoutInflater.inflate(R.id.ligh_novel_chapter_screen_header ,null, false);
+//        Log.d("LayoutInflater", "Gone through2");
+//        ((ExpandableListView) NovelView).addHeaderView( headerLayout );
+//        Log.d("LayoutInflater", "Gone through3");
         
         // get the textView
         TextView textViewTitle = (TextView) findViewById(R.id.title);
@@ -76,17 +90,7 @@ public class LightNovelChaptersActivity extends Activity {
         	NovelView.setBackgroundColor(Color.BLACK);
         	
         }
-        try {
-        	ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
-        	ExpListItems = SetStandardGroups();
-        	ExpAdapter = new ExpandListAdapter(LightNovelChaptersActivity.this, ExpListItems);
-        	ExpandList.setAdapter(ExpAdapter);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			Toast t = Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
-			//Toast t = Toast.makeText(this, "expandable list error simple", Toast.LENGTH_SHORT);
-			t.show();					
-		}
+        
         
         dao = new NovelsDao(this);
         try {
@@ -119,41 +123,44 @@ public class LightNovelChaptersActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
     
-    public ArrayList<ExpandListGroup> SetStandardGroups() {
-    	Log.d("TRY", "SetStandardGroup");
-    	        ArrayList<ExpandListGroup> list = new ArrayList<ExpandListGroup>();
-            	Log.d("TRY", "Set list1");
-    	        ArrayList<ExpandListChild> list2 = new ArrayList<ExpandListChild>();
-            	Log.d("TRY", "Set list2");
-    	        //Error here
-    	        for(Iterator<BookModel> i = novelCol.getBookCollections().iterator(); i.hasNext();) {
-    	        	Log.d("TRY", "iterator books/volume");
-					BookModel book = i.next();
-		        	Log.d("TRY", "set next");
-					ExpandListGroup volume = new ExpandListGroup();
-		        	Log.d("TRY", "alloc volume");
-					volume.setName(book.getTitle());
-		        	Log.d("TRY", "setName");
-	    	        list.add(volume);
-	            	Log.d("TRY", "add to list1");
-					for(Iterator<PageModel> i2 = book.getChapterCollection().iterator(); i2.hasNext();){
-			        	Log.d("TRY", "iterator chapters");
-						PageModel chapter = i2.next();
-			        	Log.d("TRY", "set next");
-		    	        ExpandListChild chapter_page = new ExpandListChild();
-		            	Log.d("TRY", "alloc chapter");
-		    	        chapter_page.setName(chapter.getTitle() + " (" + chapter.getPage() + ")");
-		            	Log.d("TRY", "setName+page");
-		    	        chapter_page.setTag(null);
-		            	Log.d("TRY", "setTag");
-		    	        list2.add(chapter_page);
-		            	Log.d("TRY", "add to list2");
-					}
-					volume.setItems(list2);
-				}   	      
-            	Log.d("TRY", "return list");  
-    	        return list;
-    	    }
+//    public ArrayList<ExpandListGroup> SetStandardGroups() {
+//    	novelCol = result.getResult();
+//		if(novelCol != null) {
+//			Log.d("TRY", "SetStandardGroup");
+//			ArrayList<ExpandListGroup> list = new ArrayList<ExpandListGroup>();
+//			Log.d("TRY", "Set list1");
+//			ArrayList<ExpandListChild> list2 = new ArrayList<ExpandListChild>();
+//			Log.d("TRY", "Set list2");
+//			//Error here
+//			for(Iterator<BookModel> i = novelCol.getBookCollections().iterator(); i.hasNext();) {
+//				Log.d("TRY", "iterator books/volume");
+//				BookModel book = i.next();
+//				Log.d("TRY", "set next");
+//				ExpandListGroup volume = new ExpandListGroup();
+//				Log.d("TRY", "alloc volume");
+//				volume.setName(book.getTitle());
+//				Log.d("TRY", "setName");
+//				list.add(volume);
+//        		Log.d("TRY", "add to list1");
+//        		for(Iterator<PageModel> i2 = book.getChapterCollection().iterator(); i2.hasNext();){
+//        			Log.d("TRY", "iterator chapters");
+//        			PageModel chapter = i2.next();
+//        			Log.d("TRY", "set next");
+//        			ExpandListChild chapter_page = new ExpandListChild();
+//        			Log.d("TRY", "alloc chapter");
+//        			chapter_page.setName(chapter.getTitle() + " (" + chapter.getPage() + ")");
+//        			Log.d("TRY", "setName+page");
+//        			chapter_page.setTag(null);
+//        			Log.d("TRY", "setTag");
+//        			list2.add(chapter_page);
+//        			Log.d("TRY", "add to list2");
+//        		}
+//				volume.setItems(list2);
+//			}      
+//			Log.d("TRY", "return list");  
+//			return list;
+//		}
+//    }
 
     
     public class LoadNovelDetailsTask extends AsyncTask<PageModel, ProgressBar, AsyncTaskResult<NovelCollectionModel>> {
@@ -201,6 +208,40 @@ public class LightNovelChaptersActivity extends Activity {
 				String details = "";
 				details += novelCol.getSynopsis();
 				
+				try {      
+					Log.d("TRY", "list START");
+		        	ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
+					ArrayList<ExpandListGroup> list = new ArrayList<ExpandListGroup>();
+					ArrayList<ExpandListChild> list2 = new ArrayList<ExpandListChild>();
+					//Error here
+					for(Iterator<BookModel> i = novelCol.getBookCollections().iterator(); i.hasNext();) {
+	        			Log.d("TRY", "book "+i);
+						BookModel book = i.next();
+						ExpandListGroup volume = new ExpandListGroup();
+						volume.setName(book.getTitle());
+						list.add(volume);
+		        		for(Iterator<PageModel> i2 = book.getChapterCollection().iterator(); i2.hasNext();){
+		        			Log.d("TRY", "chapter "+i);
+		        			PageModel chapter = i2.next();
+		        			ExpandListChild chapter_page = new ExpandListChild();
+		        			chapter_page.setName(chapter.getTitle() + " (" + chapter.getPage() + ")");
+		        			chapter_page.setTag(null);
+		        			list2.add(chapter_page);
+		        		}
+						volume.setItems(list2);
+					}      
+					Log.d("TRY", "list END");  
+					ExpListItems = list;
+		        	
+		        	//ExpListItems = SetStandardGroups();
+		        	ExpAdapter = new ExpandListAdapter(LightNovelChaptersActivity.this, ExpListItems);
+		        	ExpandList.setAdapter(ExpAdapter);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					Toast t = Toast.makeText(LightNovelChaptersActivity.this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
+					//Toast t = Toast.makeText(this, "expandable list error simple", Toast.LENGTH_SHORT);
+					t.show();					
+				}
 				// TODO: change to proper ui elements :)
 				// test only for listing books BookModelers
 				/*details += "\n\nListing: "; 
