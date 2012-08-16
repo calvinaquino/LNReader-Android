@@ -5,7 +5,7 @@ JSoup (Nandaka)
 
 //WARNING
 Sometimes loading a novel (entering chapter activity crashes - SOMEtimes)
-Adding checkBox disabled the hability to start the chapters activity screen for now
+ExpandableListView not iterating properlly
 
 
 //TODO:
