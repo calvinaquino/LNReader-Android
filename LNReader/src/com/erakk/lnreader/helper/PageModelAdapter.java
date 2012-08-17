@@ -3,6 +3,7 @@ package com.erakk.lnreader.helper;
 import java.util.List;
 
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
 
 import android.app.Activity;
@@ -60,6 +61,9 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 						Toast.makeText(context, "Removed from watch list: " + page.getTitle(),	Toast.LENGTH_SHORT).show();
 					}
 					// update the db!
+					page.setWatched(isChecked);
+					NovelsDao dao = new NovelsDao(context);
+					dao.updatePageModel(page);
 				}
 			});
 

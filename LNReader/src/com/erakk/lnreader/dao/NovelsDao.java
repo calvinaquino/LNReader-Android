@@ -145,7 +145,7 @@ public class NovelsDao {
 	public static NovelContentModel getNovelContent(PageModel page) throws Exception {
 		NovelContentModel content = null;
 		
-		// TODO: get from db
+		// get from db
 		content = dbh.getNovelContent(page.getPage());
 		// get from Internet;
 		if(content == null) {
@@ -177,5 +177,13 @@ public class NovelsDao {
 		dbh.insertNovelContent(content);
 		
 		return content;
+	}
+
+	public void updatePageModel(PageModel page) {
+		dbh.insertOrUpdate(page);		
+	}
+	
+	public ArrayList<PageModel> getWatchedNovel() {
+		return dbh.selectAllByColumn(DBHelper.COLUMN_IS_WATCHED, "1");
 	}
 }

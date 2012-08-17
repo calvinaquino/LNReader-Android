@@ -64,11 +64,13 @@ public class MainActivity extends Activity {
     
     public void openNovelList(View view) {
     	Intent intent = new Intent(this, DisplayLightNovelsActivity.class);
+    	intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
     	startActivity(intent);
     }
     
     public void openWatchList(View view) {
-    	Intent intent = new Intent(this, DisplayWatchListActivity.class);
+    	Intent intent = new Intent(this, DisplayLightNovelsActivity.class);
+    	intent.putExtra(Constants.EXTRA_ONLY_WATCHED, true);
     	startActivity(intent);
     }
     

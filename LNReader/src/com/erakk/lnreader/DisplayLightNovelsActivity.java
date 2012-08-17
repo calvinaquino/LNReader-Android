@@ -43,6 +43,8 @@ public class DisplayLightNovelsActivity extends ListActivity {
 	ArrayList<PageModel> listItems=new ArrayList<PageModel>();
 	PageModelAdapter adapter;
 	NovelsDao dao = new NovelsDao(this);
+	
+	boolean onlyWatched = false;
 
     @SuppressLint("NewApi")
 	@Override
@@ -51,6 +53,9 @@ public class DisplayLightNovelsActivity extends ListActivity {
         setContentView(R.layout.activity_display_light_novels);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         registerForContextMenu(getListView());
+        
+        Intent intent = getIntent();
+        onlyWatched = intent.getExtras().getBoolean(Constants.EXTRA_ONLY_WATCHED);
         
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
@@ -168,7 +173,12 @@ public class DisplayLightNovelsActivity extends ListActivity {
 	    	pb.animate();
 	    	
 			try {
-				listItems = dao.getNovels();
+				if (onlyWatched) {
+					listItems = dao.getWatchedNovel();
+				}
+				else {
+					listItems = dao.getNovels();
+				}
 				return new AsyncTaskResult<ArrayList<PageModel>>(listItems);
 			} catch (Exception e) {
 				e.printStackTrace();
