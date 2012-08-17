@@ -143,7 +143,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public void insertAllNovel(ArrayList<PageModel> list) {
 		for(Iterator<PageModel> i = list.iterator(); i.hasNext();){
 			PageModel p = i.next();
-			insertOrUpdate(p);
+			insertOrUpdatePageModel(p);
 		}	
 	}
 	
@@ -162,7 +162,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		return pageModel;
 	}
 	
-	public ArrayList<PageModel> selectAllNovels() {
+	public ArrayList<PageModel> getAllNovels() {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
 		database = this.getWritableDatabase();
 
@@ -210,7 +210,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 		
 	@SuppressWarnings("deprecation")
-	public String insertOrUpdate(PageModel page){
+	public String insertOrUpdatePageModel(PageModel page){
 		Log.d(TAG, page.toString());
 		
 		PageModel temp = selectFirstBy(COLUMN_PAGE, page.getPage());
@@ -240,7 +240,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			database.update(TABLE_PAGE, cv, "page = ?", new String[] {page.getPage()});
 			Log.d(TAG, "Updating: " + page.toString());
 		}
-		//database.close();
+		database.close();
 		return page.getPage();
 	}
 	
@@ -295,7 +295,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 		
 		Log.d(TAG, "Complete Insert Novel Details: " + novelDetails.toString());
-		//database.close();
+		database.close();
 	}
 	
 	public NovelCollectionModel getNovelDetails(String page) {
@@ -383,7 +383,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 		database.insertOrThrow(TABLE_IMAGE, null, cv);
 		Log.d(TAG, "Complete Insert Images: " + image.toString());
-		//database.close();
+		database.close();
 	}
 	
 	public ImageModel getImage(String name) {
@@ -432,6 +432,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 		database.insertOrThrow(TABLE_NOVEL_CONTENT, null, cv);
 		Log.d(TAG, "Complete Insert Novel Content:: " + content.getPage());
+		database.close();
 	}
 	
 	public NovelContentModel getNovelContent(String page) {

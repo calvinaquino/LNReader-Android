@@ -70,7 +70,7 @@ public class NovelsDao {
 			mainPage.setType(PageModel.TYPE_OTHER);
 			mainPage.setParent("");
 			if(page!= null) mainPage.setId(page.getId());
-			dbh.insertOrUpdate(mainPage);
+			dbh.insertOrUpdatePageModel(mainPage);
 			Log.d(TAG, "Updated Main_Page");
 			
 			// get updated novel list from internet
@@ -149,6 +149,7 @@ public class NovelsDao {
 		content = dbh.getNovelContent(page.getPage());
 		// get from Internet;
 		if(content == null) {
+			Log.d("getNovelContent", "Get from Internet: " + page.getPage());
 			content = getNovelContentFromInternet(page);
 		}
 		
@@ -180,7 +181,7 @@ public class NovelsDao {
 	}
 
 	public void updatePageModel(PageModel page) {
-		dbh.insertOrUpdate(page);		
+		dbh.insertOrUpdatePageModel(page);		
 	}
 	
 	public ArrayList<PageModel> getWatchedNovel() {

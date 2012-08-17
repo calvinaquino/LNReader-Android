@@ -247,7 +247,35 @@ public class BakaTsukiParser {
 			novel.setBookCollections(books);
 		} catch(Exception e) {e.printStackTrace();}
 		Log.d(TAG, "Complete parsing book collections: " + books.size());
+		
+		books = validateNovelChapters(books);
 		return books;
+	}
+	
+	private static ArrayList<BookModel> validateNovelChapters(ArrayList<BookModel> books) {
+		ArrayList<BookModel> validatedBooks = new ArrayList<BookModel>();
+		for(Iterator<BookModel> iBooks = books.iterator(); iBooks.hasNext();){
+			BookModel book = iBooks.next();
+			BookModel validatedBook = new BookModel();
+			
+			ArrayList<PageModel> chapters = book.getChapterCollection();
+			ArrayList<PageModel> validatedChapters = new ArrayList<PageModel>(); 
+			for(Iterator<PageModel> iChapter = chapters.iterator(); iChapter.hasNext();) {
+				PageModel chapter = iChapter.next();
+				if(!chapter.getPage().contains("redlink=1") &&
+				   !chapter.getPage().contains("title=User:")) {
+					validatedChapters.add(chapter);
+				}
+			}
+			
+			// check if have any chapters
+			if(validatedChapters.size() > 0) {
+				validatedBook = book;
+				validatedBook.setChapterCollection(validatedChapters);
+				validatedBooks.add(validatedBook);
+			}
+		}
+		return validatedBooks;
 	}
 
 	private static String parseNovelCover(Document doc, NovelCollectionModel novel) {

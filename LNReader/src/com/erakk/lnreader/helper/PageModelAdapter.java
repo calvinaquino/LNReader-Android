@@ -6,8 +6,10 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,16 +31,21 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		this.layoutResourceId = resourceId;
 		this.context = context;
 		this.data = objects;
-
+		Log.d("PageModelAdapter", "Count = " + objects.size());
 	}
-
+	
+	@SuppressLint("NewApi")
+	public void addAll(List<PageModel> objects) {
+		super.addAll(objects);
+		Log.d("PageModelAdapter", "Count = " + objects.size());
+	}
+	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View row = convertView;
 		PageModelHolder holder = null;
 
-		if(row == null)
-		{
+		//if(row == null)		{
 			final PageModel page = data.get(position);
 			LayoutInflater inflater = ((Activity)context).getLayoutInflater();
 			row = inflater.inflate(layoutResourceId, parent, false);
@@ -47,7 +54,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			holder.txtNovel = (TextView)row.findViewById(R.id.novel_name);
 			holder.chkIsWatched = (CheckBox)row.findViewById(R.id.novel_is_watched);
 
-			holder.txtNovel.setText(page.getTitle());
+			holder.txtNovel.setText(page.getTitle() + " (" + page.getTitle() + ")");
 			holder.chkIsWatched.setChecked(page.isWatched());
 
 			holder.chkIsWatched.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -68,11 +75,11 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			});
 
 			row.setTag(holder);
-		}
-		else
-		{
-			holder = (PageModelHolder)row.getTag();
-		}
+//		}
+//		else
+//		{
+//			holder = (PageModelHolder)row.getTag();
+//		}
 
 		return row;
 	}

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.Date;
 
 import com.erakk.lnreader.Constants;
@@ -16,6 +17,7 @@ import com.erakk.lnreader.model.ImageModel;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.ContactsContract.Directory;
+import android.text.Html;
 import android.util.Log;
 
 public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<ImageModel>> {
@@ -35,14 +37,18 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		Log.d(TAG, "Start Downloading: " + url.toString());
 		InputStream input = null;
 		OutputStream output = null;
-
 		String filepath = Constants.IMAGE_ROOT + url.getFile();
-		String path = filepath.substring(0, filepath.lastIndexOf("/"));
-		Log.d(TAG, "Saving to: " + filepath);
+		@SuppressWarnings("deprecation")
+		String decodedUrl = URLDecoder.decode(filepath);
+		Log.d(TAG, "Saving to: " + decodedUrl);
+
 		// create dir if not exist
+		String path = decodedUrl.substring(0, decodedUrl.lastIndexOf("/"));
 		File cacheDir = new File(path);
 		cacheDir.mkdirs();
 		Log.d(TAG, "Path to: " + path);
+		
+		
 		URLConnection connection = url.openConnection();
 		connection.connect();
 		// this will be useful so that you can show a typical 0-100% progress bar
@@ -51,7 +57,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 
 		// download the file
 		input = new BufferedInputStream(url.openStream());
-		output = new FileOutputStream(filepath);
+		output = new FileOutputStream(decodedUrl);
 
 		byte data[] = new byte[1024];
 		long total = 0;
@@ -65,6 +71,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		output.flush();
 		output.close();
 		input.close();
+		
 		ImageModel image = new ImageModel();
 		image.setName(url.getFile());
 		image.setUrl(url);

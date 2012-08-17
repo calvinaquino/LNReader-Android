@@ -93,6 +93,7 @@ public class DisplayLightNovelsActivity extends ListActivity {
         intent.putExtra(Constants.EXTRA_PAGE, o.getPage());
         intent.putExtra(Constants.EXTRA_TITLE, o.getTitle());
         startActivity(intent);
+        Log.d("DisplayLightNovelsActivity", o.getPage() + " (" + o.getTitle() + ")");
     }
     
     @Override
@@ -167,12 +168,12 @@ public class DisplayLightNovelsActivity extends ListActivity {
 		@SuppressLint("NewApi")
 		@Override
 		protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(Void... arg0) {
-			ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
-	    	pb.setIndeterminate(true);
-	    	pb.setActivated(true);
-	    	pb.animate();
-	    	
 			try {
+				ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
+		    	pb.setIndeterminate(true);
+		    	pb.setActivated(true);
+		    	pb.animate();	    	
+			
 				if (onlyWatched) {
 					listItems = dao.getWatchedNovel();
 				}
