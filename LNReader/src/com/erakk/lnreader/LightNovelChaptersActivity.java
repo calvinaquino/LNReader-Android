@@ -178,20 +178,15 @@ public class LightNovelChaptersActivity extends Activity {
 		        
 		        ExpandList.addHeaderView(synopsis);
 				
-				
+				// now add the volume and chapter list.
 				try {
 					ArrayList<ExpandListGroup> list = new ArrayList<ExpandListGroup>();
-					ArrayList<ExpandListChild> list2 = new ArrayList<ExpandListChild>();
-					
-							/*
-							 * Verify this iterator bookModel (probably pageModel, its getting all
-							 * chapters of the novel for each book/group
-							 */
 					for(Iterator<BookModel> i = novelCol.getBookCollections().iterator(); i.hasNext();) {
 						BookModel book = i.next();
 						ExpandListGroup volume = new ExpandListGroup();
 						volume.setName(book.getTitle());
 						list.add(volume);
+						ArrayList<ExpandListChild> list2 = new ArrayList<ExpandListChild>();
 		        		for(Iterator<PageModel> i2 = book.getChapterCollection().iterator(); i2.hasNext();){
 		        			PageModel chapter = i2.next();
 		        			ExpandListChild chapter_page = new ExpandListChild();
