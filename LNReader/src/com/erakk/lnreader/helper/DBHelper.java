@@ -119,23 +119,13 @@ public class DBHelper extends SQLiteOpenHelper {
 		database.execSQL("delete from " + TABLE_NOVEL_DETAILS);
 		database.execSQL("delete from " + TABLE_IMAGE);
 		database.execSQL("delete from " + TABLE_NOVEL_BOOK);
-		database.close();
+		//database.close();
 		Log.w(TAG,"Database Deleted.");
 	}
 	
 	public PageModel getMainPage() {
 		Log.d(TAG, "Select Main_Page");
-		PageModel page = null;
-		database = this.getWritableDatabase();
-		
-		Cursor cursor = database.rawQuery("select * from " + TABLE_PAGE + " where " + COLUMN_PAGE + " = ? ", new String[] {"Main_Page"});
-		cursor.moveToFirst();
-	    while (!cursor.isAfterLast()) {
-	    	page = cursorTopage(cursor);
-	    	Log.d(TAG, "Found Main_Page " + page.toString());
-	    	break;
-	    }		
-		database.close();
+		PageModel page = getPageModel("Main_Page");
 		return page;
 	}
 
@@ -144,6 +134,21 @@ public class DBHelper extends SQLiteOpenHelper {
 			PageModel p = i.next();
 			insertOrUpdate(p);
 		}	
+	}
+	
+	public PageModel getPageModel(String page) {
+		Log.d(TAG, "Select Page: " + page);
+		PageModel pageModel = null;
+		database = this.getWritableDatabase();
+		
+		Cursor cursor = database.rawQuery("select * from " + TABLE_PAGE + " where " + COLUMN_PAGE + " = ? ", new String[] {page});
+		cursor.moveToFirst();
+	    while (!cursor.isAfterLast()) {
+	    	pageModel = cursorTopage(cursor);
+	    	Log.d(TAG, "Found Page: " + pageModel.toString());
+	    	break;
+	    }
+		return pageModel;
 	}
 	
 	public ArrayList<PageModel> selectAllNovels() {
@@ -157,7 +162,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	pages.add(page);
 	    	cursor.moveToNext();
 	    }		
-		database.close();
+		//database.close();
 		return pages;
 	}
 	
@@ -172,7 +177,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	pages.add(page);
 	    	cursor.moveToNext();
 	    }		
-		database.close();
+		//database.close();
 		return pages;
 	}
 	
@@ -189,7 +194,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	Log.d(TAG, "Found: " + page.toString());
 	    	break;
 	    }		
-		database.close();
+		//database.close();
 		return page;
 	}
 		
@@ -238,7 +243,7 @@ public class DBHelper extends SQLiteOpenHelper {
 //					                        temp.getPage()});
 			Log.d(TAG, "Updating: " + page.toString());
 		}
-		database.close();
+		//database.close();
 		return page.getPage();
 	}
 	
@@ -293,7 +298,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 		
 		Log.d(TAG, "Complete Insert Novel Details: " + novelDetails.toString());
-		database.close();
+		//database.close();
 	}
 	
 	public NovelCollectionModel getNovelDetails(String page) {
@@ -320,6 +325,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		    	cursor.moveToNext();
 		    }		
 			
+			// get the page model
+			novelDetails.setPageModel(getPageModel(novelDetails.getPage()));			
+			
 			// get the chapters
 			for(Iterator<BookModel> iBook = bookCollection.iterator(); iBook.hasNext();) {
 				BookModel book = iBook.next();
@@ -339,7 +347,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    else {
 	    	Log.d(TAG, "No Data for Novel Details: " + page);
 	    }
-		database.close();
+		//database.close();
 		
 		Log.d(TAG, "Complete Selecting Novel Details: " + page);
 		return novelDetails;
@@ -378,7 +386,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 		database.insertOrThrow(TABLE_IMAGE, null, cv);
 		Log.d(TAG, "Complete Insert Images: " + image.toString());
-		database.close();
+		//database.close();
 	}
 	
 	public ImageModel getImage(String name) {
@@ -393,7 +401,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	Log.d(TAG, "Found: " + image.toString());
 	    	break;
 	    }		
-		database.close();
+		//database.close();
 		
 		Log.d(TAG, "Complete Select: " + name);
 		return image;

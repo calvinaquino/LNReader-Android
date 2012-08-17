@@ -53,7 +53,7 @@
                 android:value="com.erakk.lnreader.MainActivity" />
         </activity>
         <activity
-            android:name=".DisplaySynopsysActivity"
+            android:name=".DisplaySynopsisActivity"
             android:label="@string/title_activity_display_synopsys" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

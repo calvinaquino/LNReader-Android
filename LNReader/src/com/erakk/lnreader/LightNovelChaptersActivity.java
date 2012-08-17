@@ -2,6 +2,7 @@ package com.erakk.lnreader;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.zip.Inflater;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -12,9 +13,12 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -141,13 +145,41 @@ public class LightNovelChaptersActivity extends Activity {
 			if(novelCol != null) {
 				
 				//Clear progressBar and string
-				 TextView tv = (TextView) findViewById(R.id.loading);
-				 tv.setVisibility(TextView.GONE);
-		         pb.setActivated(false);
-		         pb.setVisibility(ProgressBar.GONE);
+				TextView tv = (TextView) findViewById(R.id.loading);
+				tv.setVisibility(TextView.GONE);
+				pb.setActivated(false);
+				pb.setVisibility(ProgressBar.GONE);
+				
+				ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
+				
+				// Prepare header
+				LayoutInflater layoutInflater = getLayoutInflater();
+				View synopsis = layoutInflater.inflate(R.layout.activity_display_synopsis, null);
+				synopsis.findViewById(R.id.loading).setVisibility(TextView.GONE);
+				synopsis.findViewById(R.id.progressBar2).setVisibility(ProgressBar.GONE);
+				
+				TextView textViewTitle = (TextView) synopsis.findViewById(R.id.title);
+				TextView textViewSynopsis = (TextView) synopsis.findViewById(R.id.synopsys);
+				textViewTitle.setTextSize(20);
+		        textViewSynopsis.setTextSize(16);         
+		        
+		        textViewTitle.setText(novelCol.getPageModel().getTitle());
+		        textViewSynopsis.setText(novelCol.getSynopsis());
+		        
+		        ImageView ImageViewCover = (ImageView) synopsis.findViewById(R.id.cover);
+		        if (novelCol.getCoverBitmap() == null) {
+					// IN app test, is returning empty bitmap
+					Toast tst = Toast.makeText(getApplicationContext(), "Bitmap empty", Toast.LENGTH_LONG);
+					tst.show();
+				}
+				else {
+					ImageViewCover.setImageBitmap(novelCol.getCoverBitmap());
+				}
+		        
+		        ExpandList.addHeaderView(synopsis);
+				
 				
 				try {
-		        	ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
 					ArrayList<ExpandListGroup> list = new ArrayList<ExpandListGroup>();
 					ArrayList<ExpandListChild> list2 = new ArrayList<ExpandListChild>();
 					
@@ -173,8 +205,11 @@ public class LightNovelChaptersActivity extends Activity {
 					ExpListItems = list;
 		        	ExpAdapter = new ExpandListAdapter(LightNovelChaptersActivity.this, ExpListItems);
 		        	ExpandList.setAdapter(ExpAdapter);
+		        	
+		        	
+		        	
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					e.getStackTrace();
 					Toast t = Toast.makeText(LightNovelChaptersActivity.this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
 					t.show();					
 				}

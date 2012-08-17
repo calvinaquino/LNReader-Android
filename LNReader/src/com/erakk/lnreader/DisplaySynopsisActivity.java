@@ -23,7 +23,7 @@ import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 
-public class DisplaySynopsysActivity extends Activity {
+public class DisplaySynopsisActivity extends Activity {
 	NovelsDao dao;
 	NovelCollectionModel novelCol;
     
@@ -40,7 +40,7 @@ public class DisplaySynopsysActivity extends Activity {
         page.setPage(intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_PAGE));
         page.setTitle(intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_TITLE));
         
-        setContentView(R.layout.activity_display_synopsys);
+        setContentView(R.layout.activity_display_synopsis);
         
         
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -49,10 +49,10 @@ public class DisplaySynopsysActivity extends Activity {
 
         // get the textView
         TextView textViewTitle = (TextView) findViewById(R.id.title);
-        TextView textViewSynopsys = (TextView) findViewById(R.id.synopsys);
+        TextView textViewSynopsis = (TextView) findViewById(R.id.synopsys);
         
         textViewTitle.setTextSize(20);
-        textViewSynopsys.setTextSize(16);         
+        textViewSynopsis.setTextSize(16);         
         
         textViewTitle.setText(novel);
         
@@ -60,8 +60,8 @@ public class DisplaySynopsysActivity extends Activity {
         boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
         
         if (invertColors == true) {
-        	textViewSynopsys.setBackgroundColor(Color.TRANSPARENT);
-        	textViewSynopsys.setTextColor(Color.WHITE);
+        	textViewSynopsis.setBackgroundColor(Color.TRANSPARENT);
+        	textViewSynopsis.setTextColor(Color.WHITE);
         	textViewTitle.setBackgroundColor(Color.TRANSPARENT);
         	textViewTitle.setTextColor(Color.WHITE);
         	NovelView.setBackgroundColor(Color.BLACK);
@@ -152,12 +152,13 @@ public class DisplaySynopsysActivity extends Activity {
 				
 				// Removed the old way. was causing URL to URI conflict.
 				ImageView ImageViewCover = (ImageView) findViewById(R.id.cover);
-		        ImageViewCover.setImageBitmap(novelCol.getCoverBitmap() );
-		        	
 				if (novelCol.getCoverBitmap() == null) {
 					// IN app test, is returning empty bitmap
 					Toast tst = Toast.makeText(getApplicationContext(), "Bitmap empty", Toast.LENGTH_LONG);
 					tst.show();
+				}
+				else {
+					ImageViewCover.setImageBitmap(novelCol.getCoverBitmap());
 				}
 			}
 			if(result.getError() != null) {

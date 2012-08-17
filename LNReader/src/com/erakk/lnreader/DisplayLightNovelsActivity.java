@@ -179,7 +179,7 @@ public class DisplayLightNovelsActivity extends ListActivity implements ListView
                         Toast.LENGTH_SHORT).show();
             PageModel o = adapter.getItem(info.position);
             String novel = o.toString();
-            Intent intent = new Intent(this, DisplaySynopsysActivity.class);
+            Intent intent = new Intent(this, DisplaySynopsisActivity.class);
             intent.putExtra(EXTRA_MESSAGE, novel);
             intent.putExtra(EXTRA_PAGE, o.getPage());
             intent.putExtra(EXTRA_TITLE, o.getTitle());
