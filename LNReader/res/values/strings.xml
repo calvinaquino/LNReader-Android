@@ -15,5 +15,10 @@
     <string name="novel_synopsys"></string>
     <string name="loading">Loading content...</string>
     <string name="last_novel">Jump to last read novel</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_display_synopsys">DisplaySynopsysActivity</string>
+    <string name="add_to_watch">Add to Watch List</string>
+    <string name="download_chapter">Download Chapters</string>
+    <string name="view_synopsys">View Synopsys</string>
 
 </resources>

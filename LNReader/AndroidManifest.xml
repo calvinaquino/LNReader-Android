@@ -8,8 +8,8 @@
         android:targetSdkVersion="15" />
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -51,6 +51,13 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.erakk.lnreader.MainActivity" />
+        </activity>
+        <activity
+            android:name=".DisplaySynopsysActivity"
+            android:label="@string/title_activity_display_synopsys" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.erakk.lnreader" />
         </activity>
     </application>
 
