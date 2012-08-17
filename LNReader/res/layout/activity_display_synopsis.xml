@@ -1,9 +1,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ligh_novel_synopsys_screen"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="800dp"
-	android:id="@+id/ligh_novel_synopsys_screen" >
+    android:layout_height="wrap_content" >
 
 		<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		    xmlns:tools="http://schemas.android.com/tools"
@@ -25,7 +24,7 @@
 		        android:layout_centerHorizontal="true"
 		        android:layout_below="@+id/progressBar2"
 		        android:layout_marginTop="20dp" />
-			
+			
 		    <TextView
 		        android:id="@+id/title"
 		        android:layout_width="wrap_content"
@@ -35,7 +34,6 @@
 		        android:layout_marginRight="8dp"
 		        android:layout_marginTop="20dp"
 		        android:text="@string/novel_title"
-		        android:textSize="16dp"
 		        tools:context=".LightNovelChaptersActivity" />
 		
 		    <ImageView
@@ -46,7 +44,7 @@
 		        android:layout_centerHorizontal="true"
 		        android:layout_marginTop="20dp"
 		        android:contentDescription="@string/novel_cover" />
-		
+		
 		    <TextView
 		        android:id="@+id/synopsys"
 		        android:layout_width="wrap_content"
@@ -57,7 +55,6 @@
 		        android:layout_marginRight="8dp"
 		        android:layout_marginTop="20dp"
 		        android:text="@string/novel_synopsys"
-		        android:textSize="20dp"
 		        tools:context=".LightNovelChaptersActivity" />
 			
 		</RelativeLayout>
