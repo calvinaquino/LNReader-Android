@@ -17,7 +17,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -49,12 +53,11 @@ public class LightNovelChaptersActivity extends Activity {
         Intent intent = getIntent();
         //String novel = intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_MESSAGE);
         PageModel page = new PageModel(); 
-        page.setPage(intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_PAGE));
-        page.setTitle(intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_TITLE));
+        page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
+        page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
         
         setContentView(R.layout.activity_light_novel_chapters);
-        
-        
+                
         getActionBar().setDisplayHomeAsUpEnabled(true);
         
         //View NovelView = findViewById(R.id.ligh_novel_chapter_screen);
@@ -77,9 +80,7 @@ public class LightNovelChaptersActivity extends Activity {
         	textViewTitle.setBackgroundColor(Color.TRANSPARENT);
         	textViewTitle.setTextColor(Color.WHITE);
         	NovelView.setBackgroundColor(Color.BLACK);*/
-        	
-        }
-        
+        }        
         
         dao = new NovelsDao(this);
         try {
@@ -89,6 +90,26 @@ public class LightNovelChaptersActivity extends Activity {
 			Toast t = Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
 			t.show();					
 		}
+        
+        // setup listener
+        ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
+        ExpandList.setOnChildClickListener(new OnChildClickListener() {
+			
+			@Override
+			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+				if(novelCol != null) {
+					PageModel p = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
+					
+					Intent intent = new Intent(getApplicationContext(), DisplayNovelContentActivity.class);
+			        intent.putExtra(Constants.EXTRA_PAGE, p.getPage());
+			        intent.putExtra(Constants.EXTRA_TITLE, p.getTitle());
+			        
+			        startActivity(intent);
+				}
+				return false;
+			}
+		});
+    	
     }
 
     @Override
@@ -96,7 +117,6 @@ public class LightNovelChaptersActivity extends Activity {
         getMenuInflater().inflate(R.menu.activity_light_novel_chapters, menu);
         return true;
     }
-
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -200,15 +220,11 @@ public class LightNovelChaptersActivity extends Activity {
 					ExpListItems = list;
 		        	ExpAdapter = new ExpandListAdapter(LightNovelChaptersActivity.this, ExpListItems);
 		        	ExpandList.setAdapter(ExpAdapter);
-		        	
-		        	
-		        	
 				} catch (Exception e) {
 					e.getStackTrace();
 					Toast t = Toast.makeText(LightNovelChaptersActivity.this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
 					t.show();					
-				}
-				
+				}				
 			}
 			if(result.getError() != null) {
 				Exception e = result.getError();

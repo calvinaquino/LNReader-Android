@@ -1,9 +1,5 @@
-//package com.nandaka.bakareaderclone;
 package com.erakk.lnreader;
 
-
-//import java.io.IOException;
-//import java.net.URL;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
@@ -32,12 +28,6 @@ import android.widget.Toast;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.PageModel;
-//import org.jsoup.nodes.Document;
-//import org.jsoup.nodes.Element;
-//nadaka.bakareaderclone original
-//import com.erakk.lnreader.helper.DownloadPageTask;
-//import android.app.Activity;
-//import android.widget.ListView;
 
 /*
  * Author: Nandaka
@@ -45,10 +35,6 @@ import com.erakk.lnreader.model.PageModel;
  */
 
 public class DisplayLightNovelsActivity extends ListActivity implements ListView.OnItemLongClickListener {
-
-	public final static String EXTRA_MESSAGE = "com.erakk.lnreader.NOVEL";
-	public final static String EXTRA_PAGE = "com.erakk.lnreader.page";
-	public static final String EXTRA_TITLE = "com.erakk.lnreader.title";
 	ArrayList<PageModel> listItems=new ArrayList<PageModel>();
 	ArrayAdapter<PageModel> adapter;
 	NovelsDao dao = new NovelsDao(this);
@@ -115,9 +101,9 @@ public class DisplayLightNovelsActivity extends ListActivity implements ListView
         String novel = o.toString();
         //Create new intent
         Intent intent = new Intent(this, LightNovelChaptersActivity.class);
-        intent.putExtra(EXTRA_MESSAGE, novel);
-        intent.putExtra(EXTRA_PAGE, o.getPage());
-        intent.putExtra(EXTRA_TITLE, o.getTitle());
+        intent.putExtra(Constants.EXTRA_MESSAGE, novel);
+        intent.putExtra(Constants.EXTRA_PAGE, o.getPage());
+        intent.putExtra(Constants.EXTRA_TITLE, o.getTitle());
         startActivity(intent);
     }
 
@@ -180,9 +166,9 @@ public class DisplayLightNovelsActivity extends ListActivity implements ListView
             PageModel o = adapter.getItem(info.position);
             String novel = o.toString();
             Intent intent = new Intent(this, DisplaySynopsisActivity.class);
-            intent.putExtra(EXTRA_MESSAGE, novel);
-            intent.putExtra(EXTRA_PAGE, o.getPage());
-            intent.putExtra(EXTRA_TITLE, o.getTitle());
+            intent.putExtra(Constants.EXTRA_MESSAGE, novel);
+            intent.putExtra(Constants.EXTRA_PAGE, o.getPage());
+            intent.putExtra(Constants.EXTRA_TITLE, o.getTitle());
             startActivity(intent);
             return true;
         default:

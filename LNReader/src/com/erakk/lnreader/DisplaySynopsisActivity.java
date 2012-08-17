@@ -35,10 +35,10 @@ public class DisplaySynopsisActivity extends Activity {
         
         //Get intent and message
         Intent intent = getIntent();
-        String novel = intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_MESSAGE);
+        String novel = intent.getStringExtra(Constants.EXTRA_MESSAGE);
         PageModel page = new PageModel(); 
-        page.setPage(intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_PAGE));
-        page.setTitle(intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_TITLE));
+        page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
+        page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
         
         setContentView(R.layout.activity_display_synopsis);
         
