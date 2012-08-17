@@ -45,7 +45,6 @@ public class NovelsDao {
 			dbh = new DBHelper(context);	
 	}
 	
-
 	public ArrayList<PageModel> getNovels() throws Exception{
 		boolean refresh = false;
 		PageModel page = dbh.getMainPage();

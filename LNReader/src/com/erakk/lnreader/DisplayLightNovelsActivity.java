@@ -19,7 +19,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -27,6 +31,7 @@ import android.widget.Toast;
 
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.helper.PageModelAdapter;
 import com.erakk.lnreader.model.PageModel;
 
 /*
@@ -34,9 +39,9 @@ import com.erakk.lnreader.model.PageModel;
  * Copy from: NovelsActivity.java
  */
 
-public class DisplayLightNovelsActivity extends ListActivity implements ListView.OnItemLongClickListener {
+public class DisplayLightNovelsActivity extends ListActivity {
 	ArrayList<PageModel> listItems=new ArrayList<PageModel>();
-	ArrayAdapter<PageModel> adapter;
+	PageModelAdapter adapter;
 	NovelsDao dao = new NovelsDao(this);
 
     @SuppressLint("NewApi")
@@ -51,11 +56,7 @@ public class DisplayLightNovelsActivity extends ListActivity implements ListView
         boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
         
         View NovelView = findViewById(R.id.light_novel_list_screen);
-        //ListView NovelList = (ListView) findViewById(android.R.id.list);
-        //CheckBox isWatched = (CheckBox) findViewById(R.id.novel_is_watched);
-        //TextView ListText = (TextView) findViewById(R.id.novel_name);
-        
-        
+
         if (invertColors == true) {
         	//NovelList.setBackgroundColor(Color.TRANSPARENT);
         	//ListText.setTextColor(Color.WHITE);
@@ -64,14 +65,7 @@ public class DisplayLightNovelsActivity extends ListActivity implements ListView
         	
         }
         try {
-        	adapter=new ArrayAdapter<PageModel>(this,
-	        		R.layout.novel_list_item,R.id.novel_name,
-	        		listItems);
-//        	adapter=new ArrayAdapter<PageModel>(this,
-//	        		R.layout.novel_list_item,
-//	        		listItems);
-//	    	listItems = new LoadNovelsTask().execute(adapter).get().getResult();
-        	
+        	adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
 	        new LoadNovelsTask().execute(new Void[] {});
 	    	setListAdapter(adapter);
 		} catch (Exception e) {
@@ -79,20 +73,9 @@ public class DisplayLightNovelsActivity extends ListActivity implements ListView
 			Toast t = Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
 			t.show();					
 		}
+        
     }
-//     protected void onListItemLongClick(ListView l, View v, int position, long id) {
-//         super.onListItemClick(l, v, position, id);
-//         Toast t = Toast.makeText(this, "LongClick", Toast.LENGTH_SHORT);
-//		 t.show();
-//    	 
-//     }
-    
-//     getListView().setOnLongClickListener(new OnItemLongClickListener() {
-//     	public boolean onItemLongClick(AdapterView parent, View view, int position, long id) {
-//     	    //do your stuff here
-//     	  }
-//     });
-     
+
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
@@ -106,14 +89,13 @@ public class DisplayLightNovelsActivity extends ListActivity implements ListView
         intent.putExtra(Constants.EXTRA_TITLE, o.getTitle());
         startActivity(intent);
     }
-
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_display_light_novels, menu);
         return true;
     }
-    
-    
+        
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -128,19 +110,6 @@ public class DisplayLightNovelsActivity extends ListActivity implements ListView
         return super.onOptionsItemSelected(item);
     }
     
-    @Override
-//    public void onCreateContextMenu(ContextMenu menu, View v,
-//        ContextMenuInfo menuInfo) {
-//    	super.onCreateContextMenu(menu, v, menuInfo);
-//    	
-//    	AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-//    	//menu.setHeaderTitle("Quick Menu");
-//    	String[] menuItems = getResources().getStringArray(R.array.novel_context_menu);
-//		for (int i = 0; i<menuItems.length; i++) {
-//			menu.add(Menu.NONE, i, i, menuItems[i]);
-//		}
-//    	
-//    }
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getMenuInflater();
@@ -214,6 +183,7 @@ public class DisplayLightNovelsActivity extends ListActivity implements ListView
 			 tv.setVisibility(TextView.GONE);
 	         pb.setActivated(false);
 	         pb.setVisibility(ProgressBar.GONE);
+	         
 	         ArrayList<PageModel> list = result.getResult();
 	         if(list != null) adapter.addAll(list);
 	         if(result.getError() != null) {
@@ -222,18 +192,7 @@ public class DisplayLightNovelsActivity extends ListActivity implements ListView
 				t.show();
 				Log.e(this.getClass().toString(), e.getClass().toString() + ": " + e.getMessage());
 	         }
-	    }
-    	 
+	    }    	 
     }
-
-
-
-	@Override
-	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,
-			long arg3) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-    
 }
 

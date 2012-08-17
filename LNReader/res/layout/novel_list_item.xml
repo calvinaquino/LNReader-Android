@@ -1,22 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-    
+
     <TextView
-            android:id="@+id/novel_name"
-            android:layout_height="50dp"
-            android:layout_width="260dp"
-            android:gravity="center_vertical"
-            android:onClick="onListItemClick"
-        />
-    
-    <CheckBox 
-        android:id="@+id/novel_is_watched"
-        android:checked="false"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:id="@+id/novel_name"
+        android:layout_width="260dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
         android:gravity="center_vertical"
-        android:focusable="false" />
-        
-</LinearLayout>
+        android:onClick="onListItemClick" />
+
+    <CheckBox
+        android:id="@+id/novel_is_watched"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/novel_name"
+        android:layout_alignBottom="@+id/novel_name"
+        android:layout_alignParentRight="true"
+        android:checked="false"
+        android:focusable="false"
+        android:gravity="center_vertical" />
+
+</RelativeLayout>
