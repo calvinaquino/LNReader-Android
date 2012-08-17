@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
 
+import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.DownloadImageTask;
 
@@ -67,7 +68,7 @@ public class NovelCollectionModel {
 	public Bitmap getCoverBitmap() {
 		if(coverBitmap == null) {
 			try{
-			String filepath = Environment.getExternalStorageDirectory() + "/.cache" + getCoverUrl().getFile();
+			String filepath = Constants.IMAGE_ROOT + getCoverUrl().getFile();
 			Log.d("GetCover", filepath);
 			this.coverBitmap = BitmapFactory.decodeFile(filepath);
 			}catch(Exception e){

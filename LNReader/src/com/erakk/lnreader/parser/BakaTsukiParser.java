@@ -12,14 +12,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.os.Environment;
 import android.util.Log;
+import android.widget.ImageButton;
 
+import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.model.BookModel;
+import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
+import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
 /**
@@ -306,5 +312,46 @@ public class BakaTsukiParser {
 		novel.setSynopsis(synopsis);
 		Log.d(TAG, "Completed parsing synopsis.");
 		return synopsis;
+	}
+
+	public static NovelContentModel ParseNovelContent(Document doc, PageModel page) {
+		NovelContentModel content = new NovelContentModel();
+		content.setPage(page.getPage());
+		content.setPageModel(page);
+		
+		Element textElement = doc.select("text").first();
+		String text = textElement.text();
+		
+		// get valid image list
+		// Elements imageElements = doc.select("img");
+		Document imgDoc = Jsoup.parse(text);
+		Elements imageElements = imgDoc.select("img");
+		ArrayList<ImageModel> images = new ArrayList<ImageModel>();
+		for(Iterator<Element> i = imageElements.iterator(); i.hasNext();) {
+			ImageModel image = new ImageModel();
+			Element imageElement = i.next();
+			String urlStr = imageElement.attr("src").replace("/project/", Constants.BaseURL);
+			String name = urlStr.substring(urlStr.lastIndexOf("/"));
+			image.setName(name);
+			try {
+				image.setUrl(new URL(urlStr));
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			images.add(image);
+			Log.d("ParseNovelContent", image.getName() + "==>" + image.getUrl().toString());
+		}
+		content.setImages(images);
+		
+		// clean up the text
+		String cleanedText = text.replace("src=\"/project/images/", "src=\"file://" + Constants.IMAGE_ROOT + "/project/images/");
+		Log.d("Result", cleanedText);
+		content.setContent(cleanedText);
+		
+		content.setLastXScroll(0);
+		content.setLastYScroll(0);
+		content.setLastZoom(100);
+		return content;
 	}
 }

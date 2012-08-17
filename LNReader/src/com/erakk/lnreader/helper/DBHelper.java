@@ -10,6 +10,7 @@ import java.util.Iterator;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
+import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
 import android.content.ContentValues;
@@ -41,17 +42,14 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	public static final String TABLE_NOVEL_BOOK = "novel_books";
 	
-		
-	@SuppressWarnings("unused")
-	private static final String[] ALL_PAGE_COLUMS = new String[] {COLUMN_PAGE,
-															 COLUMN_TITLE,
-															 COLUMN_TYPE, 
-															 COLUMN_PARENT, 
-															 COLUMN_LAST_UPDATE,
-															 COLUMN_LAST_CHECK,
-															 COLUMN_IS_WATCHED};
+	public static final String TABLE_NOVEL_CONTENT = "novel_books_content";
+	public static final String COLUMN_CONTENT = "content";
+	public static final String COLUMN_LAST_X = "lastXScroll";
+	public static final String COLUMN_LAST_Y = "lastYScroll";
+	public static final String COLUMN_ZOOM = "lastZoom";
+
 	private static final String DATABASE_NAME = "pages.db";
-	private static final int DATABASE_VERSION = 10;
+	private static final int DATABASE_VERSION = 11;
 	
 	private SQLiteDatabase database;
 	
@@ -89,6 +87,16 @@ public class DBHelper extends SQLiteOpenHelper {
 				  				  + COLUMN_LAST_UPDATE + " integer, "
 				  				  + COLUMN_LAST_CHECK + " integer);";
 
+	private static final String DATABASE_CREATE_NOVEL_CONTENT = "create table "
+		      + TABLE_NOVEL_CONTENT + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+				 				    + COLUMN_CONTENT + " text not null, "
+		      						+ COLUMN_PAGE + " text not null, "
+				  				    + COLUMN_LAST_X + " integer, "
+				  				    + COLUMN_LAST_Y + " integer, "
+				  				    + COLUMN_ZOOM + " double, "
+				  				    + COLUMN_LAST_UPDATE + " integer, "
+				  				    + COLUMN_LAST_CHECK + " integer);";
+	
 	public DBHelper(Context context) {
 	    super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
@@ -99,6 +107,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		 db.execSQL(DATABASE_CREATE_IMAGES);
 		 db.execSQL(DATABASE_CREATE_NOVEL_DETAILS);
 		 db.execSQL(DATABASE_CREATE_NOVEL_BOOKS);
+		 db.execSQL(DATABASE_CREATE_NOVEL_CONTENT);
 	}
 
 	@Override
@@ -110,6 +119,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_IMAGE);
 	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_DETAILS);
 	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_BOOK);
+	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_CONTENT);
 	    onCreate(db);
 	}
 	
@@ -119,6 +129,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		database.execSQL("delete from " + TABLE_NOVEL_DETAILS);
 		database.execSQL("delete from " + TABLE_IMAGE);
 		database.execSQL("delete from " + TABLE_NOVEL_BOOK);
+		database.execSQL("delete from " + TABLE_NOVEL_CONTENT);
 		//database.close();
 		Log.w(TAG,"Database Deleted.");
 	}
@@ -227,20 +238,6 @@ public class DBHelper extends SQLiteOpenHelper {
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			cv.put(COLUMN_IS_WATCHED, page.isWatched());
 			database.update(TABLE_PAGE, cv, "page = ?", new String[] {page.getPage()});
-//			database.rawQuery("update " + TABLE_PAGE + " set " + COLUMN_TITLE + " = ?, " +
-//					   											 COLUMN_TYPE + " = ?, " +
-//					   											 COLUMN_PARENT + " = ?, " +
-//					   											 COLUMN_LAST_UPDATE + " = ?, " +
-//					   											 COLUMN_LAST_CHECK + " = ?, " +
-//					   											 COLUMN_IS_WATCHED + " = ? " +
-//					   		  " where " + COLUMN_PAGE + " = ?",
-//					   		  new String[] {page.getTitle(), 
-//					                        page.getType(),
-//					                        page.getParent(),
-//					                        "" + page.getLastUpdate().getSeconds(),
-//					                        "" + page.getLastCheck().getSeconds(),
-//					                        page.isWatched() ? "1" : "0", 
-//					                        temp.getPage()});
 			Log.d(TAG, "Updating: " + page.toString());
 		}
 		//database.close();
@@ -411,7 +408,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		ImageModel image = new ImageModel();
 		image.setId(cursor.getInt(0));
 		image.setName(cursor.getString(1));
-		image.setPath(cursor.getString(21));
+		image.setPath(cursor.getString(2));
 		try {
 			image.setUrl(new URL(cursor.getString(3)));
 		} catch (MalformedURLException e) {
@@ -420,5 +417,52 @@ public class DBHelper extends SQLiteOpenHelper {
 		image.setLastUpdate(new Date(cursor.getInt(4)*1000));
 		image.setLastCheck(new Date(cursor.getInt(5)*1000));
 		return image;
+	}
+	
+	public void insertNovelContent(NovelContentModel content) {
+		database = this.getWritableDatabase();
+		Log.d(TAG, "Inserting Novel Content: " + content.getPage());
+		ContentValues cv = new ContentValues();
+		cv.put(COLUMN_CONTENT, content.getContent());
+		cv.put(COLUMN_PAGE, content.getPage());
+		cv.put(COLUMN_LAST_X, "" + content.getLastXScroll());
+		cv.put(COLUMN_LAST_Y, "" + content.getLastYScroll());
+		cv.put(COLUMN_ZOOM, "" + content.getLastZoom());
+		cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
+		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
+		database.insertOrThrow(TABLE_NOVEL_CONTENT, null, cv);
+		Log.d(TAG, "Complete Insert Novel Content:: " + content.getPage());
+	}
+	
+	public NovelContentModel getNovelContent(String page) {
+		Log.d(TAG, "Selecting Novel Content: " + page);
+		NovelContentModel content = null;
+		database = this.getWritableDatabase();
+		
+		Cursor cursor = database.rawQuery("select * from " + TABLE_NOVEL_CONTENT + " where " + COLUMN_PAGE + " = ? ", new String[] {page});
+		cursor.moveToFirst();
+	    while (!cursor.isAfterLast()) {
+	    	content = cursorToNovelContent(cursor);
+	    	Log.d(TAG, "Found: " + content.getPage());
+	    	break;
+	    }		
+		//database.close();
+		
+		Log.d(TAG, "Complete Select: " + page);
+		return content;
+	}
+
+	private NovelContentModel cursorToNovelContent(Cursor cursor) {
+		NovelContentModel content = new NovelContentModel();
+		content.setId(cursor.getInt(0));
+		content.setContent(cursor.getString(1));
+		content.setPage(cursor.getString(2));
+		content.setPageModel(getPageModel(content.getPage()));
+		content.setLastXScroll(cursor.getInt(3));
+		content.setLastYScroll(cursor.getInt(4));
+		content.setLastZoom(cursor.getDouble(5));
+		content.setLastUpdate(new Date(cursor.getInt(6)*1000));
+		content.setLastCheck(new Date(cursor.getInt(7)*1000));
+		return content;
 	}
 }

@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
 
+import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.ImageModel;
 
@@ -35,7 +36,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		InputStream input = null;
 		OutputStream output = null;
 
-		String filepath = Environment.getExternalStorageDirectory().getPath() + "/.cache" + url.getFile();
+		String filepath = Constants.IMAGE_ROOT + url.getFile();
 		String path = filepath.substring(0, filepath.lastIndexOf("/"));
 		Log.d(TAG, "Saving to: " + filepath);
 		// create dir if not exist

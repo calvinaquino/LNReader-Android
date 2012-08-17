@@ -25,6 +25,7 @@ import com.erakk.lnreader.helper.DownloadFileTask;
 import com.erakk.lnreader.helper.DownloadPageTask;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
+import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.parser.BakaTsukiParser;
 
@@ -142,4 +143,40 @@ public class NovelsDao {
 		return novel;
 	}
 	
+	public static NovelContentModel getNovelContent(PageModel page) throws Exception {
+		NovelContentModel content = null;
+		
+		// TODO: get from db
+		content = dbh.getNovelContent(page.getPage());
+		// get from Internet;
+		if(content == null) {
+			content = getNovelContentFromInternet(page);
+		}
+		
+		return content;
+	}
+
+	public static NovelContentModel getNovelContentFromInternet(PageModel page) throws Exception {
+		NovelContentModel content = new NovelContentModel();
+		
+		Response response = Jsoup.connect(Constants.BaseURL + "api.php?action=parse&format=xml&prop=text|images&page=" + page.getPage())
+				 .timeout(60000)
+				 .execute();
+		Document doc = response.parse();
+		
+		content = BakaTsukiParser.ParseNovelContent(doc, page);
+		content.setPageModel(page);
+		
+		// download all attached images
+		DownloadFileTask task = new DownloadFileTask();
+		for(Iterator<ImageModel> i = content.getImages().iterator(); i.hasNext();) {
+			ImageModel image = i.next();
+			image = task.downloadImage(image.getUrl());
+		}
+		
+		// save to DB
+		dbh.insertNovelContent(content);
+		
+		return content;
+	}
 }
