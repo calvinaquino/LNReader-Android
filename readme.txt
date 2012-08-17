@@ -3,6 +3,10 @@ Android SDK
 eclipse + ADT
 JSoup (Nandaka)
 
+//LINE-ENDINGS & SOURCE ENCODING CONFIG
+Git Config: https://help.github.com/articles/dealing-with-line-endings
+Eclipse Config: http://stackoverflow.com/questions/1886185/eclipse-and-windows-newlines
+
 //WARNING
 Sometimes loading a novel (entering chapter activity crashes - SOMEtimes)
 check PageModel, may be picking all chapters of the novel instead of chapters per volume =P
