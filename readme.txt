@@ -5,7 +5,7 @@ JSoup (Nandaka)
 
 //WARNING
 Sometimes loading a novel (entering chapter activity crashes - SOMEtimes)
-ExpandableListView not iterating properlly
+check PageModel, may be picking all chapters of the novel instead of chapters per volume =P
 
 
 //TODO:
