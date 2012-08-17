@@ -1,5 +1,7 @@
 package com.erakk.lnreader;
 
+import java.io.File;
+
 import com.erakk.lnreader.helper.DBHelper;
 
 import android.content.Intent;
@@ -66,6 +68,8 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         		 * CODE TO CLEAR IMAGE CACHE HERE
         		 */
         		
+        		DeleteRecursive(new File(Constants.IMAGE_ROOT));
+        		
         		Toast t = Toast.makeText(getApplicationContext(), "Image cache cleared!", Toast.LENGTH_LONG);
     			t.show();		
         		
@@ -74,6 +78,14 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         });
         
     }
+	
+	void DeleteRecursive(File fileOrDirectory) {
+	    if (fileOrDirectory.isDirectory())
+	        for (File child : fileOrDirectory.listFiles())
+	            DeleteRecursive(child);
+	    fileOrDirectory.delete();
+	}
+
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

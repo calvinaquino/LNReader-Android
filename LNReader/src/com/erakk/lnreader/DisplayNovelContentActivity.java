@@ -73,12 +73,17 @@ public class DisplayNovelContentActivity extends Activity {
 				// test
 				WebView wv = (WebView) findViewById(R.id.webView1);
 				wv.getSettings().setAllowFileAccess(true);
+				wv.getSettings().setSupportZoom(true);
+				wv.getSettings().setBuiltInZoomControls(true);
+
 				String html = Constants.WIKI_CSS_STYLE + content.getContent();
+				Log.d("LoadNovelContentTask", content.getContent());
 				wv.loadDataWithBaseURL("", html, "text/html", "utf-8", "");
 				
 				Log.d("LoadNovelContentTask", content.getPageModel().getTitle());
 			}
-			else {				
+			else {
+				e.printStackTrace();
 				Toast t = Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT);
 				t.show();
 			}

@@ -45,7 +45,7 @@ public class NovelsDao {
 			dbh = new DBHelper(context);	
 	}
 	
-	public ArrayList<PageModel> getNovels() throws Exception{
+	public ArrayList<PageModel> getNovels(boolean forceRefresh) throws Exception{
 		boolean refresh = false;
 		PageModel page = dbh.getMainPage();
 		
@@ -64,7 +64,7 @@ public class NovelsDao {
 			}
 		}
 		
-		if(refresh){
+		if(refresh || forceRefresh){
 			// get last updated page revision from internet
 			PageModel mainPage = getPageModelFromInternet("Main_Page");
 			mainPage.setType(PageModel.TYPE_OTHER);
