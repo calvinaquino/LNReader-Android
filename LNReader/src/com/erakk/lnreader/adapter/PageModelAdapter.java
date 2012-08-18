@@ -1,4 +1,4 @@
-package com.erakk.lnreader.helper;
+package com.erakk.lnreader.adapter;
 
 import java.util.List;
 
@@ -54,7 +54,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			holder.txtNovel = (TextView)row.findViewById(R.id.novel_name);
 			holder.chkIsWatched = (CheckBox)row.findViewById(R.id.novel_is_watched);
 
-			holder.txtNovel.setText(page.getTitle() + " (" + page.getTitle() + ")");
+			holder.txtNovel.setText(page.getTitle());// + " (" + page.getTitle() + ")");
 			holder.chkIsWatched.setChecked(page.isWatched());
 
 			holder.chkIsWatched.setOnCheckedChangeListener(new OnCheckedChangeListener() {

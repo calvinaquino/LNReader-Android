@@ -38,6 +38,7 @@ import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 
 public class LightNovelChaptersActivity extends Activity {
+	PageModel page;
 	NovelsDao dao;
 	NovelCollectionModel novelCol;
     private ExpandListAdapter ExpAdapter;
@@ -51,7 +52,7 @@ public class LightNovelChaptersActivity extends Activity {
                 
         //Get intent and message
         Intent intent = getIntent();
-        PageModel page = new PageModel(); 
+        page = new PageModel(); 
         page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
         page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
         setContentView(R.layout.activity_light_novel_chapters);
@@ -69,14 +70,8 @@ public class LightNovelChaptersActivity extends Activity {
         }        
         
         dao = new NovelsDao(this);
-        try {
-        	new LoadNovelDetailsTask().execute(new PageModel[] {page});
-        } catch (Exception e) {
-			// TODO Auto-generated catch block
-			Toast t = Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
-			t.show();					
-		}
-      
+        new LoadNovelDetailsTask().execute(new PageModel[] {page});
+       
         // setup listener
         ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
 
@@ -137,7 +132,9 @@ public class LightNovelChaptersActivity extends Activity {
 			/*
 			 * Implement code to refresh chapter/synopsis list
 			 */
-			
+			LoadNovelDetailsTask task = new LoadNovelDetailsTask();
+			task.refresh = true;
+			task.execute(page);
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.invert_colors:
@@ -235,26 +232,56 @@ public class LightNovelChaptersActivity extends Activity {
 			return super.onContextItemSelected(item);
 		}
 	}
+	
+	@SuppressLint("NewApi")
+	private void ToggleProgressBar(boolean show) {
+		ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
+		ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
+		TextView tv = (TextView) findViewById(R.id.loading);
+		
+		if(show) {
+			ExpandList.setVisibility(ExpandableListView.GONE);
+			
+			pb.setVisibility(ProgressBar.VISIBLE);
+			pb.setIndeterminate(true);
+			pb.setActivated(true);
+			pb.animate();
+			
+			tv.setVisibility(TextView.VISIBLE);
+			tv.setText("Loading...");			
+		}
+		else {
+			pb.setVisibility(ProgressBar.GONE);			
+			tv.setVisibility(TextView.GONE);
+			ExpandList.setVisibility(ExpandableListView.VISIBLE);
+		}
+	}
     
 	@SuppressLint("NewApi")
-    public class LoadNovelDetailsTask extends AsyncTask<PageModel, ProgressBar, AsyncTaskResult<NovelCollectionModel>> {
-
+    public class LoadNovelDetailsTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelCollectionModel>> {
+		public boolean refresh = false;
+		
 		@Override
 		protected void onPreExecute (){
 			// executed on UI thread.
-			ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
-	    	pb.setIndeterminate(true);
-	    	pb.setActivated(true);
-	    	pb.animate();
+			ToggleProgressBar(true);
 		}
 		
 		@Override
 		protected AsyncTaskResult<NovelCollectionModel> doInBackground(PageModel... arg0) {
 			PageModel page = arg0[0];
 			try {
-				NovelCollectionModel novelCol = dao.getNovelDetails(page);
-				Log.d("LoadNovelDetailsTask", "Loaded: " + novelCol.getPage());				
-		        return new AsyncTaskResult<NovelCollectionModel>(novelCol);
+				if(refresh) {
+					publishProgress("Refreshing chapter list...");
+					NovelCollectionModel novelCol = dao.getNovelDetailsFromInternet(page);
+					return new AsyncTaskResult<NovelCollectionModel>(novelCol);
+				}
+				else {
+					publishProgress("Loading chapter list...");
+					NovelCollectionModel novelCol = dao.getNovelDetails(page);
+					Log.d("LoadNovelDetailsTask", "Loaded: " + novelCol.getPage());				
+					return new AsyncTaskResult<NovelCollectionModel>(novelCol);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				Log.e("NovelDetails", e.getClass().toString() + ": " + e.getMessage());
@@ -263,49 +290,46 @@ public class LightNovelChaptersActivity extends Activity {
 		}
 		
 		@Override
+		protected void onProgressUpdate (String... values){
+			//executed on UI thread.
+			TextView tv = (TextView) findViewById(R.id.loading);
+			tv.setText(values[0]);
+		}
+		
+		@Override
 		protected void onPostExecute(AsyncTaskResult<NovelCollectionModel> result) {
-			ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
-			
-			pb.setActivated(false);
-			pb.setVisibility(ProgressBar.GONE);
-
-			novelCol = result.getResult();
-			if(novelCol != null) {
-				
-				//Clear progressBar and string
-				TextView tv = (TextView) findViewById(R.id.loading);
-				tv.setVisibility(TextView.GONE);
-				pb.setActivated(false);
-				pb.setVisibility(ProgressBar.GONE);
-
+			Exception e = result.getError();
+			if(e == null) {
+				novelCol = result.getResult();
 				ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
 				
 				// Prepare header
-				LayoutInflater layoutInflater = getLayoutInflater();
-				View synopsis = layoutInflater.inflate(R.layout.activity_display_synopsis, null);
-				synopsis.findViewById(R.id.loading).setVisibility(TextView.GONE);
-				synopsis.findViewById(R.id.progressBar2).setVisibility(ProgressBar.GONE);
-				
-				TextView textViewTitle = (TextView) synopsis.findViewById(R.id.title);
-				TextView textViewSynopsis = (TextView) synopsis.findViewById(R.id.synopsys);
-				textViewTitle.setTextSize(20);
-		        textViewSynopsis.setTextSize(16);         
-		        
-		        textViewTitle.setText(novelCol.getPageModel().getTitle());
-		        textViewSynopsis.setText(novelCol.getSynopsis());
-		        
-		        ImageView ImageViewCover = (ImageView) synopsis.findViewById(R.id.cover);
-		        if (novelCol.getCoverBitmap() == null) {
-					// IN app test, is returning empty bitmap
-					Toast tst = Toast.makeText(getApplicationContext(), "Bitmap empty", Toast.LENGTH_LONG);
-					tst.show();
+				if(!refresh) {  
+					LayoutInflater layoutInflater = getLayoutInflater();
+					View synopsis = layoutInflater.inflate(R.layout.activity_display_synopsis, null);
+					synopsis.findViewById(R.id.loading).setVisibility(TextView.GONE);
+					synopsis.findViewById(R.id.progressBar2).setVisibility(ProgressBar.GONE);
+					
+					TextView textViewTitle = (TextView) synopsis.findViewById(R.id.title);
+					TextView textViewSynopsis = (TextView) synopsis.findViewById(R.id.synopsys);
+					textViewTitle.setTextSize(20);
+			        textViewSynopsis.setTextSize(16);         
+			        
+			        textViewTitle.setText(novelCol.getPageModel().getTitle());
+			        textViewSynopsis.setText(novelCol.getSynopsis());
+			        
+			        ImageView ImageViewCover = (ImageView) synopsis.findViewById(R.id.cover);
+			        if (novelCol.getCoverBitmap() == null) {
+						// IN app test, is returning empty bitmap
+						Toast.makeText(getApplicationContext(), "Bitmap empty", Toast.LENGTH_LONG).show();
+					}
+					else {
+						ImageViewCover.setImageBitmap(novelCol.getCoverBitmap());
+					}
+			    
+			        ExpandList.addHeaderView(synopsis);
 				}
-				else {
-					ImageViewCover.setImageBitmap(novelCol.getCoverBitmap());
-				}
-		        
-		        ExpandList.addHeaderView(synopsis);
-				
+			    
 				// now add the volume and chapter list.
 				try {
 					ArrayList<ExpandListGroup> list = new ArrayList<ExpandListGroup>();
@@ -318,8 +342,8 @@ public class LightNovelChaptersActivity extends Activity {
 		        		for(Iterator<PageModel> i2 = book.getChapterCollection().iterator(); i2.hasNext();){
 		        			PageModel chapter = i2.next();
 		        			ExpandListChild chapter_page = new ExpandListChild();
-		        			chapter_page.setName(chapter.getTitle());
-//		        			chapter_page.setName(chapter.getTitle() + " (" + chapter.getPage() + ")");
+		        			//chapter_page.setName(chapter.getTitle());
+		        			chapter_page.setName(chapter.getTitle() + " (" + chapter.getPage() + ") id: " + chapter.getId());
 		        			chapter_page.setTag(null);
 		        			list2.add(chapter_page);
 		        		}
@@ -328,19 +352,17 @@ public class LightNovelChaptersActivity extends Activity {
 					ExpListItems = list;
 		        	ExpAdapter = new ExpandListAdapter(LightNovelChaptersActivity.this, ExpListItems);
 		        	ExpandList.setAdapter(ExpAdapter);
-				} catch (Exception e) {
-					e.getStackTrace();
-					Toast t = Toast.makeText(LightNovelChaptersActivity.this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
-					t.show();					
+				} catch (Exception e2) {
+					e2.getStackTrace();
+					Toast.makeText(LightNovelChaptersActivity.this, e2.getClass().toString() +": " + e2.getMessage(), Toast.LENGTH_SHORT).show();
 				}				
 			}
-			if(result.getError() != null) {
-				Exception e = result.getError();
-				Toast t = Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT);
-				t.show();
+			else {
+				e.printStackTrace();
+				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 				Log.e(this.getClass().toString(), e.getClass().toString() + ": " + e.getMessage());
 			}
-		}
-    	 
+			ToggleProgressBar(false);
+		}		
     }
 }
