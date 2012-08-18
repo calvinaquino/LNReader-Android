@@ -4,6 +4,7 @@
 package com.erakk.lnreader.dao;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -95,8 +96,8 @@ public class NovelsDao {
 	
 	public ArrayList<PageModel> getNovelsFromInternet() throws Exception {
 		list = new ArrayList<PageModel>();
-
-		Response response = Jsoup.connect(Constants.BaseURL)
+		String url = Constants.BASE_URL + "/project";
+		Response response = Jsoup.connect(url)
 				 .timeout(60000)
 				 .execute();
 		Document doc = response.parse();//result.getResult();
@@ -121,7 +122,7 @@ public class NovelsDao {
 		Log.d(TAG, "Getting Novel Details from internet: " + page.getPage());
 		NovelCollectionModel novel = null;
 		
-		Response response = Jsoup.connect(Constants.BaseURL + "index.php?title=" + page.getPage())
+		Response response = Jsoup.connect(Constants.BASE_URL + "/project/index.php?title=" + page.getPage())
 				 .timeout(60000)
 				 .execute();
 		Document doc = response.parse();
@@ -159,7 +160,7 @@ public class NovelsDao {
 	public static NovelContentModel getNovelContentFromInternet(PageModel page) throws Exception {
 		NovelContentModel content = new NovelContentModel();
 		
-		Response response = Jsoup.connect(Constants.BaseURL + "api.php?action=parse&format=xml&prop=text|images&page=" + page.getPage())
+		Response response = Jsoup.connect(Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&page=" + page.getPage())
 				 .timeout(60000)
 				 .execute();
 		Document doc = response.parse();
@@ -186,5 +187,37 @@ public class NovelsDao {
 	
 	public ArrayList<PageModel> getWatchedNovel() {
 		return dbh.selectAllByColumn(DBHelper.COLUMN_IS_WATCHED, "1");
+	}
+	
+	public static ImageModel getImageModel(String page) throws Exception {
+		ImageModel image = null;
+		
+		image = dbh.getImage(page);
+		if(image == null) {
+			// try again using url
+			image = dbh.getImageByReferer(page);
+			if(image == null) {
+				Log.d(TAG, "Image not found: " + page);
+				image = getImageModelFromInternet(page);
+				
+				Log.d(TAG, "Referer: " + image.getReferer());
+				dbh.insertImage(image);
+			}
+		}
+		return image;
+	}
+
+	private static ImageModel getImageModelFromInternet(String page) throws Exception {
+		Response response = Jsoup.connect(Constants.BASE_URL + page)
+				 .timeout(60000)
+				 .execute();
+		Document doc = response.parse();
+		ImageModel image = BakaTsukiParser.parseImagePage(doc); // only return the full image url
+		
+		DownloadFileTask downloader = new DownloadFileTask();
+		image = downloader.downloadImage(image.getUrl());
+		image.setReferer(page);
+		
+		return image;		
 	}
 }

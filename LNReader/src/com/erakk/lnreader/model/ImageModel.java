@@ -11,6 +11,8 @@ public class ImageModel {
 	private Date lastUpdate;
 	private Date lastCheck;
 	
+	private String referer;
+	
 	public int getId() {
 		return id;
 	}
@@ -46,6 +48,12 @@ public class ImageModel {
 	}
 	public void setLastCheck(Date lastCheck) {
 		this.lastCheck = lastCheck;
+	}
+	public String getReferer() {
+		return referer;
+	}
+	public void setReferer(String referer) {
+		this.referer = referer;
 	}
 	public String toString(){
 		return name;

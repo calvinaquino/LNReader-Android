@@ -2,6 +2,7 @@ package com.erakk.lnreader;
 
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
@@ -135,11 +136,14 @@ public class DisplayNovelContentActivity extends Activity {
 			if(e == null) {
 				NovelContentModel content = result.getResult();
 
-				// test
+				// load the contents here
 				WebView wv = (WebView) findViewById(R.id.webView1);
 				wv.getSettings().setAllowFileAccess(true);
 				wv.getSettings().setSupportZoom(true);
 				wv.getSettings().setBuiltInZoomControls(true);
+				
+				// custom link handler
+				wv.setWebViewClient(new BakaTsukiWebViewClient());
 
 				String html = Constants.WIKI_CSS_STYLE + content.getContent();
 				Log.d("LoadNovelContentTask", content.getContent());

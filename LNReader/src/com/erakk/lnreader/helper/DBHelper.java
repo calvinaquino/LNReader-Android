@@ -36,6 +36,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_IMAGE = "name";
 	public static final String COLUMN_FILEPATH = "filepath";
 	public static final String COLUMN_URL = "url";
+	public static final String COLUMN_REFERER = "referer";
 	
 	public static final String TABLE_NOVEL_DETAILS = "novel_details";
 	public static final String COLUMN_SYNOPSIS = "synopsis";
@@ -49,7 +50,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_ZOOM = "lastZoom";
 
 	private static final String DATABASE_NAME = "pages.db";
-	private static final int DATABASE_VERSION = 11;
+	private static final int DATABASE_VERSION = 12;
 	
 	private SQLiteDatabase database;
 	
@@ -69,6 +70,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				 				  + COLUMN_IMAGE + " text not null, "
 				  				  + COLUMN_FILEPATH + " text not null, "
 				  				  + COLUMN_URL + " text not null, "
+				  				  + COLUMN_REFERER + " text, "
 				  				  + COLUMN_LAST_UPDATE + " integer, "
 				  				  + COLUMN_LAST_CHECK + " integer);";
 	
@@ -374,16 +376,35 @@ public class DBHelper extends SQLiteOpenHelper {
 	@SuppressWarnings("deprecation")
 	public void insertImage(ImageModel image){
 		database = this.getWritableDatabase();
-		Log.d(TAG, "Inserting Images: " + image.toString());
+		Log.d(TAG, "Inserting Images: " + image.getName());
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_IMAGE, image.getName());
 		cv.put(COLUMN_FILEPATH, image.getPath());
 		cv.put(COLUMN_URL, image.getUrl().toString());
+		cv.put(COLUMN_REFERER, image.getReferer());
 		cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
 		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 		database.insertOrThrow(TABLE_IMAGE, null, cv);
-		Log.d(TAG, "Complete Insert Images: " + image.toString());
+		Log.d(TAG, "Complete Insert Images: " + image.getName());
 		database.close();
+	}
+	
+	public ImageModel getImageByReferer(String url) {
+		Log.d(TAG, "Selecting by Referer: " + url);
+		ImageModel image = null;
+		database = this.getWritableDatabase();
+		
+		Cursor cursor = database.rawQuery("select * from " + TABLE_IMAGE + " where " + COLUMN_REFERER + " = ? ", new String[] {url});
+		cursor.moveToFirst();
+	    while (!cursor.isAfterLast()) {
+	    	image = cursorToImage(cursor);
+	    	Log.d(TAG, "Found: " + image.toString());
+	    	break;
+	    }		
+		//database.close();
+		
+		Log.d(TAG, "Complete Select: " + url);
+		return image;
 	}
 	
 	public ImageModel getImage(String name) {
@@ -414,8 +435,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
-		image.setLastUpdate(new Date(cursor.getInt(4)*1000));
-		image.setLastCheck(new Date(cursor.getInt(5)*1000));
+		image.setReferer(cursor.getString(4));
+		image.setLastUpdate(new Date(cursor.getInt(5)*1000));
+		image.setLastCheck(new Date(cursor.getInt(6)*1000));
 		return image;
 	}
 	

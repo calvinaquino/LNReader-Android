@@ -358,7 +358,7 @@ public class BakaTsukiParser {
 		for(Iterator<Element> i = imageElements.iterator(); i.hasNext();) {
 			ImageModel image = new ImageModel();
 			Element imageElement = i.next();
-			String urlStr = imageElement.attr("src").replace("/project/", Constants.BaseURL);
+			String urlStr = imageElement.attr("src").replace("/project/", Constants.BASE_URL + "/project/");
 			String name = urlStr.substring(urlStr.lastIndexOf("/"));
 			image.setName(name);
 			try {
@@ -381,5 +381,22 @@ public class BakaTsukiParser {
 		content.setLastYScroll(0);
 		content.setLastZoom(100);
 		return content;
+	}
+	
+	public static ImageModel parseImagePage(Document doc){
+		ImageModel image = new ImageModel();
+		
+		Element mainContent = doc.select("#mw-content-text").first();
+		Element fullMedia = mainContent.select(".fullMedia").first();
+		String imageUrl = fullMedia.select("a").first().attr("href");
+		
+		try {
+			image.setUrl(new URL(Constants.BASE_URL + imageUrl));
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return image;
 	}
 }

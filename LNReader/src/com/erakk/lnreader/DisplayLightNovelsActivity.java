@@ -67,7 +67,7 @@ public class DisplayLightNovelsActivity extends ListActivity{
 			new LoadNovelsTask().execute(new boolean[] {false});
 			setListAdapter(adapter);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
 			Toast t = Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
 			t.show();					
 		}
@@ -227,8 +227,8 @@ public class DisplayLightNovelsActivity extends ListActivity{
 			if(list != null) adapter.addAll(list);
 			if(result.getError() != null) {
 				Exception e = result.getError();
-				Toast t = Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT);
-				t.show();
+				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
+				
 				Log.e(this.getClass().toString(), e.getClass().toString() + ": " + e.getMessage());
 			}
 			

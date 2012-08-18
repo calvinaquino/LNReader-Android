@@ -48,29 +48,36 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		cacheDir.mkdirs();
 		Log.d(TAG, "Path to: " + path);
 		
-		
-		URLConnection connection = url.openConnection();
-		connection.connect();
-		// this will be useful so that you can show a typical 0-100% progress bar
-		// I'm not using it AT them moment, but don't remove, might be useful for real.
-		int fileLength = connection.getContentLength();
-
-		// download the file
-		input = new BufferedInputStream(url.openStream());
-		output = new FileOutputStream(decodedUrl);
-
-		byte data[] = new byte[1024];
-		long total = 0;
-		int count;
-		while ((count = input.read(data)) != -1) {
-			total += count;
-			// publishing the progress....
-			publishProgress((int) (total * 100 / fileLength));
-			output.write(data, 0, count);
+		// check if file already downloaded
+		if(new File(decodedUrl).exists()) {
+			Log.d(TAG, "File exists: " + decodedUrl);
 		}
-		output.flush();
-		output.close();
-		input.close();
+		else {
+			Log.d(TAG, "Start downloading image: " + url);
+			URLConnection connection = url.openConnection();
+			connection.connect();
+			// this will be useful so that you can show a typical 0-100% progress bar
+			// I'm not using it AT them moment, but don't remove, might be useful for real.
+			int fileLength = connection.getContentLength();
+	
+			// download the file
+			input = new BufferedInputStream(url.openStream());
+			output = new FileOutputStream(decodedUrl);
+	
+			byte data[] = new byte[1024];
+			long total = 0;
+			int count;
+			while ((count = input.read(data)) != -1) {
+				total += count;
+				// publishing the progress....
+				publishProgress((int) (total * 100 / fileLength));
+				output.write(data, 0, count);
+			}
+			output.flush();
+			output.close();
+			input.close();
+			Log.d(TAG, "Downloading image complete, saved to: " + decodedUrl);
+		}
 		
 		ImageModel image = new ImageModel();
 		image.setName(url.getFile());
