@@ -71,7 +71,7 @@ public class DisplaySynopsisActivity extends Activity {
 
         Log.d(null, "start Default");
         
-        dao = new NovelsDao(this);
+        //dao = new NovelsDao(this);
         try {
         	new LoadNovelDetailsTask().execute(new PageModel[] {page});
         } catch (Exception e) {
@@ -114,7 +114,7 @@ public class DisplaySynopsisActivity extends Activity {
 	    	pb.animate();
 				        
 			try {
-				NovelCollectionModel novelCol = dao.getNovelDetails(page);
+				NovelCollectionModel novelCol = NovelsDao.getNovelDetails(page);
 				Log.d("LoadNovelDetailsTask", "Loaded: " + novelCol.getPage());				
 		        return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 			} catch (Exception e) {

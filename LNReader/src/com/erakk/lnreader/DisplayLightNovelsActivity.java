@@ -35,7 +35,7 @@ import com.erakk.lnreader.model.PageModel;
 public class DisplayLightNovelsActivity extends ListActivity{
 	ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	PageModelAdapter adapter;
-	NovelsDao dao = new NovelsDao(this);
+	//NovelsDao dao = new NovelsDao(this);
 
 	boolean onlyWatched = false;
 
@@ -200,11 +200,11 @@ public class DisplayLightNovelsActivity extends ListActivity{
 
 				if (onlyWatched) {
 					publishProgress("Loading Watched List");
-					return new AsyncTaskResult<ArrayList<PageModel>>(dao.getWatchedNovel());
+					return new AsyncTaskResult<ArrayList<PageModel>>(NovelsDao.getWatchedNovel());
 				}
 				else {
 					publishProgress("Loading Novel List");
-					return new AsyncTaskResult<ArrayList<PageModel>>(dao.getNovels(refresh));
+					return new AsyncTaskResult<ArrayList<PageModel>>(NovelsDao.getNovels(refresh));
 				}
 				//return new AsyncTaskResult<ArrayList<PageModel>>(listItems);
 			} catch (Exception e) {

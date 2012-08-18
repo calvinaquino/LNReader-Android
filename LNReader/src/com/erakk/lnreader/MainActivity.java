@@ -1,5 +1,7 @@
 package com.erakk.lnreader;
 
+import com.erakk.lnreader.dao.NovelsDao;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,6 +40,9 @@ public class MainActivity extends Activity {
         	Button3.setBackgroundColor(Color.DKGRAY);
         	
         }
+        
+        // Setup db context
+        NovelsDao.context = this;
     }
 
     @Override

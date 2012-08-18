@@ -69,8 +69,8 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 					}
 					// update the db!
 					page.setWatched(isChecked);
-					NovelsDao dao = new NovelsDao(context);
-					dao.updatePageModel(page);
+					//NovelsDao dao = new NovelsDao(context);
+					NovelsDao.updatePageModel(page);
 				}
 			});
 

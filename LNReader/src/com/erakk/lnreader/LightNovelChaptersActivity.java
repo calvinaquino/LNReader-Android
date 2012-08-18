@@ -39,7 +39,7 @@ import com.erakk.lnreader.model.PageModel;
 
 public class LightNovelChaptersActivity extends Activity {
 	PageModel page;
-	NovelsDao dao;
+	//NovelsDao dao;
 	NovelCollectionModel novelCol;
     private ExpandListAdapter ExpAdapter;
     private ArrayList<ExpandListGroup> ExpListItems;
@@ -69,7 +69,7 @@ public class LightNovelChaptersActivity extends Activity {
         	NovelView.setBackgroundColor(Color.BLACK);*/
         }        
         
-        dao = new NovelsDao(this);
+        //dao = new NovelsDao(this);
         new LoadNovelDetailsTask().execute(new PageModel[] {page});
        
         // setup listener
@@ -273,12 +273,12 @@ public class LightNovelChaptersActivity extends Activity {
 			try {
 				if(refresh) {
 					publishProgress("Refreshing chapter list...");
-					NovelCollectionModel novelCol = dao.getNovelDetailsFromInternet(page);
+					NovelCollectionModel novelCol = NovelsDao.getNovelDetailsFromInternet(page);
 					return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 				}
 				else {
 					publishProgress("Loading chapter list...");
-					NovelCollectionModel novelCol = dao.getNovelDetails(page);
+					NovelCollectionModel novelCol = NovelsDao.getNovelDetails(page);
 					Log.d("LoadNovelDetailsTask", "Loaded: " + novelCol.getPage());				
 					return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 				}

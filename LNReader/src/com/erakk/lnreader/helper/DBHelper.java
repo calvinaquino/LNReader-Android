@@ -147,11 +147,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		return page;
 	}
 
-	public void insertAllNovel(ArrayList<PageModel> list) {
+	public ArrayList<PageModel> insertAllNovel(ArrayList<PageModel> list) {
 		for(Iterator<PageModel> i = list.iterator(); i.hasNext();){
 			PageModel p = i.next();
-			insertOrUpdatePageModel(p);
-		}	
+			p = insertOrUpdatePageModel(p);
+		}
+		return list;
 	}
 	
 	public PageModel getPageModel(String page) {
@@ -236,6 +237,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 		else {
 			ContentValues cv = new ContentValues();
+			cv.put(COLUMN_ID, page.getId());
 			cv.put(COLUMN_PAGE, page.getPage());
 			cv.put(COLUMN_TITLE, page.getTitle());
 			cv.put(COLUMN_TYPE, page.getType());
@@ -243,7 +245,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			cv.put(COLUMN_LAST_UPDATE, "" + (int) (page.getLastUpdate().getTime() / 1000));
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			cv.put(COLUMN_IS_WATCHED, page.isWatched());
-			database.update(TABLE_PAGE, cv, "page = ?", new String[] {page.getPage()});
+			database.update(TABLE_PAGE, cv, "id = ?", new String[] {"" + page.getId()});
 			Log.d(TAG, "Updating: " + page.toString());
 		}
 		
@@ -386,6 +388,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	/*
 	 * ImageModel
+	 * No Nested Object
 	 */
 	
 	public ImageModel insertImage(ImageModel image){
@@ -399,17 +402,18 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
 		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 		database.insertOrThrow(TABLE_IMAGE, null, cv);
-		Log.d(TAG, "Complete Insert Images: " + image.getName());
-		
 		database.close();
 		
 		// get updated data
 		image = getImage(image.getName());
+		
+		Log.d(TAG, "Complete Insert Images: " + image.getName() + " id: " + image.getId());
+		
 		return image;
 	}
 	
 	public ImageModel getImageByReferer(String url) {
-		Log.d(TAG, "Selecting by Referer: " + url);
+		Log.d(TAG, "Selecting Image by Referer: " + url);
 		ImageModel image = null;
 		database = this.getWritableDatabase();
 		
@@ -417,17 +421,19 @@ public class DBHelper extends SQLiteOpenHelper {
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	image = cursorToImage(cursor);
-	    	Log.d(TAG, "Found: " + image.toString());
+	    	Log.d(TAG, "Found: " + image.getName() + " id: " + image.getId());
 	    	break;
 	    }		
-		//database.close();
+		database.close();
 		
-		Log.d(TAG, "Complete Select: " + url);
+		if(image == null) {
+			Log.d(TAG, "Not Found Image by Referer: " + url);
+		}
 		return image;
 	}
 	
 	public ImageModel getImage(String name) {
-		Log.d(TAG, "Selecting: " + name);
+		Log.d(TAG, "Selecting Image: " + name);
 		ImageModel image = null;
 		database = this.getWritableDatabase();
 		
@@ -435,12 +441,13 @@ public class DBHelper extends SQLiteOpenHelper {
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	image = cursorToImage(cursor);
-	    	Log.d(TAG, "Found: " + image.toString());
+	    	Log.d(TAG, "Found: " + image.getName() + " id: " + image.getId());
 	    	break;
 	    }		
-		//database.close();
-		
-		Log.d(TAG, "Complete Select: " + name);
+		database.close();
+		if(image == null) {
+			Log.d(TAG, "Not Found Image: " + name);
+		}
 		return image;
 	}
 
