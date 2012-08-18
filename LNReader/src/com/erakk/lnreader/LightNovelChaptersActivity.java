@@ -20,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageView;
@@ -78,19 +79,28 @@ public class LightNovelChaptersActivity extends Activity {
       
         // setup listener
         ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
-//        ExpandList.setLongClickable(true);
-//        ExpandList.setOnLongClickListener(new OnLongClickListener() {
-//			
-//			@Override
-//			public boolean onLongClick(View v) {
-//				// TODO Auto-generated method stub
-//				Toast t = Toast.makeText(LightNovelChaptersActivity.this, "longClick", Toast.LENGTH_SHORT);
-//				t.show();
-//				return false;
-//			}
-//		});
-        ExpandList.setOnChildClickListener(new OnChildClickListener() {
-			
+
+        ExpandList.setOnItemLongClickListener(new OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+                    int groupPosition = ExpandableListView.getPackedPositionGroup(id);
+                    int childPosition = ExpandableListView.getPackedPositionChild(id);
+
+                    // You now have everything that you would as if this was an OnChildClickListener() 
+                    // Add your logic here.
+                    PageModel page = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
+                    Toast.makeText(LightNovelChaptersActivity.this, "longClick: " + page.getTitle(), Toast.LENGTH_SHORT).show();
+
+                    // Return true as we are handling the event.
+                    return true;
+                }
+
+                return false;
+            }
+        });
+
+        ExpandList.setOnChildClickListener(new OnChildClickListener() {			
 			@Override
 			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 				if(novelCol != null) {
@@ -106,6 +116,7 @@ public class LightNovelChaptersActivity extends Activity {
 			}
 		});
     	
+        setTitle(page.getTitle());
     }
 
     @Override

@@ -61,7 +61,6 @@ public class DisplayLightNovelsActivity extends ListActivity{
 			//ListText.setTextColor(Color.WHITE);
 			//isWatched
 			//NovelView.setBackgroundColor(Color.BLACK);
-
 		}
 		try {
 			adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
@@ -72,7 +71,12 @@ public class DisplayLightNovelsActivity extends ListActivity{
 			Toast t = Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
 			t.show();					
 		}
-
+		if(onlyWatched){
+			setTitle("Watched Light Novels");
+		}
+		else {
+			setTitle("Light Novels");
+		}
 	}
 
 	@Override
