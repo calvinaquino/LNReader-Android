@@ -148,7 +148,7 @@ public class DisplayNovelContentActivity extends Activity {
 				Log.d("LoadNovelContentTask", content.getContent());
 				wv.loadDataWithBaseURL("", html, "text/html", "utf-8", "");
 				
-				Log.d("LoadNovelContentTask", content.getPageModel().getTitle());
+				Log.d("LoadNovelContentTask", content.getPage());
 			}
 			else {
 				e.printStackTrace();

@@ -38,7 +38,7 @@ public class NovelContentModel {
 	public void setPage(String page) {
 		this.page = page;
 	}
-	public PageModel getPageModel() {
+	public PageModel getPageModel() throws Exception {
 		if(this.pageModel == null) {
 			this.pageModel = NovelsDao.getPageModel(this.page); 
 		}

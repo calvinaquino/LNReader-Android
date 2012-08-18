@@ -40,15 +40,18 @@ public class BakaTsukiParser {
 	 * @return PageModel status, no parent and type defined
 	 */
 	public static PageModel parsePageAPI(String pageName, Document doc) throws Exception {
-		PageModel mainPage = new PageModel();
-		mainPage.setPage(pageName);
-		mainPage.setTitle(doc.select("page").first().attr("title"));
-		Log.d(TAG, "parsePageAPI Title: " + mainPage.getTitle());
+		PageModel pageModel = new PageModel();
+		pageModel.setPage(pageName);
+		pageModel.setTitle(doc.select("page").first().attr("title"));
+		Log.d(TAG, "parsePageAPI Title: " + pageModel.getTitle());
+		
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); 		//2012-08-03T02:41:50Z
 		Date lastUpdate = formatter.parse(doc.select("page").first().attr("touched"));
-		mainPage.setLastUpdate(lastUpdate);
-		Log.d(TAG, "parsePageAPI Last Update: " + mainPage.getLastUpdate());
-		return mainPage;				
+		pageModel.setLastUpdate(lastUpdate);
+		Log.d(TAG, "parsePageAPI Last Update: " + pageModel.getLastUpdate());
+		
+		//pageModel.setType(PageModel.TYPE_OTHER);
+		return pageModel;				
 	}
 	
 	/**

@@ -41,7 +41,7 @@ public class NovelsDao {
 		return _dbh;
 	}
 	
-	public static ArrayList<PageModel> getNovels(boolean forceRefresh) throws Exception{
+	public static ArrayList<PageModel> getNovels() throws Exception{
 		ArrayList<PageModel> list = null;
 		boolean refresh = false;
 		PageModel page = getDBHelper().getMainPage();
@@ -61,30 +61,25 @@ public class NovelsDao {
 			}
 		}
 		
-		if(refresh || forceRefresh){
-			// get last updated page revision from internet
-			PageModel mainPage = getPageModelFromInternet("Main_Page");
-			mainPage.setType(PageModel.TYPE_OTHER);
-			mainPage.setParent("");
-			if(page!= null) mainPage.setId(page.getId());
-			getDBHelper().insertOrUpdatePageModel(mainPage);
-			Log.d(TAG, "Updated Main_Page");
-			
-			// get updated novel list from internet
-			list = getNovelsFromInternet();
-			
+		if(refresh){
+			// get updated main page and novel list from internet
+			list = getNovelsFromInternet();			
 			Log.d(TAG, "Updated Novel List");
 		}
 		else {
+			// get from db
 			list = getDBHelper().selectAllByColumn(DBHelper.COLUMN_TYPE, PageModel.TYPE_NOVEL);
 			Log.d(TAG, "Found: " + list.size());
 		}
 		return list;
-
 	}
 	
-	public static PageModel getPageModel(String page) {
-		return getDBHelper().getPageModel(page);
+	public static PageModel getPageModel(String page) throws Exception {
+		PageModel pageModel = getDBHelper().getPageModel(page);
+		if (pageModel == null) {
+			pageModel = getPageModelFromInternet(page);
+		}
+		return pageModel;
 	}
 	
 	public static PageModel getPageModelFromInternet(String page) throws Exception {
@@ -98,8 +93,24 @@ public class NovelsDao {
 		
 		return pageModel;
 	}
+
+	public static PageModel updatePageModel(PageModel page) {
+		return getDBHelper().insertOrUpdatePageModel(page);		
+	}
+	
+	public static ArrayList<PageModel> getWatchedNovel() {
+		return getDBHelper().selectAllByColumn(DBHelper.COLUMN_IS_WATCHED, "1");
+	}
 	
 	public static ArrayList<PageModel> getNovelsFromInternet() throws Exception {
+		// get last updated page revision from internet
+		PageModel mainPage = getPageModel("Main_Page");
+		mainPage.setType(PageModel.TYPE_OTHER);
+		mainPage.setParent("");
+		getDBHelper().insertOrUpdatePageModel(mainPage);
+		Log.d(TAG, "Updated Main_Page");
+		
+		// now get the list
 		ArrayList<PageModel> list = new ArrayList<PageModel>();
 		String url = Constants.BASE_URL + "/project";
 		Response response = Jsoup.connect(url)
@@ -115,11 +126,23 @@ public class NovelsDao {
 		
 		return list;
 	}
+	
+	/*
+	 * NovelCollectionModel
+	 */
 
 	public static NovelCollectionModel getNovelDetails(PageModel page) throws Exception {
+		boolean refresh = false;
 		NovelCollectionModel novel = getDBHelper().getNovelDetails(page.getPage());
 		
-		if(novel == null) {
+		if(novel != null) {
+			// TODO: add check to refresh
+		}
+		else{
+			refresh = true;
+		}
+		
+		if(refresh) {
 			novel = getNovelDetailsFromInternet(page);
 		}
 		
@@ -154,6 +177,10 @@ public class NovelsDao {
 		return novel;
 	}
 	
+	/*
+	 * NovelContentModel
+	 */
+	
 	public static NovelContentModel getNovelContent(PageModel page) throws Exception {
 		NovelContentModel content = null;
 		
@@ -184,21 +211,18 @@ public class NovelsDao {
 		for(Iterator<ImageModel> i = content.getImages().iterator(); i.hasNext();) {
 			ImageModel image = i.next();
 			image = task.downloadImage(image.getUrl());
+			// TODO: need to save image to db?
 		}
-		
+				
 		// save to DB, and get the saved value
 		content = getDBHelper().insertNovelContent(content);
-		
+				
 		return content;
 	}
-
-	public static PageModel updatePageModel(PageModel page) {
-		return getDBHelper().insertOrUpdatePageModel(page);		
-	}
 	
-	public static ArrayList<PageModel> getWatchedNovel() {
-		return getDBHelper().selectAllByColumn(DBHelper.COLUMN_IS_WATCHED, "1");
-	}
+	/*
+	 *  ImageModel
+	 */
 	
 	public static ImageModel getImageModel(String page) throws Exception {
 		ImageModel image = null;

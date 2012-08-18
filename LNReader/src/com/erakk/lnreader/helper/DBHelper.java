@@ -50,7 +50,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_ZOOM = "lastZoom";
 
 	private static final String DATABASE_NAME = "pages.db";
-	private static final int DATABASE_VERSION = 12;
+	private static final int DATABASE_VERSION = 13;
 	
 	private SQLiteDatabase database;
 	
@@ -59,7 +59,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	      + TABLE_PAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
 							 + COLUMN_PAGE + " text not null, "
 			  				 + COLUMN_TITLE + " text not null, "
-			  				 + COLUMN_TYPE + " text not null, "
+			  				 + COLUMN_TYPE + " text, "
 			  				 + COLUMN_PARENT + " text, "
 			  				 + COLUMN_LAST_UPDATE + " integer, "
 			  				 + COLUMN_LAST_CHECK + " integer, "
@@ -486,6 +486,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 		database.insertOrThrow(TABLE_NOVEL_CONTENT, null, cv);
 		database.close();
+		
+		// TODO: insert images to db 
 		
 		content = getNovelContent(content.getPage());
 

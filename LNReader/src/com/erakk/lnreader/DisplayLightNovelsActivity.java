@@ -204,7 +204,7 @@ public class DisplayLightNovelsActivity extends ListActivity{
 				}
 				else {
 					publishProgress("Loading Novel List");
-					return new AsyncTaskResult<ArrayList<PageModel>>(NovelsDao.getNovels(refresh));
+					return new AsyncTaskResult<ArrayList<PageModel>>(NovelsDao.getNovels());
 				}
 				//return new AsyncTaskResult<ArrayList<PageModel>>(listItems);
 			} catch (Exception e) {
