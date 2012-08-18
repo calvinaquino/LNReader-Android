@@ -211,7 +211,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		return page;
 	}
 		
-	@SuppressWarnings("deprecation")
 	public String insertOrUpdatePageModel(PageModel page){
 		Log.d(TAG, page.toString());
 		
@@ -259,7 +258,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	    return page;
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void insertNovelDetails(NovelCollectionModel novelDetails){
 		database = this.getWritableDatabase();
 		Log.d(TAG, "Inserting Novel Details: " + novelDetails.toString());
@@ -373,7 +371,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		return novelDetails;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void insertImage(ImageModel image){
 		database = this.getWritableDatabase();
 		Log.d(TAG, "Inserting Images: " + image.getName());

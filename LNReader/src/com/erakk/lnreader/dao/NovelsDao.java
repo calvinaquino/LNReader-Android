@@ -3,27 +3,20 @@
  */
 package com.erakk.lnreader.dao;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
-import org.jsoup.Jsoup;
 import org.jsoup.Connection.Response;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.DownloadFileTask;
-import com.erakk.lnreader.helper.DownloadPageTask;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;

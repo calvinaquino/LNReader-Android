@@ -9,12 +9,9 @@ import java.util.Date;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Environment;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.helper.AsyncTaskResult;
-import com.erakk.lnreader.helper.DownloadImageTask;
 
 public class NovelCollectionModel {
 	private int id;

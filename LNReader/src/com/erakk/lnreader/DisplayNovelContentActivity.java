@@ -1,17 +1,11 @@
 package com.erakk.lnreader;
 
-import com.erakk.lnreader.dao.NovelsDao;
-import com.erakk.lnreader.helper.AsyncTaskResult;
-import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
-import com.erakk.lnreader.model.NovelCollectionModel;
-import com.erakk.lnreader.model.NovelContentModel;
-import com.erakk.lnreader.model.PageModel;
-
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,7 +13,12 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.support.v4.app.NavUtils;
+
+import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
+import com.erakk.lnreader.model.NovelContentModel;
+import com.erakk.lnreader.model.PageModel;
 
 @SuppressLint("NewApi")
 public class DisplayNovelContentActivity extends Activity {

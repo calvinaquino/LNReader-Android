@@ -1,29 +1,24 @@
 package com.erakk.lnreader;
 
-import java.net.URL;
-
-import com.erakk.lnreader.dao.NovelsDao;
-import com.erakk.lnreader.helper.AsyncTaskResult;
-import com.erakk.lnreader.helper.DownloadFileTask;
-import com.erakk.lnreader.model.ImageModel;
-import com.erakk.lnreader.model.NovelContentModel;
-
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.webkit.WebView;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.model.ImageModel;
+
 public class DisplayImageActivity extends Activity {
 	
-	WebView imgView;
+	WebView imgWebView;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,9 +28,11 @@ public class DisplayImageActivity extends Activity {
         Intent intent = getIntent();
         String url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
         
-        imgView = (WebView) findViewById(R.id.webView1);
-        imgView.getSettings().setAllowFileAccess(true);
-        imgView.getSettings().setBuiltInZoomControls(true);
+        imgWebView = (WebView) findViewById(R.id.webView1);
+        imgWebView.getSettings().setAllowFileAccess(true);
+        imgWebView.getSettings().setBuiltInZoomControls(true);
+        imgWebView.getSettings().setLoadWithOverviewMode(true);
+        imgWebView.getSettings().setUseWideViewPort(true);
         
         new LoadImageTask().execute(new String[] {url});
         
@@ -89,9 +86,9 @@ public class DisplayImageActivity extends Activity {
 		protected void onPostExecute(AsyncTaskResult<ImageModel> result) {
 			Exception e = result.getError();
 			if(e == null) {
-				imgView = (WebView) findViewById(R.id.webView1);
+				imgWebView = (WebView) findViewById(R.id.webView1);
 				String imageUrl = "file:///" + result.getResult().getPath(); 
-				imgView.loadUrl(imageUrl);
+				imgWebView.loadUrl(imageUrl);
 				Log.d("LoadImageTask", "Loading: " + imageUrl);
 			}
 			else{

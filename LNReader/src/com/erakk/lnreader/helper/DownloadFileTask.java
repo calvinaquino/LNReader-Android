@@ -10,15 +10,11 @@ import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.Date;
 
-import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.dao.NovelsDao;
-import com.erakk.lnreader.model.ImageModel;
-
 import android.os.AsyncTask;
-import android.os.Environment;
-import android.provider.ContactsContract.Directory;
-import android.text.Html;
 import android.util.Log;
+
+import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.model.ImageModel;
 
 public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<ImageModel>> {
 	private static final String TAG = DownloadFileTask.class.toString();

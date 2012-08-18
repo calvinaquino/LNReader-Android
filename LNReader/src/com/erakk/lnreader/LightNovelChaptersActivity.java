@@ -172,7 +172,7 @@ public class LightNovelChaptersActivity extends Activity {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+		//AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 		//String[] names = getResources().getStringArray(R.array.novel_context_menu);
 		switch(item.getItemId()) {
 		//Volume cases

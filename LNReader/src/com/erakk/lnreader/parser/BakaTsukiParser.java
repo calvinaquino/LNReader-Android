@@ -6,7 +6,6 @@ package com.erakk.lnreader.parser;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,9 +16,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import android.os.Environment;
 import android.util.Log;
-import android.widget.ImageButton;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.model.BookModel;
