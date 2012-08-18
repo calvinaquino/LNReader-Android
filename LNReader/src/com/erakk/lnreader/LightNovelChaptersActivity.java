@@ -19,7 +19,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnLongClickListener;
 import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -57,7 +56,6 @@ public class LightNovelChaptersActivity extends Activity {
         page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
         page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
         setContentView(R.layout.activity_light_novel_chapters);
-                
         getActionBar().setDisplayHomeAsUpEnabled(true);
         
         //View NovelView = findViewById(R.id.ligh_novel_chapter_screen);
@@ -85,16 +83,6 @@ public class LightNovelChaptersActivity extends Activity {
         
         // setup listener
         ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
-        ExpandList.setOnLongClickListener(new OnLongClickListener() {
-			
-			@Override
-			public boolean onLongClick(View v) {
-				// TODO Auto-generated method stub
-				Toast t = Toast.makeText(LightNovelChaptersActivity.this, "Long Click", Toast.LENGTH_SHORT);
-				t.show();
-				return false;
-			}
-		});
         ExpandList.setOnChildClickListener(new OnChildClickListener() {
 			
 			@Override
@@ -153,7 +141,7 @@ public class LightNovelChaptersActivity extends Activity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		MenuInflater inflater = getMenuInflater();
-
+		Toast t = Toast.makeText(LightNovelChaptersActivity.this, "onCreateContextMenu", Toast.LENGTH_SHORT);
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
 		if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
@@ -268,7 +256,7 @@ public class LightNovelChaptersActivity extends Activity {
 				tv.setVisibility(TextView.GONE);
 				pb.setActivated(false);
 				pb.setVisibility(ProgressBar.GONE);
-				
+
 				ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
 				
 				// Prepare header
