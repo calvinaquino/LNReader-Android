@@ -482,7 +482,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		
 		content = getNovelContent(content.getPage());
 
-		Log.d(TAG, "Complete Insert Novel Content: " + content.getPage());
+		Log.d(TAG, "Complete Insert Novel Content: " + content.getPage() + " id: " + content.getId());
 		return content;
 	}
 	
@@ -499,8 +499,9 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	break;
 	    }
 		database.close();
-		
-		Log.d(TAG, "Complete Selecting Novel Content");
+		if(content == null) {
+			Log.d(TAG, "Not Found Novel Content: " + page);
+		}		
 		return content;
 	}
 
