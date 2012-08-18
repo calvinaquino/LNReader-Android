@@ -25,8 +25,8 @@
     </PreferenceCategory>
  
     <PreferenceCategory
-        android:title="Text and Images"
-        android:key="text_and_Images_category">
+        android:title="layout_preferences"
+        android:key="layout_category">
  
         <CheckBoxPreference
             android:key="invert_colors"
@@ -34,7 +34,18 @@
             android:title="Invert Colors"
             android:defaultValue="false"
         />
-        
+        <CheckBoxPreference
+            android:key="lock_horizontal"
+            android:summary="Enters horizontal orientation and locks the orientation"
+            android:title="Lock for Horizontal"
+            android:defaultValue="false"
+        />
+        <CheckBoxPreference
+            android:key="show_images"
+            android:summary="Controls if images are displayed or not (performance)"
+            android:title="Show Images"
+            android:defaultValue="true"
+        /> 
  
     </PreferenceCategory>
      <PreferenceCategory
@@ -44,12 +55,7 @@
         <Preference
             android:key="clear_database"
             android:summary="Erases light novel database"
-            android:title="Clear Database"
-        />
-        <Preference
-            android:key="clear_cache"
-            android:summary="Clears cached novels"
-            android:title="Clear Cache"
+            android:title="Clear Novel Database"
         />
         <Preference
             android:key="clear_image_cache"

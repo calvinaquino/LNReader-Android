@@ -21,5 +21,7 @@
     <string name="download_chapter">Download Chapters</string>
     <string name="view_synopsys">View Synopsys</string>
     <string name="title_activity_display_novel_content">DisplayNovelContent</string>
+    <string name="invert_colors">Invert Colors</string>
+    
 
 </resources>

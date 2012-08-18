@@ -46,6 +46,42 @@ public class DisplayNovelContentActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.menu_settings:
+			Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
+			startActivity(launchNewIntent);
+			return true;
+		case R.id.menu_refresh_chapter_content:
+			
+			/*
+			 * Implement code to refresh chapter content
+			 */
+			
+			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
+			return true;
+		case R.id.invert_colors:
+			
+			/*
+			 * Implement code to invert colors
+			 */
+			
+			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
+			return true;
+		case R.id.menu_chapter_previous:
+			
+			/*
+			 * Implement code to move to previous chapter
+			 */
+			
+			Toast.makeText(getApplicationContext(), "Go previous", Toast.LENGTH_SHORT).show();
+			return true;
+		case R.id.menu_chapter_next:
+			
+			/*
+			 * Implement code to move to next chapter
+			 */
+			
+			Toast.makeText(getApplicationContext(), "Go next", Toast.LENGTH_SHORT).show();
+			return true;
 		case android.R.id.home:
 			NavUtils.navigateUpFromSameTask(this);
 			return true;

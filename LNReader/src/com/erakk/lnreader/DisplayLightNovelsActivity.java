@@ -110,7 +110,20 @@ public class DisplayLightNovelsActivity extends ListActivity {
 			startActivity(launchNewIntent);
 			return true;
 		case R.id.menu_refresh_novel_list:
+			
+			/*
+			 * Implement code to refresh novel list
+			 */
+			
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
+			return true;
+		case R.id.invert_colors:
+			
+			/*
+			 * Implement code to invert colors
+			 */
+			
+			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
 			return true;
 		case android.R.id.home:
 			NavUtils.navigateUpFromSameTask(this);
@@ -131,38 +144,25 @@ public class DisplayLightNovelsActivity extends ListActivity {
 		//String[] names = getResources().getStringArray(R.array.novel_context_menu);
 		switch(item.getItemId()) {
 		case R.id.add_to_watch:
+			
+			/*
+			 * Implement code to toggle watch of this novel
+			 */
+			
 			Toast.makeText(this, "Added to Watch List",
 					Toast.LENGTH_SHORT).show();
 			return true;
-		case R.id.download_chapter:
-			Toast.makeText(this, "Downloading Chapters",
+		case R.id.download_novel:
+			
+			/*
+			 * Implement code to download entire novel
+			 */
+			
+			Toast.makeText(this, "Downloading Novel",
 					Toast.LENGTH_SHORT).show();
-			return true;
-		case R.id.view_synopsys:
-			Toast.makeText(this, "Viewing Synopsys",
-					Toast.LENGTH_SHORT).show();
-			PageModel o = adapter.getItem(info.position);
-			String novel = o.toString();
-			Intent intent = new Intent(this, DisplaySynopsisActivity.class);
-			intent.putExtra(Constants.EXTRA_MESSAGE, novel);
-			intent.putExtra(Constants.EXTRA_PAGE, o.getPage());
-			intent.putExtra(Constants.EXTRA_TITLE, o.getTitle());
-			startActivity(intent);
 			return true;
 		default:
 			return super.onContextItemSelected(item);
-
-			//        if(item.getItemId() == android.R.layout.activity_list_item)
-			//        {
-			//        	AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-			//           long id = getListView().getItemIdAtPosition(info.position);
-			//           Log.d(null, "Item ID at POSITION:"+id);
-			//        }
-			//        else
-			//        {
-			//            return false;
-			//        }
-			//        return true;
 		}
 	}
 	

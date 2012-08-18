@@ -25,22 +25,22 @@ public class DisplaySettingsActivity extends PreferenceActivity {
       //This man is deprecated but...
         addPreferencesFromResource(R.xml.preferences);
         
-        Preference clearCache = (Preference)  findPreference("clear_cache");
-        clearCache.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-        	@Override
-            public boolean onPreferenceClick(Preference p) {
-                // TODO stuff              
-        		
-        		/*
-        		 * CODE TO CLEAR CACHE HERE
-        		 */
-        		
-        		Toast t = Toast.makeText(getApplicationContext(), "Cache cleared!", Toast.LENGTH_LONG);
-    			t.show();		
-        		
-                return true;
-            }
-        });
+//        Preference clearCache = (Preference)  findPreference("clear_cache");
+//        clearCache.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+//        	@Override
+//            public boolean onPreferenceClick(Preference p) {
+//                // TODO stuff              
+//        		
+//        		/*
+//        		 * CODE TO CLEAR CACHE HERE
+//        		 */
+//        		
+//        		Toast t = Toast.makeText(getApplicationContext(), "Cache cleared!", Toast.LENGTH_LONG);
+//    			t.show();		
+//        		
+//                return true;
+//            }
+//        });
         Preference clearDatabase = (Preference)  findPreference("clear_database");
         clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
         	@Override

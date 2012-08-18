@@ -1,7 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menu_settings"
-        android:title="@string/menu_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
-    <item android:id="@+id/menu_refresh_novel_list" android:title="Refresh"></item>
+        android:title="@string/menu_settings" />
+    <item android:id="@+id/menu_refresh_novel_list" 
+        android:title="Refresh" />
+    <item android:id="@+id/invert_colors"
+        android:title="@string/invert_colors" />
 </menu>

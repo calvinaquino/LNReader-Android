@@ -50,11 +50,22 @@ public class MainActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         	case R.id.last_novel:
+        		
+        		/*
+        		 * Implement code to load last chapter read
+        		 */
+        		
         		Toast last = Toast.makeText(this, "Last Novel read option not implemented yet.", Toast.LENGTH_SHORT);
         		last.show();
-        		//Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
-        		//startActivity(launchNewIntent);
         		return true;
+        	case R.id.invert_colors:
+    			
+    			/*
+    			 * Implement code to invert colors
+    			 */
+    			
+    			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
+    			return true;
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;

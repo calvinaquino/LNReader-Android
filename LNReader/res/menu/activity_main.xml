@@ -3,4 +3,8 @@
         android:title="@string/last_novel"
         android:orderInCategory="100"
         android:showAsAction="never" />
+    <item android:id="@+id/invert_colors"
+        android:title="@string/invert_colors"
+        android:orderInCategory="99"
+        android:showAsAction="never" />
 </menu>

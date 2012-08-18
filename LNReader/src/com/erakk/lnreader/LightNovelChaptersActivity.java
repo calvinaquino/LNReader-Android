@@ -2,7 +2,6 @@ package com.erakk.lnreader;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.zip.Inflater;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -13,13 +12,15 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageView;
@@ -55,20 +56,11 @@ public class LightNovelChaptersActivity extends Activity {
         PageModel page = new PageModel(); 
         page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
         page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
-        
         setContentView(R.layout.activity_light_novel_chapters);
                 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         
         //View NovelView = findViewById(R.id.ligh_novel_chapter_screen);
-        
-//        LayoutInflater layoutInflater = (LayoutInflater)LightNovelChaptersActivity.this.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-//        Log.d("LayoutInflater", "Gone through1");
-//        RelativeLayout headerLayout = (RelativeLayout)layoutInflater.inflate(R.id.ligh_novel_chapter_screen_header ,null, false);
-//        Log.d("LayoutInflater", "Gone through2");
-//        ((ExpandableListView) NovelView).addHeaderView( headerLayout );
-//        Log.d("LayoutInflater", "Gone through3");
-        
         // get the textView
         
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -93,6 +85,16 @@ public class LightNovelChaptersActivity extends Activity {
         
         // setup listener
         ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
+        ExpandList.setOnLongClickListener(new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View v) {
+				// TODO Auto-generated method stub
+				Toast t = Toast.makeText(LightNovelChaptersActivity.this, "Long Click", Toast.LENGTH_SHORT);
+				t.show();
+				return false;
+			}
+		});
         ExpandList.setOnChildClickListener(new OnChildClickListener() {
 			
 			@Override
@@ -125,12 +127,109 @@ public class LightNovelChaptersActivity extends Activity {
     		Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
     		startActivity(launchNewIntent);
     		return true;
+    	case R.id.menu_refresh_chapter_list:
+			
+			/*
+			 * Implement code to refresh chapter/synopsis list
+			 */
+			
+			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
+			return true;
+		case R.id.invert_colors:
+			
+			/*
+			 * Implement code to invert colors
+			 */
+			
+			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
+			return true;
         case android.R.id.home:
             NavUtils.navigateUpFromSameTask(this);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+    
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		MenuInflater inflater = getMenuInflater();
+
+		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
+		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
+		if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+//		if (v == findViewById(R.layout.expandvolume_list_item)) {
+			inflater.inflate(R.menu.synopsys_volume_context_menu, menu);
+		} else if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+//		} else if (v == findViewById(R.layout.expandchapter_list_item)) {
+			inflater.inflate(R.menu.synopsys_chapter_context_menu, menu);
+		}
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+		//String[] names = getResources().getStringArray(R.array.novel_context_menu);
+		switch(item.getItemId()) {
+		//Volume cases
+		case R.id.download_volume:
+			
+			/*
+			 * Implement code to download this volume
+			 */
+			
+			Toast.makeText(this, "Download this Volume",
+					Toast.LENGTH_SHORT).show();
+			return true;
+		case R.id.clear_volume:
+			
+			/*
+			 * Implement code to clear this volume cache
+			 */
+			
+			Toast.makeText(this, "Clear this Volume",
+					Toast.LENGTH_SHORT).show();
+			return true;
+		case R.id.mark_volume:
+			
+			/*
+			 * Implement code to mark entire volume as read
+			 */
+			
+			Toast.makeText(this, "Mark Volume as Read",
+					Toast.LENGTH_SHORT).show();
+			return true;
+		//Chapter cases
+		case R.id.download_chapter:
+			
+			/*
+			 * Implement code to download this chapter
+			 */
+			
+			Toast.makeText(this, "Download this chapter",
+					Toast.LENGTH_SHORT).show();
+			return true;
+		case R.id.clear_chapter:
+			
+			/*
+			 * Implement code to clear this chapter cache
+			 */
+			
+			Toast.makeText(this, "Clear this Chapter",
+					Toast.LENGTH_SHORT).show();
+			return true;
+		case R.id.mark_read:
+			
+			/*
+			 * Implement code to mark this chapter read
+			 */
+			
+			Toast.makeText(this, "Mark as Read",
+					Toast.LENGTH_SHORT).show();
+			return true;
+		default:
+			return super.onContextItemSelected(item);
+		}
+	}
     
     public class LoadNovelDetailsTask extends AsyncTask<PageModel, ProgressBar, AsyncTaskResult<NovelCollectionModel>> {
 

@@ -1,9 +1,7 @@
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
+      <item android:id="@+id/download_novel"
+            android:title="Download Novel" />
       <item android:id="@+id/add_to_watch"
-              android:title="@string/add_to_watch" />
-      <item android:id="@+id/download_chapter"
-            android:title="@string/download_chapter" />
-      <item android:id="@+id/view_synopsys"
-            android:title="@string/view_synopsys" />
+              android:title="Add to Watch List" />
 </menu>
