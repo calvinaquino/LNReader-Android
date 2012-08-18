@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v4.app.NavUtils;
 
@@ -32,7 +33,8 @@ public class DisplayNovelContentActivity extends Activity {
 		PageModel page = new PageModel(); 
 		page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
 		page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
-
+		
+		ToggleProgressBar(true);
 		new LoadNovelContentTask().execute(new PageModel[] {page});
 	}
 
@@ -88,6 +90,30 @@ public class DisplayNovelContentActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	@SuppressLint("NewApi")
+	private void ToggleProgressBar(boolean show) {
+		ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
+		TextView tv = (TextView) findViewById(R.id.loading);
+		if(show) {
+			Toast t = Toast.makeText(getApplicationContext(),"start progress bar", Toast.LENGTH_SHORT);
+			t.show();
+			pb.setIndeterminate(true);
+			pb.setActivated(true);
+			pb.animate();
+			pb.setVisibility(ProgressBar.VISIBLE);
+		
+			tv.setText("Loading...");
+			tv.setVisibility(TextView.VISIBLE);
+		}
+		else {
+			Toast t = Toast.makeText(getApplicationContext(),"end progress bar", Toast.LENGTH_SHORT);
+			t.show();
+			pb.setVisibility(ProgressBar.GONE);			
+			tv.setVisibility(TextView.GONE);
+		}
+	}
+	
 	public class LoadNovelContentTask extends AsyncTask<PageModel, ProgressBar, AsyncTaskResult<NovelContentModel>> {
 
 		@Override
@@ -123,6 +149,7 @@ public class DisplayNovelContentActivity extends Activity {
 				Toast t = Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT);
 				t.show();
 			}
+			ToggleProgressBar(false);
 		}
 	}
 

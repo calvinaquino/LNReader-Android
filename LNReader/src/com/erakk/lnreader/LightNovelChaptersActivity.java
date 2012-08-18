@@ -58,6 +58,7 @@ public class LightNovelChaptersActivity extends Activity {
         setContentView(R.layout.activity_light_novel_chapters);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         
+        
         //View NovelView = findViewById(R.id.ligh_novel_chapter_screen);
         // get the textView
         
@@ -80,9 +81,20 @@ public class LightNovelChaptersActivity extends Activity {
 			Toast t = Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
 			t.show();					
 		}
-        
+      
         // setup listener
         ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
+//        ExpandList.setLongClickable(true);
+//        ExpandList.setOnLongClickListener(new OnLongClickListener() {
+//			
+//			@Override
+//			public boolean onLongClick(View v) {
+//				// TODO Auto-generated method stub
+//				Toast t = Toast.makeText(LightNovelChaptersActivity.this, "longClick", Toast.LENGTH_SHORT);
+//				t.show();
+//				return false;
+//			}
+//		});
         ExpandList.setOnChildClickListener(new OnChildClickListener() {
 			
 			@Override

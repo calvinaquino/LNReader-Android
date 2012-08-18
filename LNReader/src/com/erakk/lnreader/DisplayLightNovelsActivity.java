@@ -60,13 +60,13 @@ public class DisplayLightNovelsActivity extends ListActivity {
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
 
-		View NovelView = findViewById(R.id.light_novel_list_screen);
+		//View NovelView = findViewById(R.id.light_novel_list_screen);
 
 		if (invertColors == true) {
 			//NovelList.setBackgroundColor(Color.TRANSPARENT);
 			//ListText.setTextColor(Color.WHITE);
 			//isWatched
-			NovelView.setBackgroundColor(Color.BLACK);
+			//NovelView.setBackgroundColor(Color.BLACK);
 
 		}
 		try {

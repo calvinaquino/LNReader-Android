@@ -28,7 +28,7 @@
 		    
 			
 		</RelativeLayout>
-
+		<!-- android:id="@+id/chapter_list" -->
 	<ExpandableListView
 	    android:id="@+id/chapter_list"
 	    android:layout_width="match_parent"
