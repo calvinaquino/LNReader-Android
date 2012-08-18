@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -50,26 +52,18 @@ public class DisplayLightNovelsActivity extends ListActivity{
 		Intent intent = getIntent();
 		onlyWatched = intent.getExtras().getBoolean(Constants.EXTRA_ONLY_WATCHED);
 
-		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
-
-		//View NovelView = findViewById(R.id.light_novel_list_screen);
-
-		if (invertColors == true) {
-			//NovelList.setBackgroundColor(Color.TRANSPARENT);
-			//ListText.setTextColor(Color.WHITE);
-			//isWatched
-			//NovelView.setBackgroundColor(Color.BLACK);
-		}
-		try {
-			adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
-			new LoadNovelsTask().execute(new boolean[] {false});
-			setListAdapter(adapter);
-		} catch (Exception e) {
-			e.printStackTrace();
-			Toast t = Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
-			t.show();					
-		}
+		//Encapsulated in updateContent
+//		try {
+//			adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
+//			new LoadNovelsTask().execute(new boolean[] {false});
+//			setListAdapter(adapter);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			Toast t = Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
+//			t.show();					
+//		}
+		updateContent ();
+		
 		if(onlyWatched){
 			setTitle("Watched Light Novels");
 		}
@@ -98,6 +92,13 @@ public class DisplayLightNovelsActivity extends ListActivity{
 		getMenuInflater().inflate(R.menu.activity_display_light_novels, menu);
 		return true;
 	}
+	
+	@Override
+    protected void onResume() {
+        super.onResume();
+        // The activity has become visible (it is now "resumed").
+        updateViewColor();
+    }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -111,14 +112,15 @@ public class DisplayLightNovelsActivity extends ListActivity{
 			/*
 			 * Implement code to refresh novel list
 			 */
+			updateContent();
 			
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.invert_colors:
 			
-			/*
-			 * Implement code to invert colors
-			 */
+			toggleColorPref();
+    		updateViewColor();
+			updateContent();
 			
 			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
 			return true;
@@ -163,6 +165,21 @@ public class DisplayLightNovelsActivity extends ListActivity{
 		}
 	}
 	
+	private void updateContent () {
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
+		try {
+			if (invertColors)adapter = new PageModelAdapter(this, R.layout.novel_list_item_black, listItems);
+			else adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
+			new LoadNovelsTask().execute(new boolean[] {false});
+			setListAdapter(adapter);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Toast t = Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
+			t.show();					
+		}
+	}
+	
 	@SuppressLint("NewApi")
 	private void ToggleProgressBar(boolean show) {
 		ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
@@ -179,10 +196,44 @@ public class DisplayLightNovelsActivity extends ListActivity{
 		}
 		else {
 			pb.setVisibility(ProgressBar.GONE);			
-			tv.setVisibility(TextView.GONE);
+			tv.setVisibility(TextView.INVISIBLE);
 		}
 	}
-
+	
+	private void toggleColorPref () { 
+    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	SharedPreferences.Editor editor = sharedPrefs.edit();
+    	if (sharedPrefs.getBoolean("invert_colors", false)) {
+    		editor.putBoolean("invert_colors", false);
+    	}
+    	else {
+    		editor.putBoolean("invert_colors", true);
+    	}
+    	editor.commit();
+    	//Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+    }
+    
+    private void updateViewColor() {
+    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
+    	
+    	// Views to be changed
+        View MainView = findViewById(R.id.light_novel_list_screen);
+        
+        // it is considered white background and black text to be the standard
+        // so we change to black background and white text if true
+        if (invertColors == true) {
+        	MainView.setBackgroundColor(Color.BLACK);
+        	adapter = new PageModelAdapter(this, R.layout.novel_list_item_black, listItems);
+//        	NovelNames.setTextColor(Color.WHITE);
+        }
+        else {
+        	MainView.setBackgroundColor(Color.WHITE);
+        	adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
+//        	NovelNames.setTextColor(Color.BLACK);
+        }
+    }
+	
 	@SuppressLint("NewApi")
 	public class LoadNovelsTask extends AsyncTask<boolean[], String, AsyncTaskResult<ArrayList<PageModel>>> {
 
@@ -223,15 +274,22 @@ public class DisplayLightNovelsActivity extends ListActivity{
 		protected void onPostExecute(AsyncTaskResult<ArrayList<PageModel>> result) {
 			//executed on UI thread.
 			ArrayList<PageModel> list = result.getResult();
-			if(list != null) adapter.addAll(list);
+			if(list != null) {
+				adapter.addAll(list);
+				ToggleProgressBar(false);
+				if (list.size() == 0 || onlyWatched) {
+					// Show message if watch list is empty
+					TextView tv = (TextView) findViewById(R.id.loading);
+					tv.setVisibility(TextView.VISIBLE);
+					tv.setText("Watch List is empty.");
+				}
+			}
 			if(result.getError() != null) {
 				Exception e = result.getError();
 				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 				
 				Log.e(this.getClass().toString(), e.getClass().toString() + ": " + e.getMessage());
 			}
-			
-			ToggleProgressBar(false);
 		}    	 
 	}
 }

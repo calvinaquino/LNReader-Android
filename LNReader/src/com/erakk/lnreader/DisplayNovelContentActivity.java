@@ -105,7 +105,7 @@ public class DisplayNovelContentActivity extends Activity {
 		
 			tv.setText("Loading...");
 			tv.setVisibility(TextView.VISIBLE);
-		}
+		} 
 		else {
 			pb.setVisibility(ProgressBar.GONE);			
 			tv.setVisibility(TextView.GONE);

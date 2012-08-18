@@ -25,7 +25,7 @@
     </PreferenceCategory>
  
     <PreferenceCategory
-        android:title="layout_preferences"
+        android:title="Layout Preferences"
         android:key="layout_category">
  
         <CheckBoxPreference

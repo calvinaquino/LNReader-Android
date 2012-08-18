@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,25 +23,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
-
-        View MainView = findViewById(R.id.main_screen);
-        Button Button1 = (Button)findViewById(R.id.button1);
-        Button Button2 = (Button)findViewById(R.id.button2);
-        Button Button3 = (Button)findViewById(R.id.button3);
-        
-        if (invertColors == true) {
-        	MainView.setBackgroundColor(Color.BLACK);
-        	Button1.setTextColor(Color.WHITE);
-        	Button1.setBackgroundColor(Color.DKGRAY);
-        	Button2.setTextColor(Color.WHITE);
-        	Button2.setBackgroundColor(Color.DKGRAY);
-        	Button3.setTextColor(Color.WHITE);
-        	Button3.setBackgroundColor(Color.DKGRAY);
-        	
-        }
-        
         // Setup db context
         NovelsDao.context = this;
     }
@@ -49,6 +31,13 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
+    }
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // The activity has become visible (it is now "resumed").
+        updateViewColor();
     }
     
     @Override
@@ -65,9 +54,8 @@ public class MainActivity extends Activity {
         		return true;
         	case R.id.invert_colors:
     			
-    			/*
-    			 * Implement code to invert colors
-    			 */
+        		toggleColorPref();
+        		updateViewColor();
     			
     			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
     			return true;
@@ -76,6 +64,51 @@ public class MainActivity extends Activity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    
+    private void toggleColorPref () { 
+    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	SharedPreferences.Editor editor = sharedPrefs.edit();
+    	if (sharedPrefs.getBoolean("invert_colors", false)) {
+    		editor.putBoolean("invert_colors", false);
+    	}
+    	else {
+    		editor.putBoolean("invert_colors", true);
+    	}
+    	editor.commit();
+    	//Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+    }
+    
+    private void updateViewColor() {
+    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
+    	
+    	// Views to be changed
+        View MainView = findViewById(R.id.main_screen);
+        Button Button1 = (Button)findViewById(R.id.button1);
+        Button Button2 = (Button)findViewById(R.id.button2);
+        Button Button3 = (Button)findViewById(R.id.button3);
+        
+        // it is considered white background and black text to be the standard
+        // so we change to black background and white text if true
+        if (invertColors == true) {
+        	MainView.setBackgroundColor(Color.BLACK);
+        	Button1.setTextColor(Color.WHITE);
+        	Button1.setBackgroundColor(Color.DKGRAY);
+        	Button2.setTextColor(Color.WHITE);
+        	Button2.setBackgroundColor(Color.DKGRAY);
+        	Button3.setTextColor(Color.WHITE);
+        	Button3.setBackgroundColor(Color.DKGRAY);
+        }
+        else {
+        	MainView.setBackgroundColor(Color.WHITE);
+        	Button1.setTextColor(Color.BLACK);
+        	Button1.setBackgroundColor(Color.LTGRAY);
+        	Button2.setTextColor(Color.BLACK);
+        	Button2.setBackgroundColor(Color.LTGRAY);
+        	Button3.setTextColor(Color.BLACK);
+        	Button3.setBackgroundColor(Color.LTGRAY);
+        }
     }
     
     public void openNovelList(View view) {

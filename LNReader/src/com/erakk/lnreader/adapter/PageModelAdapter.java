@@ -9,6 +9,8 @@ import com.erakk.lnreader.model.PageModel;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +51,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			final PageModel page = data.get(position);
 			LayoutInflater inflater = ((Activity)context).getLayoutInflater();
 			row = inflater.inflate(layoutResourceId, parent, false);
-
+			
 			holder = new PageModelHolder();
 			holder.txtNovel = (TextView)row.findViewById(R.id.novel_name);
 			holder.chkIsWatched = (CheckBox)row.findViewById(R.id.novel_is_watched);
@@ -89,4 +91,5 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		TextView txtNovel;
 		CheckBox chkIsWatched;
 	}
+
 }

@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -56,18 +57,7 @@ public class LightNovelChaptersActivity extends Activity {
         page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
         page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
         setContentView(R.layout.activity_light_novel_chapters);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
-        
-        if (invertColors == true) {
-        	/*textViewSynopsys.setBackgroundColor(Color.TRANSPARENT);
-        	textViewSynopsys.setTextColor(Color.WHITE);
-        	textViewTitle.setBackgroundColor(Color.TRANSPARENT);
-        	textViewTitle.setTextColor(Color.WHITE);
-        	NovelView.setBackgroundColor(Color.BLACK);*/
-        }        
+        getActionBar().setDisplayHomeAsUpEnabled(true);   
         
         //dao = new NovelsDao(this);
         new LoadNovelDetailsTask().execute(new PageModel[] {page});
@@ -78,9 +68,19 @@ public class LightNovelChaptersActivity extends Activity {
         ExpandList.setOnItemLongClickListener(new OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                int groupPosition = ExpandableListView.getPackedPositionGroup(id);
+                int childPosition = ExpandableListView.getPackedPositionChild(id);
                 if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
-                    int groupPosition = ExpandableListView.getPackedPositionGroup(id);
-                    int childPosition = ExpandableListView.getPackedPositionChild(id);
+
+                    // You now have everything that you would as if this was an OnChildClickListener() 
+                    // Add your logic here.
+                    PageModel page = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
+                    Toast.makeText(LightNovelChaptersActivity.this, "longClick: " + page.getTitle(), Toast.LENGTH_SHORT).show();
+
+                    // Return true as we are handling the event.
+                    return true;
+                }
+                else if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
 
                     // You now have everything that you would as if this was an OnChildClickListener() 
                     // Add your logic here.
@@ -142,6 +142,8 @@ public class LightNovelChaptersActivity extends Activity {
 			/*
 			 * Implement code to invert colors
 			 */
+			toggleColorPref();
+			updateViewColor();
 			
 			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
 			return true;
@@ -232,6 +234,38 @@ public class LightNovelChaptersActivity extends Activity {
 			return super.onContextItemSelected(item);
 		}
 	}
+	
+	private void toggleColorPref () { 
+    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	SharedPreferences.Editor editor = sharedPrefs.edit();
+    	if (sharedPrefs.getBoolean("invert_colors", false)) {
+    		editor.putBoolean("invert_colors", false);
+    	}
+    	else {
+    		editor.putBoolean("invert_colors", true);
+    	}
+    	editor.commit();
+    	//Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+    }
+    
+    private void updateViewColor() {
+    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
+    	
+    	// Views to be changed
+//        View MainView = findViewById(R.id.main_screen);
+        
+        // it is considered white background and black text to be the standard
+        // so we change to black background and white text if true
+        if (invertColors == true) {
+//        	MainView.setBackgroundColor(Color.BLACK);
+//        	Button1.setTextColor(Color.WHITE);
+        }
+        else {
+//        	MainView.setBackgroundColor(Color.WHITE);
+//        	Button1.setTextColor(Color.BLACK);
+        }
+    }
 	
 	@SuppressLint("NewApi")
 	private void ToggleProgressBar(boolean show) {
