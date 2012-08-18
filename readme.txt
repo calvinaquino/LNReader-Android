@@ -7,14 +7,14 @@ JSoup (Nandaka)
 Git Config: https://help.github.com/articles/dealing-with-line-endings
 Eclipse Config: http://stackoverflow.com/questions/1886185/eclipse-and-windows-newlines
 
-//WARNING
-Sometimes loading a novel (entering chapter activity crashes - SOMEtimes)
-check PageModel, may be picking all chapters of the novel instead of chapters per volume =P
+//WARNING - updated
+Sometimes loading a novel gives CalledFromWrongThreadException (this may be my fault but i couldnt detectd)
+I can't register the ExpandList for contextMenu. it allways crashes... do you have any idea?
 
 
 //TODO:
 get LN chapters and update info - Working
-Download and save - Working
+Download and save - DONE
 Remodel UI - Working
 Create icons,change colors. - Colors working/Icons later
 MAYBE Rename work. - Baka-Tsuki Reader / TsukiReader or another
