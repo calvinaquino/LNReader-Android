@@ -80,7 +80,11 @@ public class NovelsDao {
 
 	}
 	
-	public PageModel getPageModelFromInternet(String page) throws Exception {
+	public static PageModel getPageModel(String page) {
+		return dbh.getPageModel(page);
+	}
+	
+	public static PageModel getPageModelFromInternet(String page) throws Exception {
 		Response response = Jsoup.connect("http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&titles=" + page)
 				 .timeout(60000)
 				 .execute();
@@ -174,8 +178,8 @@ public class NovelsDao {
 		return content;
 	}
 
-	public void updatePageModel(PageModel page) {
-		dbh.insertOrUpdatePageModel(page);		
+	public PageModel updatePageModel(PageModel page) {
+		return dbh.insertOrUpdatePageModel(page);		
 	}
 	
 	public ArrayList<PageModel> getWatchedNovel() {

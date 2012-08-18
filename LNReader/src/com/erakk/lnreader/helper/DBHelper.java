@@ -216,7 +216,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		return page;
 	}
 		
-	public String insertOrUpdatePageModel(PageModel page){
+	public PageModel insertOrUpdatePageModel(PageModel page){
 		Log.d(TAG, page.toString());
 		
 		PageModel temp = selectFirstBy(COLUMN_PAGE, page.getPage());
@@ -246,8 +246,11 @@ public class DBHelper extends SQLiteOpenHelper {
 			database.update(TABLE_PAGE, cv, "page = ?", new String[] {page.getPage()});
 			Log.d(TAG, "Updating: " + page.toString());
 		}
+		
+		// get the updated data.
+		page = getPageModel(page.getPage());
 		database.close();
-		return page.getPage();
+		return page;
 	}
 	
 	private PageModel cursorTopage(Cursor cursor) {
@@ -263,8 +266,9 @@ public class DBHelper extends SQLiteOpenHelper {
 	    return page;
 	}
 	
-	public void insertNovelDetails(NovelCollectionModel novelDetails){
+	public NovelCollectionModel insertNovelDetails(NovelCollectionModel novelDetails){
 		database = this.getWritableDatabase();
+		//database.beginTransaction();
 		Log.d(TAG, "Inserting Novel Details: " + novelDetails.toString());
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_PAGE, novelDetails.getPage());
@@ -298,9 +302,13 @@ public class DBHelper extends SQLiteOpenHelper {
 				database.insertOrThrow(TABLE_PAGE, null, cv3);
 			}
 		}
-		
+		//database.endTransaction();
 		Log.d(TAG, "Complete Insert Novel Details: " + novelDetails.toString());
 		database.close();
+		
+		// get updated data
+		novelDetails = getNovelDetails(novelDetails.getPage());
+		return novelDetails;
 	}
 	
 	public NovelCollectionModel getNovelDetails(String page) {
@@ -349,7 +357,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    else {
 	    	Log.d(TAG, "No Data for Novel Details: " + page);
 	    }
-		//database.close();
+		database.close();
 		
 		Log.d(TAG, "Complete Selecting Novel Details: " + page);
 		return novelDetails;
@@ -376,7 +384,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		return novelDetails;
 	}
 
-	public void insertImage(ImageModel image){
+	/*
+	 * ImageModel
+	 */
+	
+	public ImageModel insertImage(ImageModel image){
 		database = this.getWritableDatabase();
 		Log.d(TAG, "Inserting Images: " + image.getName());
 		ContentValues cv = new ContentValues();
@@ -388,7 +400,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 		database.insertOrThrow(TABLE_IMAGE, null, cv);
 		Log.d(TAG, "Complete Insert Images: " + image.getName());
+		
 		database.close();
+		
+		// get updated data
+		image = getImage(image.getName());
+		return image;
 	}
 	
 	public ImageModel getImageByReferer(String url) {
@@ -443,7 +460,13 @@ public class DBHelper extends SQLiteOpenHelper {
 		return image;
 	}
 	
-	public void insertNovelContent(NovelContentModel content) {
+	
+	/*
+	 * NovelContentModel
+	 * Nested object : PageModel, lazy loading via NovelsDao
+	 */
+	
+	public NovelContentModel insertNovelContent(NovelContentModel content) {
 		database = this.getWritableDatabase();
 		Log.d(TAG, "Inserting Novel Content: " + content.getPage());
 		ContentValues cv = new ContentValues();
@@ -455,8 +478,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
 		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 		database.insertOrThrow(TABLE_NOVEL_CONTENT, null, cv);
-		Log.d(TAG, "Complete Insert Novel Content:: " + content.getPage());
 		database.close();
+		
+		content = getNovelContent(content.getPage());
+
+		Log.d(TAG, "Complete Insert Novel Content: " + content.getPage());
+		return content;
 	}
 	
 	public NovelContentModel getNovelContent(String page) {
@@ -468,12 +495,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	content = cursorToNovelContent(cursor);
-	    	Log.d(TAG, "Found: " + content.getPage());
+	    	Log.d(TAG, "Found: " + content.getPage() + " id: " + content.getId());
 	    	break;
-	    }		
-		//database.close();
+	    }
+		database.close();
 		
-		Log.d(TAG, "Complete Select: " + page);
+		Log.d(TAG, "Complete Selecting Novel Content");
 		return content;
 	}
 
@@ -482,7 +509,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		content.setId(cursor.getInt(0));
 		content.setContent(cursor.getString(1));
 		content.setPage(cursor.getString(2));
-		content.setPageModel(getPageModel(content.getPage()));
 		content.setLastXScroll(cursor.getInt(3));
 		content.setLastYScroll(cursor.getInt(4));
 		content.setLastZoom(cursor.getDouble(5));

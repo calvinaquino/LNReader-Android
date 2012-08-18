@@ -3,6 +3,8 @@ package com.erakk.lnreader.model;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.erakk.lnreader.dao.NovelsDao;
+
 public class NovelContentModel {
 	private int id;
 	private String content;
@@ -37,6 +39,9 @@ public class NovelContentModel {
 		this.page = page;
 	}
 	public PageModel getPageModel() {
+		if(this.pageModel == null) {
+			this.pageModel = NovelsDao.getPageModel(this.page); 
+		}
 		return pageModel;
 	}
 	public void setPageModel(PageModel pageModel) {
