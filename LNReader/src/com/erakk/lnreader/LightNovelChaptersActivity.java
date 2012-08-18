@@ -302,36 +302,34 @@ public class LightNovelChaptersActivity extends Activity {
 			if(e == null) {
 				novelCol = result.getResult();
 				ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
-				
-				// Prepare header
-				if(!refresh) {  
-					LayoutInflater layoutInflater = getLayoutInflater();
-					View synopsis = layoutInflater.inflate(R.layout.activity_display_synopsis, null);
-					synopsis.findViewById(R.id.loading).setVisibility(TextView.GONE);
-					synopsis.findViewById(R.id.progressBar2).setVisibility(ProgressBar.GONE);
-					
-					TextView textViewTitle = (TextView) synopsis.findViewById(R.id.title);
-					TextView textViewSynopsis = (TextView) synopsis.findViewById(R.id.synopsys);
-					textViewTitle.setTextSize(20);
-			        textViewSynopsis.setTextSize(16);         
-			        
-			        textViewTitle.setText(novelCol.getPageModel().getTitle());
-			        textViewSynopsis.setText(novelCol.getSynopsis());
-			        
-			        ImageView ImageViewCover = (ImageView) synopsis.findViewById(R.id.cover);
-			        if (novelCol.getCoverBitmap() == null) {
-						// IN app test, is returning empty bitmap
-						Toast.makeText(getApplicationContext(), "Bitmap empty", Toast.LENGTH_LONG).show();
-					}
-					else {
-						ImageViewCover.setImageBitmap(novelCol.getCoverBitmap());
-					}
-			    
-			        ExpandList.addHeaderView(synopsis);
-				}
-			    
 				// now add the volume and chapter list.
 				try {
+					// Prepare header
+					if(!refresh) {  
+						LayoutInflater layoutInflater = getLayoutInflater();
+						View synopsis = layoutInflater.inflate(R.layout.activity_display_synopsis, null);
+						synopsis.findViewById(R.id.loading).setVisibility(TextView.GONE);
+						synopsis.findViewById(R.id.progressBar2).setVisibility(ProgressBar.GONE);
+
+						TextView textViewTitle = (TextView) synopsis.findViewById(R.id.title);
+						TextView textViewSynopsis = (TextView) synopsis.findViewById(R.id.synopsys);
+						textViewTitle.setTextSize(20);
+						textViewSynopsis.setTextSize(16); 
+						textViewTitle.setText(novelCol.getPageModel().getTitle());
+						textViewSynopsis.setText(novelCol.getSynopsis());
+
+						ImageView ImageViewCover = (ImageView) synopsis.findViewById(R.id.cover);
+						if (novelCol.getCoverBitmap() == null) {
+							// IN app test, is returning empty bitmap
+							Toast.makeText(getApplicationContext(), "Bitmap empty", Toast.LENGTH_LONG).show();
+						}
+						else {
+							ImageViewCover.setImageBitmap(novelCol.getCoverBitmap());
+						}
+
+						ExpandList.addHeaderView(synopsis);
+					}
+				
 					ArrayList<ExpandListGroup> list = new ArrayList<ExpandListGroup>();
 					for(Iterator<BookModel> i = novelCol.getBookCollections().iterator(); i.hasNext();) {
 						BookModel book = i.next();

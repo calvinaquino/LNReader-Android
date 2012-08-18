@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.dao.NovelsDao;
 
 public class NovelCollectionModel {
 	private int id;
@@ -21,7 +22,10 @@ public class NovelCollectionModel {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public PageModel getPageModel() {
+	public PageModel getPageModel() throws Exception {
+		if(this.pageModel == null) {
+			this.pageModel = NovelsDao.getPageModel(this.page);
+		}		
 		return pageModel;
 	}
 	public void setPageModel(PageModel pageModel) {

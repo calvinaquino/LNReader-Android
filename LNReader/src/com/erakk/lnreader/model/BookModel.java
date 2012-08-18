@@ -5,6 +5,12 @@ import java.util.Date;
 
 public class BookModel {
 	private int id;
+	private String title;
+	private ArrayList<PageModel> chapterCollection;
+	private String page;
+	
+	private Date lastUpdate;
+	private Date lastCheck;
 	
 	public int getId() {
 		return id;
@@ -12,21 +18,12 @@ public class BookModel {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
-	private String page;
 	public String getPage() {
 		return page;
 	}
 	public void setPage(String page) {
 		this.page = page;
 	}
-	
-	private String title;
-	private ArrayList<PageModel> chapterCollection;
-	
-	private Date lastUpdate;
-	private Date lastCheck;
-	
 	public Date getLastUpdate() {
 		return lastUpdate;
 	}
