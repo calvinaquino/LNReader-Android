@@ -47,20 +47,14 @@ public class LightNovelChaptersActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        
+                
         //Get intent and message
         Intent intent = getIntent();
-        //String novel = intent.getStringExtra(DisplayLightNovelsActivity.EXTRA_MESSAGE);
         PageModel page = new PageModel(); 
         page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
         page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
         setContentView(R.layout.activity_light_novel_chapters);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        
-        
-        //View NovelView = findViewById(R.id.ligh_novel_chapter_screen);
-        // get the textView
         
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
@@ -153,7 +147,7 @@ public class LightNovelChaptersActivity extends Activity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		MenuInflater inflater = getMenuInflater();
-		Toast t = Toast.makeText(LightNovelChaptersActivity.this, "onCreateContextMenu", Toast.LENGTH_SHORT);
+		Toast.makeText(LightNovelChaptersActivity.this, "onCreateContextMenu", Toast.LENGTH_SHORT).show();
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
 		if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
@@ -231,17 +225,21 @@ public class LightNovelChaptersActivity extends Activity {
 		}
 	}
     
+	@SuppressLint("NewApi")
     public class LoadNovelDetailsTask extends AsyncTask<PageModel, ProgressBar, AsyncTaskResult<NovelCollectionModel>> {
 
-		@SuppressLint("NewApi")
 		@Override
-		protected AsyncTaskResult<NovelCollectionModel> doInBackground(PageModel... arg0) {
-			PageModel page = arg0[0];
+		protected void onPreExecute (){
+			// executed on UI thread.
 			ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
 	    	pb.setIndeterminate(true);
 	    	pb.setActivated(true);
 	    	pb.animate();
-				        
+		}
+		
+		@Override
+		protected AsyncTaskResult<NovelCollectionModel> doInBackground(PageModel... arg0) {
+			PageModel page = arg0[0];
 			try {
 				NovelCollectionModel novelCol = dao.getNovelDetails(page);
 				Log.d("LoadNovelDetailsTask", "Loaded: " + novelCol.getPage());				
@@ -253,7 +251,7 @@ public class LightNovelChaptersActivity extends Activity {
 			}
 		}
 		
-		@SuppressLint("NewApi")
+		@Override
 		protected void onPostExecute(AsyncTaskResult<NovelCollectionModel> result) {
 			ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
 			

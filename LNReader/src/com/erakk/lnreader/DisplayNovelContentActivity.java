@@ -96,8 +96,8 @@ public class DisplayNovelContentActivity extends Activity {
 		ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
 		TextView tv = (TextView) findViewById(R.id.loading);
 		if(show) {
-			Toast t = Toast.makeText(getApplicationContext(),"start progress bar", Toast.LENGTH_SHORT);
-			t.show();
+//			Toast t = Toast.makeText(getApplicationContext(),"start progress bar", Toast.LENGTH_SHORT);
+//			t.show();
 			pb.setIndeterminate(true);
 			pb.setActivated(true);
 			pb.animate();
@@ -107,15 +107,20 @@ public class DisplayNovelContentActivity extends Activity {
 			tv.setVisibility(TextView.VISIBLE);
 		}
 		else {
-			Toast t = Toast.makeText(getApplicationContext(),"end progress bar", Toast.LENGTH_SHORT);
-			t.show();
+//			Toast t = Toast.makeText(getApplicationContext(),"end progress bar", Toast.LENGTH_SHORT);
+//			t.show();
 			pb.setVisibility(ProgressBar.GONE);			
 			tv.setVisibility(TextView.GONE);
 		}
 	}
 	
 	public class LoadNovelContentTask extends AsyncTask<PageModel, ProgressBar, AsyncTaskResult<NovelContentModel>> {
-
+		@Override
+		protected void onPreExecute (){
+			// executed on UI thread.
+			ToggleProgressBar(true);
+		}
+		
 		@Override
 		protected AsyncTaskResult<NovelContentModel> doInBackground(PageModel... params) {
 			try{

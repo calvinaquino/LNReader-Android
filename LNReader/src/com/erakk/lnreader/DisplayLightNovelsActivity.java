@@ -6,7 +6,6 @@ import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -19,11 +18,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -39,7 +33,7 @@ import com.erakk.lnreader.model.PageModel;
  * Copy from: NovelsActivity.java
  */
 
-public class DisplayLightNovelsActivity extends ListActivity {
+public class DisplayLightNovelsActivity extends ListActivity{
 	ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	PageModelAdapter adapter;
 	NovelsDao dao = new NovelsDao(this);
@@ -186,19 +180,27 @@ public class DisplayLightNovelsActivity extends ListActivity {
 		}
 	}
 
-	public class LoadNovelsTask extends AsyncTask<boolean[], ProgressBar, AsyncTaskResult<ArrayList<PageModel>>> {
+	@SuppressLint("NewApi")
+	public class LoadNovelsTask extends AsyncTask<boolean[], String, AsyncTaskResult<ArrayList<PageModel>>> {
 
-		@SuppressLint("NewApi")
+		@Override
+		protected void onPreExecute (){
+			// executed on UI thread.
+			ToggleProgressBar(true);
+		}
+		
 		@Override
 		protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(boolean[]... arg0) {
+			// different thread from UI
 			boolean refresh = arg0[0][0];
 			try {
-				ToggleProgressBar(true);
 
 				if (onlyWatched) {
+					publishProgress("Loading Watched List");
 					return new AsyncTaskResult<ArrayList<PageModel>>(dao.getWatchedNovel());
 				}
 				else {
+					publishProgress("Loading Novel List");
 					return new AsyncTaskResult<ArrayList<PageModel>>(dao.getNovels(refresh));
 				}
 				//return new AsyncTaskResult<ArrayList<PageModel>>(listItems);
@@ -207,9 +209,16 @@ public class DisplayLightNovelsActivity extends ListActivity {
 				return new AsyncTaskResult<ArrayList<PageModel>>(e);
 			}
 		}
-
-		@SuppressLint("NewApi")
+		
+		@Override
+		protected void onProgressUpdate (String... values){
+			//executed on UI thread.
+			TextView tv = (TextView) findViewById(R.id.loading);
+			tv.setText(values[0]);
+		}
+		
 		protected void onPostExecute(AsyncTaskResult<ArrayList<PageModel>> result) {
+			//executed on UI thread.
 			ArrayList<PageModel> list = result.getResult();
 			if(list != null) adapter.addAll(list);
 			if(result.getError() != null) {
