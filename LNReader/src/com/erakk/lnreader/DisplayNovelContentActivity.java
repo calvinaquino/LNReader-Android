@@ -3,6 +3,7 @@ package com.erakk.lnreader;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Picture;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
+import android.webkit.WebView.PictureListener;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -160,6 +162,7 @@ public class DisplayNovelContentActivity extends Activity {
 			}
 		}
 
+		@SuppressWarnings("deprecation")
 		protected void onPostExecute(AsyncTaskResult<NovelContentModel> result) {
 			Exception e = result.getError();
 			if(e == null) {
@@ -167,7 +170,7 @@ public class DisplayNovelContentActivity extends Activity {
 				setContent(content);
 
 				// load the contents here
-				WebView wv = (WebView) findViewById(R.id.webView1);
+				final WebView wv = (WebView) findViewById(R.id.webView1);
 				wv.getSettings().setAllowFileAccess(true);
 				wv.getSettings().setSupportZoom(true);
 				wv.getSettings().setBuiltInZoomControls(true);
@@ -184,10 +187,16 @@ public class DisplayNovelContentActivity extends Activity {
 				Log.d("LoadNovelContentTask", content.getPage());
 				
 				wv.setInitialScale((int) (content.getLastZoom() * 100));
-				wv.scrollTo(content.getLastXScroll(), content.getLastYScroll());
 				
-				//wv.scrollTo(content.getLastXScroll(), content.getLastYScroll());
-			
+				wv.setPictureListener(new PictureListener(){
+					@Override
+					@Deprecated
+					public void onNewPicture(WebView arg0, Picture arg1) {
+						wv.scrollTo(content.getLastXScroll(), content.getLastYScroll());
+					}					
+				});
+				
+				
 				Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 			}
 			else {
