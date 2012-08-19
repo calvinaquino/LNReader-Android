@@ -51,9 +51,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "pages.db";
 	private static final int DATABASE_VERSION = 13;
-	
-	private SQLiteDatabase database;
-	
+
 	// Database creation SQL statement
 	private static final String DATABASE_CREATE_PAGES = "create table "
 	      + TABLE_PAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -121,7 +119,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		Log.w(DBHelper.class.getName(),
-		        "Upgrading database from version " + oldVersion + " to "
+		        "Upgrading db from version " + oldVersion + " to "
 		            + newVersion + ", which will destroy all old data");
 	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_PAGE);
 	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_IMAGE);
@@ -131,37 +129,34 @@ public class DBHelper extends SQLiteOpenHelper {
 	    onCreate(db);
 	}
 	
-	public void deletePagesDB() {
-		database = this.getWritableDatabase();
-		database.execSQL("delete from " + TABLE_PAGE);
-		database.execSQL("delete from " + TABLE_NOVEL_DETAILS);
-		database.execSQL("delete from " + TABLE_IMAGE);
-		database.execSQL("delete from " + TABLE_NOVEL_BOOK);
-		database.execSQL("delete from " + TABLE_NOVEL_CONTENT);
-		//database.close();
+	public void deletePagesDB(SQLiteDatabase db) {
+		db.execSQL("delete from " + TABLE_PAGE);
+		db.execSQL("delete from " + TABLE_NOVEL_DETAILS);
+		db.execSQL("delete from " + TABLE_IMAGE);
+		db.execSQL("delete from " + TABLE_NOVEL_BOOK);
+		db.execSQL("delete from " + TABLE_NOVEL_CONTENT);
 		Log.w(TAG,"Database Deleted.");
 	}
 	
-	public PageModel getMainPage() {
+	public PageModel getMainPage(SQLiteDatabase db) {
 		Log.d(TAG, "Select Main_Page");
-		PageModel page = getPageModel("Main_Page");
+		PageModel page = getPageModel(db, "Main_Page");
 		return page;
 	}
 
-	public ArrayList<PageModel> insertAllNovel(ArrayList<PageModel> list) {
+	public ArrayList<PageModel> insertAllNovel(SQLiteDatabase db, ArrayList<PageModel> list) {
 		for(Iterator<PageModel> i = list.iterator(); i.hasNext();){
 			PageModel p = i.next();
-			p = insertOrUpdatePageModel(p);
+			p = insertOrUpdatePageModel(db, p);
 		}
 		return list;
 	}
 	
-	public PageModel getPageModel(String page) {
+	public PageModel getPageModel(SQLiteDatabase db, String page) {
 		Log.d(TAG, "Select Page: " + page);
 		PageModel pageModel = null;
-		database = this.getWritableDatabase();
 		
-		Cursor cursor = database.rawQuery("select * from " + TABLE_PAGE + " where " + COLUMN_PAGE + " = ? ", new String[] {page});
+		Cursor cursor = db.rawQuery("select * from " + TABLE_PAGE + " where " + COLUMN_PAGE + " = ? ", new String[] {page});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	pageModel = cursorTopage(cursor);
@@ -171,59 +166,52 @@ public class DBHelper extends SQLiteOpenHelper {
 		return pageModel;
 	}
 	
-	public ArrayList<PageModel> getAllNovels() {
+	public ArrayList<PageModel> getAllNovels(SQLiteDatabase db) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
-		database = this.getWritableDatabase();
-
-		Cursor cursor = database.rawQuery("select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ?", new String[] {"Main_Page"});
+		
+		Cursor cursor = db.rawQuery("select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ?", new String[] {"Main_Page"});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	PageModel page = cursorTopage(cursor);
 	    	pages.add(page);
 	    	cursor.moveToNext();
 	    }		
-		//database.close();
 		return pages;
 	}
 	
-	public ArrayList<PageModel> selectAllByColumn(String column, String value) {
+	public ArrayList<PageModel> selectAllByColumn(SQLiteDatabase db, String column, String value) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
-		database = this.getWritableDatabase();
-
-		Cursor cursor = database.rawQuery("select * from " + TABLE_PAGE + " where " + column + " = ?", new String[] {value});
+		
+		Cursor cursor = db.rawQuery("select * from " + TABLE_PAGE + " where " + column + " = ?", new String[] {value});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	PageModel page = cursorTopage(cursor);
 	    	pages.add(page);
 	    	cursor.moveToNext();
 	    }		
-		//database.close();
 		return pages;
 	}
 	
-	public PageModel selectFirstBy(String column, String value){
+	public PageModel selectFirstBy(SQLiteDatabase db, String column, String value){
 		Log.d(TAG, "Select First: Column = " + column + " Value = " + value);
 		PageModel page = null;
-		database = this.getWritableDatabase();
 		
-		Cursor cursor = database.rawQuery("select * from " + TABLE_PAGE + " where " + column + " = ? ", new String[] {value});
-		//Cursor cursor = database.rawQuery("select * from " + TABLE_PAGE + " where " + column + " = '" + value + "'", null);
+		Cursor cursor = db.rawQuery("select * from " + TABLE_PAGE + " where " + column + " = ? ", new String[] {value});
+		//Cursor cursor = db.rawQuery("select * from " + TABLE_PAGE + " where " + column + " = '" + value + "'", null);
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	page = cursorTopage(cursor);
 	    	Log.d(TAG, "Found: " + page.toString());
 	    	break;
 	    }		
-		//database.close();
 		return page;
 	}
 		
-	public PageModel insertOrUpdatePageModel(PageModel page){
+	public PageModel insertOrUpdatePageModel(SQLiteDatabase db, PageModel page){
 		Log.d(TAG, page.toString());
 		
-		PageModel temp = selectFirstBy(COLUMN_PAGE, page.getPage());
-		
-		database = this.getWritableDatabase();
+		PageModel temp = selectFirstBy(db, COLUMN_PAGE, page.getPage());
+
 		if(temp == null) {
 			Log.d(TAG, "Inserting: " + page.toString());
 			ContentValues cv = new ContentValues();
@@ -234,7 +222,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			cv.put(COLUMN_LAST_UPDATE, "" + (int) (page.getLastUpdate().getTime()/ 1000));
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			cv.put(COLUMN_IS_WATCHED, page.isWatched());
-			database.insertOrThrow(TABLE_PAGE, null, cv);
+			db.insertOrThrow(TABLE_PAGE, null, cv);
 		}
 		else {
 			ContentValues cv = new ContentValues();
@@ -246,13 +234,12 @@ public class DBHelper extends SQLiteOpenHelper {
 			cv.put(COLUMN_LAST_UPDATE, "" + (int) (page.getLastUpdate().getTime() / 1000));
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			cv.put(COLUMN_IS_WATCHED, page.isWatched());
-			database.update(TABLE_PAGE, cv, "id = ?", new String[] {"" + page.getId()});
+			db.update(TABLE_PAGE, cv, "id = ?", new String[] {"" + page.getId()});
 			Log.d(TAG, "Updating: " + page.toString());
 		}
 		
 		// get the updated data.
-		page = getPageModel(page.getPage());
-		database.close();
+		page = getPageModel(db, page.getPage());
 		return page;
 	}
 	
@@ -276,9 +263,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 *   - ArrayList<PageModel>
 	 */
 	
-	public NovelCollectionModel insertNovelDetails(NovelCollectionModel novelDetails){
-		database = this.getWritableDatabase();
-		database.beginTransaction();
+	public NovelCollectionModel insertNovelDetails(SQLiteDatabase db, NovelCollectionModel novelDetails){
+		db.beginTransaction();
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_PAGE, novelDetails.getPage());
 		cv.put(COLUMN_SYNOPSIS, novelDetails.getSynopsis());
@@ -286,14 +272,14 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000));
 		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 		// check if exist
-		NovelCollectionModel temp = getNovelDetailsOnly(database, novelDetails.getPage());
+		NovelCollectionModel temp = getNovelDetailsOnly(db, novelDetails.getPage());
 		if(temp == null) {
 			Log.d(TAG, "Inserting Novel Details: " + novelDetails.getPage());
-			database.insertOrThrow(TABLE_NOVEL_DETAILS, null, cv);
+			db.insertOrThrow(TABLE_NOVEL_DETAILS, null, cv);
 		}
 		else {
 			Log.d(TAG, "Updating Novel Details: " + novelDetails.getPage() + " id: " + temp.getId());
-			database.update(TABLE_NOVEL_DETAILS, cv, COLUMN_ID + " = ?", new String[] {"" + temp.getId()});
+			db.update(TABLE_NOVEL_DETAILS, cv, COLUMN_ID + " = ?", new String[] {"" + temp.getId()});
 		}
 
 		for(Iterator<BookModel> iBooks = novelDetails.getBookCollections().iterator(); iBooks.hasNext();){
@@ -304,14 +290,14 @@ public class DBHelper extends SQLiteOpenHelper {
 			cv2.put(COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000));
 			cv2.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			
-			BookModel tempBook = getBookModel(database, novelDetails.getPage(), book.getTitle());
+			BookModel tempBook = getBookModel(db, novelDetails.getPage(), book.getTitle());
 			if(tempBook == null) {
 				Log.d(TAG, "Inserting Novel Book: " + book.getPage() + "%" + book.getTitle());
-				database.insertOrThrow(TABLE_NOVEL_BOOK, null, cv2);
+				db.insertOrThrow(TABLE_NOVEL_BOOK, null, cv2);
 			}
 			else {
 				Log.d(TAG, "Updating Novel Book: " + book.getPage() + "%" + book.getTitle() + " id: " + tempBook.getId());
-				database.update(TABLE_NOVEL_BOOK, cv2, COLUMN_ID + " = ?", new String[] {"" + tempBook.getId()});
+				db.update(TABLE_NOVEL_BOOK, cv2, COLUMN_ID + " = ?", new String[] {"" + tempBook.getId()});
 			}
 		}
 		
@@ -328,26 +314,25 @@ public class DBHelper extends SQLiteOpenHelper {
 				cv3.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 				cv3.put(COLUMN_IS_WATCHED, false);
 				
-				// TODO: check database concurency
-				PageModel tempPage = getPageModel(page.getPage());
+				// TODO: check db concurency
+				PageModel tempPage = getPageModel(db, page.getPage());
 				if(tempPage == null) {
 					Log.d(TAG, "Inserting Novel Chapter: " + page.getPage());
-					database.insertOrThrow(TABLE_PAGE, null, cv3);
+					db.insertOrThrow(TABLE_PAGE, null, cv3);
 				}
 				else {
 					Log.d(TAG, "Updating Novel Chapter: " + page.getPage() + " id: " +tempPage.getId());
-					database.update(TABLE_PAGE, cv3, COLUMN_ID + " = ?", new String[] {"" + tempPage.getId()});
+					db.update(TABLE_PAGE, cv3, COLUMN_ID + " = ?", new String[] {"" + tempPage.getId()});
 				}
 			}
 		}
 
-		database.setTransactionSuccessful();
-		database.endTransaction();
+		db.setTransactionSuccessful();
+		db.endTransaction();
 		Log.d(TAG, "Complete Insert Novel Details: " + novelDetails.toString());
-		database.close();
-		
+
 		// get updated data
-		novelDetails = getNovelDetails(novelDetails.getPage());
+		novelDetails = getNovelDetails(db, novelDetails.getPage());
 		return novelDetails;
 	}
 	
@@ -391,7 +376,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	private ArrayList<PageModel> getChapterCollection(SQLiteDatabase db, String parent) {
 		ArrayList<PageModel> chapters = new ArrayList<PageModel>();
-		Cursor cursor = database.rawQuery("select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ? ", new String[] {parent});
+		Cursor cursor = db.rawQuery("select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ? ", new String[] {parent});
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			PageModel chapter = cursorTopage(cursor);
@@ -402,19 +387,18 @@ public class DBHelper extends SQLiteOpenHelper {
 		return chapters;
 	}
 	
-	public NovelCollectionModel getNovelDetails(String page) {
+	public NovelCollectionModel getNovelDetails(SQLiteDatabase db, String page) {
 		Log.d(TAG, "Selecting Novel Details: " + page);
-		database = this.getWritableDatabase();
-		NovelCollectionModel novelDetails = getNovelDetailsOnly(database, page);
+		NovelCollectionModel novelDetails = getNovelDetailsOnly(db, page);
 		
 	    if(novelDetails != null) {
 		    // get the books
-		    ArrayList<BookModel> bookCollection = getBookCollectionOnly(database, page);	
+		    ArrayList<BookModel> bookCollection = getBookCollectionOnly(db, page);	
 
 			// get the chapters
 			for(Iterator<BookModel> iBook = bookCollection.iterator(); iBook.hasNext();) {
 				BookModel book = iBook.next();
-				ArrayList<PageModel> chapters = getChapterCollection(database, novelDetails.getPage() + "%" + book.getTitle());
+				ArrayList<PageModel> chapters = getChapterCollection(db, novelDetails.getPage() + "%" + book.getTitle());
 				book.setChapterCollection(chapters);
 			}		
 			novelDetails.setBookCollections(bookCollection);
@@ -422,7 +406,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	    else {
 	    	Log.d(TAG, "No Data for Novel Details: " + page);
 	    }
-		database.close();
 		
 		Log.d(TAG, "Complete Selecting Novel Details: " + page);
 		return novelDetails;
@@ -454,8 +437,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * No Nested Object
 	 */
 	
-	public ImageModel insertImage(ImageModel image){
-		database = this.getWritableDatabase();
+	public ImageModel insertImage(SQLiteDatabase db, ImageModel image){
 		Log.d(TAG, "Inserting Images: " + image.getName());
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_IMAGE, image.getName());
@@ -464,30 +446,27 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_REFERER, image.getReferer());
 		cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
 		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
-		database.insertOrThrow(TABLE_IMAGE, null, cv);
-		database.close();
-		
+		db.insertOrThrow(TABLE_IMAGE, null, cv);
+
 		// get updated data
-		image = getImage(image.getName());
+		image = getImage(db, image.getName());
 		
 		Log.d(TAG, "Complete Insert Images: " + image.getName() + " id: " + image.getId());
 		
 		return image;
 	}
 	
-	public ImageModel getImageByReferer(String url) {
+	public ImageModel getImageByReferer(SQLiteDatabase db, String url) {
 		Log.d(TAG, "Selecting Image by Referer: " + url);
 		ImageModel image = null;
-		database = this.getWritableDatabase();
 		
-		Cursor cursor = database.rawQuery("select * from " + TABLE_IMAGE + " where " + COLUMN_REFERER + " = ? ", new String[] {url});
+		Cursor cursor = db.rawQuery("select * from " + TABLE_IMAGE + " where " + COLUMN_REFERER + " = ? ", new String[] {url});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	image = cursorToImage(cursor);
 	    	Log.d(TAG, "Found: " + image.getName() + " id: " + image.getId());
 	    	break;
 	    }		
-		database.close();
 		
 		if(image == null) {
 			Log.d(TAG, "Not Found Image by Referer: " + url);
@@ -495,19 +474,18 @@ public class DBHelper extends SQLiteOpenHelper {
 		return image;
 	}
 	
-	public ImageModel getImage(String name) {
+	public ImageModel getImage(SQLiteDatabase db, String name) {
 		Log.d(TAG, "Selecting Image: " + name);
 		ImageModel image = null;
-		database = this.getWritableDatabase();
 		
-		Cursor cursor = database.rawQuery("select * from " + TABLE_IMAGE + " where " + COLUMN_IMAGE + " = ? ", new String[] {name});
+		Cursor cursor = db.rawQuery("select * from " + TABLE_IMAGE + " where " + COLUMN_IMAGE + " = ? ", new String[] {name});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	image = cursorToImage(cursor);
 	    	Log.d(TAG, "Found: " + image.getName() + " id: " + image.getId());
 	    	break;
 	    }		
-		database.close();
+
 		if(image == null) {
 			Log.d(TAG, "Not Found Image: " + name);
 		}
@@ -536,8 +514,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * Nested object : PageModel, lazy loading via NovelsDao
 	 */
 	
-	public NovelContentModel insertNovelContent(NovelContentModel content) {
-		database = this.getWritableDatabase();
+	public NovelContentModel insertNovelContent(SQLiteDatabase db, NovelContentModel content) {
 		Log.d(TAG, "Inserting Novel Content: " + content.getPage());
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_CONTENT, content.getContent());
@@ -547,30 +524,27 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_ZOOM, "" + content.getLastZoom());
 		cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
 		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
-		database.insertOrThrow(TABLE_NOVEL_CONTENT, null, cv);
-		database.close();
+		db.insertOrThrow(TABLE_NOVEL_CONTENT, null, cv);
 		
 		// TODO: insert images to db 
 		
-		content = getNovelContent(content.getPage());
+		content = getNovelContent(db, content.getPage());
 
 		Log.d(TAG, "Complete Insert Novel Content: " + content.getPage() + " id: " + content.getId());
 		return content;
 	}
 	
-	public NovelContentModel getNovelContent(String page) {
+	public NovelContentModel getNovelContent(SQLiteDatabase db, String page) {
 		Log.d(TAG, "Selecting Novel Content: " + page);
 		NovelContentModel content = null;
-		database = this.getWritableDatabase();
 		
-		Cursor cursor = database.rawQuery("select * from " + TABLE_NOVEL_CONTENT + " where " + COLUMN_PAGE + " = ? ", new String[] {page});
+		Cursor cursor = db.rawQuery("select * from " + TABLE_NOVEL_CONTENT + " where " + COLUMN_PAGE + " = ? ", new String[] {page});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	content = cursorToNovelContent(cursor);
 	    	Log.d(TAG, "Found: " + content.getPage() + " id: " + content.getId());
 	    	break;
 	    }
-		database.close();
 		if(content == null) {
 			Log.d(TAG, "Not Found Novel Content: " + page);
 		}		

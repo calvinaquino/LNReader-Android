@@ -24,7 +24,9 @@ public class NovelCollectionModel {
 	}
 	public PageModel getPageModel() throws Exception {
 		if(this.pageModel == null) {
-			this.pageModel = NovelsDao.getPageModel(this.page);
+			// some hack to get context
+			NovelsDao dao = new NovelsDao(NovelsDao.sharedContext);
+			this.pageModel = dao.getPageModel(this.page);
 		}		
 		return pageModel;
 	}

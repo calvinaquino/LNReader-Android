@@ -40,7 +40,9 @@ public class NovelContentModel {
 	}
 	public PageModel getPageModel() throws Exception {
 		if(this.pageModel == null) {
-			this.pageModel = NovelsDao.getPageModel(this.page); 
+			// hacks to get context.
+			NovelsDao dao = new NovelsDao(NovelsDao.sharedContext);
+			this.pageModel = dao.getPageModel(this.page); 
 		}
 		return pageModel;
 	}

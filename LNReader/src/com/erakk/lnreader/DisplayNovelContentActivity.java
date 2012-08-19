@@ -22,7 +22,8 @@ import com.erakk.lnreader.model.PageModel;
 
 @SuppressLint("NewApi")
 public class DisplayNovelContentActivity extends Activity {
-
+	NovelsDao dao = new NovelsDao(this);
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -123,7 +124,7 @@ public class DisplayNovelContentActivity extends Activity {
 		protected AsyncTaskResult<NovelContentModel> doInBackground(PageModel... params) {
 			try{
 				PageModel p = params[0];
-				NovelContentModel content = NovelsDao.getNovelContent(p);
+				NovelContentModel content = dao.getNovelContent(p);
 				return new AsyncTaskResult<NovelContentModel>(content);
 			}catch(Exception e) {
 				return new AsyncTaskResult<NovelContentModel>(e);

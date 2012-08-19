@@ -12,6 +12,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
@@ -30,21 +31,27 @@ import com.erakk.lnreader.parser.BakaTsukiParser;
  */
 public class NovelsDao {
 	private static final String TAG = NovelsDao.class.toString();
+	public static Context sharedContext;
+	private DBHelper dbh;
 	
-	public static Context context;
-	private static DBHelper _dbh;
-	private static DBHelper getDBHelper() {
-		if(_dbh == null) {
-			if(context == null) throw new NullPointerException("DB Context is not init!");
-			_dbh = new DBHelper(context);
-		}
-		return _dbh;
+	public NovelsDao(Context context) {
+		dbh = new DBHelper(context);
+		sharedContext = context;
 	}
 	
-	public static ArrayList<PageModel> getNovels() throws Exception{
+	public void deleteDB() {
+		SQLiteDatabase db = dbh.getWritableDatabase();
+		dbh.deletePagesDB(db);
+		db.close();
+	}
+	
+	public  ArrayList<PageModel> getNovels() throws Exception{
 		ArrayList<PageModel> list = null;
 		boolean refresh = false;
-		PageModel page = getDBHelper().getMainPage();
+		
+		SQLiteDatabase db = dbh.getReadableDatabase();
+		PageModel page = dbh.getMainPage(db);
+		db.close();
 		
 		// check if have main page data
 		if(page == null) {
@@ -68,46 +75,63 @@ public class NovelsDao {
 		}
 		else {
 			// get from db
-			list = getDBHelper().selectAllByColumn(DBHelper.COLUMN_TYPE, PageModel.TYPE_NOVEL);
+			db = dbh.getReadableDatabase();
+			list = dbh.selectAllByColumn(db, DBHelper.COLUMN_TYPE, PageModel.TYPE_NOVEL);
+			db.close();
 			Log.d(TAG, "Found: " + list.size());
 		}
+		
 		return list;
 	}
 	
-	public static PageModel getPageModel(String page) throws Exception {
-		PageModel pageModel = getDBHelper().getPageModel(page);
+	public  PageModel getPageModel(String page) throws Exception {
+		SQLiteDatabase db = dbh.getReadableDatabase();
+		PageModel pageModel = dbh.getPageModel(db, page);
+		db.close();
+		
 		if (pageModel == null) {
 			pageModel = getPageModelFromInternet(page);
 		}
+		
 		return pageModel;
 	}
 	
-	public static PageModel getPageModelFromInternet(String page) throws Exception {
+	public  PageModel getPageModelFromInternet(String page) throws Exception {
 		Response response = Jsoup.connect("http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&titles=" + page)
 				 .timeout(60000)
 				 .execute();
 		PageModel pageModel = BakaTsukiParser.parsePageAPI(page, response.parse());
 		
 		// save to db and get saved value
-		pageModel = getDBHelper().insertOrUpdatePageModel(pageModel);
+		SQLiteDatabase db = dbh.getWritableDatabase();
+		pageModel = dbh.insertOrUpdatePageModel(db, pageModel);
+		db.close();
 		
 		return pageModel;
 	}
 
-	public static PageModel updatePageModel(PageModel page) {
-		return getDBHelper().insertOrUpdatePageModel(page);		
+	public  PageModel updatePageModel(PageModel page) {
+		SQLiteDatabase db = dbh.getWritableDatabase();
+		PageModel pageModel = dbh.insertOrUpdatePageModel(db, page);
+		return pageModel;
 	}
 	
-	public static ArrayList<PageModel> getWatchedNovel() {
-		return getDBHelper().selectAllByColumn(DBHelper.COLUMN_IS_WATCHED, "1");
+	public  ArrayList<PageModel> getWatchedNovel() {
+		SQLiteDatabase db = dbh.getReadableDatabase();
+		ArrayList<PageModel> watchedNovel = dbh.selectAllByColumn(db, DBHelper.COLUMN_IS_WATCHED, "1");
+		db.close();
+		return watchedNovel;
 	}
 	
-	public static ArrayList<PageModel> getNovelsFromInternet() throws Exception {
+	public  ArrayList<PageModel> getNovelsFromInternet() throws Exception {
 		// get last updated page revision from internet
 		PageModel mainPage = getPageModel("Main_Page");
 		mainPage.setType(PageModel.TYPE_OTHER);
 		mainPage.setParent("");
-		getDBHelper().insertOrUpdatePageModel(mainPage);
+		
+		SQLiteDatabase db = dbh.getWritableDatabase();
+		db.beginTransaction();
+		mainPage = dbh.insertOrUpdatePageModel(db, mainPage);
 		Log.d(TAG, "Updated Main_Page");
 		
 		// now get the list
@@ -122,8 +146,10 @@ public class NovelsDao {
 		Log.d(TAG, "Found: "+list.size()+" Novels");
 		
 		// saved to db and get saved value
-		list = getDBHelper().insertAllNovel(list);
-		
+		list = dbh.insertAllNovel(db, list);
+		db.setTransactionSuccessful();
+		db.endTransaction();
+		db.close();
 		return list;
 	}
 	
@@ -131,9 +157,11 @@ public class NovelsDao {
 	 * NovelCollectionModel
 	 */
 
-	public static NovelCollectionModel getNovelDetails(PageModel page) throws Exception {
+	public  NovelCollectionModel getNovelDetails(PageModel page) throws Exception {
 		boolean refresh = false;
-		NovelCollectionModel novel = getDBHelper().getNovelDetails(page.getPage());
+		SQLiteDatabase db = dbh.getReadableDatabase();
+		NovelCollectionModel novel = dbh.getNovelDetails(db, page.getPage());
+		db.close();
 		
 		if(novel != null) {
 			// TODO: add check to refresh
@@ -149,7 +177,7 @@ public class NovelsDao {
 		return novel;
 	}
 	
-	public static NovelCollectionModel getNovelDetailsFromInternet(PageModel page) throws Exception {
+	public  NovelCollectionModel getNovelDetailsFromInternet(PageModel page) throws Exception {
 		Log.d(TAG, "Getting Novel Details from internet: " + page.getPage());
 		NovelCollectionModel novel = null;
 		
@@ -163,7 +191,9 @@ public class NovelsDao {
 		novel.setLastUpdate(novelPage.getLastUpdate());
 		
 		// insert to DB and get saved value
-		novel = getDBHelper().insertNovelDetails(novel);
+		SQLiteDatabase db = dbh.getWritableDatabase();
+		novel = dbh.insertNovelDetails(db, novel);
+		db.close();
 		
 		// download cover image
 		if(novel.getCoverUrl() != null) {
@@ -181,11 +211,14 @@ public class NovelsDao {
 	 * NovelContentModel
 	 */
 	
-	public static NovelContentModel getNovelContent(PageModel page) throws Exception {
+	public  NovelContentModel getNovelContent(PageModel page) throws Exception {
 		NovelContentModel content = null;
 		
 		// get from db
-		content = getDBHelper().getNovelContent(page.getPage());
+		SQLiteDatabase db = dbh.getReadableDatabase();
+		content = dbh.getNovelContent(db, page.getPage());
+		db.close();
+		
 		// get from Internet;
 		if(content == null) {
 			Log.d("getNovelContent", "Get from Internet: " + page.getPage());
@@ -195,7 +228,7 @@ public class NovelsDao {
 		return content;
 	}
 
-	public static NovelContentModel getNovelContentFromInternet(PageModel page) throws Exception {
+	public  NovelContentModel getNovelContentFromInternet(PageModel page) throws Exception {
 		NovelContentModel content = new NovelContentModel();
 		
 		Response response = Jsoup.connect(Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&page=" + page.getPage())
@@ -215,8 +248,9 @@ public class NovelsDao {
 		}
 				
 		// save to DB, and get the saved value
-		content = getDBHelper().insertNovelContent(content);
-				
+		SQLiteDatabase db = dbh.getWritableDatabase();
+		content = dbh.insertNovelContent(db, content);
+		db.close();
 		return content;
 	}
 	
@@ -224,23 +258,24 @@ public class NovelsDao {
 	 *  ImageModel
 	 */
 	
-	public static ImageModel getImageModel(String page) throws Exception {
+	public  ImageModel getImageModel(String page) throws Exception {
 		ImageModel image = null;
-		
-		image = getDBHelper().getImage(page);
+		SQLiteDatabase db = dbh.getReadableDatabase();
+		image = dbh.getImage(db, page);
 		if(image == null) {
 			Log.d(TAG, "Image not found, might need to check by referer: " + page);
-			image = getDBHelper().getImageByReferer(page);
-			
-			if(image == null) {
-				Log.d(TAG, "Image not found, getting data from internet: " + page);
-				image = getImageModelFromInternet(page);				
-			}
+			image = dbh.getImageByReferer(db, page);
 		}
+		db.close();
+		
+		if(image == null) {
+			Log.d(TAG, "Image not found, getting data from internet: " + page);
+			image = getImageModelFromInternet(page);				
+		}		
 		return image;
 	}
 
-	private static ImageModel getImageModelFromInternet(String page) throws Exception {
+	private ImageModel getImageModelFromInternet(String page) throws Exception {
 		Response response = Jsoup.connect(Constants.BASE_URL + page)
 				 .timeout(60000)
 				 .execute();
@@ -252,8 +287,9 @@ public class NovelsDao {
 		image.setReferer(page);
 		
 		// save to db and get the saved value
-		image = getDBHelper().insertImage(image);
-		
+		SQLiteDatabase db = dbh.getWritableDatabase();
+		image = dbh.insertImage(db, image);
+		db.close();
 		return image;		
 	}
 }

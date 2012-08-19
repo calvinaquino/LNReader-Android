@@ -37,7 +37,7 @@ import com.erakk.lnreader.model.PageModel;
 public class DisplayLightNovelsActivity extends ListActivity{
 	ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	PageModelAdapter adapter;
-	//NovelsDao dao = new NovelsDao(this);
+	NovelsDao dao = new NovelsDao(this);
 	boolean refreshOnly = false;
 	boolean onlyWatched = false;
 
@@ -173,7 +173,7 @@ public class DisplayLightNovelsActivity extends ListActivity{
 				if (invertColors)adapter = new PageModelAdapter(this, R.layout.novel_list_item_black, listItems);
 				else adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
 			}
-			new LoadNovelsTask().execute(new boolean[] {false});
+			new LoadNovelsTask().execute();
 			setListAdapter(adapter);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -237,7 +237,7 @@ public class DisplayLightNovelsActivity extends ListActivity{
     }
 	
 	@SuppressLint("NewApi")
-	public class LoadNovelsTask extends AsyncTask<boolean[], String, AsyncTaskResult<ArrayList<PageModel>>> {
+	public class LoadNovelsTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>> {
 
 		@Override
 		protected void onPreExecute (){
@@ -246,18 +246,16 @@ public class DisplayLightNovelsActivity extends ListActivity{
 		}
 		
 		@Override
-		protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(boolean[]... arg0) {
+		protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(Void... arg0) {
 			// different thread from UI
-			boolean refresh = arg0[0][0];
 			try {
-
 				if (onlyWatched) {
 					publishProgress("Loading Watched List");
-					return new AsyncTaskResult<ArrayList<PageModel>>(NovelsDao.getWatchedNovel());
+					return new AsyncTaskResult<ArrayList<PageModel>>(dao.getWatchedNovel());
 				}
 				else {
 					publishProgress("Loading Novel List");
-					return new AsyncTaskResult<ArrayList<PageModel>>(NovelsDao.getNovels());
+					return new AsyncTaskResult<ArrayList<PageModel>>(dao.getNovels());
 				}
 				//return new AsyncTaskResult<ArrayList<PageModel>>(listItems);
 			} catch (Exception e) {

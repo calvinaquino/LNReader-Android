@@ -17,7 +17,7 @@ import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.ImageModel;
 
 public class DisplayImageActivity extends Activity {
-	
+	NovelsDao dao = new NovelsDao(this);
 	WebView imgWebView;
 	
     @Override
@@ -76,7 +76,7 @@ public class DisplayImageActivity extends Activity {
 			String url = params[0];
 			
 			try{
-				return new AsyncTaskResult<ImageModel>(NovelsDao.getImageModel(url));
+				return new AsyncTaskResult<ImageModel>(dao.getImageModel(url));
 			} catch (Exception e) {
 				return new AsyncTaskResult<ImageModel>(e);
 			}

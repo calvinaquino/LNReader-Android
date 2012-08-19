@@ -2,9 +2,6 @@ package com.erakk.lnreader;
 
 import java.io.File;
 
-import com.erakk.lnreader.helper.DBHelper;
-
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -18,12 +15,9 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
-
-
+import com.erakk.lnreader.dao.NovelsDao;
 
 public class DisplaySettingsActivity extends PreferenceActivity {
 	//private static final String TAG = DisplayLightNovelsActivity.class.toString();
@@ -60,8 +54,8 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         		/*
         		 * CODE TO CLEAR DATABASE HERE
         		 */
-        		DBHelper helper = new DBHelper(getApplicationContext());
-        		helper.deletePagesDB();
+        		NovelsDao dao = new NovelsDao(getApplicationContext());
+        		dao.deleteDB();
         		Toast t = Toast.makeText(getApplicationContext(), "Database cleared!", Toast.LENGTH_LONG);
     			t.show();		
         		

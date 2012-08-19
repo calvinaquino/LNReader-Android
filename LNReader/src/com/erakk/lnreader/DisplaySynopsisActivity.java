@@ -24,9 +24,9 @@ import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 
 public class DisplaySynopsisActivity extends Activity {
-	NovelsDao dao;
+	NovelsDao dao = new NovelsDao(this);
 	NovelCollectionModel novelCol;
-    
+	
     @SuppressLint({ "NewApi", "NewApi" })
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -114,7 +114,7 @@ public class DisplaySynopsisActivity extends Activity {
 	    	pb.animate();
 				        
 			try {
-				NovelCollectionModel novelCol = NovelsDao.getNovelDetails(page);
+				NovelCollectionModel novelCol = dao.getNovelDetails(page);
 				Log.d("LoadNovelDetailsTask", "Loaded: " + novelCol.getPage());				
 		        return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 			} catch (Exception e) {

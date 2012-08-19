@@ -29,9 +29,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.erakk.lnreader.DisplayLightNovelsActivity.LoadNovelsTask;
 import com.erakk.lnreader.adapter.ExpandListAdapter;
-import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.classes.ExpandListChild;
 import com.erakk.lnreader.classes.ExpandListGroup;
 import com.erakk.lnreader.dao.NovelsDao;
@@ -44,6 +42,8 @@ public class LightNovelChaptersActivity extends Activity {
 	PageModel page;
 	Activity activity = null;
 	NovelCollectionModel novelCol;
+	NovelsDao dao = new NovelsDao(this);
+	
     private ExpandListAdapter ExpAdapter;
     private ArrayList<ExpandListGroup> ExpListItems;
     private ExpandableListView ExpandList;
@@ -318,12 +318,12 @@ public class LightNovelChaptersActivity extends Activity {
 			try {
 				if(refresh) {
 					publishProgress("Refreshing chapter list...");
-					NovelCollectionModel novelCol = NovelsDao.getNovelDetailsFromInternet(page);
+					NovelCollectionModel novelCol = dao.getNovelDetailsFromInternet(page);
 					return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 				}
 				else {
 					publishProgress("Loading chapter list...");
-					NovelCollectionModel novelCol = NovelsDao.getNovelDetails(page);
+					NovelCollectionModel novelCol = dao.getNovelDetails(page);
 					Log.d("LoadNovelDetailsTask", "Loaded: " + novelCol.getPage());				
 					return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 				}
