@@ -254,7 +254,13 @@ public class NovelsDao {
 		db.close();
 		return content;
 	}
-	
+
+	public NovelContentModel updateNovelContent(NovelContentModel content) {
+		SQLiteDatabase db = dbh.getWritableDatabase();
+		content = dbh.insertNovelContent(db, content);
+		db.close();
+		return content;
+	}
 	/*
 	 *  ImageModel
 	 */
@@ -293,4 +299,5 @@ public class NovelsDao {
 		db.close();
 		return image;		
 	}
+
 }

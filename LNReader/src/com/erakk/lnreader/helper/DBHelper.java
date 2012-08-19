@@ -522,15 +522,23 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_LAST_X, "" + content.getLastXScroll());
 		cv.put(COLUMN_LAST_Y, "" + content.getLastYScroll());
 		cv.put(COLUMN_ZOOM, "" + content.getLastZoom());
-		cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
-		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
-		db.insertOrThrow(TABLE_NOVEL_CONTENT, null, cv);
 		
-		// TODO: insert images to db 
-		
-		content = getNovelContent(db, content.getPage());
-
-		Log.d(TAG, "Complete Insert Novel Content: " + content.getPage() + " id: " + content.getId());
+		if(content.getId() == 0){
+			cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
+			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
+			db.insertOrThrow(TABLE_NOVEL_CONTENT, null, cv);
+			
+			content = getNovelContent(db, content.getPage());
+			Log.d(TAG, "Complete Insert Novel Content: " + content.getPage() + " id: " + content.getId());
+			
+			// TODO: insert images to db 
+			
+		}
+		else {
+			db.update(TABLE_NOVEL_CONTENT, cv, COLUMN_ID + " = ? ",	new String[] {"" + content.getId()});
+			content = getNovelContent(db, content.getPage());
+			Log.d(TAG, "Complete Update Novel Content: " + content.getPage() + " id: " + content.getId());
+		}		
 		return content;
 	}
 	

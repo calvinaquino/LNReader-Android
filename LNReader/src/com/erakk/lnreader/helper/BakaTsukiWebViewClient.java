@@ -11,7 +11,6 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 public class BakaTsukiWebViewClient extends WebViewClient {
-
 	@Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
 //        if (Uri.parse(url).getHost().equals("www.example.com")) {
@@ -33,5 +32,5 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 			Toast.makeText(context, "Url: " + url, Toast.LENGTH_SHORT).show();
 		}
         return true;
-    }
+    }	
 }
