@@ -29,7 +29,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.erakk.lnreader.DisplayLightNovelsActivity.LoadNovelsTask;
 import com.erakk.lnreader.adapter.ExpandListAdapter;
+import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.classes.ExpandListChild;
 import com.erakk.lnreader.classes.ExpandListGroup;
 import com.erakk.lnreader.dao.NovelsDao;
@@ -40,7 +42,7 @@ import com.erakk.lnreader.model.PageModel;
 
 public class LightNovelChaptersActivity extends Activity {
 	PageModel page;
-	//NovelsDao dao;
+	Activity activity = null;
 	NovelCollectionModel novelCol;
     private ExpandListAdapter ExpAdapter;
     private ArrayList<ExpandListGroup> ExpListItems;
@@ -50,7 +52,8 @@ public class LightNovelChaptersActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-                
+        
+        activity = this;
         //Get intent and message
         Intent intent = getIntent();
         page = new PageModel(); 
@@ -60,11 +63,11 @@ public class LightNovelChaptersActivity extends Activity {
         getActionBar().setDisplayHomeAsUpEnabled(true);   
         
         //dao = new NovelsDao(this);
-        new LoadNovelDetailsTask().execute(new PageModel[] {page});
+        //new LoadNovelDetailsTask().execute(new PageModel[] {page});
+        updateContent(false);
        
         // setup listener
         ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
-
         ExpandList.setOnItemLongClickListener(new OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -74,6 +77,9 @@ public class LightNovelChaptersActivity extends Activity {
 
                     // You now have everything that you would as if this was an OnChildClickListener() 
                     // Add your logic here.
+                	//activity.openContextMenu(view);
+                	//parent.showContextMenu();
+                	
                     PageModel page = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
                     Toast.makeText(LightNovelChaptersActivity.this, "longClick: " + page.getTitle(), Toast.LENGTH_SHORT).show();
 
@@ -84,8 +90,8 @@ public class LightNovelChaptersActivity extends Activity {
 
                     // You now have everything that you would as if this was an OnChildClickListener() 
                     // Add your logic here.
-                    PageModel page = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
-                    Toast.makeText(LightNovelChaptersActivity.this, "longClick: " + page.getTitle(), Toast.LENGTH_SHORT).show();
+        			
+                    Toast.makeText(LightNovelChaptersActivity.this, "longClickGroup", Toast.LENGTH_SHORT).show();
 
                     // Return true as we are handling the event.
                     return true;
@@ -129,21 +135,14 @@ public class LightNovelChaptersActivity extends Activity {
     		return true;
     	case R.id.menu_refresh_chapter_list:
 			
-			/*
-			 * Implement code to refresh chapter/synopsis list
-			 */
-			LoadNovelDetailsTask task = new LoadNovelDetailsTask();
-			task.refresh = true;
-			task.execute(page);
+			updateContent(true);
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.invert_colors:
 			
-			/*
-			 * Implement code to invert colors
-			 */
 			toggleColorPref();
 			updateViewColor();
+			updateContent(true);
 			
 			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
 			return true;
@@ -253,20 +252,32 @@ public class LightNovelChaptersActivity extends Activity {
     	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
     	
     	// Views to be changed
-//        View MainView = findViewById(R.id.main_screen);
+        View SynopsisView = findViewById(R.id.ligh_novel_synopsys_screen);
+        View ChapterView = findViewById(R.id.ligh_novel_chapter_screen);
         
         // it is considered white background and black text to be the standard
         // so we change to black background and white text if true
         if (invertColors == true) {
-//        	MainView.setBackgroundColor(Color.BLACK);
-//        	Button1.setTextColor(Color.WHITE);
+        	ExpAdapter.invertColorMode(true);
+        	SynopsisView.setBackgroundColor(Color.BLACK);
+        	ChapterView.setBackgroundColor(Color.BLACK);
         }
         else {
-//        	MainView.setBackgroundColor(Color.WHITE);
-//        	Button1.setTextColor(Color.BLACK);
+        	ExpAdapter.invertColorMode(false);
+        	SynopsisView.setBackgroundColor(Color.WHITE);
+        	ChapterView.setBackgroundColor(Color.WHITE);
         }
+        updateContent(true);
     }
 	
+    private void updateContent ( boolean willRefresh) {
+//		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+//    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
+		LoadNovelDetailsTask task = new LoadNovelDetailsTask();
+		task.refresh = willRefresh;
+		task.execute(page);
+	}
+    
 	@SuppressLint("NewApi")
 	private void ToggleProgressBar(boolean show) {
 		ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);

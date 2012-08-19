@@ -18,7 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -38,7 +38,7 @@ public class DisplayLightNovelsActivity extends ListActivity{
 	ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	PageModelAdapter adapter;
 	//NovelsDao dao = new NovelsDao(this);
-
+	boolean refreshOnly = false;
 	boolean onlyWatched = false;
 
 	@SuppressLint("NewApi")
@@ -53,15 +53,6 @@ public class DisplayLightNovelsActivity extends ListActivity{
 		onlyWatched = intent.getExtras().getBoolean(Constants.EXTRA_ONLY_WATCHED);
 
 		//Encapsulated in updateContent
-//		try {
-//			adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
-//			new LoadNovelsTask().execute(new boolean[] {false});
-//			setListAdapter(adapter);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			Toast t = Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
-//			t.show();					
-//		}
 		updateContent ();
 		
 		if(onlyWatched){
@@ -139,7 +130,7 @@ public class DisplayLightNovelsActivity extends ListActivity{
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		//AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+		//adapter.AdapterContextMenuInfo info = (adapter.AdapterContextMenuInfo) item.getMenuInfo();
 		//String[] names = getResources().getStringArray(R.array.novel_context_menu);
 		switch(item.getItemId()) {
 		case R.id.add_to_watch:
@@ -147,9 +138,15 @@ public class DisplayLightNovelsActivity extends ListActivity{
 			/*
 			 * Implement code to toggle watch of this novel
 			 */
-			
-			Toast.makeText(this, "Added to Watch List",
-					Toast.LENGTH_SHORT).show();
+	        CheckBox checkBox = (CheckBox) findViewById(R.id.novel_is_watched);
+	        if (checkBox.isChecked()) {
+	        	checkBox.setChecked(false);Toast.makeText(this, "Removed from Watch List",
+						Toast.LENGTH_SHORT).show();
+	        }
+	        else {
+	        	checkBox.setChecked(true);Toast.makeText(this, "Added to Watch List",
+						Toast.LENGTH_SHORT).show();
+	        }
 			return true;
 		case R.id.download_novel:
 			
@@ -169,8 +166,13 @@ public class DisplayLightNovelsActivity extends ListActivity{
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
     	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
 		try {
-			if (invertColors)adapter = new PageModelAdapter(this, R.layout.novel_list_item_black, listItems);
-			else adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
+			if (adapter != null) { 
+				if (invertColors)adapter.setResourceId(R.layout.novel_list_item_black);
+				else adapter.setResourceId(R.layout.novel_list_item);
+			} else {
+				if (invertColors)adapter = new PageModelAdapter(this, R.layout.novel_list_item_black, listItems);
+				else adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
+			}
 			new LoadNovelsTask().execute(new boolean[] {false});
 			setListAdapter(adapter);
 		} catch (Exception e) {
@@ -275,10 +277,14 @@ public class DisplayLightNovelsActivity extends ListActivity{
 			//executed on UI thread.
 			ArrayList<PageModel> list = result.getResult();
 			if(list != null) {
-				adapter.addAll(list);
+				if (!refreshOnly) {
+					adapter.addAll(list);
+					refreshOnly = true;
+				}
 				ToggleProgressBar(false);
 				if (list.size() == 0 || onlyWatched) {
 					// Show message if watch list is empty
+					// TODO: verify the logic.
 					TextView tv = (TextView) findViewById(R.id.loading);
 					tv.setVisibility(TextView.VISIBLE);
 					tv.setText("Watch List is empty.");

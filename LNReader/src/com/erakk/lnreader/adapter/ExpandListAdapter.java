@@ -3,19 +3,23 @@ package com.erakk.lnreader.adapter;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
+
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.classes.*;
-import com.erakk.lnreader.adapter.ExpandListAdapter;
+import com.erakk.lnreader.classes.ExpandListChild;
+import com.erakk.lnreader.classes.ExpandListGroup;
  
 public class ExpandListAdapter extends BaseExpandableListAdapter {
  
     private Context context;
     private ArrayList<ExpandListGroup> groups;
+	boolean invertColors = false;
     public ExpandListAdapter(Context context, ArrayList<ExpandListGroup> groups) {
         this.context = context;
         this.groups = groups;
@@ -46,7 +50,8 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
         ExpandListChild child = (ExpandListChild) getChild(groupPosition, childPosition);
         if (view == null) {
             LayoutInflater infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = infalInflater.inflate(R.layout.expandchapter_list_item, null);
+            if (invertColors) view = infalInflater.inflate(R.layout.expandchapter_list_item_black, null);
+            else view = infalInflater.inflate(R.layout.expandchapter_list_item, null);
 
         }
         TextView tv = (TextView) view.findViewById(R.id.novel_chapter);
@@ -84,7 +89,8 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
         ExpandListGroup group = (ExpandListGroup) getGroup(groupPosition);
         if (view == null) {
             LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inf.inflate(R.layout.expandvolume_list_item, null);
+            if (invertColors) view = inf.inflate(R.layout.expandvolume_list_item_black, null);
+            else view = inf.inflate(R.layout.expandvolume_list_item, null);
         }
         TextView tv = (TextView) view.findViewById(R.id.novel_volume);
         tv.setText(group.getName());
@@ -100,6 +106,10 @@ public class ExpandListAdapter extends BaseExpandableListAdapter {
     public boolean isChildSelectable(int arg0, int arg1) {
         // TODO Auto-generated method stub
     return true;
+    }
+    
+    public void invertColorMode(boolean invert) {
+    	invertColors = invert;
     }
  
 }

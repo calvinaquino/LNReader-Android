@@ -3,5 +3,5 @@
       <item android:id="@+id/download_novel"
             android:title="Download Novel" />
       <item android:id="@+id/add_to_watch"
-              android:title="Add to Watch List" />
+              android:title="Add/remove from Watch" />
 </menu>

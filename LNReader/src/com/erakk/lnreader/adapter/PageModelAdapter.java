@@ -91,5 +91,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		TextView txtNovel;
 		CheckBox chkIsWatched;
 	}
-
+	public void setResourceId (int id) {
+		this.layoutResourceId = id;
+	}
 }
