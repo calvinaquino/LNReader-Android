@@ -164,7 +164,7 @@ public class BakaTsukiParser {
 											PageModel p = new PageModel();
 											p.setTitle(link.text());
 											p.setPage(link.attr("href").replace("/project/index.php?title=",""));
-											p.setParent(novel.getPage() + "%" + book.getTitle());
+											p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 											p.setType(PageModel.TYPE_CONTENT);
 											Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 											chapterCollection.add(p);
@@ -215,7 +215,7 @@ public class BakaTsukiParser {
 												PageModel p = new PageModel();
 												p.setTitle(link.text());
 												p.setPage(link.attr("href").replace("/project/index.php?title=",""));
-												p.setParent(novel.getPage() + "%" + book.getTitle());
+												p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 												p.setType(PageModel.TYPE_CONTENT);
 												Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 												chapterCollection.add(p);
@@ -230,7 +230,7 @@ public class BakaTsukiParser {
 											PageModel p = new PageModel();
 											p.setTitle(link.text());
 											p.setPage(link.attr("href").replace("/project/index.php?title=",""));
-											p.setParent(novel.getPage() + "%" + book.getTitle());
+											p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 											p.setType(PageModel.TYPE_CONTENT);
 											Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 											chapterCollection.add(p);

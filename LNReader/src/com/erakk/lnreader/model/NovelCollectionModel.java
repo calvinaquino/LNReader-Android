@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -132,4 +133,46 @@ public class NovelCollectionModel {
 		return page;
 	}
 	
+	private ArrayList<PageModel> _FlattedChapterList;
+	public ArrayList<PageModel> getFlattedChapterList() {
+		if(_FlattedChapterList == null) {
+			_FlattedChapterList = new ArrayList<PageModel>();
+			for(Iterator<BookModel> i = this.bookCollections.iterator(); i.hasNext();) {
+				BookModel b = i.next();
+				for(Iterator<PageModel> i2 = b.getChapterCollection().iterator(); i2.hasNext();) {
+					_FlattedChapterList.add(i2.next());
+				}
+			}
+		}
+		return _FlattedChapterList;
+	}
+	
+	public PageModel getNext(String page) {
+		int index = -1;
+		for(Iterator<PageModel> i = getFlattedChapterList().iterator(); i.hasNext();) {
+			PageModel temp = i.next();
+			if(temp.getPage().contentEquals(page)) {
+				index = getFlattedChapterList().indexOf(temp);
+				break;
+			}
+		}
+		if(index != -1 && index + 1 < getFlattedChapterList().size())
+			return getFlattedChapterList().get(index + 1);
+		else return null;
+	}
+	
+	public PageModel getPrev(String page) {
+		int index = -1;
+		for(Iterator<PageModel> i = getFlattedChapterList().iterator(); i.hasNext();) {
+			PageModel temp = i.next();
+			if(temp.getPage().contentEquals(page)) {
+				index = getFlattedChapterList().indexOf(temp);
+				break;
+			}
+		}
+		if(index != -1 && index - 1 >= 0)
+			return getFlattedChapterList().get(index - 1);
+		else return null;
+	}
+
 }

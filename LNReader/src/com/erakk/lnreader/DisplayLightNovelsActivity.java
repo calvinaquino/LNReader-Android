@@ -71,7 +71,7 @@ public class DisplayLightNovelsActivity extends ListActivity{
 		String novel = o.toString();
 		//Create new intent
 		Intent intent = new Intent(this, LightNovelChaptersActivity.class);
-		intent.putExtra(Constants.EXTRA_MESSAGE, novel);
+		intent.putExtra(Constants.EXTRA_NOVEL, novel);
 		intent.putExtra(Constants.EXTRA_PAGE, o.getPage());
 		intent.putExtra(Constants.EXTRA_TITLE, o.getTitle());
 		startActivity(intent);

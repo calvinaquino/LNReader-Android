@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
+import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
@@ -29,7 +30,11 @@ public class DisplayNovelContentActivity extends Activity {
 	private static final String TAG = DisplayNovelContentActivity.class.toString();
 	private NovelsDao dao = new NovelsDao(this);
 	private NovelContentModel content;
+	private NovelCollectionModel novelDetails;
 	private LoadNovelContentTask task;
+	private PageModel page;
+	private String volume;
+	private String parentPage;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -38,15 +43,27 @@ public class DisplayNovelContentActivity extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		Intent intent = getIntent();
-		PageModel page = new PageModel(); 
-		page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
-		page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
+		//PageModel page = new PageModel(); 
+		//page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
+		//page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
+		//volume = intent.getStringExtra(Constants.EXTRA_VOLUME);
+		parentPage = intent.getStringExtra(Constants.EXTRA_NOVEL);
 		
-		ToggleProgressBar(true);
-		task = new LoadNovelContentTask();
-		task.execute(new PageModel[] {page});
-		
-		setTitle(page.getTitle());
+		try {
+			page = dao.getPageModel(intent.getStringExtra(Constants.EXTRA_PAGE));
+			ToggleProgressBar(true);
+			task = new LoadNovelContentTask();
+			task.execute(new PageModel[] {page});
+			
+			novelDetails = dao.getNovelDetails(page.getParentPageModel());
+			
+			volume = page.getParent().replace(page.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
+			
+			setTitle(page.getParentPageModel().getTitle() + ": " + volume + " "+ page.getTitle());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Log.d(TAG, "onCreate called");
 	}
 	
@@ -120,16 +137,42 @@ public class DisplayNovelContentActivity extends Activity {
 			/*
 			 * Implement code to move to previous chapter
 			 */
-			
-			Toast.makeText(getApplicationContext(), "Go previous", Toast.LENGTH_SHORT).show();
+			// still not working orz
+			PageModel prev = novelDetails.getPrev(page.getPage());
+			if(prev!= null) {
+				Intent intent = new Intent(getApplicationContext(), DisplayNovelContentActivity.class);
+		        intent.putExtra(Constants.EXTRA_PAGE, prev.getPage());
+		        intent.putExtra(Constants.EXTRA_TITLE, prev.getTitle());
+		        intent.putExtra(Constants.EXTRA_NOVEL, novelDetails.getPage());
+		        //intent.putExtra(Constants.EXTRA_VOLUME, volume);
+		        
+		        startActivity(intent);
+				//Toast.makeText(getApplicationContext(), "Go previous: " + prev.getTitle(), Toast.LENGTH_SHORT).show();
+			}
+			else {
+				Toast.makeText(getApplicationContext(), "First available chapter.", Toast.LENGTH_SHORT).show();
+			}
 			return true;
 		case R.id.menu_chapter_next:
 			
 			/*
 			 * Implement code to move to next chapter
 			 */
+			PageModel next = novelDetails.getNext(page.getPage());
+			if(next!= null) {
+				Intent intent = new Intent(getApplicationContext(), DisplayNovelContentActivity.class);
+		        intent.putExtra(Constants.EXTRA_PAGE, next.getPage());
+		        intent.putExtra(Constants.EXTRA_TITLE, next.getTitle());
+		        intent.putExtra(Constants.EXTRA_NOVEL, novelDetails.getPage());
+		        //intent.putExtra(Constants.EXTRA_VOLUME, volume);
+		        
+		        startActivity(intent);
+				//Toast.makeText(getApplicationContext(), "Go next: " + next.getTitle(), Toast.LENGTH_SHORT).show();
+			}
+			else {
+				Toast.makeText(getApplicationContext(), "Last available chapter.", Toast.LENGTH_SHORT).show();
+			}
 			
-			Toast.makeText(getApplicationContext(), "Go next", Toast.LENGTH_SHORT).show();
 			return true;
 		case android.R.id.home:
 			NavUtils.navigateUpFromSameTask(this);

@@ -104,6 +104,8 @@ public class LightNovelChaptersActivity extends Activity {
 					Intent intent = new Intent(getApplicationContext(), DisplayNovelContentActivity.class);
 			        intent.putExtra(Constants.EXTRA_PAGE, p.getPage());
 			        intent.putExtra(Constants.EXTRA_TITLE, p.getTitle());
+			        intent.putExtra(Constants.EXTRA_NOVEL, novelCol.getPage());
+			        intent.putExtra(Constants.EXTRA_VOLUME, novelCol.getBookCollections().get(groupPosition).getTitle());
 			        
 			        startActivity(intent);
 				}
