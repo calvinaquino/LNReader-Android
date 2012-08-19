@@ -181,6 +181,7 @@ public class DisplayNovelContentActivity extends Activity {
 
 		protected void onPostExecute(AsyncTaskResult<NovelContentModel> result) {
 			Exception e = result.getError();
+			
 			if(e == null) {
 				content = result.getResult();
 				setContent(content);
@@ -205,14 +206,16 @@ public class DisplayNovelContentActivity extends Activity {
 				wv.setInitialScale((int) (content.getLastZoom() * 100));
 				
 				wv.setPictureListener(new PictureListener(){
+					boolean needScroll = true;
 					@Override
 					@Deprecated
 					public void onNewPicture(WebView arg0, Picture arg1) {
 						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
-						if(wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
+						if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
 							//wv.scrollTo(content.getLastXScroll(), content.getLastYScroll());
 							//wv.setScrollX(value)
 							wv.setScrollY(content.getLastYScroll());
+							needScroll = false;
 						}						
 					}					
 				});
