@@ -283,7 +283,9 @@ public class NovelsDao {
 	}
 
 	private ImageModel getImageModelFromInternet(String page) throws Exception {
-		Response response = Jsoup.connect(Constants.BASE_URL + page)
+		String url = page;
+		if(!url.startsWith("http")) url = Constants.BASE_URL + url;
+		Response response = Jsoup.connect(url)
 				 .timeout(60000)
 				 .execute();
 		Document doc = response.parse();

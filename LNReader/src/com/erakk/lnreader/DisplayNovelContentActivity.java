@@ -198,7 +198,7 @@ public class DisplayNovelContentActivity extends Activity {
 				wv.setWebViewClient(client);
 				
 				String html = Constants.WIKI_CSS_STYLE + "<body>" + content.getContent() + "</body></html>" ;
-				wv.loadDataWithBaseURL("", html, "text/html", "utf-8", "");
+				wv.loadDataWithBaseURL(Constants.BASE_URL, html, "text/html", "utf-8", "");
 				
 				Log.d("LoadNovelContentTask", content.getPage());
 				
