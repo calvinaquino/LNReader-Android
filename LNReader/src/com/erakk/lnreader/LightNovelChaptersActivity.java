@@ -29,14 +29,16 @@ import android.widget.Toast;
 import com.erakk.lnreader.adapter.BookModelAdapter;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 
 public class LightNovelChaptersActivity extends Activity {
-	PageModel page;
-	Activity activity = null;
-	NovelCollectionModel novelCol;
-	NovelsDao dao = new NovelsDao(this);
+	private static final String TAG = LightNovelChaptersActivity.class.toString();
+	private PageModel page;
+	//private Activity activity = null;
+	private NovelCollectionModel novelCol;
+	private NovelsDao dao = new NovelsDao(this);
 	
     private BookModelAdapter ExpAdapter;
     private ExpandableListView ExpandList;
@@ -46,7 +48,7 @@ public class LightNovelChaptersActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        activity = this;
+        //activity = this;
         //Get intent and message
         Intent intent = getIntent();
         page = new PageModel(); 
@@ -55,8 +57,6 @@ public class LightNovelChaptersActivity extends Activity {
         setContentView(R.layout.activity_light_novel_chapters);
         getActionBar().setDisplayHomeAsUpEnabled(true);   
         
-        //dao = new NovelsDao(this);
-        //new LoadNovelDetailsTask().execute(new PageModel[] {page});
         updateContent(false);
        
         // setup listener
@@ -66,6 +66,7 @@ public class LightNovelChaptersActivity extends Activity {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 int groupPosition = ExpandableListView.getPackedPositionGroup(id);
                 int childPosition = ExpandableListView.getPackedPositionChild(id);
+
                 if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
 
                     // You now have everything that you would as if this was an OnChildClickListener() 
@@ -83,14 +84,14 @@ public class LightNovelChaptersActivity extends Activity {
 
                     // You now have everything that you would as if this was an OnChildClickListener() 
                     // Add your logic here.
-        			
-                    Toast.makeText(LightNovelChaptersActivity.this, "longClickGroup", Toast.LENGTH_SHORT).show();
+                	BookModel book = novelCol.getBookCollections().get(groupPosition);
+                    Toast.makeText(LightNovelChaptersActivity.this, "longClickGroup: " + book.getTitle(), Toast.LENGTH_SHORT).show();
 
                     // Return true as we are handling the event.
                     return true;
                 }
 
-                return false;
+                return true;
             }
         });
 
@@ -112,7 +113,14 @@ public class LightNovelChaptersActivity extends Activity {
     	
         setTitle(page.getTitle());
     }
-
+    
+    @Override
+    public void onResume(){
+    	super.onResume();
+    	Log.d(TAG, "Resuming...");
+    	updateContent(false);
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_light_novel_chapters, menu);
@@ -131,8 +139,7 @@ public class LightNovelChaptersActivity extends Activity {
 			updateContent(true);
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
 			return true;
-		case R.id.invert_colors:
-			
+		case R.id.invert_colors:			
 			toggleColorPref();
 			updateViewColor();
 			updateContent(true);
@@ -147,19 +154,19 @@ public class LightNovelChaptersActivity extends Activity {
     }
     
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		MenuInflater inflater = getMenuInflater();
-		Toast.makeText(LightNovelChaptersActivity.this, "onCreateContextMenu", Toast.LENGTH_SHORT).show();
-		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
-		int type = ExpandableListView.getPackedPositionType(info.packedPosition);
-		if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
-//		if (v == findViewById(R.layout.expandvolume_list_item)) {
-			inflater.inflate(R.menu.synopsys_volume_context_menu, menu);
-		} else if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
-//		} else if (v == findViewById(R.layout.expandchapter_list_item)) {
-			inflater.inflate(R.menu.synopsys_chapter_context_menu, menu);
-		}
-	}
+    	super.onCreateContextMenu(menu, v, menuInfo);
+    	MenuInflater inflater = getMenuInflater();
+    	Toast.makeText(LightNovelChaptersActivity.this, "onCreateContextMenu", Toast.LENGTH_SHORT).show();
+    	ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
+    	int type = ExpandableListView.getPackedPositionType(info.packedPosition);
+    	if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+    		//		if (v == findViewById(R.layout.expandvolume_list_item)) {
+    		inflater.inflate(R.menu.synopsys_volume_context_menu, menu);
+    	} else if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+    		//		} else if (v == findViewById(R.layout.expandchapter_list_item)) {
+    		inflater.inflate(R.menu.synopsys_chapter_context_menu, menu);
+    	}
+    }
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
@@ -343,7 +350,7 @@ public class LightNovelChaptersActivity extends Activity {
 				// now add the volume and chapter list.
 				try {
 					// Prepare header
-					if(!refresh) {  
+					if(ExpandList.getHeaderViewsCount() == 0) {  
 						LayoutInflater layoutInflater = getLayoutInflater();
 						View synopsis = layoutInflater.inflate(R.layout.activity_display_synopsis, null);
 						synopsis.findViewById(R.id.loading).setVisibility(TextView.GONE);

@@ -213,31 +213,24 @@ public class DBHelper extends SQLiteOpenHelper {
 		Log.d(TAG, page.toString());
 		
 		PageModel temp = selectFirstBy(db, COLUMN_PAGE, page.getPage());
-
+		ContentValues cv = new ContentValues();
+		cv.put(COLUMN_PAGE, page.getPage());
+		cv.put(COLUMN_TITLE, page.getTitle());
+		cv.put(COLUMN_TYPE, page.getType());
+		cv.put(COLUMN_PARENT, page.getParent());
+		cv.put(COLUMN_LAST_UPDATE, "" + (int) (page.getLastUpdate().getTime()/ 1000));
+		cv.put(COLUMN_IS_WATCHED, page.isWatched());
+		cv.put(COLUMN_IS_FINISHED_READ, page.isFinishedRead());
 		if(temp == null) {
-			Log.d(TAG, "Inserting: " + page.toString());
-			ContentValues cv = new ContentValues();
-			cv.put(COLUMN_PAGE, page.getPage());
-			cv.put(COLUMN_TITLE, page.getTitle());
-			cv.put(COLUMN_TYPE, page.getType());
-			cv.put(COLUMN_PARENT, page.getParent());
-			cv.put(COLUMN_LAST_UPDATE, "" + (int) (page.getLastUpdate().getTime()/ 1000));
+			Log.d(TAG, "Inserting: " + page.toString());			
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
-			cv.put(COLUMN_IS_WATCHED, page.isWatched());
 			db.insertOrThrow(TABLE_PAGE, null, cv);
 		}
 		else {
-			ContentValues cv = new ContentValues();
-			cv.put(COLUMN_ID, page.getId());
-			cv.put(COLUMN_PAGE, page.getPage());
-			cv.put(COLUMN_TITLE, page.getTitle());
-			cv.put(COLUMN_TYPE, page.getType());
-			cv.put(COLUMN_PARENT, page.getParent());
-			cv.put(COLUMN_LAST_UPDATE, "" + (int) (page.getLastUpdate().getTime() / 1000));
-			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
-			cv.put(COLUMN_IS_WATCHED, page.isWatched());
-			db.update(TABLE_PAGE, cv, "id = ?", new String[] {"" + page.getId()});
 			Log.d(TAG, "Updating: " + page.toString());
+			cv.put(COLUMN_LAST_CHECK, "" + (int) (temp.getLastCheck().getTime() / 1000));
+			db.update(TABLE_PAGE, cv, "id = ?", new String[] {"" + page.getId()});
+			
 		}
 		
 		// get the updated data.

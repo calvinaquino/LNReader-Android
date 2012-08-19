@@ -3,6 +3,9 @@ package com.erakk.lnreader.adapter;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,8 +43,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 	}
 
 	public long getChildId(int groupPosition, int childPosition) {
-		ArrayList<PageModel> chList = groups.get(groupPosition).getChapterCollection();
-		return chList.get(childPosition).getId();
+		return childPosition;
 	}
 
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View view, ViewGroup parent) {
@@ -57,6 +59,11 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		TextView tv = (TextView) view.findViewById(R.id.novel_chapter);
 		tv.setText(child.getTitle());
 		tv.setTag(child.getPage());
+		
+		Log.d("getChildView", "Finished read " + child.getTitle() + " : " + child.isFinishedRead());
+		if(child.isFinishedRead()) {
+			tv.setTextColor(Color.parseColor("#888888"));
+		}
 		return view;
 	}
 
@@ -74,7 +81,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 	}
 
 	public long getGroupId(int groupPosition) {
-		return groups.get(groupPosition).getId();
+		return groupPosition;
 	}
 
 	public View getGroupView(int groupPosition, boolean isLastChild, View view, ViewGroup parent) {

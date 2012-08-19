@@ -51,7 +51,7 @@ public class DisplayNovelContentActivity extends Activity {
 	}
 	
 	@Override
-	public void onStop() {
+	public void onPause() {
 		if(content!= null) {
 			// save last position and zoom
 			WebView wv = (WebView) findViewById(R.id.webView1);
@@ -64,14 +64,20 @@ public class DisplayNovelContentActivity extends Activity {
 				try{
 					PageModel page = content.getPageModel();
 					page.setFinishedRead(true);
-					dao.updatePageModel(page);
+					page = dao.updatePageModel(page);
+					Log.d(TAG, "Complete read content:" + page.getTitle());			
 				}catch(Exception ex) {
 					ex.printStackTrace();
 				}
-			}			
+			}
 			Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 		}
-		
+		Log.d(TAG, "Pausing activity");
+		super.onPause();
+	}
+	
+	@Override
+	public void onStop() {
 		if(task.getStatus() != Status.FINISHED) {
 			task.cancel(true);
 		}
@@ -191,7 +197,7 @@ public class DisplayNovelContentActivity extends Activity {
 				BakaTsukiWebViewClient client = new BakaTsukiWebViewClient();
 				wv.setWebViewClient(client);
 				
-				String html = Constants.WIKI_CSS_STYLE + content.getContent();
+				String html = Constants.WIKI_CSS_STYLE + "<body>" + content.getContent() + "</body></html>" ;
 				wv.loadDataWithBaseURL("", html, "text/html", "utf-8", "");
 				
 				Log.d("LoadNovelContentTask", content.getPage());
@@ -202,7 +208,12 @@ public class DisplayNovelContentActivity extends Activity {
 					@Override
 					@Deprecated
 					public void onNewPicture(WebView arg0, Picture arg1) {
-						wv.scrollTo(content.getLastXScroll(), content.getLastYScroll());
+						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
+						if(wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
+							//wv.scrollTo(content.getLastXScroll(), content.getLastYScroll());
+							//wv.setScrollX(value)
+							wv.setScrollY(content.getLastYScroll());
+						}						
 					}					
 				});
 				
