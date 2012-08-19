@@ -113,6 +113,7 @@ public class NovelsDao {
 	public  PageModel updatePageModel(PageModel page) {
 		SQLiteDatabase db = dbh.getWritableDatabase();
 		PageModel pageModel = dbh.insertOrUpdatePageModel(db, page);
+		db.close();
 		return pageModel;
 	}
 	

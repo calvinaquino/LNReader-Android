@@ -22,7 +22,9 @@ import com.erakk.lnreader.model.PageModel;
 
 @SuppressLint("NewApi")
 public class DisplayNovelContentActivity extends Activity {
+	private static final String TAG = DisplayNovelContentActivity.class.toString();
 	NovelsDao dao = new NovelsDao(this);
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -40,7 +42,20 @@ public class DisplayNovelContentActivity extends Activity {
 		
 		setTitle(page.getTitle());
 	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		Log.d(TAG, "Pausing activity");
+	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		Log.d(TAG, "Resuming activity");
+	}
+
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_display_novel_content, menu);

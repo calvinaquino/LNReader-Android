@@ -280,9 +280,9 @@ public class DisplayLightNovelsActivity extends ListActivity{
 					refreshOnly = true;
 				}
 				ToggleProgressBar(false);
-				if (list.size() == 0 || onlyWatched) {
+				
+				if (list.size() == 0 && onlyWatched) {
 					// Show message if watch list is empty
-					// TODO: verify the logic.
 					TextView tv = (TextView) findViewById(R.id.loading);
 					tv.setVisibility(TextView.VISIBLE);
 					tv.setText("Watch List is empty.");
