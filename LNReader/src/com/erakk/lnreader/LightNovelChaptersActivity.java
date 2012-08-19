@@ -1,8 +1,5 @@
 package com.erakk.lnreader;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -29,12 +26,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.erakk.lnreader.adapter.ExpandListAdapter;
-import com.erakk.lnreader.classes.ExpandListChild;
-import com.erakk.lnreader.classes.ExpandListGroup;
+import com.erakk.lnreader.adapter.BookModelAdapter;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
-import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 
@@ -44,8 +38,7 @@ public class LightNovelChaptersActivity extends Activity {
 	NovelCollectionModel novelCol;
 	NovelsDao dao = new NovelsDao(this);
 	
-    private ExpandListAdapter ExpAdapter;
-    private ArrayList<ExpandListGroup> ExpListItems;
+    private BookModelAdapter ExpAdapter;
     private ExpandableListView ExpandList;
     
     @SuppressLint({ "NewApi", "NewApi" })
@@ -374,26 +367,8 @@ public class LightNovelChaptersActivity extends Activity {
 
 						ExpandList.addHeaderView(synopsis);
 					}
-				
-					ArrayList<ExpandListGroup> list = new ArrayList<ExpandListGroup>();
-					for(Iterator<BookModel> i = novelCol.getBookCollections().iterator(); i.hasNext();) {
-						BookModel book = i.next();
-						ExpandListGroup volume = new ExpandListGroup();
-						volume.setName(book.getTitle());
-						list.add(volume);
-						ArrayList<ExpandListChild> list2 = new ArrayList<ExpandListChild>();
-		        		for(Iterator<PageModel> i2 = book.getChapterCollection().iterator(); i2.hasNext();){
-		        			PageModel chapter = i2.next();
-		        			ExpandListChild chapter_page = new ExpandListChild();
-		        			//chapter_page.setName(chapter.getTitle());
-		        			chapter_page.setName(chapter.getTitle() + " (" + chapter.getPage() + ") id: " + chapter.getId());
-		        			chapter_page.setTag(null);
-		        			list2.add(chapter_page);
-		        		}
-						volume.setItems(list2);
-					}       
-					ExpListItems = list;
-		        	ExpAdapter = new ExpandListAdapter(LightNovelChaptersActivity.this, ExpListItems);
+
+		        	ExpAdapter = new BookModelAdapter(LightNovelChaptersActivity.this, novelCol.getBookCollections());
 		        	ExpandList.setAdapter(ExpAdapter);
 				} catch (Exception e2) {
 					e2.getStackTrace();

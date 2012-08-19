@@ -23,6 +23,7 @@ import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
+@SuppressWarnings("deprecation")
 @SuppressLint("NewApi")
 public class DisplayNovelContentActivity extends Activity {
 	private static final String TAG = DisplayNovelContentActivity.class.toString();
@@ -58,6 +59,16 @@ public class DisplayNovelContentActivity extends Activity {
 			content.setLastYScroll(wv.getScrollY());
 			content.setLastZoom(wv.getScale());
 			content = dao.updateNovelContent(content);
+			
+			if(wv.getContentHeight() <=  wv.getScrollY() + wv.getBottom()) {
+				try{
+					PageModel page = content.getPageModel();
+					page.setFinishedRead(true);
+					dao.updatePageModel(page);
+				}catch(Exception ex) {
+					ex.printStackTrace();
+				}
+			}			
 			Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 		}
 		
@@ -162,7 +173,6 @@ public class DisplayNovelContentActivity extends Activity {
 			}
 		}
 
-		@SuppressWarnings("deprecation")
 		protected void onPostExecute(AsyncTaskResult<NovelContentModel> result) {
 			Exception e = result.getError();
 			if(e == null) {
@@ -195,7 +205,6 @@ public class DisplayNovelContentActivity extends Activity {
 						wv.scrollTo(content.getLastXScroll(), content.getLastYScroll());
 					}					
 				});
-				
 				
 				Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 			}

@@ -31,6 +31,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_TYPE = "type";
 	public static final String COLUMN_PARENT = "parent";
 	public static final String COLUMN_IS_WATCHED = "is_watched";
+	public static final String COLUMN_IS_FINISHED_READ = "is_finished_read";
 	
 	public static final String TABLE_IMAGE = "images";
 	public static final String COLUMN_IMAGE = "name";
@@ -50,7 +51,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_ZOOM = "lastZoom";
 
 	private static final String DATABASE_NAME = "pages.db";
-	private static final int DATABASE_VERSION = 13;
+	private static final int DATABASE_VERSION = 15;
 
 	// Database creation SQL statement
 	private static final String DATABASE_CREATE_PAGES = "create table "
@@ -61,7 +62,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			  				 + COLUMN_PARENT + " text, "
 			  				 + COLUMN_LAST_UPDATE + " integer, "
 			  				 + COLUMN_LAST_CHECK + " integer, "
-			  				 + COLUMN_IS_WATCHED + " boolean);";
+			  				 + COLUMN_IS_WATCHED + " boolean, "
+			  				 + COLUMN_IS_FINISHED_READ + " boolean);";
 	
 	private static final String DATABASE_CREATE_IMAGES = "create table "
 		      + TABLE_IMAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -253,6 +255,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		page.setLastUpdate(new Date(cursor.getLong(5)*1000));
 		page.setLastCheck(new Date(cursor.getLong(6)*1000));
 		page.setWatched(cursor.getInt(7) == 1 ? true : false);
+		page.setFinishedRead(cursor.getInt(8) == 1 ? true : false);
 	    return page;
 	}
 	

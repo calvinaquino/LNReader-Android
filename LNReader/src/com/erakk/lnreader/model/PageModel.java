@@ -9,13 +9,6 @@ public class PageModel {
 	public static final String TYPE_CONTENT = "Content";
 	
 	private int id;
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	
 	private String page;
 	private String title;
 	private String type;
@@ -23,8 +16,14 @@ public class PageModel {
 	private String parent;
 	private Date lastCheck;
 	private boolean isWatched;
+	private boolean isFinishedRead;
 	
-	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public String getPage() {
 		return page;
 	}
@@ -70,6 +69,12 @@ public class PageModel {
 	}
 	public void setWatched(boolean isWatched) {
 		this.isWatched = isWatched;
+	}
+	public boolean isFinishedRead() {
+		return isFinishedRead;
+	}
+	public void setFinishedRead(boolean isFinishedRead) {
+		this.isFinishedRead = isFinishedRead;
 	}
 	
 }
