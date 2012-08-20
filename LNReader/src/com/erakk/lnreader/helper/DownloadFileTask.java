@@ -101,7 +101,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 
 				//via notifier, C# style :)
 				if(notifier!=null) {
-					notifier.onCallback("Progress: " + progress + "%");
+					notifier.onCallback("Downloading: " + url + "\nProgress: " + progress + "%");
 				}
 				Log.d(TAG, "Downloading: " + url + " " + progress + "%");
 				output.write(data, 0, count);

@@ -1,11 +1,15 @@
 package com.erakk.lnreader;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
@@ -26,12 +30,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.erakk.lnreader.DisplayLightNovelContentActivity.LoadNovelContentTask;
 import com.erakk.lnreader.adapter.BookModelAdapter;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.ICallbackNotifier;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
+import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
 public class DisplayLightNovelDetailsActivity extends Activity {
@@ -44,9 +50,12 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     private BookModelAdapter bookModelAdapter;
     private ExpandableListView expandList;
     
+    private DownloadNovelContentTask downloadTask = null;
+    private LoadNovelDetailsTask task = null;
+    
     @SuppressLint({ "NewApi", "NewApi" })
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
+     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         //activity = this;
@@ -63,40 +72,6 @@ public class DisplayLightNovelDetailsActivity extends Activity {
         // setup listener
         expandList = (ExpandableListView) findViewById(R.id.chapter_list);
         registerForContextMenu(expandList);
-        
-//        ExpandList.setOnItemLongClickListener(new OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-//                int groupPosition = ExpandableListView.getPackedPositionGroup(id);
-//                int childPosition = ExpandableListView.getPackedPositionChild(id);
-//
-//                if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
-//
-//                    // You now have everything that you would as if this was an OnChildClickListener() 
-//                    // Add your logic here.
-//                	//activity.openContextMenu(view);
-//                	//parent.showContextMenu();                	
-//                    PageModel page = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
-//                    Toast.makeText(DisplayLightNovelDetailsActivity.this, "longClick: " + page.getTitle(), Toast.LENGTH_SHORT).show();
-//
-//                    // Return true as we are handling the event.
-//                    return true;
-//                }
-//                else if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
-//
-//                    // You now have everything that you would as if this was an OnChildClickListener() 
-//                    // Add your logic here.
-//                	BookModel book = novelCol.getBookCollections().get(groupPosition);
-//                    Toast.makeText(DisplayLightNovelDetailsActivity.this, "longClickGroup: " + book.getTitle(), Toast.LENGTH_SHORT).show();
-//
-//                    // Return true as we are handling the event.
-//                    return true;
-//                }
-//
-//                return true;
-//            }
-//        });
-
         expandList.setOnChildClickListener(new OnChildClickListener() {			
 			@Override
 			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
@@ -123,6 +98,17 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     	super.onResume();
     	Log.d(TAG, "Resuming...");
     	updateContent(false);
+    }
+    
+    public void onStop(){
+    	// check running task
+    	if(task != null && !(task.getStatus() == Status.FINISHED)) {
+    		task.cancel(true);
+    	}
+    	if(downloadTask != null && !(downloadTask.getStatus() == Status.FINISHED)) {
+    		downloadTask.cancel(true);
+    	}
+    	super.onStop();
     }
     
     @Override
@@ -160,12 +146,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
     	super.onCreateContextMenu(menu, v, menuInfo);
     	ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
-
-//    	// unpacking
-//    	int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
-//    	int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
-//    	Toast.makeText(this, "Position: " + groupPosition + " " + childPosition, Toast.LENGTH_SHORT).show();
-//    	
+	
     	MenuInflater inflater = getMenuInflater();
     	int type = ExpandableListView.getPackedPositionType(info.packedPosition);    	
     	if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
@@ -182,8 +163,8 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     	int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
     	int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
     	
-		//AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-		//String[] names = getResources().getStringArray(R.array.novel_context_menu);
+    	PageModel chapter = null;
+    	
 		switch(item.getItemId()) {
 		//Volume cases
 		case R.id.download_volume:
@@ -192,6 +173,16 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			 * Implement code to download this volume
 			 */
 			BookModel book = novelCol.getBookCollections().get(groupPosition);//.getChapterCollection().get(childPosition);
+			// get the chapter which not downloaded yet
+			ArrayList<PageModel> downloadingChapters = new ArrayList<PageModel>();
+			for(Iterator<PageModel> i = book.getChapterCollection().iterator(); i.hasNext();) {
+				PageModel temp = i.next();
+				if(!temp.isDownloaded()) downloadingChapters.add(temp);
+			}
+			
+			downloadTask = new DownloadNovelContentTask((PageModel[]) downloadingChapters.toArray(new PageModel[downloadingChapters.size()]));
+			downloadTask.execute();
+			
 			Toast.makeText(this, "Download this Volume: " + book.getTitle(),
 					Toast.LENGTH_SHORT).show();
 			return true;
@@ -219,7 +210,9 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			/*
 			 * Implement code to download this chapter
 			 */
-			PageModel chapter = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
+			chapter = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
+			downloadTask = new DownloadNovelContentTask(new PageModel[] { chapter});
+			downloadTask.execute();
 			Toast.makeText(this, "Download this chapter: " + chapter.getTitle(), Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.clear_chapter:
@@ -228,17 +221,18 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			 * Implement code to clear this chapter cache
 			 */
 			
-			Toast.makeText(this, "Clear this Chapter",
-					Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "Clear this Chapter", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.mark_read:
 			
 			/*
 			 * Implement code to mark this chapter read
 			 */
-			
-			Toast.makeText(this, "Mark as Read",
-					Toast.LENGTH_SHORT).show();
+			chapter = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
+			chapter.setFinishedRead(true);
+			dao.updatePageModel(chapter);
+			bookModelAdapter.notifyDataSetChanged();
+			Toast.makeText(this, "Mark as Read", Toast.LENGTH_SHORT).show();
 			return true;
 		default:
 			return super.onContextItemSelected(item);
@@ -284,7 +278,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     private void updateContent ( boolean willRefresh) {
 //		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 //    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
-		LoadNovelDetailsTask task = new LoadNovelDetailsTask();
+		task = new LoadNovelDetailsTask();
 		task.refresh = willRefresh;
 		task.execute(page);
 	}
@@ -405,4 +399,66 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			ToggleProgressBar(false);
 		}		
     }
+
+	public class DownloadNovelContentTask extends AsyncTask<Void, String, AsyncTaskResult<NovelContentModel[]>> implements ICallbackNotifier{
+		private PageModel[] chapters;
+		
+		public DownloadNovelContentTask(PageModel[] chapters) {
+			super();
+			this.chapters = chapters;
+		}
+		
+		@Override
+		protected void onPreExecute (){
+			// executed on UI thread.
+			ToggleProgressBar(true);
+		}
+		
+		@Override
+		public void onCallback(String message) {
+    		publishProgress(message);
+    	}
+
+		@Override
+		protected AsyncTaskResult<NovelContentModel[]> doInBackground(Void... params) {
+			try{
+				NovelContentModel[] contents = new NovelContentModel[chapters.length];
+				for(int i = 0; i < chapters.length; ++i) {
+					publishProgress("Downloading: " + chapters[i].getTitle());
+					NovelContentModel temp = dao.getNovelContentFromInternet(chapters[i], this);
+					contents[i] = temp;
+				}
+				return new AsyncTaskResult<NovelContentModel[]>(contents);
+			}catch(Exception e) {
+				return new AsyncTaskResult<NovelContentModel[]>(e);
+			}
+		}
+		
+		@Override
+		protected void onProgressUpdate (String... values){
+			//executed on UI thread.
+			TextView tv = (TextView) findViewById(R.id.loading);
+			tv.setText(values[0]);
+		}
+		
+		@Override
+		protected void onPostExecute(AsyncTaskResult<NovelContentModel[]> result) {
+			Exception e = result.getError();
+			if(e == null) {
+				NovelContentModel[] content = result.getResult();
+				if(content != null && content.length == chapters.length) {
+//					for(int i = 0; i < chapters.length; ++i) {
+//						chapters[i].setDownloaded(true);
+//					}
+//					bookModelAdapter.notifyDataSetChanged();
+					updateContent(false);
+				}
+			}
+			else {
+				e.printStackTrace();
+				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
+			}
+			ToggleProgressBar(false);
+		}
+	}
 }
