@@ -19,7 +19,9 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/progressBar2"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp" 
+        android:background="#ffffff"
+        android:alpha="0.8"/>
     
 
     <ListView

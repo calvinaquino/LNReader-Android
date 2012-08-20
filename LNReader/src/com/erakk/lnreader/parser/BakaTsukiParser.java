@@ -76,6 +76,7 @@ public class BakaTsukiParser {
 				page.setPage(link.attr("href").replace("/project/index.php?title=", ""));
 				page.setType(PageModel.TYPE_NOVEL);
 				page.setTitle(link.text());
+				// TODO: get the actual last update time. 
 				page.setLastUpdate(new Date());
 				page.setLastCheck(new Date());
 				page.setParent("Main_Page");

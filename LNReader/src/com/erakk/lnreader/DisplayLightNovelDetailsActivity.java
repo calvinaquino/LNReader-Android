@@ -54,7 +54,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
         page = new PageModel(); 
         page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
         page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
-        setContentView(R.layout.activity_light_novel_chapters);
+        setContentView(R.layout.activity_display_light_novel_details);
         getActionBar().setDisplayHomeAsUpEnabled(true);   
         
         updateContent(false);

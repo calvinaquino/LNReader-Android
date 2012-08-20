@@ -147,11 +147,13 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	public ArrayList<PageModel> insertAllNovel(SQLiteDatabase db, ArrayList<PageModel> list) {
+		ArrayList<PageModel> updatedList = new ArrayList<PageModel>();
 		for(Iterator<PageModel> i = list.iterator(); i.hasNext();){
 			PageModel p = i.next();
 			p = insertOrUpdatePageModel(db, p);
+			updatedList.add(p);
 		}
-		return list;
+		return updatedList;
 	}
 	
 	public PageModel getPageModel(SQLiteDatabase db, String page) {
@@ -219,15 +221,17 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_TYPE, page.getType());
 		cv.put(COLUMN_PARENT, page.getParent());
 		cv.put(COLUMN_LAST_UPDATE, "" + (int) (page.getLastUpdate().getTime()/ 1000));
-		cv.put(COLUMN_IS_WATCHED, page.isWatched());
-		cv.put(COLUMN_IS_FINISHED_READ, page.isFinishedRead());
 		if(temp == null) {
-			Log.d(TAG, "Inserting: " + page.toString());			
+			Log.d(TAG, "Inserting: " + page.toString());
+			cv.put(COLUMN_IS_WATCHED, false);
+			cv.put(COLUMN_IS_FINISHED_READ, false);
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			db.insertOrThrow(TABLE_PAGE, null, cv);
 		}
 		else {
 			Log.d(TAG, "Updating: " + page.toString());
+			cv.put(COLUMN_IS_WATCHED, temp.isWatched());
+			cv.put(COLUMN_IS_FINISHED_READ, temp.isFinishedRead()	);
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (temp.getLastCheck().getTime() / 1000));
 			db.update(TABLE_PAGE, cv, "id = ?", new String[] {"" + page.getId()});
 			
@@ -235,6 +239,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		
 		// get the updated data.
 		page = getPageModel(db, page.getPage());
+		Log.d(TAG, "isWatched: "+page.isWatched());
 		return page;
 	}
 	

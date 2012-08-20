@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
@@ -35,17 +36,19 @@ import com.erakk.lnreader.model.PageModel;
  */
 
 public class DisplayLightNovelListActivity extends ListActivity{
-	ArrayList<PageModel> listItems = new ArrayList<PageModel>();
-	PageModelAdapter adapter;
-	NovelsDao dao = new NovelsDao(this);
-	boolean refreshOnly = false;
-	boolean onlyWatched = false;
+	private static final String TAG = DisplayLightNovelListActivity.class.toString();
+	private ArrayList<PageModel> listItems = new ArrayList<PageModel>();
+	private PageModelAdapter adapter;
+	private NovelsDao dao = new NovelsDao(this);
+	private boolean refreshOnly = false;
+	private boolean onlyWatched = false;
+	private LoadNovelsTask task = null;
 
 	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_display_light_novels);
+		setContentView(R.layout.activity_display_light_novel_list);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		registerForContextMenu(getListView());
 
@@ -53,7 +56,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		onlyWatched = intent.getExtras().getBoolean(Constants.EXTRA_ONLY_WATCHED);
 
 		//Encapsulated in updateContent
-		updateContent ();
+		updateContent();
 		
 		if(onlyWatched){
 			setTitle("Watched Light Novels");
@@ -85,6 +88,18 @@ public class DisplayLightNovelListActivity extends ListActivity{
 	}
 	
 	@Override
+	protected void onStop() {
+		// cancel running task
+		if(task != null) {
+			if(!(task.getStatus() == Status.FINISHED)) {
+				task.cancel(true);
+				Log.d(TAG, "Stopping running task.");
+			}
+		}
+		super.onStop();
+	}
+	
+	@Override
     protected void onResume() {
         super.onResume();
         // The activity has become visible (it is now "resumed").
@@ -103,6 +118,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 			/*
 			 * Implement code to refresh novel list
 			 */
+			refreshOnly = true;
 			updateContent();
 			
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
@@ -254,8 +270,14 @@ public class DisplayLightNovelListActivity extends ListActivity{
 					return new AsyncTaskResult<ArrayList<PageModel>>(dao.getWatchedNovel());
 				}
 				else {
-					publishProgress("Loading Novel List");
-					return new AsyncTaskResult<ArrayList<PageModel>>(dao.getNovels());
+					if(refreshOnly) {
+						publishProgress("Refreshing Novel List");
+						return new AsyncTaskResult<ArrayList<PageModel>>(dao.getNovelsFromInternet());
+					}
+					else {
+						publishProgress("Loading Novel List");
+						return new AsyncTaskResult<ArrayList<PageModel>>(dao.getNovels());
+					}
 				}
 				//return new AsyncTaskResult<ArrayList<PageModel>>(listItems);
 			} catch (Exception e) {
@@ -275,10 +297,12 @@ public class DisplayLightNovelListActivity extends ListActivity{
 			//executed on UI thread.
 			ArrayList<PageModel> list = result.getResult();
 			if(list != null) {
-				if (!refreshOnly) {
-					adapter.addAll(list);
-					refreshOnly = true;
+				if (refreshOnly) {
+					adapter.clear();
+					refreshOnly = false;
 				}
+				
+				adapter.addAll(list);
 				ToggleProgressBar(false);
 				
 				if (list.size() == 0 && onlyWatched) {

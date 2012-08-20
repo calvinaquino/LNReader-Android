@@ -21,10 +21,10 @@ import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
 
 public class PageModelAdapter extends ArrayAdapter<PageModel> {
-	Context context;
-	int layoutResourceId;
-	List<PageModel> data;
-
+	private static final String TAG = PageModelAdapter.class.toString();
+	private Context context;
+	private int layoutResourceId;
+	private List<PageModel> data;
 
 	public PageModelAdapter(Context context, int resourceId, List<PageModel> objects) {
 		super(context, resourceId, objects);
@@ -62,6 +62,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		
 		holder.chkIsWatched = (CheckBox)row.findViewById(R.id.novel_is_watched);
 		if(holder.chkIsWatched != null) {
+			Log.d(TAG, page.getId() + " " + page.getTitle() + " isWatched: " + page.isWatched());
 			holder.chkIsWatched.setChecked(page.isWatched());
 			holder.chkIsWatched.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 

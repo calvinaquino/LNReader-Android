@@ -39,7 +39,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_display_novel_content);
+		setContentView(R.layout.activity_display_light_novel_content);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		Intent intent = getIntent();
