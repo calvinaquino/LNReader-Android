@@ -1,14 +1,14 @@
 package com.erakk.lnreader.helper;
 
-import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.DisplayImageActivity;
-
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
+
+import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.DisplayImageActivity;
 
 public class BakaTsukiWebViewClient extends WebViewClient {
 	@Override
@@ -29,7 +29,10 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 			context.startActivity(intent);
 		}
 		else {
-			Toast.makeText(context, "Url: " + url, Toast.LENGTH_SHORT).show();
+			//Toast.makeText(context, "Url: " + url, Toast.LENGTH_SHORT).show();
+			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+			context.startActivity(browserIntent);
+			return true;
 		}
         return true;
     }	
