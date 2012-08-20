@@ -3,6 +3,8 @@ package com.erakk.lnreader.model;
 import java.util.ArrayList;
 import java.util.Date;
 
+import android.content.Context;
+
 import com.erakk.lnreader.dao.NovelsDao;
 
 public class NovelContentModel {
@@ -19,6 +21,11 @@ public class NovelContentModel {
 	private Date lastCheck;
 	
 	private ArrayList<ImageModel> images;
+	private Context context;
+	public NovelContentModel(Context context) {
+		this.context = context;
+	}
+	
 	
 	public int getId() {
 		return id;
@@ -40,8 +47,7 @@ public class NovelContentModel {
 	}
 	public PageModel getPageModel() throws Exception {
 		if(this.pageModel == null) {
-			// hacks to get context.
-			NovelsDao dao = new NovelsDao(NovelsDao.sharedContext);
+			NovelsDao dao = new NovelsDao(context);
 			this.pageModel = dao.getPageModel(this.page, null); 
 		}
 		return pageModel;

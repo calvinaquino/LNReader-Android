@@ -3,6 +3,8 @@ package com.erakk.lnreader.model;
 
 import java.util.Date;
 
+import android.content.Context;
+
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.dao.NovelsDao;
 
@@ -21,6 +23,12 @@ public class PageModel {
 	private Date lastCheck;
 	private boolean isWatched;
 	private boolean isFinishedRead;
+	private boolean isDownloaded;
+	
+	private Context context;
+	public PageModel(Context context) {
+		this.context = context;
+	}
 	
 	public int getId() {
 		return id;
@@ -82,7 +90,7 @@ public class PageModel {
 	}
 	public PageModel getParentPageModel() throws Exception {
 		if(this.parentPageModel == null) {
-			NovelsDao dao = new NovelsDao(NovelsDao.sharedContext);
+			NovelsDao dao = new NovelsDao(context);
 			if(this.type.contentEquals(TYPE_CONTENT)) {
 				String tempParent = parent.substring(0, parent.indexOf(Constants.NOVEL_BOOK_DIVIDER));
 				this.parentPageModel = dao.getPageModel(tempParent, null);
@@ -96,5 +104,10 @@ public class PageModel {
 	public void setParentPageModel(PageModel parentPageModel) {
 		this.parentPageModel = parentPageModel;
 	}
-	
+	public boolean isDownloaded() {
+		return isDownloaded;
+	}
+	public void setDownloaded(boolean isDownloaded) {
+		this.isDownloaded = isDownloaded;
+	}
 }

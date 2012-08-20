@@ -16,6 +16,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
@@ -39,8 +40,8 @@ public class BakaTsukiParser {
 	 * @param doc parsed page for given pageName
 	 * @return PageModel status, no parent and type defined
 	 */
-	public static PageModel parsePageAPI(String pageName, Document doc) throws Exception {
-		PageModel pageModel = new PageModel();
+	public static PageModel parsePageAPI(String pageName, Document doc, Context context) throws Exception {
+		PageModel pageModel = new PageModel(context);
 		pageModel.setPage(pageName);
 		pageModel.setTitle(doc.select("page").first().attr("title"));
 		Log.d(TAG, "parsePageAPI Title: " + pageModel.getTitle());
@@ -58,7 +59,7 @@ public class BakaTsukiParser {
 	 * @param doc parsed page from Main_Page
 	 * @return list of novels in PageModel
 	 */
-	public static ArrayList<PageModel> ParseNovelList(Document doc) {
+	public static ArrayList<PageModel> ParseNovelList(Document doc, Context context) {
 		ArrayList<PageModel> result = new ArrayList<PageModel>();
 		
 		if(doc == null) throw new NullPointerException("Document cannot be null.");
@@ -72,7 +73,7 @@ public class BakaTsukiParser {
 				Element novel = i.next();
 				Element link = novel.select("a").first();
 				
-				PageModel page = new PageModel();
+				PageModel page = new PageModel(context);
 				page.setPage(link.attr("href").replace("/project/index.php?title=", ""));
 				page.setType(PageModel.TYPE_NOVEL);
 				page.setTitle(link.text());
@@ -94,20 +95,20 @@ public class BakaTsukiParser {
 	 * @param page
 	 * @return
 	 */
-	public static NovelCollectionModel ParseNovelDetails(Document doc, PageModel page) {
-		NovelCollectionModel novel = new NovelCollectionModel();
+	public static NovelCollectionModel ParseNovelDetails(Document doc, PageModel page, Context context) {
+		NovelCollectionModel novel = new NovelCollectionModel(context);
 		if(doc == null) throw new NullPointerException("Document cannot be null.");
 		novel.setPage(page.getPage());
 		novel.setPageModel(page);
 		
 		parseNovelSynopsis(doc, novel);		
 		parseNovelCover(doc, novel);				
-		parseNovelChapters(doc, novel);
+		parseNovelChapters(doc, novel, context);
 		
 		return novel;
 	}
 
-	private static ArrayList<BookModel> parseNovelChapters(Document doc, NovelCollectionModel novel) {
+	private static ArrayList<BookModel> parseNovelChapters(Document doc, NovelCollectionModel novel, Context context) {
 		Log.d(TAG, "Start parsing book collections");
 		// parse the collection
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
@@ -162,7 +163,7 @@ public class BakaTsukiParser {
 										Elements links = chapter.select("a");
 										if(links.size() > 0) {
 											Element link = links.first();
-											PageModel p = new PageModel();
+											PageModel p = new PageModel(context);
 											p.setTitle(link.text());
 											p.setPage(link.attr("href").replace("/project/index.php?title=",""));
 											p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
@@ -213,7 +214,7 @@ public class BakaTsukiParser {
 											Elements links = chapter.select("a");
 											if(links.size() > 0) {
 												Element link = links.first();
-												PageModel p = new PageModel();
+												PageModel p = new PageModel(context);
 												p.setTitle(link.text());
 												p.setPage(link.attr("href").replace("/project/index.php?title=",""));
 												p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
@@ -228,7 +229,7 @@ public class BakaTsukiParser {
 										Elements links = bookElement.select("a");
 										if(links.size() > 0) {
 											Element link = links.first();
-											PageModel p = new PageModel();
+											PageModel p = new PageModel(context);
 											p.setTitle(link.text());
 											p.setPage(link.attr("href").replace("/project/index.php?title=",""));
 											p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
@@ -343,8 +344,9 @@ public class BakaTsukiParser {
 		return synopsis;
 	}
 
-	public static NovelContentModel ParseNovelContent(Document doc, PageModel page) {
-		NovelContentModel content = new NovelContentModel();
+	public static NovelContentModel ParseNovelContent(Document doc, PageModel page, Context context) {
+		NovelContentModel content = new NovelContentModel(context);
+		page.setDownloaded(true);
 		content.setPage(page.getPage());
 		content.setPageModel(page);
 		

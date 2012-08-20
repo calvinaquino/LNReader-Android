@@ -36,6 +36,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	private PageModel pageModel;
 	private String volume;
 	private String parentPage;
+	private boolean refresh = false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 			task.execute(new PageModel[] {pageModel});	
 		} catch (Exception e) {
 			e.printStackTrace();
-			Log.d(TAG, "Failed to get the PageModel for content: " + content.getPage());
+			Log.d(TAG, "Failed to get the PageModel for content: " + intent.getStringExtra(Constants.EXTRA_PAGE));
 		}
 		Log.d(TAG, "onCreate called");
 	}
@@ -70,8 +71,12 @@ public class DisplayLightNovelContentActivity extends Activity {
 			content.setLastXScroll(wv.getScrollX());
 			content.setLastYScroll(wv.getScrollY());
 			content.setLastZoom(wv.getScale());
-			content = dao.updateNovelContent(content);
-			
+			try{
+				content = dao.updateNovelContent(content);
+			}catch(Exception ex) {
+				// TODO: need to handle properly
+				ex.printStackTrace();
+			}
 			if(wv.getContentHeight() <=  wv.getScrollY() + wv.getBottom()) {
 				try{
 					PageModel page = content.getPageModel();
@@ -116,7 +121,9 @@ public class DisplayLightNovelContentActivity extends Activity {
 			/*
 			 * Implement code to refresh chapter content
 			 */
-			
+			refresh = true;
+			task = new LoadNovelContentTask();
+			task.execute(pageModel);
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.invert_colors:
@@ -191,7 +198,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	}
 	
 	public class LoadNovelContentTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelContentModel>> implements ICallbackNotifier{
-    	public void onCallback(String message) {
+		public void onCallback(String message) {
     		publishProgress(message);
     	}
     	
@@ -205,8 +212,12 @@ public class DisplayLightNovelContentActivity extends Activity {
 		protected AsyncTaskResult<NovelContentModel> doInBackground(PageModel... params) {
 			try{
 				PageModel p = params[0];
-				NovelContentModel content = dao.getNovelContent(p, this);
-				return new AsyncTaskResult<NovelContentModel>(content);
+				if(refresh) {
+					return new AsyncTaskResult<NovelContentModel>(dao.getNovelContentFromInternet(p, this));
+				}
+				else {
+					return new AsyncTaskResult<NovelContentModel>(dao.getNovelContent(p, this));
+				}
 			}catch(Exception e) {
 				return new AsyncTaskResult<NovelContentModel>(e);
 			}
@@ -218,7 +229,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 			if(e == null) {
 				content = result.getResult();
 				setContent(content);
-
+				
 				// load the contents here
 				final WebView wv = (WebView) findViewById(R.id.webView1);
 				wv.getSettings().setAllowFileAccess(true);
@@ -259,7 +270,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 					
 					setTitle(pageModel.getParentPageModel().getTitle() + ": " + volume + " "+ pageModel.getTitle());
 				} catch (Exception ex) {
-				
+					ex.printStackTrace();
 				}
 				Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 			}
@@ -268,6 +279,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 			}
 			ToggleProgressBar(false);
+			refresh = false;
 		}
 	}
 

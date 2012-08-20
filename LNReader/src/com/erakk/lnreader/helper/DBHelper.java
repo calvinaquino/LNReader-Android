@@ -32,6 +32,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_PARENT = "parent";
 	public static final String COLUMN_IS_WATCHED = "is_watched";
 	public static final String COLUMN_IS_FINISHED_READ = "is_finished_read";
+	public static final String COLUMN_IS_DOWNLOADED = "is_downloaded";
 	
 	public static final String TABLE_IMAGE = "images";
 	public static final String COLUMN_IMAGE = "name";
@@ -51,7 +52,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_ZOOM = "lastZoom";
 
 	private static final String DATABASE_NAME = "pages.db";
-	private static final int DATABASE_VERSION = 15;
+	private static final int DATABASE_VERSION = 16;
 
 	// Database creation SQL statement
 	private static final String DATABASE_CREATE_PAGES = "create table "
@@ -63,7 +64,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			  				 + COLUMN_LAST_UPDATE + " integer, "
 			  				 + COLUMN_LAST_CHECK + " integer, "
 			  				 + COLUMN_IS_WATCHED + " boolean, "
-			  				 + COLUMN_IS_FINISHED_READ + " boolean);";
+			  				 + COLUMN_IS_FINISHED_READ + " boolean, "
+			  				 + COLUMN_IS_DOWNLOADED + " boolean );";
 	
 	private static final String DATABASE_CREATE_IMAGES = "create table "
 		      + TABLE_IMAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -100,8 +102,10 @@ public class DBHelper extends SQLiteOpenHelper {
 				  				    + COLUMN_LAST_UPDATE + " integer, "
 				  				    + COLUMN_LAST_CHECK + " integer);";
 	
+	private Context context;
 	public DBHelper(Context context) {
 	    super(context, DATABASE_NAME, null, DATABASE_VERSION);
+	    this.context = context;
 	}
 	
 	@Override
@@ -214,7 +218,14 @@ public class DBHelper extends SQLiteOpenHelper {
 	public PageModel insertOrUpdatePageModel(SQLiteDatabase db, PageModel page){
 		Log.d(TAG, page.toString());
 		
-		PageModel temp = selectFirstBy(db, COLUMN_PAGE, page.getPage());
+		PageModel temp = null;
+		if(page.getId() > 0){
+			temp = page;
+		}
+		else {
+			temp = selectFirstBy(db, COLUMN_PAGE, page.getPage());
+		}
+		
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_PAGE, page.getPage());
 		cv.put(COLUMN_TITLE, page.getTitle());
@@ -226,25 +237,25 @@ public class DBHelper extends SQLiteOpenHelper {
 			cv.put(COLUMN_IS_WATCHED, false);
 			cv.put(COLUMN_IS_FINISHED_READ, false);
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
+			cv.put(COLUMN_IS_DOWNLOADED, false);
 			db.insertOrThrow(TABLE_PAGE, null, cv);
 		}
 		else {
-			Log.d(TAG, "Updating: " + page.toString());
+			Log.d(TAG, "Updating: " + temp.toString());
 			cv.put(COLUMN_IS_WATCHED, temp.isWatched());
-			cv.put(COLUMN_IS_FINISHED_READ, temp.isFinishedRead()	);
+			cv.put(COLUMN_IS_FINISHED_READ, temp.isFinishedRead());
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (temp.getLastCheck().getTime() / 1000));
-			db.update(TABLE_PAGE, cv, "id = ?", new String[] {"" + page.getId()});
-			
+			cv.put(COLUMN_IS_DOWNLOADED, temp.isDownloaded());
+			db.update(TABLE_PAGE, cv, "id = ?", new String[] {"" + temp.getId()});
 		}
 		
 		// get the updated data.
 		page = getPageModel(db, page.getPage());
-		Log.d(TAG, "isWatched: "+page.isWatched());
 		return page;
 	}
 	
 	private PageModel cursorTopage(Cursor cursor) {
-		PageModel page = new PageModel();
+		PageModel page = new PageModel(context);
 		page.setId(cursor.getInt(0));
 		page.setPage(cursor.getString(1));
 		page.setTitle(cursor.getString(2));
@@ -254,6 +265,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		page.setLastCheck(new Date(cursor.getLong(6)*1000));
 		page.setWatched(cursor.getInt(7) == 1 ? true : false);
 		page.setFinishedRead(cursor.getInt(8) == 1 ? true : false);
+		page.setDownloaded(cursor.getInt(9) == 1 ? true : false);
 	    return page;
 	}
 	
@@ -423,7 +435,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	private NovelCollectionModel cursorToNovelCollection(Cursor cursor) {
-		NovelCollectionModel novelDetails = new NovelCollectionModel();
+		NovelCollectionModel novelDetails = new NovelCollectionModel(context);
 		novelDetails.setId(cursor.getInt(0));
 		novelDetails.setPage(cursor.getString(1));
 		novelDetails.setSynopsis(cursor.getString(2));
@@ -524,8 +536,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * Nested object : PageModel, lazy loading via NovelsDao
 	 */
 	
-	public NovelContentModel insertNovelContent(SQLiteDatabase db, NovelContentModel content) {
-		Log.d(TAG, "Inserting Novel Content: " + content.getPage());
+	public NovelContentModel insertNovelContent(SQLiteDatabase db, NovelContentModel content) throws Exception {
+		db.beginTransaction();
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_CONTENT, content.getContent());
 		cv.put(COLUMN_PAGE, content.getPage());
@@ -533,22 +545,33 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_LAST_Y, "" + content.getLastYScroll());
 		cv.put(COLUMN_ZOOM, "" + content.getLastZoom());
 		
-		if(content.getId() == 0){
+		NovelContentModel temp = getNovelContent(db, content.getPage());
+		if(temp == null){
+			Log.d(TAG, "Inserting Novel Content: " + content.getPage());
 			cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			db.insertOrThrow(TABLE_NOVEL_CONTENT, null, cv);
-			
-			content = getNovelContent(db, content.getPage());
-			Log.d(TAG, "Complete Insert Novel Content: " + content.getPage() + " id: " + content.getId());
-			
-			// TODO: insert images to db 
-			
 		}
 		else {
-			db.update(TABLE_NOVEL_CONTENT, cv, COLUMN_ID + " = ? ",	new String[] {"" + content.getId()});
-			content = getNovelContent(db, content.getPage());
-			Log.d(TAG, "Complete Update Novel Content: " + content.getPage() + " id: " + content.getId());
-		}		
+			Log.d(TAG, "Updating Novel Content: " + content.getPage() + " id: " + temp.getId());
+			cv.put(COLUMN_LAST_UPDATE, "" + (int) (temp.getLastUpdate().getTime() / 1000));
+			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
+			db.update(TABLE_NOVEL_CONTENT, cv, COLUMN_ID + " = ? ",	new String[] {"" + temp.getId()});
+		}
+		
+		// update the pageModel
+		PageModel pageModel = content.getPageModel();
+		if(pageModel != null) {
+			pageModel.setDownloaded(true);
+			pageModel = insertOrUpdatePageModel(db, pageModel);
+		}
+		
+		// TODO: insert images to db
+		
+		content = getNovelContent(db, content.getPage());
+		
+		db.setTransactionSuccessful();
+		db.endTransaction();
 		return content;
 	}
 	
@@ -570,7 +593,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	private NovelContentModel cursorToNovelContent(Cursor cursor) {
-		NovelContentModel content = new NovelContentModel();
+		NovelContentModel content = new NovelContentModel(context);
 		content.setId(cursor.getInt(0));
 		content.setContent(cursor.getString(1));
 		content.setPage(cursor.getString(2));

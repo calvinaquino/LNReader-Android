@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -16,6 +17,11 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.dao.NovelsDao;
 
 public class NovelCollectionModel {
+	private Context context;
+	public NovelCollectionModel(Context context) {
+		this.context = context;
+	}
+	
 	private int id;
 	public int getId() {
 		return id;
@@ -26,7 +32,7 @@ public class NovelCollectionModel {
 	public PageModel getPageModel() throws Exception {
 		if(this.pageModel == null) {
 			// some hack to get context
-			NovelsDao dao = new NovelsDao(NovelsDao.sharedContext);
+			NovelsDao dao = new NovelsDao(context);
 			this.pageModel = dao.getPageModel(this.page, null);
 		}		
 		return pageModel;

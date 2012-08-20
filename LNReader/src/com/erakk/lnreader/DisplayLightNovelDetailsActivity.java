@@ -52,7 +52,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
         //activity = this;
         //Get intent and message
         Intent intent = getIntent();
-        page = new PageModel(); 
+        page = new PageModel(this); 
         page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
         page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
         setContentView(R.layout.activity_display_light_novel_details);

@@ -13,7 +13,9 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookModel;
+import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
 public class BookModelAdapter extends BaseExpandableListAdapter {
@@ -60,10 +62,19 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		tv.setText(child.getTitle());
 		tv.setTag(child.getPage());
 		
-		Log.d("getChildView", "Finished read " + child.getTitle() + " : " + child.isFinishedRead());
+		//Log.d("getChildView", "Finished read " + child.getTitle() + " : " + child.isFinishedRead());
 		if(child.isFinishedRead()) {
 			tv.setTextColor(Color.parseColor("#888888"));
 		}
+		
+		TextView tvIsDownloaded = (TextView) view.findViewById(R.id.novel_is_downloaded);
+		Log.d("getChildView", "Downloaded " + child.getTitle() + " id " + child.getId() + " : " + child.isDownloaded() );
+		if(tvIsDownloaded != null) {
+			if(!child.isDownloaded()) {
+				tvIsDownloaded.setVisibility(TextView.GONE);
+			}
+		}
+		
 		return view;
 	}
 

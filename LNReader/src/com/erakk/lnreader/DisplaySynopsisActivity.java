@@ -37,7 +37,7 @@ public class DisplaySynopsisActivity extends Activity {
         //Get intent and message
         Intent intent = getIntent();
         String novel = intent.getStringExtra(Constants.EXTRA_NOVEL);
-        PageModel page = new PageModel(); 
+        PageModel page = new PageModel(this); 
         page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
         page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
         
