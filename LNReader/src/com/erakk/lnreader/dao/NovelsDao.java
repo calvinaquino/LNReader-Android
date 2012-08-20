@@ -18,6 +18,7 @@ import android.util.Log;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.DownloadFileTask;
+import com.erakk.lnreader.helper.ICallbackNotifier;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
@@ -159,7 +160,7 @@ public class NovelsDao {
 	 * NovelCollectionModel
 	 */
 
-	public  NovelCollectionModel getNovelDetails(PageModel page) throws Exception {
+	public  NovelCollectionModel getNovelDetails(PageModel page, ICallbackNotifier notifier) throws Exception {
 		boolean refresh = false;
 		SQLiteDatabase db = dbh.getReadableDatabase();
 		NovelCollectionModel novel = dbh.getNovelDetails(db, page.getPage());
@@ -173,13 +174,13 @@ public class NovelsDao {
 		}
 		
 		if(refresh) {
-			novel = getNovelDetailsFromInternet(page);
+			novel = getNovelDetailsFromInternet(page, notifier);
 		}
 		
 		return novel;
 	}
 	
-	public  NovelCollectionModel getNovelDetailsFromInternet(PageModel page) throws Exception {
+	public  NovelCollectionModel getNovelDetailsFromInternet(PageModel page, ICallbackNotifier notifier) throws Exception {
 		Log.d(TAG, "Getting Novel Details from internet: " + page.getPage());
 		NovelCollectionModel novel = null;
 		
@@ -199,7 +200,7 @@ public class NovelsDao {
 		
 		// download cover image
 		if(novel.getCoverUrl() != null) {
-			DownloadFileTask task = new DownloadFileTask();
+			DownloadFileTask task = new DownloadFileTask(notifier);
 			ImageModel image = task.downloadImage(novel.getCoverUrl());
 			// TODO: need to save to db?
 			Log.d("Image", image.toString());
@@ -213,7 +214,7 @@ public class NovelsDao {
 	 * NovelContentModel
 	 */
 	
-	public  NovelContentModel getNovelContent(PageModel page) throws Exception {
+	public  NovelContentModel getNovelContent(PageModel page, ICallbackNotifier notifier) throws Exception {
 		NovelContentModel content = null;
 		
 		// get from db
@@ -224,13 +225,13 @@ public class NovelsDao {
 		// get from Internet;
 		if(content == null) {
 			Log.d("getNovelContent", "Get from Internet: " + page.getPage());
-			content = getNovelContentFromInternet(page);
+			content = getNovelContentFromInternet(page, notifier);
 		}
 		
 		return content;
 	}
 
-	public  NovelContentModel getNovelContentFromInternet(PageModel page) throws Exception {
+	public  NovelContentModel getNovelContentFromInternet(PageModel page, ICallbackNotifier notifier) throws Exception {
 		NovelContentModel content = new NovelContentModel();
 		
 		Response response = Jsoup.connect(Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&page=" + page.getPage())
@@ -242,7 +243,7 @@ public class NovelsDao {
 		content.setPageModel(page);
 		
 		// download all attached images
-		DownloadFileTask task = new DownloadFileTask();
+		DownloadFileTask task = new DownloadFileTask(notifier);
 		for(Iterator<ImageModel> i = content.getImages().iterator(); i.hasNext();) {
 			ImageModel image = i.next();
 			image = task.downloadImage(image.getUrl());
@@ -266,7 +267,7 @@ public class NovelsDao {
 	 *  ImageModel
 	 */
 	
-	public  ImageModel getImageModel(String page) throws Exception {
+	public  ImageModel getImageModel(String page, ICallbackNotifier notifier) throws Exception {
 		ImageModel image = null;
 		SQLiteDatabase db = dbh.getReadableDatabase();
 		image = dbh.getImage(db, page);
@@ -278,12 +279,12 @@ public class NovelsDao {
 		
 		if(image == null) {
 			Log.d(TAG, "Image not found, getting data from internet: " + page);
-			image = getImageModelFromInternet(page);				
+			image = getImageModelFromInternet(page, notifier);				
 		}		
 		return image;
 	}
 
-	private ImageModel getImageModelFromInternet(String page) throws Exception {
+	public ImageModel getImageModelFromInternet(String page, ICallbackNotifier notifier) throws Exception {
 		String url = page;
 		if(!url.startsWith("http")) url = Constants.BASE_URL + url;
 		Response response = Jsoup.connect(url)
@@ -292,7 +293,7 @@ public class NovelsDao {
 		Document doc = response.parse();
 		ImageModel image = BakaTsukiParser.parseImagePage(doc); // only return the full image url
 		
-		DownloadFileTask downloader = new DownloadFileTask();
+		DownloadFileTask downloader = new DownloadFileTask(notifier);
 		image = downloader.downloadImage(image.getUrl());
 		image.setReferer(page);
 		

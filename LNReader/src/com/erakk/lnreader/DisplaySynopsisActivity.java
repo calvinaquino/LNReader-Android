@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.helper.ICallbackNotifier;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 
@@ -103,7 +104,8 @@ public class DisplaySynopsisActivity extends Activity {
     }
       
     public class LoadNovelDetailsTask extends AsyncTask<PageModel, ProgressBar, AsyncTaskResult<NovelCollectionModel>> {
-
+    	public ICallbackNotifier notifier;
+    	
 		@SuppressLint("NewApi")
 		@Override
 		protected AsyncTaskResult<NovelCollectionModel> doInBackground(PageModel... arg0) {
@@ -114,7 +116,7 @@ public class DisplaySynopsisActivity extends Activity {
 	    	pb.animate();
 				        
 			try {
-				NovelCollectionModel novelCol = dao.getNovelDetails(page);
+				NovelCollectionModel novelCol = dao.getNovelDetails(page, notifier);
 				Log.d("LoadNovelDetailsTask", "Loaded: " + novelCol.getPage());				
 		        return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 			} catch (Exception e) {

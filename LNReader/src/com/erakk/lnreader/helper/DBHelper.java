@@ -439,16 +439,25 @@ public class DBHelper extends SQLiteOpenHelper {
 	 */
 	
 	public ImageModel insertImage(SQLiteDatabase db, ImageModel image){
-		Log.d(TAG, "Inserting Images: " + image.getName());
+		ImageModel temp = getImage(db, image.getName());
+		
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_IMAGE, image.getName());
 		cv.put(COLUMN_FILEPATH, image.getPath());
 		cv.put(COLUMN_URL, image.getUrl().toString());
 		cv.put(COLUMN_REFERER, image.getReferer());
-		cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
-		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
-		db.insertOrThrow(TABLE_IMAGE, null, cv);
-
+		if(temp == null) {
+			Log.d(TAG, "Inserting Images: " + image.getName());
+			cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
+			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
+			db.insertOrThrow(TABLE_IMAGE, null, cv);
+		}
+		else {
+			Log.d(TAG, "Updating Images: " + image.getName());
+			cv.put(COLUMN_LAST_UPDATE, "" + (int) (temp.getLastUpdate().getTime() / 1000));
+			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
+			db.update(TABLE_IMAGE, cv, COLUMN_ID + " = ?", new String[] {"" + temp.getId()});
+		}
 		// get updated data
 		image = getImage(db, image.getName());
 		

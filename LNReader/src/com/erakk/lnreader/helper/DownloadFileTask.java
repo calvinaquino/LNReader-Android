@@ -18,6 +18,16 @@ import com.erakk.lnreader.model.ImageModel;
 
 public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<ImageModel>> {
 	private static final String TAG = DownloadFileTask.class.toString();
+	private ICallbackNotifier notifier = null;
+
+	//	public DownloadFileTask() {
+	//		super();
+	//	}
+
+	public DownloadFileTask(ICallbackNotifier notifier) {
+		super();
+		this.notifier = notifier;
+	}
 
 	@Override
 	protected AsyncTaskResult<ImageModel> doInBackground(URL... urls) {
@@ -43,38 +53,70 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		File cacheDir = new File(path);
 		cacheDir.mkdirs();
 		Log.d(TAG, "Path to: " + path);
-		
-		// check if file already downloaded
-		if(new File(decodedUrl).exists()) {
-			Log.d(TAG, "File exists: " + decodedUrl);
+
+		File tempFilename = new File(decodedUrl + ".!tmp");
+		File decodedFile = new File(decodedUrl);
+
+
+		Log.d(TAG, "Start downloading image: " + url);
+
+		// remove temp file if exist
+		if(tempFilename.exists()) {
+			tempFilename.delete();
 		}
-		else {
-			Log.d(TAG, "Start downloading image: " + url);
-			URLConnection connection = url.openConnection();
-			connection.connect();
-			// this will be useful so that you can show a typical 0-100% progress bar
-			// I'm not using it AT them moment, but don't remove, might be useful for real.
-			int fileLength = connection.getContentLength();
-	
+
+		URLConnection connection = url.openConnection();
+		connection.connect();
+
+		// this will be useful so that you can show a typical 0-100% progress bar
+		// I'm not using it AT them moment, but don't remove, might be useful for real.
+		int fileLength = connection.getContentLength();
+
+		// check saved filesize if already downloaded
+		boolean download = true;
+		if(decodedFile.exists()) {
+			if(decodedFile.length() == fileLength) {
+				download = false;
+				Log.d(TAG, "File exists: " + decodedUrl);
+			}
+			else {
+				decodedFile.delete();
+				Log.d(TAG, "File exists but different size: " + decodedUrl + " " + decodedFile.length() + "!=" + fileLength);
+			}
+		}
+
+		if(download) {
 			// download the file
 			input = new BufferedInputStream(url.openStream());
-			output = new FileOutputStream(decodedUrl);
-	
+			output = new FileOutputStream(tempFilename);
+
 			byte data[] = new byte[1024];
 			long total = 0;
 			int count;
 			while ((count = input.read(data)) != -1) {
 				total += count;
 				// publishing the progress....
-				publishProgress((int) (total * 100 / fileLength));
+				int progress = (int) (total * 100 / fileLength);
+				publishProgress(progress);
+
+				//via notifier, C# style :)
+				if(notifier!=null) {
+					notifier.onProgressChanged("Progress: " + progress + "%");
+				}
+				Log.d(TAG, "Downloading: " + url + " " + progress + "%");
 				output.write(data, 0, count);
 			}
 			output.flush();
 			output.close();
 			input.close();
-			Log.d(TAG, "Downloading image complete, saved to: " + decodedUrl);
 		}
-		
+
+		// Rename file
+		tempFilename.renameTo(decodedFile);
+
+		Log.d(TAG, "Downloading image complete, saved to: " + decodedUrl);
+
+
 		ImageModel image = new ImageModel();
 		image.setName(url.getFile());
 		image.setUrl(url);

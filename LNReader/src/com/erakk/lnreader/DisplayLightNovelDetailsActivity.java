@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.erakk.lnreader.adapter.BookModelAdapter;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.helper.ICallbackNotifier;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
@@ -307,7 +308,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 	@SuppressLint("NewApi")
     public class LoadNovelDetailsTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelCollectionModel>> {
 		public boolean refresh = false;
-		
+		public ICallbackNotifier notifier;
 		@Override
 		protected void onPreExecute (){
 			// executed on UI thread.
@@ -320,12 +321,12 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			try {
 				if(refresh) {
 					publishProgress("Refreshing chapter list...");
-					NovelCollectionModel novelCol = dao.getNovelDetailsFromInternet(page);
+					NovelCollectionModel novelCol = dao.getNovelDetailsFromInternet(page, notifier);
 					return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 				}
 				else {
 					publishProgress("Loading chapter list...");
-					NovelCollectionModel novelCol = dao.getNovelDetails(page);
+					NovelCollectionModel novelCol = dao.getNovelDetails(page, notifier);
 					Log.d("LoadNovelDetailsTask", "Loaded: " + novelCol.getPage());				
 					return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 				}

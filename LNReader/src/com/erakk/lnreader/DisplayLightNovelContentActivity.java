@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
+import com.erakk.lnreader.helper.ICallbackNotifier;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
@@ -191,6 +192,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	}
 	
 	public class LoadNovelContentTask extends AsyncTask<PageModel, ProgressBar, AsyncTaskResult<NovelContentModel>> {
+		public ICallbackNotifier notifier;
 		@Override
 		protected void onPreExecute (){
 			// executed on UI thread.
@@ -201,7 +203,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		protected AsyncTaskResult<NovelContentModel> doInBackground(PageModel... params) {
 			try{
 				PageModel p = params[0];
-				NovelContentModel content = dao.getNovelContent(p);
+				NovelContentModel content = dao.getNovelContent(p, notifier);
 				return new AsyncTaskResult<NovelContentModel>(content);
 			}catch(Exception e) {
 				return new AsyncTaskResult<NovelContentModel>(e);
@@ -249,7 +251,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 					}					
 				});
 				try{
-					novelDetails = dao.getNovelDetails(pageModel.getParentPageModel());
+					novelDetails = dao.getNovelDetails(pageModel.getParentPageModel(), null);
 					
 					volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
 					
