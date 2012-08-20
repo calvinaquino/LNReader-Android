@@ -126,7 +126,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_light_novel_chapters, menu);
+        getMenuInflater().inflate(R.menu.activity_display_light_novel_details, menu);
         return true;
     }
     
