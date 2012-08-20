@@ -32,7 +32,7 @@ public class DisplayNovelContentActivity extends Activity {
 	private NovelContentModel content;
 	private NovelCollectionModel novelDetails;
 	private LoadNovelContentTask task;
-	private PageModel page;
+	private PageModel pageModel;
 	private String volume;
 	private String parentPage;
 	
@@ -50,19 +50,13 @@ public class DisplayNovelContentActivity extends Activity {
 		parentPage = intent.getStringExtra(Constants.EXTRA_NOVEL);
 		
 		try {
-			page = dao.getPageModel(intent.getStringExtra(Constants.EXTRA_PAGE));
+			pageModel = dao.getPageModel(intent.getStringExtra(Constants.EXTRA_PAGE));
 			ToggleProgressBar(true);
 			task = new LoadNovelContentTask();
-			task.execute(new PageModel[] {page});
-			
-			novelDetails = dao.getNovelDetails(page.getParentPageModel());
-			
-			volume = page.getParent().replace(page.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
-			
-			setTitle(page.getParentPageModel().getTitle() + ": " + volume + " "+ page.getTitle());
+			task.execute(new PageModel[] {pageModel});	
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Log.d(TAG, "Failed to get the PageModel for content: " + content.getPage());
 		}
 		Log.d(TAG, "onCreate called");
 	}
@@ -82,12 +76,12 @@ public class DisplayNovelContentActivity extends Activity {
 					PageModel page = content.getPageModel();
 					page.setFinishedRead(true);
 					page = dao.updatePageModel(page);
-					Log.d(TAG, "Complete read content:" + page.getTitle());			
+					Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());			
 				}catch(Exception ex) {
 					ex.printStackTrace();
+					Log.d(TAG, "Error updating PageModel for Content: " + content.getPage());
 				}
 			}
-			Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 		}
 		Log.d(TAG, "Pausing activity");
 		super.onPause();
@@ -138,15 +132,11 @@ public class DisplayNovelContentActivity extends Activity {
 			 * Implement code to move to previous chapter
 			 */
 			// still not working orz
-			PageModel prev = novelDetails.getPrev(page.getPage());
+			PageModel prev = novelDetails.getPrev(pageModel.getPage());
 			if(prev!= null) {
-				Intent intent = new Intent(getApplicationContext(), DisplayNovelContentActivity.class);
-		        intent.putExtra(Constants.EXTRA_PAGE, prev.getPage());
-		        intent.putExtra(Constants.EXTRA_TITLE, prev.getTitle());
-		        intent.putExtra(Constants.EXTRA_NOVEL, novelDetails.getPage());
-		        //intent.putExtra(Constants.EXTRA_VOLUME, volume);
-		        
-		        startActivity(intent);
+				pageModel = prev;
+				task = new LoadNovelContentTask();
+				task.execute(prev);
 				//Toast.makeText(getApplicationContext(), "Go previous: " + prev.getTitle(), Toast.LENGTH_SHORT).show();
 			}
 			else {
@@ -158,15 +148,11 @@ public class DisplayNovelContentActivity extends Activity {
 			/*
 			 * Implement code to move to next chapter
 			 */
-			PageModel next = novelDetails.getNext(page.getPage());
+			PageModel next = novelDetails.getNext(pageModel.getPage());
 			if(next!= null) {
-				Intent intent = new Intent(getApplicationContext(), DisplayNovelContentActivity.class);
-		        intent.putExtra(Constants.EXTRA_PAGE, next.getPage());
-		        intent.putExtra(Constants.EXTRA_TITLE, next.getTitle());
-		        intent.putExtra(Constants.EXTRA_NOVEL, novelDetails.getPage());
-		        //intent.putExtra(Constants.EXTRA_VOLUME, volume);
-		        
-		        startActivity(intent);
+				pageModel = next;
+				task = new LoadNovelContentTask();
+				task.execute(next);
 				//Toast.makeText(getApplicationContext(), "Go next: " + next.getTitle(), Toast.LENGTH_SHORT).show();
 			}
 			else {
@@ -262,7 +248,15 @@ public class DisplayNovelContentActivity extends Activity {
 						}						
 					}					
 				});
+				try{
+					novelDetails = dao.getNovelDetails(pageModel.getParentPageModel());
+					
+					volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
+					
+					setTitle(pageModel.getParentPageModel().getTitle() + ": " + volume + " "+ pageModel.getTitle());
+				} catch (Exception ex) {
 				
+				}
 				Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 			}
 			else {
