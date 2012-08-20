@@ -41,8 +41,8 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 	private NovelCollectionModel novelCol;
 	private NovelsDao dao = new NovelsDao(this);
 	
-    private BookModelAdapter ExpAdapter;
-    private ExpandableListView ExpandList;
+    private BookModelAdapter bookModelAdapter;
+    private ExpandableListView expandList;
     
     @SuppressLint({ "NewApi", "NewApi" })
 	@Override
@@ -61,42 +61,43 @@ public class DisplayLightNovelDetailsActivity extends Activity {
         updateContent(false);
        
         // setup listener
-        ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
-        ExpandList.setOnItemLongClickListener(new OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                int groupPosition = ExpandableListView.getPackedPositionGroup(id);
-                int childPosition = ExpandableListView.getPackedPositionChild(id);
+        expandList = (ExpandableListView) findViewById(R.id.chapter_list);
+        registerForContextMenu(expandList);
+        
+//        ExpandList.setOnItemLongClickListener(new OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+//                int groupPosition = ExpandableListView.getPackedPositionGroup(id);
+//                int childPosition = ExpandableListView.getPackedPositionChild(id);
+//
+//                if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+//
+//                    // You now have everything that you would as if this was an OnChildClickListener() 
+//                    // Add your logic here.
+//                	//activity.openContextMenu(view);
+//                	//parent.showContextMenu();                	
+//                    PageModel page = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
+//                    Toast.makeText(DisplayLightNovelDetailsActivity.this, "longClick: " + page.getTitle(), Toast.LENGTH_SHORT).show();
+//
+//                    // Return true as we are handling the event.
+//                    return true;
+//                }
+//                else if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+//
+//                    // You now have everything that you would as if this was an OnChildClickListener() 
+//                    // Add your logic here.
+//                	BookModel book = novelCol.getBookCollections().get(groupPosition);
+//                    Toast.makeText(DisplayLightNovelDetailsActivity.this, "longClickGroup: " + book.getTitle(), Toast.LENGTH_SHORT).show();
+//
+//                    // Return true as we are handling the event.
+//                    return true;
+//                }
+//
+//                return true;
+//            }
+//        });
 
-                if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
-
-                    // You now have everything that you would as if this was an OnChildClickListener() 
-                    // Add your logic here.
-                	//activity.openContextMenu(view);
-                	//parent.showContextMenu();
-                	
-                    PageModel page = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
-                    Toast.makeText(DisplayLightNovelDetailsActivity.this, "longClick: " + page.getTitle(), Toast.LENGTH_SHORT).show();
-
-                    // Return true as we are handling the event.
-                    return true;
-                }
-                else if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
-
-                    // You now have everything that you would as if this was an OnChildClickListener() 
-                    // Add your logic here.
-                	BookModel book = novelCol.getBookCollections().get(groupPosition);
-                    Toast.makeText(DisplayLightNovelDetailsActivity.this, "longClickGroup: " + book.getTitle(), Toast.LENGTH_SHORT).show();
-
-                    // Return true as we are handling the event.
-                    return true;
-                }
-
-                return true;
-            }
-        });
-
-        ExpandList.setOnChildClickListener(new OnChildClickListener() {			
+        expandList.setOnChildClickListener(new OnChildClickListener() {			
 			@Override
 			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 				if(novelCol != null) {
@@ -158,21 +159,29 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
     	super.onCreateContextMenu(menu, v, menuInfo);
-    	MenuInflater inflater = getMenuInflater();
-    	Toast.makeText(DisplayLightNovelDetailsActivity.this, "onCreateContextMenu", Toast.LENGTH_SHORT).show();
     	ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
-    	int type = ExpandableListView.getPackedPositionType(info.packedPosition);
+
+//    	// unpacking
+//    	int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+//    	int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
+//    	Toast.makeText(this, "Position: " + groupPosition + " " + childPosition, Toast.LENGTH_SHORT).show();
+//    	
+    	MenuInflater inflater = getMenuInflater();
+    	int type = ExpandableListView.getPackedPositionType(info.packedPosition);    	
     	if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
-    		//		if (v == findViewById(R.layout.expandvolume_list_item)) {
-    		inflater.inflate(R.menu.synopsys_volume_context_menu, menu);
+    		inflater.inflate(R.menu.novel_details_volume_context_menu, menu);
     	} else if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
-    		//		} else if (v == findViewById(R.layout.expandchapter_list_item)) {
-    		inflater.inflate(R.menu.synopsys_chapter_context_menu, menu);
+    		inflater.inflate(R.menu.novel_details_chapter_context_menu, menu);
     	}
     }
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
+    	ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
+    	// unpacking
+    	int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+    	int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
+    	
 		//AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 		//String[] names = getResources().getStringArray(R.array.novel_context_menu);
 		switch(item.getItemId()) {
@@ -182,8 +191,8 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			/*
 			 * Implement code to download this volume
 			 */
-			
-			Toast.makeText(this, "Download this Volume",
+			BookModel book = novelCol.getBookCollections().get(groupPosition);//.getChapterCollection().get(childPosition);
+			Toast.makeText(this, "Download this Volume: " + book.getTitle(),
 					Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.clear_volume:
@@ -210,9 +219,8 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			/*
 			 * Implement code to download this chapter
 			 */
-			
-			Toast.makeText(this, "Download this chapter",
-					Toast.LENGTH_SHORT).show();
+			PageModel chapter = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
+			Toast.makeText(this, "Download this chapter: " + chapter.getTitle(), Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.clear_chapter:
 			
@@ -261,12 +269,12 @@ public class DisplayLightNovelDetailsActivity extends Activity {
         // it is considered white background and black text to be the standard
         // so we change to black background and white text if true
         if (invertColors == true) {
-        	ExpAdapter.invertColorMode(true);
+        	bookModelAdapter.invertColorMode(true);
         	SynopsisView.setBackgroundColor(Color.BLACK);
         	ChapterView.setBackgroundColor(Color.BLACK);
         }
         else {
-        	ExpAdapter.invertColorMode(false);
+        	bookModelAdapter.invertColorMode(false);
         	SynopsisView.setBackgroundColor(Color.WHITE);
         	ChapterView.setBackgroundColor(Color.WHITE);
         }
@@ -283,12 +291,12 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     
 	@SuppressLint("NewApi")
 	private void ToggleProgressBar(boolean show) {
-		ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
+		expandList = (ExpandableListView) findViewById(R.id.chapter_list);
 		ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
 		TextView tv = (TextView) findViewById(R.id.loading);
 		
 		if(show) {
-			ExpandList.setVisibility(ExpandableListView.GONE);
+			expandList.setVisibility(ExpandableListView.GONE);
 			
 			pb.setVisibility(ProgressBar.VISIBLE);
 			pb.setIndeterminate(true);
@@ -301,7 +309,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 		else {
 			pb.setVisibility(ProgressBar.GONE);			
 			tv.setVisibility(TextView.GONE);
-			ExpandList.setVisibility(ExpandableListView.VISIBLE);
+			expandList.setVisibility(ExpandableListView.VISIBLE);
 		}
 	}
     
@@ -353,11 +361,11 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			Exception e = result.getError();
 			if(e == null) {
 				novelCol = result.getResult();
-				ExpandList = (ExpandableListView) findViewById(R.id.chapter_list);
+				expandList = (ExpandableListView) findViewById(R.id.chapter_list);
 				// now add the volume and chapter list.
 				try {
 					// Prepare header
-					if(ExpandList.getHeaderViewsCount() == 0) {  
+					if(expandList.getHeaderViewsCount() == 0) {  
 						LayoutInflater layoutInflater = getLayoutInflater();
 						View synopsis = layoutInflater.inflate(R.layout.activity_display_synopsis, null);
 						synopsis.findViewById(R.id.loading).setVisibility(TextView.GONE);
@@ -379,11 +387,11 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 							ImageViewCover.setImageBitmap(novelCol.getCoverBitmap());
 						}
 
-						ExpandList.addHeaderView(synopsis);
+						expandList.addHeaderView(synopsis);
 					}
 
-		        	ExpAdapter = new BookModelAdapter(DisplayLightNovelDetailsActivity.this, novelCol.getBookCollections());
-		        	ExpandList.setAdapter(ExpAdapter);
+		        	bookModelAdapter = new BookModelAdapter(DisplayLightNovelDetailsActivity.this, novelCol.getBookCollections());
+		        	expandList.setAdapter(bookModelAdapter);
 				} catch (Exception e2) {
 					e2.getStackTrace();
 					Toast.makeText(DisplayLightNovelDetailsActivity.this, e2.getClass().toString() +": " + e2.getMessage(), Toast.LENGTH_SHORT).show();

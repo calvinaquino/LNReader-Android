@@ -1,9 +1,0 @@
-<menu
-  xmlns:android="http://schemas.android.com/apk/res/android">
-      <item android:id="@+id/download_chapter"
-            android:title="Download Chapter" />
-      <item android:id="@+id/clear_chapter"
-              android:title="Clear Chapter Cache" />
-      <item android:id="@+id/mark_read"
-              android:title="Mark as Read" />
-</menu>
