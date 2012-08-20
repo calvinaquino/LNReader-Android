@@ -306,9 +306,13 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 	}
     
 	@SuppressLint("NewApi")
-    public class LoadNovelDetailsTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelCollectionModel>> {
+    public class LoadNovelDetailsTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelCollectionModel>> implements ICallbackNotifier {
 		public boolean refresh = false;
-		public ICallbackNotifier notifier;
+
+    	public void onCallback(String message) {
+    		publishProgress(message);
+    	}
+    	
 		@Override
 		protected void onPreExecute (){
 			// executed on UI thread.
@@ -321,12 +325,12 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			try {
 				if(refresh) {
 					publishProgress("Refreshing chapter list...");
-					NovelCollectionModel novelCol = dao.getNovelDetailsFromInternet(page, notifier);
+					NovelCollectionModel novelCol = dao.getNovelDetailsFromInternet(page, this);
 					return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 				}
 				else {
 					publishProgress("Loading chapter list...");
-					NovelCollectionModel novelCol = dao.getNovelDetails(page, notifier);
+					NovelCollectionModel novelCol = dao.getNovelDetails(page, this);
 					Log.d("LoadNovelDetailsTask", "Loaded: " + novelCol.getPage());				
 					return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 				}

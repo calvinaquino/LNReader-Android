@@ -85,10 +85,10 @@ public class PageModel {
 			NovelsDao dao = new NovelsDao(NovelsDao.sharedContext);
 			if(this.type.contentEquals(TYPE_CONTENT)) {
 				String tempParent = parent.substring(0, parent.indexOf(Constants.NOVEL_BOOK_DIVIDER));
-				this.parentPageModel = dao.getPageModel(tempParent);
+				this.parentPageModel = dao.getPageModel(tempParent, null);
 			}
 			else {
-				this.parentPageModel = dao.getPageModel(this.parent);
+				this.parentPageModel = dao.getPageModel(this.parent, null);
 			}
 		}
 		return parentPageModel;

@@ -51,7 +51,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		parentPage = intent.getStringExtra(Constants.EXTRA_NOVEL);
 		
 		try {
-			pageModel = dao.getPageModel(intent.getStringExtra(Constants.EXTRA_PAGE));
+			pageModel = dao.getPageModel(intent.getStringExtra(Constants.EXTRA_PAGE), null);
 			ToggleProgressBar(true);
 			task = new LoadNovelContentTask();
 			task.execute(new PageModel[] {pageModel});	
@@ -132,7 +132,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 			/*
 			 * Implement code to move to previous chapter
 			 */
-			// still not working orz
 			PageModel prev = novelDetails.getPrev(pageModel.getPage());
 			if(prev!= null) {
 				pageModel = prev;
@@ -191,8 +190,11 @@ public class DisplayLightNovelContentActivity extends Activity {
 		this.content = content;
 	}
 	
-	public class LoadNovelContentTask extends AsyncTask<PageModel, ProgressBar, AsyncTaskResult<NovelContentModel>> {
-		public ICallbackNotifier notifier;
+	public class LoadNovelContentTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelContentModel>> implements ICallbackNotifier{
+    	public void onCallback(String message) {
+    		publishProgress(message);
+    	}
+    	
 		@Override
 		protected void onPreExecute (){
 			// executed on UI thread.
@@ -203,7 +205,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		protected AsyncTaskResult<NovelContentModel> doInBackground(PageModel... params) {
 			try{
 				PageModel p = params[0];
-				NovelContentModel content = dao.getNovelContent(p, notifier);
+				NovelContentModel content = dao.getNovelContent(p, this);
 				return new AsyncTaskResult<NovelContentModel>(content);
 			}catch(Exception e) {
 				return new AsyncTaskResult<NovelContentModel>(e);

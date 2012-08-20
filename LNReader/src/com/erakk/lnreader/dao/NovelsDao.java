@@ -46,7 +46,7 @@ public class NovelsDao {
 		db.close();
 	}
 	
-	public  ArrayList<PageModel> getNovels() throws Exception{
+	public  ArrayList<PageModel> getNovels(ICallbackNotifier notifier) throws Exception{
 		ArrayList<PageModel> list = null;
 		boolean refresh = false;
 		
@@ -70,9 +70,9 @@ public class NovelsDao {
 			}
 		}
 		
-		if(refresh){
+		if(refresh){			
 			// get updated main page and novel list from internet
-			list = getNovelsFromInternet();			
+			list = getNovelsFromInternet(notifier);			
 			Log.d(TAG, "Updated Novel List");
 		}
 		else {
@@ -86,19 +86,19 @@ public class NovelsDao {
 		return list;
 	}
 	
-	public  PageModel getPageModel(String page) throws Exception {
+	public  PageModel getPageModel(String page, ICallbackNotifier notifier) throws Exception {
 		SQLiteDatabase db = dbh.getReadableDatabase();
 		PageModel pageModel = dbh.getPageModel(db, page);
 		db.close();
 		
 		if (pageModel == null) {
-			pageModel = getPageModelFromInternet(page);
+			pageModel = getPageModelFromInternet(page, notifier);
 		}
 		
 		return pageModel;
 	}
 	
-	public  PageModel getPageModelFromInternet(String page) throws Exception {
+	public  PageModel getPageModelFromInternet(String page, ICallbackNotifier notifier) throws Exception {
 		Response response = Jsoup.connect("http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&titles=" + page)
 				 .timeout(60000)
 				 .execute();
@@ -126,9 +126,12 @@ public class NovelsDao {
 		return watchedNovel;
 	}
 	
-	public  ArrayList<PageModel> getNovelsFromInternet() throws Exception {
+	public  ArrayList<PageModel> getNovelsFromInternet(ICallbackNotifier notifier) throws Exception {
+		if(notifier != null) {
+			notifier.onCallback("Downloading novel list...");
+		}
 		// get last updated page revision from internet
-		PageModel mainPage = getPageModel("Main_Page");
+		PageModel mainPage = getPageModel("Main_Page", notifier);
 		mainPage.setType(PageModel.TYPE_OTHER);
 		mainPage.setParent("");
 		
@@ -190,7 +193,7 @@ public class NovelsDao {
 		Document doc = response.parse();
 		
 		novel = BakaTsukiParser.ParseNovelDetails(doc, page);
-		PageModel novelPage = getPageModelFromInternet(page.getPage());
+		PageModel novelPage = getPageModelFromInternet(page.getPage(), notifier);
 		novel.setLastUpdate(novelPage.getLastUpdate());
 		
 		// insert to DB and get saved value

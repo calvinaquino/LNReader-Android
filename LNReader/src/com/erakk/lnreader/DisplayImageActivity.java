@@ -15,14 +15,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.erakk.lnreader.DisplayLightNovelContentActivity.LoadNovelContentTask;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.ICallbackNotifier;
 import com.erakk.lnreader.model.ImageModel;
-import com.erakk.lnreader.model.PageModel;
 
-public class DisplayImageActivity extends Activity implements ICallbackNotifier {
+public class DisplayImageActivity extends Activity {
 	private NovelsDao dao = new NovelsDao(this);
 	private WebView imgWebView;
 	private LoadImageTask task;
@@ -44,7 +42,6 @@ public class DisplayImageActivity extends Activity implements ICallbackNotifier 
         imgWebView.getSettings().setUseWideViewPort(true);
         
         task = new LoadImageTask();
-        task.notifier = this;
         task.execute(new String[] {url});
         
     }
@@ -114,24 +111,14 @@ public class DisplayImageActivity extends Activity implements ICallbackNotifier 
 		}
 	}
     
-	@Override
-	public void onProgressChanged(String message) {
-		/*
-		 * Need to use handler to post the message...
-		 */
-		//ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
-		final TextView tv = (TextView) findViewById(R.id.loading);
-		final String finalMessage = message;
-		tv.post(new Runnable() {
-		    	public void run() {
-		    		tv.setText(finalMessage);
-		    	}
-		});
-	}
+
 	
     @SuppressLint("NewApi")
-	public class LoadImageTask extends AsyncTask<String, String, AsyncTaskResult<ImageModel>> {
-    	public ICallbackNotifier notifier;
+	public class LoadImageTask extends AsyncTask<String, String, AsyncTaskResult<ImageModel>> implements ICallbackNotifier {
+    	public void onCallback(String message) {
+    		publishProgress(message);
+    	}
+    	
     	@Override
 		protected void onPreExecute (){
 			// executed on UI thread.
@@ -144,17 +131,24 @@ public class DisplayImageActivity extends Activity implements ICallbackNotifier 
 			
 			try{
 				if(refresh) {
-					return new AsyncTaskResult<ImageModel>(dao.getImageModelFromInternet(url, notifier));
+					return new AsyncTaskResult<ImageModel>(dao.getImageModelFromInternet(url, this));
 				}
 				else {
-					return new AsyncTaskResult<ImageModel>(dao.getImageModel(url, notifier));
+					return new AsyncTaskResult<ImageModel>(dao.getImageModel(url, this));
 				}
 			} catch (Exception e) {
 				return new AsyncTaskResult<ImageModel>(e);
-			}
-			
+			}			
 		}
-    	
+		
+		@Override
+		protected void onProgressUpdate (String... values){
+			//executed on UI thread.
+			TextView tv = (TextView) findViewById(R.id.loading);
+			tv.setText(values[0]);
+		}
+		
+		@Override
 		protected void onPostExecute(AsyncTaskResult<ImageModel> result) {
 			Exception e = result.getError();
 			if(e == null) {

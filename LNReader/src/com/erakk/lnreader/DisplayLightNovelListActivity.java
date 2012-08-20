@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.helper.ICallbackNotifier;
 import com.erakk.lnreader.model.PageModel;
 
 /*
@@ -253,7 +254,10 @@ public class DisplayLightNovelListActivity extends ListActivity{
     }
 	
 	@SuppressLint("NewApi")
-	public class LoadNovelsTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>> {
+	public class LoadNovelsTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>>  implements ICallbackNotifier {
+    	public void onCallback(String message) {
+    		publishProgress(message);
+    	}
 
 		@Override
 		protected void onPreExecute (){
@@ -272,11 +276,11 @@ public class DisplayLightNovelListActivity extends ListActivity{
 				else {
 					if(refreshOnly) {
 						publishProgress("Refreshing Novel List");
-						return new AsyncTaskResult<ArrayList<PageModel>>(dao.getNovelsFromInternet());
+						return new AsyncTaskResult<ArrayList<PageModel>>(dao.getNovelsFromInternet(this));
 					}
 					else {
 						publishProgress("Loading Novel List");
-						return new AsyncTaskResult<ArrayList<PageModel>>(dao.getNovels());
+						return new AsyncTaskResult<ArrayList<PageModel>>(dao.getNovels(this));
 					}
 				}
 				//return new AsyncTaskResult<ArrayList<PageModel>>(listItems);

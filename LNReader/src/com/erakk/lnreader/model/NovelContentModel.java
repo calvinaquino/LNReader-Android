@@ -42,7 +42,7 @@ public class NovelContentModel {
 		if(this.pageModel == null) {
 			// hacks to get context.
 			NovelsDao dao = new NovelsDao(NovelsDao.sharedContext);
-			this.pageModel = dao.getPageModel(this.page); 
+			this.pageModel = dao.getPageModel(this.page, null); 
 		}
 		return pageModel;
 	}
