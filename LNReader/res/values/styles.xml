@@ -1,6 +1,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="AppTheme" parent="android:Theme.Light" />
+    <style name="NightTheme" parent="android:Theme.Black" />
     <style name="DarkTheme" >
         <item name="android:textColor">#ffffff</item>
         <item name="android:background">#000000</item>

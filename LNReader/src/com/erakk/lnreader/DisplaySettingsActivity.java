@@ -97,12 +97,8 @@ public class DisplaySettingsActivity extends PreferenceActivity {
     	// update category
     	PreferenceCategory preferenceUpdateCategory = (PreferenceCategory) findPreference("update_category");
     	Spannable titleUpdateCategory = new SpannableString ( preferenceUpdateCategory.toString() );
-    	// perform updates
-    	Preference preferencePerformUpdates = (Preference) findPreference("perform_updates");
-    	Spannable titlePerformUpdates = new SpannableString ( preferencePerformUpdates.getTitle() );
-    	Spannable summaryPerformUpdates = new SpannableString ( preferencePerformUpdates.getSummary() );
     	// updates interval
-    	Preference preferenceUpdateInterval = (Preference) findPreference("perform_updates");
+    	Preference preferenceUpdateInterval = (Preference) findPreference("updates_interval");
     	Spannable titleUpdateInterval = new SpannableString ( preferenceUpdateInterval.getTitle() );
     	Spannable summaryUpdateInterval = new SpannableString ( preferenceUpdateInterval.getSummary() );
     	// layout category
@@ -142,9 +138,6 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         	// update category
         	// =====
         	titleUpdateCategory.setSpan(new ForegroundColorSpan( col ), 0, titleUpdateCategory.length(), 0);
-        	// perform updates
-        	summaryPerformUpdates.setSpan( new ForegroundColorSpan( col ), 0, summaryPerformUpdates.length(), 0 );
-        	titlePerformUpdates.setSpan( new ForegroundColorSpan( col ), 0, titlePerformUpdates.length(), 0 );
         	// updates interval
         	summaryUpdateInterval.setSpan( new ForegroundColorSpan( col ), 0, summaryUpdateInterval.length(), 0 );
         	titleUpdateInterval.setSpan( new ForegroundColorSpan( col ), 0, titleUpdateInterval.length(), 0 );
@@ -179,9 +172,6 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         	// update category
         	// =====
         	titleUpdateCategory.setSpan(new ForegroundColorSpan( col ), 0, titleUpdateCategory.length(), 0);
-        	// perform updates
-        	summaryPerformUpdates.setSpan( new ForegroundColorSpan( col ), 0, summaryPerformUpdates.length(), 0 );
-        	titlePerformUpdates.setSpan( new ForegroundColorSpan( col ), 0, titlePerformUpdates.length(), 0 );
         	// updates interval
         	summaryUpdateInterval.setSpan( new ForegroundColorSpan( col ), 0, summaryUpdateInterval.length(), 0 );
         	titleUpdateInterval.setSpan( new ForegroundColorSpan( col ), 0, titleUpdateInterval.length(), 0 );
@@ -213,9 +203,6 @@ public class DisplaySettingsActivity extends PreferenceActivity {
     	// update category
     	// =====
         preferenceUpdateCategory.setTitle( titleUpdateCategory );
-    	// perform updates
-        preferencePerformUpdates.setSummary( summaryPerformUpdates );
-        preferencePerformUpdates.setTitle( titlePerformUpdates );
     	// updates interval
         preferenceUpdateInterval.setSummary( summaryUpdateInterval );
         preferenceUpdateInterval.setTitle( titleUpdateInterval );

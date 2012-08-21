@@ -5,13 +5,6 @@
         android:title="Update"
         android:key="update_category">
          
-        <CheckBoxPreference
-            android:key="perform_updates"
-            android:summary="Enable or disable update verification"
-            android:title="Enable updates"
-            android:defaultValue="true"
-        />
-         
         <ListPreference
             android:key="updates_interval"
             android:title="Updates interval"
@@ -19,7 +12,6 @@
             android:defaultValue="1000"
             android:entries="@array/updateInterval"
             android:entryValues="@array/updateIntervalValues"
-            android:dependency="perform_updates"
         />   
              
     </PreferenceCategory>

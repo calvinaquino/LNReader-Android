@@ -243,7 +243,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
     	
     	// Views to be changed
         View MainView = findViewById(R.id.light_novel_list_screen);
-        
+        MainView.invalidate();
         // it is considered white background and black text to be the standard
         // so we change to black background and white text if true
         if (invertColors == true) {

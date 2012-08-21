@@ -45,7 +45,6 @@ import com.erakk.lnreader.model.PageModel;
 public class DisplayLightNovelDetailsActivity extends Activity {
 	private static final String TAG = DisplayLightNovelDetailsActivity.class.toString();
 	private PageModel page;
-	//private Activity activity = null;
 	private NovelCollectionModel novelCol;
 	private NovelsDao dao = new NovelsDao(this);
 	
@@ -60,7 +59,6 @@ public class DisplayLightNovelDetailsActivity extends Activity {
      public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        //activity = this;
         //Get intent and message
         Intent intent = getIntent();
         page = new PageModel(this); 
@@ -73,7 +71,6 @@ public class DisplayLightNovelDetailsActivity extends Activity {
        
         // setup listener
         expandList = (ExpandableListView) findViewById(R.id.chapter_list);
-        //updateViewColor();
         registerForContextMenu(expandList);
         expandList.setOnChildClickListener(new OnChildClickListener() {			
 			@Override
@@ -135,7 +132,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 		case R.id.invert_colors:			
 			toggleColorPref();
 			updateViewColor();
-			updateContent(true);
+//			updateContent(true);
 			
 			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
 			return true;
@@ -261,14 +258,20 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     	
     	// Views to be changed
         View SynopsisView = findViewById(R.id.ligh_novel_synopsys_screen);
-        View ChapterView = findViewById(R.id.ligh_novel_chapter_screen);
+        TextView SynopsisText = (TextView)findViewById(R.id.synopsys);
+        TextView TitleText = (TextView)findViewById(R.id.title);
         
+        View ChapterView = findViewById(R.id.ligh_novel_chapter_screen);
+        ChapterView.invalidate();
+        SynopsisView.invalidate();
         // it is considered white background and black text to be the standard
         // so we change to black background and white text if true
         if (invertColors == true) {
         	bookModelAdapter.invertColorMode(true);
         	SynopsisView.setBackgroundColor(Color.BLACK);
         	ChapterView.setBackgroundColor(Color.BLACK);
+        	SynopsisText.setTextColor(Color.WHITE);
+        	TitleText.setTextColor(Color.WHITE);
         	int[] colors = {0, 0xFFFFFFFF, 0}; // white
         	expandList.setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
         	expandList.setDividerHeight(1);
@@ -277,11 +280,13 @@ public class DisplayLightNovelDetailsActivity extends Activity {
         	bookModelAdapter.invertColorMode(false);
         	SynopsisView.setBackgroundColor(Color.WHITE);
         	ChapterView.setBackgroundColor(Color.WHITE);
+        	SynopsisText.setTextColor(Color.BLACK);
+        	TitleText.setTextColor(Color.BLACK);
         	int[] colors = {0, 0xFF000000, 0}; // black
         	expandList.setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
         	expandList.setDividerHeight(1);
         }
-        updateContent(true);
+//        updateContent(true);
     }
 	
     private void updateContent ( boolean willRefresh) {
@@ -406,6 +411,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 				Log.e(this.getClass().toString(), e.getClass().toString() + ": " + e.getMessage());
 			}
 			ToggleProgressBar(false);
+	        updateViewColor();
 		}		
     }
 

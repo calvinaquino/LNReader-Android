@@ -3,14 +3,20 @@ package com.erakk.lnreader;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Picture;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebView.PictureListener;
 import android.widget.ProgressBar;
@@ -51,7 +57,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 		//page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
 		//volume = intent.getStringExtra(Constants.EXTRA_VOLUME);
 		parentPage = intent.getStringExtra(Constants.EXTRA_NOVEL);
-		
+
+		updateViewColor();
 		try {
 			pageModel = dao.getPageModel(intent.getStringExtra(Constants.EXTRA_PAGE), null);
 			ToggleProgressBar(true);
@@ -109,6 +116,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 			/*
 			 * Implement code to invert colors
 			 */
+			toggleColorPref();
+			updateViewColor();
 			
 			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
 			return true;
@@ -175,6 +184,36 @@ public class DisplayLightNovelContentActivity extends Activity {
 			tv.setVisibility(TextView.GONE);
 		}
 	}
+	
+	private void toggleColorPref () { 
+    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	SharedPreferences.Editor editor = sharedPrefs.edit();
+    	if (sharedPrefs.getBoolean("invert_colors", false)) {
+    		editor.putBoolean("invert_colors", false);
+    	}
+    	else {
+    		editor.putBoolean("invert_colors", true);
+    	}
+    	editor.commit();
+    	//Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+    }
+    
+    private void updateViewColor() {
+    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
+    	
+    	// Views to be changed
+        WebView webView = (WebView)findViewById(R.id.webView1);
+        // it is considered white background and black text to be the standard
+        // so we change to black background and white text if true
+        if (invertColors == true) {
+        	webView.setBackgroundColor(Color.BLACK);
+        }
+        else {
+        	webView.setBackgroundColor(Color.WHITE);
+        }
+//        updateContent(true);
+    }
 	
 	private void setLastReadState() {
 		if(content!= null) {

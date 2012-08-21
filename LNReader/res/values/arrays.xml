@@ -2,6 +2,7 @@
 <resources>
     
     <string-array name="updateInterval">
+        <item name="0">Never</item>
         <item name="3600000">Every hour</item>
         <item name="7200000">Every 2 hours</item>
         <item name="14400000">Every 4 hours</item>
@@ -11,6 +12,7 @@
     </string-array>
      
     <string-array name="updateIntervalValues">
+        <item name="0">0</item>
         <item name="3600000">3600000</item>
         <item name="7200000">7200000</item>
         <item name="14400000">14400000</item>

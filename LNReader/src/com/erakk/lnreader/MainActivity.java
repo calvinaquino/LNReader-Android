@@ -82,6 +82,7 @@ public class MainActivity extends Activity {
         Button Button1 = (Button)findViewById(R.id.button1);
         Button Button2 = (Button)findViewById(R.id.button2);
         Button Button3 = (Button)findViewById(R.id.button3);
+        MainView.invalidate();
         
         // it is considered white background and black text to be the standard
         // so we change to black background and white text if true
