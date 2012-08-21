@@ -9,6 +9,7 @@
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:background="#ffffff"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp" />
 

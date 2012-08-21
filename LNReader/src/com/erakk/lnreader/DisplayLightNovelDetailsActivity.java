@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -71,6 +73,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
        
         // setup listener
         expandList = (ExpandableListView) findViewById(R.id.chapter_list);
+        //updateViewColor();
         registerForContextMenu(expandList);
         expandList.setOnChildClickListener(new OnChildClickListener() {			
 			@Override
@@ -266,11 +269,17 @@ public class DisplayLightNovelDetailsActivity extends Activity {
         	bookModelAdapter.invertColorMode(true);
         	SynopsisView.setBackgroundColor(Color.BLACK);
         	ChapterView.setBackgroundColor(Color.BLACK);
+        	int[] colors = {0, 0xFFFFFFFF, 0}; // white
+        	expandList.setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
+        	expandList.setDividerHeight(1);
         }
         else {
         	bookModelAdapter.invertColorMode(false);
         	SynopsisView.setBackgroundColor(Color.WHITE);
         	ChapterView.setBackgroundColor(Color.WHITE);
+        	int[] colors = {0, 0xFF000000, 0}; // black
+        	expandList.setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
+        	expandList.setDividerHeight(1);
         }
         updateContent(true);
     }

@@ -1,15 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-    
-    <TextView
-            android:id="@+id/novel_chapter"
-            android:layout_height="50dp"
-            android:layout_width="match_parent"
-            android:gravity="center_vertical"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="5dp"
-       		android:textColor="#ffffff"   />
 
-</TableRow>
+    <TextView
+        android:id="@+id/novel_chapter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:paddingLeft="17dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:paddingRight="65dp"
+        android:gravity="center_vertical"
+        android:text="Novel Chapter"
+       	android:textColor="#ffffff" />
+
+
+    <TextView
+        android:id="@+id/novel_is_downloaded"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/novel_chapter"
+        android:layout_alignBottom="@+id/novel_chapter"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:text="(DL)"
+       	android:textColor="#ffffff" />
+
+</RelativeLayout>

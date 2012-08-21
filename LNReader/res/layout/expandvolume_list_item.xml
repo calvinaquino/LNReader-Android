@@ -11,6 +11,7 @@
             android:onClick="onChapterItemClick"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="5dp" 
+            android:textSize="16dp"
         />
 
 </TableRow>

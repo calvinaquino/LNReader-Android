@@ -7,6 +7,8 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -247,11 +249,17 @@ public class DisplayLightNovelListActivity extends ListActivity{
         if (invertColors == true) {
         	MainView.setBackgroundColor(Color.BLACK);
         	adapter = new PageModelAdapter(this, R.layout.novel_list_item_black, listItems);
+        	int[] colors = {0, 0xFFFFFFFF, 0}; // blue
+        	getListView().setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
+        	getListView().setDividerHeight(1);
 //        	NovelNames.setTextColor(Color.WHITE);
         }
         else {
         	MainView.setBackgroundColor(Color.WHITE);
         	adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
+        	int[] colors = {0, 0xFF000000, 0}; // blue
+        	getListView().setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
+        	getListView().setDividerHeight(1);
 //        	NovelNames.setTextColor(Color.BLACK);
         }
     }

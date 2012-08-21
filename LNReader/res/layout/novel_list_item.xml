@@ -7,17 +7,20 @@
     <TextView
         android:id="@+id/novel_name"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:paddingRight="60dp"
         android:gravity="center_vertical"
         android:onClick="onListItemClick"
-        android:textSize="20dp" />
+        android:textSize="16dp" />
 
     <TextView
         android:id="@+id/novel_last_update"
         android:layout_width="wrap_content"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/novel_is_watched"
         android:gravity="center_vertical"
@@ -33,7 +36,7 @@
         android:layout_alignParentRight="true"
         android:checked="false"
         android:focusable="false"
-        android:gravity="center_vertical" 
+        android:gravity="center" 
         android:button="@android:drawable/btn_star" />
     
 </RelativeLayout>
