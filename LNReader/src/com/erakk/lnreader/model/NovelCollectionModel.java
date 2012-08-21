@@ -78,25 +78,13 @@ public class NovelCollectionModel {
 	public Bitmap getCoverBitmap() {
 		if(coverBitmap == null) {
 			try{
-			String filepath = Constants.IMAGE_ROOT + getCoverUrl().getFile();
-			Log.d("GetCover", filepath);
-			this.coverBitmap = BitmapFactory.decodeFile(filepath);
+				String filepath = Constants.IMAGE_ROOT + getCoverUrl().getFile();
+				Log.d("GetCover", filepath);
+				this.coverBitmap = BitmapFactory.decodeFile(filepath);
 			}catch(Exception e){
 				e.printStackTrace();
 				Log.e("GetCover", e.getClass().toString() + ": " + e.getMessage());
 			}
-//			DownloadImageTask t = new DownloadImageTask(); 
-//			t.execute(new URL[] {coverUrl});
-//			
-//			try {
-//				AsyncTaskResult<Bitmap> result = t.get();
-//				if(result.getError() == null) {
-//					coverBitmap = result.getResult();
-//				}
-//			} catch (Exception e) {
-//				 TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} 			
 		}
 		// Redimension image so they all have a constant size
 		//coverBitmap = Bitmap.createScaledBitmap(coverBitmap, 200, 300, true); 

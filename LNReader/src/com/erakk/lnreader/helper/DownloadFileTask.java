@@ -77,38 +77,51 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		if(decodedFile.exists()) {
 			if(decodedFile.length() == fileLength) {
 				download = false;
-				Log.d(TAG, "File exists: " + decodedUrl);
+				Log.d(TAG, "File exists: " + decodedUrl + " Size: " + fileLength);
 			}
 			else {
 				decodedFile.delete();
 				Log.d(TAG, "File exists but different size: " + decodedUrl + " " + decodedFile.length() + "!=" + fileLength);
 			}
 		}
-
 		if(download) {
-			// download the file
-			input = new BufferedInputStream(url.openStream());
-			output = new FileOutputStream(tempFilename);
-
-			byte data[] = new byte[1024];
-			long total = 0;
-			int count;
-			while ((count = input.read(data)) != -1) {
-				total += count;
-				// publishing the progress....
-				int progress = (int) (total * 100 / fileLength);
-				publishProgress(progress);
-
-				//via notifier, C# style :)
-				if(notifier!=null) {
-					notifier.onCallback("Downloading: " + url + "\nProgress: " + progress + "%");
+			for(int i = 0 ; i<Constants.IMAGE_DOWNLOAD_RETRY; ++i) {
+				try{
+					// download the file
+					input = new BufferedInputStream(url.openStream());
+					output = new FileOutputStream(tempFilename);
+		
+					byte data[] = new byte[1024];
+					long total = 0;
+					int count;
+					while ((count = input.read(data)) != -1) {
+						total += count;
+						// publishing the progress....
+						int progress = (int) (total * 100 / fileLength);
+						publishProgress(progress);
+		
+						//via notifier, C# style :)
+						if(notifier!=null) {
+							notifier.onCallback("Downloading: " + url + "\nProgress: " + progress + "%");
+						}
+						Log.d(TAG, "Downloading: " + url + " " + progress + "%");
+						output.write(data, 0, count);
+					}
+					Log.d(TAG, "Filesize: " + count);
+					if(count > 0) break;
+				} catch(Exception ex) {
+					if(i > Constants.IMAGE_DOWNLOAD_RETRY) throw ex;
+					else {
+						if(notifier!=null) {
+							notifier.onCallback("Downloading: " + url + "\nRetry: " + i+ "x");
+						}
+					}
+				}finally{
+					output.flush();
+					output.close();
+					input.close();
 				}
-				Log.d(TAG, "Downloading: " + url + " " + progress + "%");
-				output.write(data, 0, count);
 			}
-			output.flush();
-			output.close();
-			input.close();
 		}
 
 		// Rename file

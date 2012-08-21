@@ -44,8 +44,11 @@ public class NovelsDao {
 	public void deleteDB() {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			dbh.deletePagesDB(db);
-			db.close();
+			try{
+				dbh.deletePagesDB(db);
+			}finally{
+				db.close();
+			}
 		}
 	}
 
@@ -54,12 +57,16 @@ public class NovelsDao {
 		boolean refresh = false;
 		PageModel page = null;
 		SQLiteDatabase db = null;
+		
+		// check if main page exist
 		synchronized (dbh) {
-			db = dbh.getReadableDatabase();
-			page = dbh.getMainPage(db);
-			db.close();
+			try{
+				db = dbh.getReadableDatabase();
+				page = dbh.getMainPage(db);
+			}finally{
+				db.close();
+			}
 		}
-		// check if have main page data
 		if (page == null) {
 			refresh = true;
 			Log.d(TAG, "No Main_Page data!");
@@ -81,9 +88,12 @@ public class NovelsDao {
 		} else {
 			// get from db
 			synchronized (dbh) {
-				db = dbh.getReadableDatabase();
-				list = dbh.selectAllByColumn(db, DBHelper.COLUMN_TYPE, PageModel.TYPE_NOVEL);
-				db.close();
+				try{
+					db = dbh.getReadableDatabase();
+					list = dbh.getAllNovels(db);//dbh.selectAllByColumn(db, DBHelper.COLUMN_TYPE, PageModel.TYPE_NOVEL);
+				}finally{
+					db.close();
+				}
 			}
 			Log.d(TAG, "Found: " + list.size());
 		}
@@ -91,13 +101,68 @@ public class NovelsDao {
 		return list;
 	}
 
+	public ArrayList<PageModel> getNovelsFromInternet(ICallbackNotifier notifier) throws Exception {
+		if (notifier != null) {
+			notifier.onCallback("Downloading novel list...");
+		}
+		// get last updated page revision from internet
+		PageModel mainPage = getPageModel("Main_Page", notifier);
+		mainPage.setType(PageModel.TYPE_OTHER);
+		mainPage.setParent("");
+
+		ArrayList<PageModel> list = null;
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			try{
+				db.beginTransaction();
+				mainPage = dbh.insertOrUpdatePageModel(db, mainPage);
+				Log.d(TAG, "Updated Main_Page");
+	
+				// now get the list
+				list = new ArrayList<PageModel>();
+				String url = Constants.BASE_URL + "/project";
+				Response response = Jsoup.connect(url).timeout(60000).execute();
+				Document doc = response.parse();
+	
+				list = BakaTsukiParser.ParseNovelList(doc, context);
+				Log.d(TAG, "Found from internet: " + list.size() + " Novels");
+	
+				// saved to db and get saved value
+				list = dbh.insertAllNovel(db, list);
+				
+				// now get the saved value
+				list = dbh.getAllNovels(db);
+				db.setTransactionSuccessful();
+			}finally{
+				db.endTransaction();
+				db.close();
+			}
+		}
+		return list;
+	}
+
+	public ArrayList<PageModel> getWatchedNovel() {
+		ArrayList<PageModel> watchedNovel = null;
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			try{
+				watchedNovel = dbh.selectAllByColumn(db, DBHelper.COLUMN_IS_WATCHED, "1");
+			}finally{
+				db.close();
+			}			
+		}
+		return watchedNovel;
+	}
+
 	public PageModel getPageModel(String page, ICallbackNotifier notifier) throws Exception {
 		PageModel pageModel = null;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
-
-			pageModel = dbh.getPageModel(db, page);
-			db.close();
+			try{
+				pageModel = dbh.getPageModel(db, page);
+			}finally{
+				db.close();
+			}
 		}
 		if (pageModel == null) {
 			pageModel = getPageModelFromInternet(page, notifier);
@@ -112,63 +177,29 @@ public class NovelsDao {
 		synchronized (dbh) {
 			// save to db and get saved value
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			pageModel = dbh.insertOrUpdatePageModel(db, pageModel);
-			db.close();
+			try{
+				pageModel = dbh.insertOrUpdatePageModel(db, pageModel);
+			}finally{
+				db.close();
+			}
 		}
 		return pageModel;
 	}
 
 	public PageModel updatePageModel(PageModel page) {
+		PageModel pageModel = null;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			PageModel pageModel = dbh.insertOrUpdatePageModel(db, page);
-			db.close();
-			return pageModel;
+			try{
+				pageModel = dbh.insertOrUpdatePageModel(db, page);
+			}
+			finally{
+				db.close();
+			}
 		}
+		return pageModel;
 	}
-
-	public ArrayList<PageModel> getWatchedNovel() {
-		synchronized (dbh) {
-			SQLiteDatabase db = dbh.getReadableDatabase();
-			ArrayList<PageModel> watchedNovel = dbh.selectAllByColumn(db, DBHelper.COLUMN_IS_WATCHED, "1");
-			db.close();
-			return watchedNovel;
-		}
-	}
-
-	public ArrayList<PageModel> getNovelsFromInternet(ICallbackNotifier notifier) throws Exception {
-		if (notifier != null) {
-			notifier.onCallback("Downloading novel list...");
-		}
-		// get last updated page revision from internet
-		PageModel mainPage = getPageModel("Main_Page", notifier);
-		mainPage.setType(PageModel.TYPE_OTHER);
-		mainPage.setParent("");
-
-		synchronized (dbh) {
-			SQLiteDatabase db = dbh.getWritableDatabase();
-			db.beginTransaction();
-			mainPage = dbh.insertOrUpdatePageModel(db, mainPage);
-			Log.d(TAG, "Updated Main_Page");
-
-			// now get the list
-			ArrayList<PageModel> list = new ArrayList<PageModel>();
-			String url = Constants.BASE_URL + "/project";
-			Response response = Jsoup.connect(url).timeout(60000).execute();
-			Document doc = response.parse();
-
-			list = BakaTsukiParser.ParseNovelList(doc, context);
-			Log.d(TAG, "Found: " + list.size() + " Novels");
-
-			// saved to db and get saved value
-			list = dbh.insertAllNovel(db, list);
-			db.setTransactionSuccessful();
-			db.endTransaction();
-			db.close();
-			return list;
-		}
-	}
-
+	
 	/*
 	 * NovelCollectionModel
 	 */
@@ -178,8 +209,12 @@ public class NovelsDao {
 		NovelCollectionModel novel = null;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
-			novel = dbh.getNovelDetails(db, page.getPage());
-			db.close();
+			try{
+				novel = dbh.getNovelDetails(db, page.getPage());
+			}
+			finally{
+				db.close();
+			}
 		}
 		if (novel != null) {
 			// TODO: add check to refresh
@@ -202,14 +237,22 @@ public class NovelsDao {
 		Document doc = response.parse();
 
 		novel = BakaTsukiParser.ParseNovelDetails(doc, page, context);
-		PageModel novelPage = getPageModelFromInternet(page.getPage(), notifier);
+		
+		// check if page model exist
+		PageModel novelPage = getPageModel(page.getPage(), notifier);
+		page.setParent("Main_Page"); // insurance
+		
 		novel.setLastUpdate(novelPage.getLastUpdate());
 
 		synchronized (dbh) {
 			// insert to DB and get saved value
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			novel = dbh.insertNovelDetails(db, novel);
-			db.close();
+			try{
+				novel = dbh.insertNovelDetails(db, novel);
+			}
+			finally{
+				db.close();
+			}
 		}
 		// download cover image
 		if (novel.getCoverUrl() != null) {
@@ -233,8 +276,12 @@ public class NovelsDao {
 		synchronized (dbh) {
 			// get from db
 			SQLiteDatabase db = dbh.getReadableDatabase();
-			content = dbh.getNovelContent(db, page.getPage());
-			db.close();
+			try{
+				content = dbh.getNovelContent(db, page.getPage());
+			}
+			finally{
+				db.close();
+			}
 		}
 		// get from Internet;
 		if (content == null) {
@@ -263,8 +310,12 @@ public class NovelsDao {
 		synchronized (dbh) {
 			// save to DB, and get the saved value
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			content = dbh.insertNovelContent(db, content);
-			db.close();
+			try{
+				content = dbh.insertNovelContent(db, content);
+			}
+			finally{
+				db.close();
+			}
 		}
 		return content;
 	}
@@ -272,11 +323,14 @@ public class NovelsDao {
 	public NovelContentModel updateNovelContent(NovelContentModel content) throws Exception {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
-
-			content = dbh.insertNovelContent(db, content);
-			db.close();
-			return content;
+			try{
+				content = dbh.insertNovelContent(db, content);
+			}
+			finally{
+				db.close();
+			}
 		}
+		return content;
 	}
 
 	/*
@@ -287,12 +341,17 @@ public class NovelsDao {
 		ImageModel image = null;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
-			image = dbh.getImage(db, page);
-			if (image == null) {
-				Log.d(TAG, "Image not found, might need to check by referer: " + page);
-				image = dbh.getImageByReferer(db, page);
+			try{
+				image = dbh.getImage(db, page);
+	
+				if (image == null) {
+					Log.d(TAG, "Image not found, might need to check by referer: " + page);
+					image = dbh.getImageByReferer(db, page);
+				}
 			}
-			db.close();
+			finally{
+				db.close();
+			}
 		}
 		if (image == null) {
 			Log.d(TAG, "Image not found, getting data from internet: " + page);
@@ -317,8 +376,12 @@ public class NovelsDao {
 		synchronized (dbh) {
 			// save to db and get the saved value
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			image = dbh.insertImage(db, image);
-			db.close();
+			try{
+				image = dbh.insertImage(db, image);
+			}
+			finally{
+				db.close();
+			}
 		}
 		return image;
 	}

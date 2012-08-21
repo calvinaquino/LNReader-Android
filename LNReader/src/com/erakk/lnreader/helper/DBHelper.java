@@ -177,7 +177,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	public ArrayList<PageModel> getAllNovels(SQLiteDatabase db) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
 		
-		Cursor cursor = db.rawQuery("select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ?", new String[] {"Main_Page"});
+		Cursor cursor = db.rawQuery("select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ? " + " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE, 
+									 new String[] {"Main_Page"});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	PageModel page = cursorTopage(cursor);

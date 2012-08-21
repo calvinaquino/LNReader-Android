@@ -9,7 +9,9 @@ Eclipse Config: http://stackoverflow.com/questions/1886185/eclipse-and-windows-n
 
 //WARNING - updated
 Sometimes loading a novel gives CalledFromWrongThreadException (this may be my fault but i couldnt detectd)
+- It because we try to update the data not from the ui thread, this should be fixed already.
 I can't register the ExpandList for contextMenu. it allways crashes... do you have any idea?
+- done.
 
 
 //TODO:
