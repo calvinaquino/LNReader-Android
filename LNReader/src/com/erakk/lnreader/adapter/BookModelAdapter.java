@@ -1,6 +1,7 @@
 package com.erakk.lnreader.adapter;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -29,6 +30,18 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		this.groups = groups;
 	}
 
+//	@Override
+//	public void notifyDataSetChanged() {
+//		for(Iterator<BookModel> iBook = groups.iterator(); iBook.hasNext();) {
+//			BookModel book = iBook.next();
+//			for(Iterator<PageModel> iPage = book.getChapterCollection().iterator(); iPage.hasNext();) {
+//				PageModel temp = iPage.next();
+//				Log.d("notifyDataSetChanged", "downloaded: " + temp.getTitle() + " " + temp.isDownloaded());
+//			}
+//		}
+//		super.notifyDataSetChanged();
+//	}
+	
 	public void addItem(PageModel item, BookModel group) {
 		if (!groups.contains(group)) {
 			groups.add(group);
@@ -72,6 +85,9 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		if(tvIsDownloaded != null) {
 			if(!child.isDownloaded()) {
 				tvIsDownloaded.setVisibility(TextView.GONE);
+			}
+			else {
+				tvIsDownloaded.setVisibility(TextView.VISIBLE);
 			}
 		}
 		

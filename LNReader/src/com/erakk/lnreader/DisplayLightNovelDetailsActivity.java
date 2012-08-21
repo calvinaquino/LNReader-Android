@@ -446,7 +446,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			Exception e = result.getError();
 			if(e == null) {
 				NovelContentModel[] content = result.getResult();
-				if(content != null && content.length == chapters.length) {
+				if(content != null) {
 					for(Iterator<BookModel> iBook = novelCol.getBookCollections().iterator(); iBook.hasNext();) {
 						BookModel book = iBook.next();
 						for(Iterator<PageModel> iPage = book.getChapterCollection().iterator(); iPage.hasNext();) {
