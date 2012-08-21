@@ -53,8 +53,10 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		registerForContextMenu(getListView());
 
-		Intent intent = getIntent();
-		onlyWatched = intent.getExtras().getBoolean(Constants.EXTRA_ONLY_WATCHED);
+		//Intent intent = getIntent();
+		onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);//intent.getExtras().getBoolean(Constants.EXTRA_ONLY_WATCHED);
+		//onlyWatched = false;
+		//Toast.makeText(this, "intent: " + getIntent().getStringExtra(Constants.EXTRA_ONLY_WATCHED), Toast.LENGTH_SHORT).show();
 
 		//Encapsulated in updateContent
 		updateContent();
@@ -78,6 +80,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		intent.putExtra(Constants.EXTRA_NOVEL, novel);
 		intent.putExtra(Constants.EXTRA_PAGE, o.getPage());
 		intent.putExtra(Constants.EXTRA_TITLE, o.getTitle());
+		intent.putExtra(Constants.EXTRA_ONLY_WATCHED, getIntent().getStringExtra(Constants.EXTRA_ONLY_WATCHED));
 		startActivity(intent);
 		Log.d("DisplayLightNovelsActivity", o.getPage() + " (" + o.getTitle() + ")");
 	}

@@ -50,7 +50,7 @@
             android:label="@string/title_activity_light_novel_chapters" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.erakk.lnreader.MainActivity" />
+                android:value="com.erakk.lnreader.DisplayLightNovelListActivity" />
         </activity>
         <activity
             android:name=".DisplaySynopsisActivity"
@@ -64,16 +64,14 @@
             android:label="@string/title_activity_display_novel_content" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.erakk.lnreader.LightNovelChaptersActivity" />
+                android:value="com.erakk.lnreader.DisplayLightNovelDetailsActivity" />
         </activity>
         <activity
             android:name=".DisplayImageActivity"
             android:label="@string/title_activity_display_image" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+             <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.erakk.lnreader.DisplayLightNovelContentActivity" />
         </activity>
     </application>
 

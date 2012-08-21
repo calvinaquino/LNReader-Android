@@ -27,11 +27,13 @@ public class DisplayImageActivity extends Activity {
 	private boolean refresh = false;
 	private String url;
 	
-    @Override
+    @SuppressLint("NewApi")
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_image);
-        
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+
         Intent intent = getIntent();
         url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
         
