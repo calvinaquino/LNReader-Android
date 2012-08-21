@@ -97,7 +97,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     public void onResume(){
     	super.onResume();
     	Log.d(TAG, "Resuming...");
-    	updateContent(false);
+    	//updateContent(false);
     }
     
     public void onStop(){
@@ -447,11 +447,20 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			if(e == null) {
 				NovelContentModel[] content = result.getResult();
 				if(content != null && content.length == chapters.length) {
-//					for(int i = 0; i < chapters.length; ++i) {
-//						chapters[i].setDownloaded(true);
-//					}
-//					bookModelAdapter.notifyDataSetChanged();
-					updateContent(false);
+					for(Iterator<BookModel> iBook = novelCol.getBookCollections().iterator(); iBook.hasNext();) {
+						BookModel book = iBook.next();
+						for(Iterator<PageModel> iPage = book.getChapterCollection().iterator(); iPage.hasNext();) {
+							PageModel temp = iPage.next();
+							for(int i = 0; i < chapters.length; ++i) {
+								if(temp.getPage() == chapters[i].getPage()) {
+									temp.setDownloaded(true);
+									chapters[i].setDownloaded(true);
+								}
+							}
+						}
+					}
+					bookModelAdapter.notifyDataSetChanged();
+//					updateContent(false);
 				}
 			}
 			else {

@@ -247,7 +247,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			cv.put(COLUMN_IS_FINISHED_READ, temp.isFinishedRead());
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (temp.getLastCheck().getTime() / 1000));
 			cv.put(COLUMN_IS_DOWNLOADED, temp.isDownloaded());
-			db.update(TABLE_PAGE, cv, "id = ?", new String[] {"" + temp.getId()});
+			int result = db.update(TABLE_PAGE, cv, "id = ?", new String[] {"" + temp.getId()});
+			Log.d(TAG, "Page Model Update Affected Row: " + result);
 		}
 		
 		// get the updated data.
@@ -278,7 +279,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	 */
 	
 	public NovelCollectionModel insertNovelDetails(SQLiteDatabase db, NovelCollectionModel novelDetails){
-		db.beginTransaction();
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_PAGE, novelDetails.getPage());
 		cv.put(COLUMN_SYNOPSIS, novelDetails.getSynopsis());
@@ -341,8 +341,6 @@ public class DBHelper extends SQLiteOpenHelper {
 			}
 		}
 
-		db.setTransactionSuccessful();
-		db.endTransaction();
 		Log.d(TAG, "Complete Insert Novel Details: " + novelDetails.toString());
 
 		// get updated data
@@ -538,7 +536,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	 */
 	
 	public NovelContentModel insertNovelContent(SQLiteDatabase db, NovelContentModel content) throws Exception {
-		db.beginTransaction();
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_CONTENT, content.getContent());
 		cv.put(COLUMN_PAGE, content.getPage());
@@ -557,7 +554,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			Log.d(TAG, "Updating Novel Content: " + content.getPage() + " id: " + temp.getId());
 			cv.put(COLUMN_LAST_UPDATE, "" + (int) (temp.getLastUpdate().getTime() / 1000));
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
-			db.update(TABLE_NOVEL_CONTENT, cv, COLUMN_ID + " = ? ",	new String[] {"" + temp.getId()});
+			int result = db.update(TABLE_NOVEL_CONTENT, cv, COLUMN_ID + " = ? ",	new String[] {"" + temp.getId()});
+			Log.d(TAG, "Novel Content Update Affected Row: "  + result);
 		}
 		
 		// update the pageModel
@@ -570,9 +568,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		// TODO: insert images to db
 		
 		content = getNovelContent(db, content.getPage());
-		
-		db.setTransactionSuccessful();
-		db.endTransaction();
 		return content;
 	}
 	

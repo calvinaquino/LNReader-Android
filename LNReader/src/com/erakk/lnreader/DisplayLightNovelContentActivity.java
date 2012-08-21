@@ -65,30 +65,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	
 	@Override
 	public void onPause() {
-		if(content!= null) {
-			// save last position and zoom
-			WebView wv = (WebView) findViewById(R.id.webView1);
-			content.setLastXScroll(wv.getScrollX());
-			content.setLastYScroll(wv.getScrollY());
-			content.setLastZoom(wv.getScale());
-			try{
-				content = dao.updateNovelContent(content);
-			}catch(Exception ex) {
-				// TODO: need to handle properly
-				ex.printStackTrace();
-			}
-			if(wv.getContentHeight() <=  wv.getScrollY() + wv.getBottom()) {
-				try{
-					PageModel page = content.getPageModel();
-					page.setFinishedRead(true);
-					page = dao.updatePageModel(page);
-					Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());			
-				}catch(Exception ex) {
-					ex.printStackTrace();
-					Log.d(TAG, "Error updating PageModel for Content: " + content.getPage());
-				}
-			}
-		}
+		setLastReadState();
 		Log.d(TAG, "Pausing activity");
 		super.onPause();
 	}
@@ -141,6 +118,9 @@ public class DisplayLightNovelContentActivity extends Activity {
 			 */
 			PageModel prev = novelDetails.getPrev(pageModel.getPage());
 			if(prev!= null) {
+				setLastReadState();
+				// set the current intent
+				getIntent().putExtra(Constants.EXTRA_PAGE, prev.getPage());				
 				pageModel = prev;
 				task = new LoadNovelContentTask();
 				task.execute(prev);
@@ -157,6 +137,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 			 */
 			PageModel next = novelDetails.getNext(pageModel.getPage());
 			if(next!= null) {
+				setLastReadState();
+				getIntent().putExtra(Constants.EXTRA_PAGE, next.getPage());
 				pageModel = next;
 				task = new LoadNovelContentTask();
 				task.execute(next);
@@ -190,6 +172,33 @@ public class DisplayLightNovelContentActivity extends Activity {
 		else {
 			pb.setVisibility(ProgressBar.GONE);			
 			tv.setVisibility(TextView.GONE);
+		}
+	}
+	
+	private void setLastReadState() {
+		if(content!= null) {
+			// save last position and zoom
+			WebView wv = (WebView) findViewById(R.id.webView1);
+			content.setLastXScroll(wv.getScrollX());
+			content.setLastYScroll(wv.getScrollY());
+			content.setLastZoom(wv.getScale());
+			try{
+				content = dao.updateNovelContent(content);
+			}catch(Exception ex) {
+				// TODO: need to handle properly
+				ex.printStackTrace();
+			}
+			if(wv.getContentHeight() <=  wv.getScrollY() + wv.getBottom()) {
+				try{
+					PageModel page = content.getPageModel();
+					page.setFinishedRead(true);
+					page = dao.updatePageModel(page);
+					Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());			
+				}catch(Exception ex) {
+					ex.printStackTrace();
+					Log.d(TAG, "Error updating PageModel for Content: " + content.getPage());
+				}
+			}
 		}
 	}
 	
@@ -228,7 +237,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 			
 			if(e == null) {
 				content = result.getResult();
-				setContent(content);
+				//setContent(content);
 				
 				// load the contents here
 				final WebView wv = (WebView) findViewById(R.id.webView1);
@@ -268,7 +277,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 					
 					volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
 					
-					setTitle(pageModel.getParentPageModel().getTitle() + ": " + volume + " "+ pageModel.getTitle());
+					setTitle(volume + " "+ pageModel.getTitle());
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}

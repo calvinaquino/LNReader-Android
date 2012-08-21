@@ -248,9 +248,12 @@ public class NovelsDao {
 			// insert to DB and get saved value
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			try{
+				db.beginTransaction();
 				novel = dbh.insertNovelDetails(db, novel);
+				db.setTransactionSuccessful();
 			}
 			finally{
+				db.endTransaction();
 				db.close();
 			}
 		}
@@ -311,9 +314,13 @@ public class NovelsDao {
 			// save to DB, and get the saved value
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			try{
+				// TODO: somehow using transaction cause problem...
+				db.beginTransaction();
 				content = dbh.insertNovelContent(db, content);
+				db.setTransactionSuccessful();
 			}
 			finally{
+				db.endTransaction();
 				db.close();
 			}
 		}
