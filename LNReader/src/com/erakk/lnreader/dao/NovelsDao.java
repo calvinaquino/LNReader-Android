@@ -307,6 +307,10 @@ public class NovelsDao {
 		DownloadFileTask task = new DownloadFileTask(notifier);
 		for (Iterator<ImageModel> i = content.getImages().iterator(); i.hasNext();) {
 			ImageModel image = i.next();
+			
+			if(notifier != null) {
+				notifier.onCallback("Downloading: " + image.getUrl());
+			}
 			image = task.downloadImage(image.getUrl());
 			// TODO: need to save image to db?
 		}

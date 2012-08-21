@@ -232,7 +232,14 @@ public class DisplayLightNovelContentActivity extends Activity {
 				return new AsyncTaskResult<NovelContentModel>(e);
 			}
 		}
-
+		
+		@Override
+		protected void onProgressUpdate (String... values){
+			//executed on UI thread.
+			TextView tv = (TextView) findViewById(R.id.loading);
+			tv.setText(values[0]);
+		}
+		
 		protected void onPostExecute(AsyncTaskResult<NovelContentModel> result) {
 			Exception e = result.getError();
 			
