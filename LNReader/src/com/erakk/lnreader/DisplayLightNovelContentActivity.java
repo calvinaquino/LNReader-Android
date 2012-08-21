@@ -29,6 +29,7 @@ import com.erakk.lnreader.model.PageModel;
 @SuppressLint("NewApi")
 public class DisplayLightNovelContentActivity extends Activity {
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
+	private final Activity activity = this;
 	private NovelsDao dao = new NovelsDao(this);
 	private NovelContentModel content;
 	private NovelCollectionModel novelDetails;
@@ -248,7 +249,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 				//wv.getSettings().setUseWideViewPort(true);
 				
 				// custom link handler
-				BakaTsukiWebViewClient client = new BakaTsukiWebViewClient();
+				BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(activity);
 				wv.setWebViewClient(client);
 				
 				String html = Constants.WIKI_CSS_STYLE + "<body>" + content.getContent() + "</body></html>" ;

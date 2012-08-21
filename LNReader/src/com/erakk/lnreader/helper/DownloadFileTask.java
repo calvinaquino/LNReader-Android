@@ -85,7 +85,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 			}
 		}
 		if(download) {
-			for(int i = 0 ; i<Constants.IMAGE_DOWNLOAD_RETRY; ++i) {
+			for(int i = 0 ; i < Constants.IMAGE_DOWNLOAD_RETRY; ++i) {
 				try{
 					// download the file
 					input = new BufferedInputStream(url.openStream());
@@ -104,11 +104,11 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 						if(notifier!=null) {
 							notifier.onCallback("Downloading: " + url + "\nProgress: " + progress + "%");
 						}
-						Log.d(TAG, "Downloading: " + url + " " + progress + "%");
+						//Log.d(TAG, "Downloading: " + url + " " + progress + "%");
 						output.write(data, 0, count);
 					}
-					Log.d(TAG, "Filesize: " + count);
-					if(count > 0) break;
+					Log.d(TAG, "Filesize: " + total);
+					if(total > 0) break;
 				} catch(Exception ex) {
 					if(i > Constants.IMAGE_DOWNLOAD_RETRY) throw ex;
 					else {
