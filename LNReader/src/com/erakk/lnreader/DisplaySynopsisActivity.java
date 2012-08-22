@@ -18,9 +18,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
-import com.erakk.lnreader.helper.ICallbackNotifier;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 

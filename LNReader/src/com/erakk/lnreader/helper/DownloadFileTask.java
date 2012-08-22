@@ -14,6 +14,9 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.callback.CallbackEventData;
+import com.erakk.lnreader.callback.DownloadCallbackEventData;
+import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.model.ImageModel;
 
 public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<ImageModel>> {
@@ -102,7 +105,12 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		
 						//via notifier, C# style :)
 						if(notifier!=null) {
-							notifier.onCallback("Downloading: " + url + "\nProgress: " + progress + "%");
+							DownloadCallbackEventData message = new DownloadCallbackEventData();
+							message.setUrl(url.toString());
+							message.setTotalSize(fileLength);
+							message.setDownloadedSize(total);
+							message.setFilePath(decodedUrl);
+							notifier.onCallback(message);//"Downloading: " + url + "\nProgress: " + progress + "%");
 						}
 						//Log.d(TAG, "Downloading: " + url + " " + progress + "%");
 						output.write(data, 0, count);
@@ -113,7 +121,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 					if(i > Constants.IMAGE_DOWNLOAD_RETRY) throw ex;
 					else {
 						if(notifier!=null) {
-							notifier.onCallback("Downloading: " + url + "\nRetry: " + i+ "x");
+							notifier.onCallback(new CallbackEventData("Downloading: " + url + "\nRetry: " + i+ "x"));
 						}
 					}
 				}finally{

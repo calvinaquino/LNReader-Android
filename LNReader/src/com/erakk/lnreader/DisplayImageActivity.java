@@ -15,9 +15,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.erakk.lnreader.callback.CallbackEventData;
+import com.erakk.lnreader.callback.DownloadCallbackEventData;
+import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
-import com.erakk.lnreader.helper.ICallbackNotifier;
 import com.erakk.lnreader.model.ImageModel;
 
 public class DisplayImageActivity extends Activity {
@@ -83,7 +86,8 @@ public class DisplayImageActivity extends Activity {
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
 			return true;
 		case android.R.id.home:
-			NavUtils.navigateUpFromSameTask(this);
+			//NavUtils.navigateUpFromSameTask(this);
+			super.onBackPressed();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -116,8 +120,8 @@ public class DisplayImageActivity extends Activity {
 
 	
     @SuppressLint("NewApi")
-	public class LoadImageTask extends AsyncTask<String, String, AsyncTaskResult<ImageModel>> implements ICallbackNotifier {
-    	public void onCallback(String message) {
+	public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTaskResult<ImageModel>> implements ICallbackNotifier {
+    	public void onCallback(ICallbackEventData message) {
     		publishProgress(message);
     	}
     	
@@ -144,10 +148,29 @@ public class DisplayImageActivity extends Activity {
 		}
 		
 		@Override
-		protected void onProgressUpdate (String... values){
+		protected void onProgressUpdate (ICallbackEventData... values){
 			//executed on UI thread.
+			ICallbackEventData data = values[0];
 			TextView tv = (TextView) findViewById(R.id.loading);
-			tv.setText(values[0]);
+			tv.setText(data.getMessage());
+			
+			if(data.getClass() == DownloadCallbackEventData.class) {
+				DownloadCallbackEventData downloadData = (DownloadCallbackEventData) data;
+				ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
+				int percent = downloadData.getPercentage();
+				synchronized (pb) {
+					if(percent > -1) {
+						// somehow doesn't works....
+						pb.setIndeterminate(false);
+						pb.setSecondaryProgress(percent);
+						pb.setMax(100);
+						pb.setProgress(percent);
+					}
+					else {
+						pb.setIndeterminate(true);
+					}
+				}
+			}
 		}
 		
 		@Override

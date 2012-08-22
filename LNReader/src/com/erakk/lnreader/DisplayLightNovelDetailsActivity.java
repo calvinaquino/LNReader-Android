@@ -34,9 +34,10 @@ import android.widget.Toast;
 
 import com.erakk.lnreader.DisplayLightNovelContentActivity.LoadNovelContentTask;
 import com.erakk.lnreader.adapter.BookModelAdapter;
+import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
-import com.erakk.lnreader.helper.ICallbackNotifier;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
@@ -137,7 +138,8 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
 			return true;
         case android.R.id.home:
-            NavUtils.navigateUpFromSameTask(this);
+            //NavUtils.navigateUpFromSameTask(this);
+        	super.onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -325,8 +327,8 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     public class LoadNovelDetailsTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelCollectionModel>> implements ICallbackNotifier {
 		public boolean refresh = false;
 
-    	public void onCallback(String message) {
-    		publishProgress(message);
+    	public void onCallback(ICallbackEventData message) {
+    		publishProgress(message.getMessage());
     	}
     	
 		@Override
@@ -430,8 +432,8 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 		}
 		
 		@Override
-		public void onCallback(String message) {
-    		publishProgress(message);
+		public void onCallback(ICallbackEventData message) {
+    		publishProgress(message.getMessage());
     	}
 
 		@Override

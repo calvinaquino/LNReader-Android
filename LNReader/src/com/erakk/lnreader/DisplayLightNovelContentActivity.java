@@ -23,10 +23,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
-import com.erakk.lnreader.helper.ICallbackNotifier;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
@@ -160,7 +161,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 			
 			return true;
 		case android.R.id.home:
-			NavUtils.navigateUpFromSameTask(this);
+			//NavUtils.navigateUpFromSameTask(this);
+			super.onBackPressed();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -247,8 +249,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 	}
 	
 	public class LoadNovelContentTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelContentModel>> implements ICallbackNotifier{
-		public void onCallback(String message) {
-    		publishProgress(message);
+		public void onCallback(ICallbackEventData message) {
+    		publishProgress(message.getMessage());
     	}
     	
 		@Override

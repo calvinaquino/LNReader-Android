@@ -16,9 +16,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.callback.CallbackEventData;
+import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.DownloadFileTask;
-import com.erakk.lnreader.helper.ICallbackNotifier;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
@@ -103,7 +104,7 @@ public class NovelsDao {
 
 	public ArrayList<PageModel> getNovelsFromInternet(ICallbackNotifier notifier) throws Exception {
 		if (notifier != null) {
-			notifier.onCallback("Downloading novel list...");
+			notifier.onCallback(new CallbackEventData("Downloading novel list..."));
 		}
 		// get last updated page revision from internet
 		PageModel mainPage = getPageModel("Main_Page", notifier);
@@ -309,7 +310,7 @@ public class NovelsDao {
 			ImageModel image = i.next();
 			
 			if(notifier != null) {
-				notifier.onCallback("Downloading: " + image.getUrl());
+				notifier.onCallback(new CallbackEventData("Start downloading: " + image.getUrl()));
 			}
 			image = task.downloadImage(image.getUrl());
 			// TODO: need to save image to db?

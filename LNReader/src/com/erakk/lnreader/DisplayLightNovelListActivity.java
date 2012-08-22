@@ -28,9 +28,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.adapter.PageModelAdapter;
+import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
-import com.erakk.lnreader.helper.ICallbackNotifier;
 import com.erakk.lnreader.model.PageModel;
 
 /*
@@ -138,7 +139,8 @@ public class DisplayLightNovelListActivity extends ListActivity{
 			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
 			return true;
 		case android.R.id.home:
-			NavUtils.navigateUpFromSameTask(this);
+			//NavUtils.navigateUpFromSameTask(this);
+			super.onBackPressed();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -266,8 +268,8 @@ public class DisplayLightNovelListActivity extends ListActivity{
 	
 	@SuppressLint("NewApi")
 	public class LoadNovelsTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>>  implements ICallbackNotifier {
-    	public void onCallback(String message) {
-    		publishProgress(message);
+    	public void onCallback(ICallbackEventData message) {
+    		publishProgress(message.getMessage());
     	}
 
 		@Override

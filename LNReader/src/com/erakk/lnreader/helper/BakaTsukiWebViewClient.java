@@ -52,10 +52,17 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 					// check if have inside db
 					NovelsDao dao = new NovelsDao(context);
 					try {
-						String[] titles2 = titles[1].split("#", 2 ); // remove anchor text						
-						PageModel pageModel =  dao.getPageModel(titles2[0], null);
-						caller.getIntent().putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
-						caller.recreate();
+						// split anchor text
+						String[] titles2 = titles[1].split("#", 2 ); 
+
+						// check if load different page.
+						String currentPage = caller.getIntent().getStringExtra(Constants.EXTRA_PAGE);
+						if(!currentPage.equalsIgnoreCase(titles2[0])) {
+							PageModel pageModel =  dao.getPageModel(titles2[0], null);
+							caller.getIntent().putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
+							caller.recreate();
+						}
+						// navigate to the anchor if exist.
 						if(titles2.length == 2){
 							view.loadUrl("#" + titles2[1]);
 						}
