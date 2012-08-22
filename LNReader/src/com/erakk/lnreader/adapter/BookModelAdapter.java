@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,21 +65,27 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View view, ViewGroup parent) {
 		PageModel child = getChild(groupPosition, childPosition);
-		if (view == null) {
+		//if (view == null) {
 			LayoutInflater infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			if (invertColors)
 				view = infalInflater.inflate(R.layout.expandchapter_list_item_black, null);
 			else
 				view = infalInflater.inflate(R.layout.expandchapter_list_item, null);
-		}
+		//}
 		
 		TextView tv = (TextView) view.findViewById(R.id.novel_chapter);
 		tv.setText(child.getTitle());
 		tv.setTag(child.getPage());
 		
 		//Log.d("getChildView", "Finished read " + child.getTitle() + " : " + child.isFinishedRead());
+    	int read = invertColors?Color.parseColor("#888888"):Color.parseColor("#888888");
+    	int notRead = invertColors?Color.parseColor("#ffffff"):Color.parseColor("#000000");
+    	
 		if(child.isFinishedRead()) {
-			tv.setTextColor(Color.parseColor("#888888"));
+			tv.setTextColor(read);
+		}
+		else {
+			tv.setTextColor(notRead);
 		}
 		
 		TextView tvIsDownloaded = (TextView) view.findViewById(R.id.novel_is_downloaded);
@@ -90,7 +98,6 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 				tvIsDownloaded.setVisibility(TextView.VISIBLE);
 			}
 		}
-		
 		return view;
 	}
 
@@ -113,15 +120,16 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 
 	public View getGroupView(int groupPosition, boolean isLastChild, View view, ViewGroup parent) {
 		BookModel group =  getGroup(groupPosition);
-		if (view == null) {
+		//if (view == null) {
 			LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			if (invertColors)
 				view = inf.inflate(R.layout.expandvolume_list_item_black, null);
 			else
 				view = inf.inflate(R.layout.expandvolume_list_item, null);
-		}
+		//}
 		TextView tv = (TextView) view.findViewById(R.id.novel_volume);
 		tv.setText(group.getTitle());
+
 		return view;
 	}
 
@@ -135,5 +143,6 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 
 	public void invertColorMode(boolean invert) {
 		invertColors = invert;
+		this.notifyDataSetInvalidated();
 	}
 }

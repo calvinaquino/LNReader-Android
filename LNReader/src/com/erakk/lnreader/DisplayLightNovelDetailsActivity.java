@@ -229,12 +229,13 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			
 			/*
 			 * Implement code to mark this chapter read
+			 * >> change to toggle
 			 */
 			chapter = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
-			chapter.setFinishedRead(true);
+			chapter.setFinishedRead(!chapter.isFinishedRead());
 			dao.updatePageModel(chapter);
 			bookModelAdapter.notifyDataSetChanged();
-			Toast.makeText(this, "Mark as Read", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "Toggle Read", Toast.LENGTH_SHORT).show();
 			return true;
 		default:
 			return super.onContextItemSelected(item);

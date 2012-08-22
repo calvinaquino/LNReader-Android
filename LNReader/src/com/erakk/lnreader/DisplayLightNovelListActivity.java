@@ -134,7 +134,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 			
 			toggleColorPref();
     		updateViewColor();
-			updateContent();
+			//updateContent();
 			
 			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
 			return true;
@@ -245,12 +245,12 @@ public class DisplayLightNovelListActivity extends ListActivity{
     	
     	// Views to be changed
         View MainView = findViewById(R.id.light_novel_list_screen);
-        MainView.invalidate();
+        // MainView.invalidate();
         // it is considered white background and black text to be the standard
         // so we change to black background and white text if true
         if (invertColors == true) {
         	MainView.setBackgroundColor(Color.BLACK);
-        	adapter = new PageModelAdapter(this, R.layout.novel_list_item_black, listItems);
+        	adapter.setLayout( R.layout.novel_list_item_black);// = new PageModelAdapter(this, R.layout.novel_list_item_black, listItems);
         	int[] colors = {0, 0xFFFFFFFF, 0}; // blue
         	getListView().setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
         	getListView().setDividerHeight(1);
@@ -258,12 +258,15 @@ public class DisplayLightNovelListActivity extends ListActivity{
         }
         else {
         	MainView.setBackgroundColor(Color.WHITE);
-        	adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
+        	//adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
+        	adapter.setLayout( R.layout.novel_list_item);
         	int[] colors = {0, 0xFF000000, 0}; // blue
         	getListView().setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
         	getListView().setDividerHeight(1);
 //        	NovelNames.setTextColor(Color.BLACK);
         }
+        MainView.invalidate();
+        adapter.notifyDataSetInvalidated();
     }
 	
 	@SuppressLint("NewApi")
