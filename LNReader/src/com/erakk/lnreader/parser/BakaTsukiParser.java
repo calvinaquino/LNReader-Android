@@ -110,7 +110,21 @@ public class BakaTsukiParser {
 		
 		return novel;
 	}
+	
+	/**
+	 * Sanitizes a title by removing unnecessary stuff.
+	 * @param title
+	 * @return
+	 */
+	private static String sanitize(String title) {
+		title = title.replaceAll("<.+?>", "")				 //Strip tags
+					 .replaceAll("\\[.+?\\]", "")		 //Strip [___]s
+					 .replaceAll("^(.+?)[(\\[].*$", "$1") //Leaves only the text before brackets (might be a bit too aggressive)
+					 .trim();
 
+		return title;
+	}
+	
 	private static ArrayList<BookModel> parseNovelChapters(Document doc, NovelCollectionModel novel, Context context) {
 		Log.d(TAG, "Start parsing book collections");
 		// parse the collection
@@ -147,7 +161,7 @@ public class BakaTsukiParser {
 						else if(bookElement.tagName() == "h3") {
 							Log.d(TAG, "Found: " +bookElement.text());
 							BookModel book = new BookModel();
-							book.setTitle(bookElement.text()); // TODO: need to sanitize the title.
+							book.setTitle(sanitize(bookElement.text())); // TODO: need to sanitize the title.
 							ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
 							
 							// parse the chapters.
@@ -167,7 +181,7 @@ public class BakaTsukiParser {
 										if(links.size() > 0) {
 											Element link = links.first();
 											PageModel p = new PageModel(context);
-											p.setTitle(link.text());
+											p.setTitle(sanitize(link.text()));
 											p.setPage(link.attr("href").replace("/project/index.php?title=",""));
 											p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 											p.setType(PageModel.TYPE_CONTENT);
@@ -197,7 +211,7 @@ public class BakaTsukiParser {
 							else if(bookElement.tagName() == "p") {
 								Log.d(TAG, "Found: " +bookElement.text());
 								BookModel book = new BookModel();
-								book.setTitle(bookElement.text());
+								book.setTitle(sanitize(bookElement.text()));
 								ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
 								
 								// parse the chapters.
@@ -233,7 +247,7 @@ public class BakaTsukiParser {
 										if(links.size() > 0) {
 											Element link = links.first();
 											PageModel p = new PageModel(context);
-											p.setTitle(link.text());
+											p.setTitle(sanitize(link.text()));
 											p.setPage(link.attr("href").replace("/project/index.php?title=",""));
 											p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 											p.setType(PageModel.TYPE_CONTENT);
