@@ -48,26 +48,19 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 			if(url.contains("/project/index.php?title=")) {
 				String titles[] = url.split("title=", 2);
 				if(titles.length == 2 && !(titles[1].length() == 0)) {
-					Toast.makeText(context, "Page Title: " + titles[1], Toast.LENGTH_SHORT).show();
+					Toast.makeText(context, "Loading: " + titles[1], Toast.LENGTH_SHORT).show();
 					// check if have inside db
 					NovelsDao dao = new NovelsDao(context);
 					try {
-						PageModel pageModel =  dao.getPageModel(titles[1], null);
+						String[] titles2 = titles[1].split("#", 2 ); // remove anchor text						
+						PageModel pageModel =  dao.getPageModel(titles2[0], null);
 						caller.getIntent().putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
 						caller.recreate();
-//						if(pageModel != null) {
-//							NovelContentModel content = dao.getNovelContent(pageModel, null);
-//							if(content != null) {
-//								String html = Constants.WIKI_CSS_STYLE + "<body>" + content.getContent() + "</body></html>" ;
-//								view.loadDataWithBaseURL(Constants.BASE_URL, html, "text/html", "utf-8", "");
-//								caller.getIntent().putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
-//								
-//								
-//							}
-//						}
+						if(titles2.length == 2){
+							view.loadUrl("#" + titles2[1]);
+						}
 						useDefault = false;
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

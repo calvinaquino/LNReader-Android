@@ -10,6 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -45,8 +47,9 @@ public class BakaTsukiParser {
 		pageModel.setPage(pageName);
 		pageModel.setTitle(doc.select("page").first().attr("title"));
 		Log.d(TAG, "parsePageAPI Title: " + pageModel.getTitle());
-		
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); 		//2012-08-03T02:41:50Z
+		//2012-08-03T02:41:50Z
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Date lastUpdate = formatter.parse(doc.select("page").first().attr("touched"));
 		pageModel.setLastUpdate(lastUpdate);
 		Log.d(TAG, "parsePageAPI Last Update: " + pageModel.getLastUpdate());
