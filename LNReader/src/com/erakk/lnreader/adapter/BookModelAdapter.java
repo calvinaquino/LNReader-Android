@@ -25,7 +25,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
 	private ArrayList<BookModel> groups;
-	boolean invertColors = false;
+//	boolean invertColors = false;
 
 	public BookModelAdapter(Context context, ArrayList<BookModel> groups) {
 		this.context = context;
@@ -67,9 +67,9 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		PageModel child = getChild(groupPosition, childPosition);
 		//if (view == null) {
 			LayoutInflater infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			if (invertColors)
-				view = infalInflater.inflate(R.layout.expandchapter_list_item_black, null);
-			else
+			//if (invertColors)
+			//	view = infalInflater.inflate(R.layout.expandchapter_list_item_black, null);
+			//else
 				view = infalInflater.inflate(R.layout.expandchapter_list_item, null);
 		//}
 		
@@ -77,9 +77,16 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		tv.setText(child.getTitle());
 		tv.setTag(child.getPage());
 		
+		int notRead;
+		if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean("invert_colors", false)) {    		
+			notRead = Color.parseColor("#dddddd");
+    	}
+    	else {
+    		notRead = Color.parseColor("#222222");
+    	}
 		//Log.d("getChildView", "Finished read " + child.getTitle() + " : " + child.isFinishedRead());
-    	int read = invertColors?Color.parseColor("#888888"):Color.parseColor("#888888");
-    	int notRead = invertColors?Color.parseColor("#ffffff"):Color.parseColor("#000000");
+    	int read = Color.parseColor("#888888");//:Color.parseColor("#888888");
+    	//:Color.parseColor("#000000");
     	
 		if(child.isFinishedRead()) {
 			tv.setTextColor(read);
@@ -122,9 +129,9 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		BookModel group =  getGroup(groupPosition);
 		//if (view == null) {
 			LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			if (invertColors)
-				view = inf.inflate(R.layout.expandvolume_list_item_black, null);
-			else
+			//if (invertColors)
+			//	view = inf.inflate(R.layout.expandvolume_list_item_black, null);
+			//else
 				view = inf.inflate(R.layout.expandvolume_list_item, null);
 		//}
 		TextView tv = (TextView) view.findViewById(R.id.novel_volume);
@@ -141,8 +148,8 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		return true;
 	}
 
-	public void invertColorMode(boolean invert) {
-		invertColors = invert;
-		this.notifyDataSetInvalidated();
-	}
+//	public void invertColorMode(boolean invert) {
+//		invertColors = invert;
+//		this.notifyDataSetInvalidated();
+//	}
 }

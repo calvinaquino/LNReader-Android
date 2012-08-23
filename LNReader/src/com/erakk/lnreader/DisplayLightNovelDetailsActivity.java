@@ -58,6 +58,14 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     @SuppressLint({ "NewApi", "NewApi" })
 	@Override
      public void onCreate(Bundle savedInstanceState) {
+    	// set before create any view
+    	if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("invert_colors", false)) {    		
+    		setTheme(R.style.AppTheme2);
+    	}
+    	else {
+    		setTheme(R.style.AppTheme);
+    	}
+    	
         super.onCreate(savedInstanceState);
         
         //Get intent and message
@@ -101,6 +109,13 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     	//updateContent(false);
     }
     
+    @SuppressLint("NewApi")
+	@Override
+    protected void onRestart() {
+        super.onRestart();
+        recreate();
+    }
+    
     public void onStop(){
     	// check running task
     	if(task != null && !(task.getStatus() == Status.FINISHED)) {
@@ -118,7 +133,8 @@ public class DisplayLightNovelDetailsActivity extends Activity {
         return true;
     }
     
-    @Override
+    @SuppressLint("NewApi")
+	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     	case R.id.menu_settings:
@@ -132,8 +148,9 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			return true;
 		case R.id.invert_colors:			
 			toggleColorPref();
-			updateViewColor();
+			//updateViewColor();
 //			updateContent(true);
+			recreate();
 			
 			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
 			return true;
@@ -255,42 +272,42 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     	//Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
     }
     
-    private void updateViewColor() {
-    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
-    	
-    	// Views to be changed
-        View SynopsisView = findViewById(R.id.ligh_novel_synopsys_screen);
-        TextView SynopsisText = (TextView)findViewById(R.id.synopsys);
-        TextView TitleText = (TextView)findViewById(R.id.title);
-        
-        View ChapterView = findViewById(R.id.ligh_novel_chapter_screen);
-        ChapterView.invalidate();
-        SynopsisView.invalidate();
-        // it is considered white background and black text to be the standard
-        // so we change to black background and white text if true
-        if (invertColors == true) {
-        	bookModelAdapter.invertColorMode(true);
-        	SynopsisView.setBackgroundColor(Color.BLACK);
-        	ChapterView.setBackgroundColor(Color.BLACK);
-        	SynopsisText.setTextColor(Color.WHITE);
-        	TitleText.setTextColor(Color.WHITE);
-        	int[] colors = {0, 0xFFFFFFFF, 0}; // white
-        	expandList.setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
-        	expandList.setDividerHeight(1);
-        }
-        else {
-        	bookModelAdapter.invertColorMode(false);
-        	SynopsisView.setBackgroundColor(Color.WHITE);
-        	ChapterView.setBackgroundColor(Color.WHITE);
-        	SynopsisText.setTextColor(Color.BLACK);
-        	TitleText.setTextColor(Color.BLACK);
-        	int[] colors = {0, 0xFF000000, 0}; // black
-        	expandList.setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
-        	expandList.setDividerHeight(1);
-        }
-//        updateContent(true);
-    }
+//    private void updateViewColor() {
+////    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+////    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
+////    	
+//    	// Views to be changed
+//        View SynopsisView = findViewById(R.id.ligh_novel_synopsys_screen);
+//        TextView SynopsisText = (TextView)findViewById(R.id.synopsys);
+//        TextView TitleText = (TextView)findViewById(R.id.title);
+//        
+//        View ChapterView = findViewById(R.id.ligh_novel_chapter_screen);
+//        ChapterView.invalidate();
+//        SynopsisView.invalidate();
+//        // it is considered white background and black text to be the standard
+//        // so we change to black background and white text if true
+////        if (invertColors == true) {
+////        	bookModelAdapter.invertColorMode(true);
+////        	SynopsisView.setBackgroundColor(Color.BLACK);
+////        	ChapterView.setBackgroundColor(Color.BLACK);
+////        	SynopsisText.setTextColor(Color.WHITE);
+////        	TitleText.setTextColor(Color.WHITE);
+////        	int[] colors = {0, 0xFFFFFFFF, 0}; // white
+////        	expandList.setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
+////        	expandList.setDividerHeight(1);
+////        }
+////        else {
+//        	bookModelAdapter.invertColorMode(false);
+//        	SynopsisView.setBackgroundColor(Color.WHITE);
+//        	ChapterView.setBackgroundColor(Color.WHITE);
+//        	SynopsisText.setTextColor(Color.BLACK);
+//        	TitleText.setTextColor(Color.BLACK);
+//        	int[] colors = {0, 0xFF000000, 0}; // black
+//        	expandList.setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
+//        	expandList.setDividerHeight(1);
+////        }
+////        updateContent(true);
+//    }
 	
     private void updateContent ( boolean willRefresh) {
 //		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -414,7 +431,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 				Log.e(this.getClass().toString(), e.getClass().toString() + ": " + e.getMessage());
 			}
 			ToggleProgressBar(false);
-	        updateViewColor();
+	        //updateViewColor();
 		}		
     }
 
