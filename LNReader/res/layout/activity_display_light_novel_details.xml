@@ -5,7 +5,7 @@
     android:minHeight="800dp"
 	android:id="@+id/ligh_novel_chapter_screen" >
 
-		<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		<!-- <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		    xmlns:tools="http://schemas.android.com/tools"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content" > 
@@ -27,7 +27,7 @@
 		        android:layout_marginTop="20dp" />
 		    
 			
-		</RelativeLayout>
+		</RelativeLayout> -->
 		<!-- android:id="@+id/chapter_list" -->
 	<ExpandableListView
 	    android:id="@+id/chapter_list"

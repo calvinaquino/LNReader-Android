@@ -5,6 +5,7 @@ import java.util.Iterator;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -55,6 +56,8 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     private DownloadNovelContentTask downloadTask = null;
     private LoadNovelDetailsTask task = null;
     
+	private ProgressDialog dialog;
+    
     @SuppressLint({ "NewApi", "NewApi" })
 	@Override
      public void onCreate(Bundle savedInstanceState) {
@@ -100,13 +103,6 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 		});
     	
         setTitle(page.getTitle());
-    }
-    
-    @Override
-    public void onResume(){
-    	super.onResume();
-    	Log.d(TAG, "Resuming...");
-    	//updateContent(false);
     }
     
     @SuppressLint("NewApi")
@@ -319,25 +315,27 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     
 	@SuppressLint("NewApi")
 	private void ToggleProgressBar(boolean show) {
-		expandList = (ExpandableListView) findViewById(R.id.chapter_list);
-		ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
-		TextView tv = (TextView) findViewById(R.id.loading);
+//		expandList = (ExpandableListView) findViewById(R.id.chapter_list);
+//		ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
+//		TextView tv = (TextView) findViewById(R.id.loading);
 		
 		if(show) {
-			expandList.setVisibility(ExpandableListView.GONE);
-			
-			pb.setVisibility(ProgressBar.VISIBLE);
-			pb.setIndeterminate(true);
-			pb.setActivated(true);
-			pb.animate();
-			
-			tv.setVisibility(TextView.VISIBLE);
-			tv.setText("Loading...");			
+//			expandList.setVisibility(ExpandableListView.GONE);
+//			
+//			pb.setVisibility(ProgressBar.VISIBLE);
+//			pb.setIndeterminate(true);
+//			pb.setActivated(true);
+//			pb.animate();
+//			
+//			tv.setVisibility(TextView.VISIBLE);
+//			tv.setText("Loading...");
+			dialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
 		}
 		else {
-			pb.setVisibility(ProgressBar.GONE);			
-			tv.setVisibility(TextView.GONE);
-			expandList.setVisibility(ExpandableListView.VISIBLE);
+//			pb.setVisibility(ProgressBar.GONE);			
+//			tv.setVisibility(TextView.GONE);
+//			expandList.setVisibility(ExpandableListView.VISIBLE);
+			dialog.dismiss();
 		}
 	}
     
@@ -380,8 +378,9 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 		@Override
 		protected void onProgressUpdate (String... values){
 			//executed on UI thread.
-			TextView tv = (TextView) findViewById(R.id.loading);
-			tv.setText(values[0]);
+			//TextView tv = (TextView) findViewById(R.id.loading);
+			//tv.setText(values[0]);
+			dialog.setMessage(values[0]);
 		}
 		
 		@Override
@@ -396,8 +395,8 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 					if(expandList.getHeaderViewsCount() == 0) {  
 						LayoutInflater layoutInflater = getLayoutInflater();
 						View synopsis = layoutInflater.inflate(R.layout.activity_display_synopsis, null);
-						synopsis.findViewById(R.id.loading).setVisibility(TextView.GONE);
-						synopsis.findViewById(R.id.progressBar2).setVisibility(ProgressBar.GONE);
+//						synopsis.findViewById(R.id.loading).setVisibility(TextView.GONE);
+//						synopsis.findViewById(R.id.progressBar2).setVisibility(ProgressBar.GONE);
 
 						TextView textViewTitle = (TextView) synopsis.findViewById(R.id.title);
 						TextView textViewSynopsis = (TextView) synopsis.findViewById(R.id.synopsys);
@@ -472,8 +471,9 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 		@Override
 		protected void onProgressUpdate (String... values){
 			//executed on UI thread.
-			TextView tv = (TextView) findViewById(R.id.loading);
-			tv.setText(values[0]);
+			//TextView tv = (TextView) findViewById(R.id.loading);
+			//tv.setText(values[0]);
+			dialog.setTitle(values[0]);
 		}
 		
 		@Override

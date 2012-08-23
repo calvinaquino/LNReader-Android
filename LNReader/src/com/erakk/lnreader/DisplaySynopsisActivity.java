@@ -110,10 +110,10 @@ public class DisplaySynopsisActivity extends Activity {
 		@Override
 		protected AsyncTaskResult<NovelCollectionModel> doInBackground(PageModel... arg0) {
 			PageModel page = arg0[0];
-			ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
-	    	pb.setIndeterminate(true);
-	    	pb.setActivated(true);
-	    	pb.animate();
+//			ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
+//	    	pb.setIndeterminate(true);
+//	    	pb.setActivated(true);
+//	    	pb.animate();
 				        
 			try {
 				NovelCollectionModel novelCol = dao.getNovelDetails(page, notifier);
@@ -128,10 +128,10 @@ public class DisplaySynopsisActivity extends Activity {
 		
 		@SuppressLint("NewApi")
 		protected void onPostExecute(AsyncTaskResult<NovelCollectionModel> result) {
-			ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
-			
-			pb.setActivated(false);
-			pb.setVisibility(ProgressBar.GONE);
+//			ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
+//			
+//			pb.setActivated(false);
+//			pb.setVisibility(ProgressBar.GONE);
 
 			// TODO: get image Cover and put in ImageView :)
 			//ImageView ImageViewCover = (ImageView) findViewById(R.id.cover);
@@ -141,10 +141,10 @@ public class DisplaySynopsisActivity extends Activity {
 			if(novelCol != null) {
 				
 				//Clear progressBar and string
-				 TextView tv = (TextView) findViewById(R.id.loading);
-				 tv.setVisibility(TextView.GONE);
-		         pb.setActivated(false);
-		         pb.setVisibility(ProgressBar.GONE);
+//				 TextView tv = (TextView) findViewById(R.id.loading);
+//				 tv.setVisibility(TextView.GONE);
+//		         pb.setActivated(false);
+//		         pb.setVisibility(ProgressBar.GONE);
 				
 				String details = "";
 				details += novelCol.getSynopsis();

@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -53,6 +54,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 	private String volume;
 	private String parentPage;
 	private boolean refresh = false;
+
+	private ProgressDialog dialog;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -78,7 +81,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		//updateViewColor();
 		try {
 			pageModel = dao.getPageModel(intent.getStringExtra(Constants.EXTRA_PAGE), null);
-			ToggleProgressBar(true);
+			//ToggleProgressBar(true);
 			task = new LoadNovelContentTask();
 			task.execute(new PageModel[] {pageModel});	
 		} catch (Exception e) {
@@ -186,20 +189,26 @@ public class DisplayLightNovelContentActivity extends Activity {
 	
 	@SuppressLint("NewApi")
 	private void ToggleProgressBar(boolean show) {
-		ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
-		TextView tv = (TextView) findViewById(R.id.loading);
+//		ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
+//		TextView tv = (TextView) findViewById(R.id.loading);
+		Log.d("ProgressBar", "Toggle");
 		if(show) {
-			pb.setIndeterminate(true);
-			pb.setActivated(true);
-			pb.animate();
-			pb.setVisibility(ProgressBar.VISIBLE);
-		
-			tv.setText("Loading...");
-			tv.setVisibility(TextView.VISIBLE);
+//			pb.setIndeterminate(true);
+//			pb.setActivated(true);
+//			pb.animate();
+//			pb.setVisibility(ProgressBar.VISIBLE);
+//		
+//			tv.setText("Loading...");
+//			tv.setVisibility(TextView.VISIBLE);
+			dialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
+			dialog.setCanceledOnTouchOutside(true);
+			Log.d("ProgressBar", "Show");
 		} 
 		else {
-			pb.setVisibility(ProgressBar.GONE);			
-			tv.setVisibility(TextView.GONE);
+//			pb.setVisibility(ProgressBar.GONE);			
+//			tv.setVisibility(TextView.GONE);
+			dialog.dismiss();
+			Log.d("ProgressBar", "Dismiss");
 		}
 	}
 	
@@ -320,8 +329,9 @@ public class DisplayLightNovelContentActivity extends Activity {
 		@Override
 		protected void onProgressUpdate (String... values){
 			//executed on UI thread.
-			TextView tv = (TextView) findViewById(R.id.loading);
-			tv.setText(values[0]);
+//			TextView tv = (TextView) findViewById(R.id.loading);
+//			tv.setText(values[0]);
+			dialog.setMessage(values[0]);
 		}
 		
 		protected void onPostExecute(AsyncTaskResult<NovelContentModel> result) {

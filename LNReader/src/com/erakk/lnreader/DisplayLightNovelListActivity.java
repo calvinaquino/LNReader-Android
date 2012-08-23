@@ -4,16 +4,13 @@ import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -23,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +43,8 @@ public class DisplayLightNovelListActivity extends ListActivity{
 	private boolean refreshOnly = false;
 	private boolean onlyWatched = false;
 	private LoadNovelsTask task = null;
+	
+	private ProgressDialog dialog;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -207,13 +205,9 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		//SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
     	//boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
 		try {
-			if (adapter != null) { 
-				//if (invertColors)adapter.setResourceId(R.layout.novel_list_item_black);
-				//else 
+			if (adapter != null) {
 				adapter.setResourceId(R.layout.novel_list_item);
 			} else {
-				//if (invertColors)adapter = new PageModelAdapter(this, R.layout.novel_list_item_black, listItems);
-				//else 
 				adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
 			}
 			new LoadNovelsTask().execute();
@@ -227,21 +221,23 @@ public class DisplayLightNovelListActivity extends ListActivity{
 	
 	@SuppressLint("NewApi")
 	private void ToggleProgressBar(boolean show) {
-		ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
-		TextView tv = (TextView) findViewById(R.id.loading);
+		//ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
+		//TextView tv = (TextView) findViewById(R.id.loading);
 		
 		if(show) {
-			pb.setIndeterminate(true);
-			pb.setActivated(true);
-			pb.animate();
-			pb.setVisibility(ProgressBar.VISIBLE);
-		
-			tv.setText("Loading...");
-			tv.setVisibility(TextView.VISIBLE);
+//			pb.setIndeterminate(true);
+//			pb.setActivated(true);
+//			pb.animate();
+//			pb.setVisibility(ProgressBar.VISIBLE);
+//		
+//			tv.setText("Loading...");
+//			tv.setVisibility(TextView.VISIBLE);
+			dialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
 		}
 		else {
-			pb.setVisibility(ProgressBar.GONE);			
-			tv.setVisibility(TextView.INVISIBLE);
+//			pb.setVisibility(ProgressBar.GONE);			
+//			tv.setVisibility(TextView.INVISIBLE);
+			dialog.dismiss();
 		}
 	}
 	
@@ -328,9 +324,10 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		@Override
 		protected void onProgressUpdate (String... values){
 			//executed on UI thread.
-			TextView tv = (TextView) findViewById(R.id.loading);
-			tv.setText(values[0]);
-		}
+//			TextView tv = (TextView) findViewById(R.id.loading);
+//			tv.setText(values[0]);
+			dialog.setTitle(values[0]);
+			}
 		
 		protected void onPostExecute(AsyncTaskResult<ArrayList<PageModel>> result) {
 			//executed on UI thread.
@@ -346,9 +343,9 @@ public class DisplayLightNovelListActivity extends ListActivity{
 				
 				if (list.size() == 0 && onlyWatched) {
 					// Show message if watch list is empty
-					TextView tv = (TextView) findViewById(R.id.loading);
-					tv.setVisibility(TextView.VISIBLE);
-					tv.setText("Watch List is empty.");
+//					TextView tv = (TextView) findViewById(R.id.loading);
+//					tv.setVisibility(TextView.VISIBLE);
+//					tv.setText("Watch List is empty.");
 				}
 			}
 			if(result.getError() != null) {
