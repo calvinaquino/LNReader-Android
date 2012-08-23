@@ -2,6 +2,7 @@
 Android SDK
 eclipse + ADT
 JSoup (Nandaka)
+Android 3+ (Honeycomb)
 
 //LINE-ENDINGS & SOURCE ENCODING CONFIG
 Git Config: https://help.github.com/articles/dealing-with-line-endings

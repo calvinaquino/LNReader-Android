@@ -2,6 +2,7 @@ package com.erakk.lnreader;
 
 import java.io.File;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -13,6 +14,7 @@ import android.preference.PreferenceManager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -24,7 +26,16 @@ public class DisplaySettingsActivity extends PreferenceActivity {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-    public void onCreate(Bundle savedInstanceState) {    	
+    public void onCreate(Bundle savedInstanceState) {
+		Log.d("MainActivity", "onCreate");
+    	// set before create any view
+    	if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("invert_colors", false)) {    		
+    		setTheme(R.style.AppTheme2);
+    	}
+    	else {
+    		setTheme(R.style.AppTheme);
+    	}
+    	
         super.onCreate(savedInstanceState);
       //This man is deprecated but but we may want to be bale to run on older API
         addPreferencesFromResource(R.xml.preferences);
@@ -37,8 +48,8 @@ public class DisplaySettingsActivity extends PreferenceActivity {
             public boolean onPreferenceClick(Preference p) {
                 // TODO stuff              
         		
-        		updateViewColor();
-        		
+        		//updateViewColor();
+        		recreate();
         		Toast t = Toast.makeText(getApplicationContext(), "Color Inverted", Toast.LENGTH_LONG);
     			t.show();		
         		
@@ -81,6 +92,15 @@ public class DisplaySettingsActivity extends PreferenceActivity {
             }
         });
         
+    }
+    
+    @SuppressLint("NewApi")
+	@Override
+    protected void onRestart() {
+        super.onRestart();
+        // The activity has become visible (it is now "resumed").
+        //updateViewColor();
+        recreate();
     }
     
 	@SuppressWarnings("deprecation")
@@ -128,77 +148,77 @@ public class DisplaySettingsActivity extends PreferenceActivity {
     	Spannable titleClearImageCache = new SpannableString ( preferenceClearImageCache.getTitle() );
     	Spannable summaryClearImageCache = new SpannableString ( preferenceClearImageCache.getSummary() );
     	
-        // it is considered white background and black text to be the standard
-        // so we change to black background and white text if true
-//    	Preference preference1 = (Preference) findViewById(R.id.);
-        if (invertColors == true) {
-        	getListView().setBackgroundColor(Color.BLACK);
-        	int col = Color.WHITE;
-        	// =====
-        	// update category
-        	// =====
-        	titleUpdateCategory.setSpan(new ForegroundColorSpan( col ), 0, titleUpdateCategory.length(), 0);
-        	// updates interval
-        	summaryUpdateInterval.setSpan( new ForegroundColorSpan( col ), 0, summaryUpdateInterval.length(), 0 );
-        	titleUpdateInterval.setSpan( new ForegroundColorSpan( col ), 0, titleUpdateInterval.length(), 0 );
-        	// =====
-        	// layout category
-        	// =====
-        	titleLayoutCategory.setSpan( new ForegroundColorSpan( col ), 0, titleLayoutCategory.length(), 0 );
-        	// invert colors
-        	summaryInvertColors.setSpan( new ForegroundColorSpan( col ), 0, summaryInvertColors.length(), 0 );
-        	titleInvertColors.setSpan( new ForegroundColorSpan( col ), 0, titleInvertColors.length(), 0 );
-        	// lock horizontal
-        	summaryLockHorizontal.setSpan( new ForegroundColorSpan( col ), 0, summaryLockHorizontal.length(), 0 );
-        	titleLockHorizontal.setSpan( new ForegroundColorSpan( col ), 0, titleLockHorizontal.length(), 0 );
-        	// show images
-        	summaryShowImages.setSpan( new ForegroundColorSpan( col ), 0, summaryShowImages.length(), 0 );
-        	titleShowImages.setSpan( new ForegroundColorSpan( col ), 0, titleShowImages.length(), 0 );
-        	// =====
-        	// storage category
-        	// =====
-        	titleStorageCategory.setSpan( new ForegroundColorSpan( col ), 0, titleStorageCategory.length(), 0 );
-        	// clear database
-        	summaryClearDatabase.setSpan( new ForegroundColorSpan( col ), 0, summaryClearDatabase.length(), 0 );
-        	titleClearDatabase.setSpan( new ForegroundColorSpan( col ), 0, titleClearDatabase.length(), 0 );
-        	// clear image cache
-        	summaryClearImageCache.setSpan( new ForegroundColorSpan( col ), 0, summaryClearImageCache.length(), 0 );
-        	titleClearImageCache.setSpan( new ForegroundColorSpan( col ), 0, titleClearImageCache.length(), 0 );
-        }
-        else {
-        	getListView().setBackgroundColor(Color.TRANSPARENT);
-        	int col = Color.BLACK;
-        	// =====
-        	// update category
-        	// =====
-        	titleUpdateCategory.setSpan(new ForegroundColorSpan( col ), 0, titleUpdateCategory.length(), 0);
-        	// updates interval
-        	summaryUpdateInterval.setSpan( new ForegroundColorSpan( col ), 0, summaryUpdateInterval.length(), 0 );
-        	titleUpdateInterval.setSpan( new ForegroundColorSpan( col ), 0, titleUpdateInterval.length(), 0 );
-        	// =====
-        	// layout category
-        	// =====
-        	titleLayoutCategory.setSpan( new ForegroundColorSpan( col ), 0, titleLayoutCategory.length(), 0 );
-        	// invert colors
-        	summaryInvertColors.setSpan( new ForegroundColorSpan( col ), 0, summaryInvertColors.length(), 0 );
-        	titleInvertColors.setSpan( new ForegroundColorSpan( col ), 0, titleInvertColors.length(), 0 );
-        	// lock horizontal
-        	summaryLockHorizontal.setSpan( new ForegroundColorSpan( col ), 0, summaryLockHorizontal.length(), 0 );
-        	titleLockHorizontal.setSpan( new ForegroundColorSpan( col ), 0, titleLockHorizontal.length(), 0 );
-        	// show images
-        	summaryShowImages.setSpan( new ForegroundColorSpan( col ), 0, summaryShowImages.length(), 0 );
-        	titleShowImages.setSpan( new ForegroundColorSpan( col ), 0, titleShowImages.length(), 0 );
-        	// =====
-        	// storage category
-        	// =====
-        	titleStorageCategory.setSpan( new ForegroundColorSpan( col ), 0, titleStorageCategory.length(), 0 );
-        	// clear database
-        	summaryClearDatabase.setSpan( new ForegroundColorSpan( col ), 0, summaryClearDatabase.length(), 0 );
-        	titleClearDatabase.setSpan( new ForegroundColorSpan( col ), 0, titleClearDatabase.length(), 0 );
-        	// clear image cache
-        	summaryClearImageCache.setSpan( new ForegroundColorSpan( col ), 0, summaryClearImageCache.length(), 0 );
-        	titleClearImageCache.setSpan( new ForegroundColorSpan( col ), 0, titleClearImageCache.length(), 0 );
-        }
+//        // it is considered white background and black text to be the standard
+//        // so we change to black background and white text if true
+////    	Preference preference1 = (Preference) findViewById(R.id.);
+//        if (invertColors == true) {
+//        	getListView().setBackgroundColor(Color.BLACK);
+//        	int col = Color.WHITE;
+//        	// =====
+//        	// update category
+//        	// =====
+//        	titleUpdateCategory.setSpan(new ForegroundColorSpan( col ), 0, titleUpdateCategory.length(), 0);
+//        	// updates interval
+//        	summaryUpdateInterval.setSpan( new ForegroundColorSpan( col ), 0, summaryUpdateInterval.length(), 0 );
+//        	titleUpdateInterval.setSpan( new ForegroundColorSpan( col ), 0, titleUpdateInterval.length(), 0 );
+//        	// =====
+//        	// layout category
+//        	// =====
+//        	titleLayoutCategory.setSpan( new ForegroundColorSpan( col ), 0, titleLayoutCategory.length(), 0 );
+//        	// invert colors
+//        	summaryInvertColors.setSpan( new ForegroundColorSpan( col ), 0, summaryInvertColors.length(), 0 );
+//        	titleInvertColors.setSpan( new ForegroundColorSpan( col ), 0, titleInvertColors.length(), 0 );
+//        	// lock horizontal
+//        	summaryLockHorizontal.setSpan( new ForegroundColorSpan( col ), 0, summaryLockHorizontal.length(), 0 );
+//        	titleLockHorizontal.setSpan( new ForegroundColorSpan( col ), 0, titleLockHorizontal.length(), 0 );
+//        	// show images
+//        	summaryShowImages.setSpan( new ForegroundColorSpan( col ), 0, summaryShowImages.length(), 0 );
+//        	titleShowImages.setSpan( new ForegroundColorSpan( col ), 0, titleShowImages.length(), 0 );
+//        	// =====
+//        	// storage category
+//        	// =====
+//        	titleStorageCategory.setSpan( new ForegroundColorSpan( col ), 0, titleStorageCategory.length(), 0 );
+//        	// clear database
+//        	summaryClearDatabase.setSpan( new ForegroundColorSpan( col ), 0, summaryClearDatabase.length(), 0 );
+//        	titleClearDatabase.setSpan( new ForegroundColorSpan( col ), 0, titleClearDatabase.length(), 0 );
+//        	// clear image cache
+//        	summaryClearImageCache.setSpan( new ForegroundColorSpan( col ), 0, summaryClearImageCache.length(), 0 );
+//        	titleClearImageCache.setSpan( new ForegroundColorSpan( col ), 0, titleClearImageCache.length(), 0 );
+//        }
+//        else {
+//        	getListView().setBackgroundColor(Color.TRANSPARENT);
+//        	int col = Color.BLACK;
+//        	// =====
+//        	// update category
+//        	// =====
+//        	titleUpdateCategory.setSpan(new ForegroundColorSpan( col ), 0, titleUpdateCategory.length(), 0);
+//        	// updates interval
+//        	summaryUpdateInterval.setSpan( new ForegroundColorSpan( col ), 0, summaryUpdateInterval.length(), 0 );
+//        	titleUpdateInterval.setSpan( new ForegroundColorSpan( col ), 0, titleUpdateInterval.length(), 0 );
+//        	// =====
+//        	// layout category
+//        	// =====
+//        	titleLayoutCategory.setSpan( new ForegroundColorSpan( col ), 0, titleLayoutCategory.length(), 0 );
+//        	// invert colors
+//        	summaryInvertColors.setSpan( new ForegroundColorSpan( col ), 0, summaryInvertColors.length(), 0 );
+//        	titleInvertColors.setSpan( new ForegroundColorSpan( col ), 0, titleInvertColors.length(), 0 );
+//        	// lock horizontal
+//        	summaryLockHorizontal.setSpan( new ForegroundColorSpan( col ), 0, summaryLockHorizontal.length(), 0 );
+//        	titleLockHorizontal.setSpan( new ForegroundColorSpan( col ), 0, titleLockHorizontal.length(), 0 );
+//        	// show images
+//        	summaryShowImages.setSpan( new ForegroundColorSpan( col ), 0, summaryShowImages.length(), 0 );
+//        	titleShowImages.setSpan( new ForegroundColorSpan( col ), 0, titleShowImages.length(), 0 );
+//        	// =====
+//        	// storage category
+//        	// =====
+//        	titleStorageCategory.setSpan( new ForegroundColorSpan( col ), 0, titleStorageCategory.length(), 0 );
+//        	// clear database
+//        	summaryClearDatabase.setSpan( new ForegroundColorSpan( col ), 0, summaryClearDatabase.length(), 0 );
+//        	titleClearDatabase.setSpan( new ForegroundColorSpan( col ), 0, titleClearDatabase.length(), 0 );
+//        	// clear image cache
+//        	summaryClearImageCache.setSpan( new ForegroundColorSpan( col ), 0, summaryClearImageCache.length(), 0 );
+//        	titleClearImageCache.setSpan( new ForegroundColorSpan( col ), 0, titleClearImageCache.length(), 0 );
+//        }
     	// =====
     	// update category
     	// =====
@@ -231,13 +251,12 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         preferenceClearImageCache.setTitle( titleClearImageCache );
     }
 	
-	void DeleteRecursive(File fileOrDirectory) {
+	private void DeleteRecursive(File fileOrDirectory) {
 	    if (fileOrDirectory.isDirectory())
 	        for (File child : fileOrDirectory.listFiles())
 	            DeleteRecursive(child);
 	    fileOrDirectory.delete();
 	}
-
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

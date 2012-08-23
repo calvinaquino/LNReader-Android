@@ -51,6 +51,15 @@ public class DisplayLightNovelListActivity extends ListActivity{
 	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+    	Log.d("MainActivity", "onCreate");
+    	// set before create any view
+    	if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("invert_colors", false)) {    		
+    		setTheme(R.style.AppTheme2);
+    	}
+    	else {
+    		setTheme(R.style.AppTheme);
+    	}
+    	
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_display_light_novel_list);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -106,13 +115,20 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		super.onStop();
 	}
 	
+    @SuppressLint("NewApi")
 	@Override
-    protected void onResume() {
-        super.onResume();
-        // The activity has become visible (it is now "resumed").
-        updateViewColor();
+    protected void onRestart() {
+        super.onRestart();
+        recreate();
     }
+//	@Override
+//    protected void onResume() {
+//        super.onResume();
+//        // The activity has become visible (it is now "resumed").
+//        //updateViewColor();
+//    }
 
+	@SuppressLint("NewApi")
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -133,8 +149,9 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		case R.id.invert_colors:
 			
 			toggleColorPref();
-    		updateViewColor();
+    		//updateViewColor();
 			//updateContent();
+			recreate();
 			
 			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
 			return true;
@@ -187,15 +204,17 @@ public class DisplayLightNovelListActivity extends ListActivity{
 	}
 	
 	private void updateContent () {
-		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
+		//SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	//boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
 		try {
 			if (adapter != null) { 
-				if (invertColors)adapter.setResourceId(R.layout.novel_list_item_black);
-				else adapter.setResourceId(R.layout.novel_list_item);
+				//if (invertColors)adapter.setResourceId(R.layout.novel_list_item_black);
+				//else 
+				adapter.setResourceId(R.layout.novel_list_item);
 			} else {
-				if (invertColors)adapter = new PageModelAdapter(this, R.layout.novel_list_item_black, listItems);
-				else adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
+				//if (invertColors)adapter = new PageModelAdapter(this, R.layout.novel_list_item_black, listItems);
+				//else 
+				adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
 			}
 			new LoadNovelsTask().execute();
 			setListAdapter(adapter);
@@ -239,35 +258,35 @@ public class DisplayLightNovelListActivity extends ListActivity{
     	//Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
     }
     
-    private void updateViewColor() {
-    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
-    	
-    	// Views to be changed
-        View MainView = findViewById(R.id.light_novel_list_screen);
-        // MainView.invalidate();
-        // it is considered white background and black text to be the standard
-        // so we change to black background and white text if true
-        if (invertColors == true) {
-        	MainView.setBackgroundColor(Color.BLACK);
-        	adapter.setLayout( R.layout.novel_list_item_black);// = new PageModelAdapter(this, R.layout.novel_list_item_black, listItems);
-        	int[] colors = {0, 0xFFFFFFFF, 0}; // blue
-        	getListView().setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
-        	getListView().setDividerHeight(1);
-//        	NovelNames.setTextColor(Color.WHITE);
-        }
-        else {
-        	MainView.setBackgroundColor(Color.WHITE);
-        	//adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
-        	adapter.setLayout( R.layout.novel_list_item);
-        	int[] colors = {0, 0xFF000000, 0}; // blue
-        	getListView().setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
-        	getListView().setDividerHeight(1);
-//        	NovelNames.setTextColor(Color.BLACK);
-        }
-        MainView.invalidate();
-        adapter.notifyDataSetInvalidated();
-    }
+//    private void updateViewColor() {
+//    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+//    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
+//    	
+//    	// Views to be changed
+//        View MainView = findViewById(R.id.light_novel_list_screen);
+//        // MainView.invalidate();
+//        // it is considered white background and black text to be the standard
+//        // so we change to black background and white text if true
+//        if (invertColors == true) {
+//        	MainView.setBackgroundColor(Color.BLACK);
+//        	adapter.setLayout( R.layout.novel_list_item_black);// = new PageModelAdapter(this, R.layout.novel_list_item_black, listItems);
+//        	int[] colors = {0, 0xFFFFFFFF, 0}; // blue
+//        	getListView().setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
+//        	getListView().setDividerHeight(1);
+////        	NovelNames.setTextColor(Color.WHITE);
+//        }
+//        else {
+//        	MainView.setBackgroundColor(Color.WHITE);
+//        	//adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
+//        	adapter.setLayout( R.layout.novel_list_item);
+//        	int[] colors = {0, 0xFF000000, 0}; // blue
+//        	getListView().setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
+//        	getListView().setDividerHeight(1);
+////        	NovelNames.setTextColor(Color.BLACK);
+//        }
+//        MainView.invalidate();
+//        adapter.notifyDataSetInvalidated();
+//    }
 	
 	@SuppressLint("NewApi")
 	public class LoadNovelsTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>>  implements ICallbackNotifier {

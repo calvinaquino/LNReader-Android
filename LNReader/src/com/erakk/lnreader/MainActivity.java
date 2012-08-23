@@ -2,35 +2,31 @@ package com.erakk.lnreader;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Build;
-import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
-import android.text.AndroidCharacter;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
+
 
 public class MainActivity extends Activity {
 
     @SuppressLint("NewApi")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
+    	Log.d("MainActivity", "onCreate");
     	// set before create any view
-    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
-    	if(invertColors) {    		
-    		setTheme(R.style.AppTheme);
+    	if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("invert_colors", false)) {    		
+    		setTheme(R.style.AppTheme2);
     	}
     	else {
-    		setTheme(R.style.AppTheme2);
+    		setTheme(R.style.AppTheme);
     	}
     	
         super.onCreate(savedInstanceState);
@@ -47,13 +43,12 @@ public class MainActivity extends Activity {
         return true;
     }
     
-//    @SuppressLint("NewApi")
-//	@Override
-//    protected void onResume() {
-//        super.onResume();
-//        // The activity has become visible (it is now "resumed").
-//        //updateViewColor();
-//    }
+    @SuppressLint("NewApi")
+	@Override
+    protected void onRestart() {
+        super.onRestart();
+        recreate();
+    }
     
     @SuppressLint("NewApi")
 	@Override
@@ -63,8 +58,7 @@ public class MainActivity extends Activity {
         		
         		/*
         		 * Implement code to load last chapter read
-        		 */
-        		
+        		 */        		
         		Toast last = Toast.makeText(this, "Last Novel read option not implemented yet.", Toast.LENGTH_SHORT);
         		last.show();
         		return true;
