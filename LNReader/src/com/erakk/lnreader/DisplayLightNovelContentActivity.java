@@ -1,9 +1,16 @@
 package com.erakk.lnreader;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Picture;
 import android.graphics.drawable.GradientDrawable;
@@ -17,6 +24,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.textservice.TextInfo;
 import android.webkit.WebView;
 import android.webkit.WebView.PictureListener;
 import android.widget.ProgressBar;
@@ -119,8 +127,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 			 */
 			toggleColorPref();
 			updateViewColor();
-			
-			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
+			recreate();
+			Toast.makeText(getApplicationContext(), "Colors inverted: ", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.menu_chapter_previous:
 			
@@ -217,6 +225,28 @@ public class DisplayLightNovelContentActivity extends Activity {
 //        updateContent(true);
     }
 	
+    
+	private String readCSS(int id) {
+		StringBuilder contents = new StringBuilder();
+		InputStream in =  this.getResources().openRawResource(id);
+		InputStreamReader isr = new InputStreamReader(in);
+		BufferedReader buff = new BufferedReader(isr);
+		String temp = null;
+		try {
+			while((temp = buff.readLine()) != null){
+				contents.append(temp);
+			}
+			buff.close();
+			isr.close();
+			in.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Log.d("ReadCss", contents.toString());
+		return contents.toString();
+	}
+    
 	private void setLastReadState() {
 		if(content!= null) {
 			// save last position and zoom
@@ -246,6 +276,11 @@ public class DisplayLightNovelContentActivity extends Activity {
 	
 	public void setContent(NovelContentModel content) {
 		this.content = content;
+	}
+	
+	public boolean getColorPreferences(){
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	return sharedPrefs.getBoolean("invert_colors", false);
 	}
 	
 	public class LoadNovelContentTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelContentModel>> implements ICallbackNotifier{
@@ -300,7 +335,20 @@ public class DisplayLightNovelContentActivity extends Activity {
 				BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(activity);
 				wv.setWebViewClient(client);
 				
-				String html = Constants.WIKI_CSS_STYLE + "<body>" + content.getContent() + "</body></html>" ;
+				//String html = Constants.WIKI_CSS_STYLE + "<body>" + content.getContent() + "</body></html>" ;
+				
+				
+				int styleId = -1;
+				if(getColorPreferences()) {
+					styleId = R.raw.style_dark;
+					Log.d("CSS", "CSS = dark");					
+				}
+				else {
+					styleId = R.raw.style;
+					Log.d("CSS", "CSS = normal");
+				}
+				
+				String html = "<html><head><style type=\"text/css\">" + readCSS(styleId) + "</style></head><body>" + content.getContent() + "</body></html>";
 				wv.loadDataWithBaseURL(Constants.BASE_URL, html, "text/html", "utf-8", "");
 				
 				Log.d("LoadNovelContentTask", content.getPage());
@@ -314,9 +362,9 @@ public class DisplayLightNovelContentActivity extends Activity {
 					public void onNewPicture(WebView arg0, Picture arg1) {
 						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
 						if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
-							//wv.scrollTo(content.getLastXScroll(), content.getLastYScroll());
+							wv.scrollTo(content.getLastXScroll(), content.getLastYScroll());
 							//wv.setScrollX(value)
-							wv.setScrollY(content.getLastYScroll());
+							//wv.setScrollY(content.getLastYScroll());
 							needScroll = false;
 						}						
 					}					
@@ -340,5 +388,4 @@ public class DisplayLightNovelContentActivity extends Activity {
 			refresh = false;
 		}
 	}
-
 }
