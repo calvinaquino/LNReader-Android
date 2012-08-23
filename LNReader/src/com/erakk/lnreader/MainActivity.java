@@ -6,9 +6,12 @@ import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
+import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
+import android.text.AndroidCharacter;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,18 +23,21 @@ public class MainActivity extends Activity {
     @SuppressLint("NewApi")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getActionBar().setDisplayHomeAsUpEnabled(false);
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	// set before create any view
+    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
     	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
-    	if(invertColors) {
+    	if(invertColors) {    		
     		setTheme(R.style.AppTheme);
-    		Toast.makeText(this, "Light.", Toast.LENGTH_SHORT).show();
     	}
     	else {
-    		setTheme(R.style.DarkTheme);
-    		Toast.makeText(this, "Dark.", Toast.LENGTH_SHORT).show();
+    		setTheme(R.style.AppTheme2);
     	}
+    	
+        super.onCreate(savedInstanceState);
+        
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
+        	getActionBar().setDisplayHomeAsUpEnabled(false);
+        
         setContentView(R.layout.activity_main);
     }
 
@@ -41,13 +47,13 @@ public class MainActivity extends Activity {
         return true;
     }
     
-    @SuppressLint("NewApi")
-	@Override
-    protected void onResume() {
-        super.onResume();
-        // The activity has become visible (it is now "resumed").
-        //updateViewColor();
-    }
+//    @SuppressLint("NewApi")
+//	@Override
+//    protected void onResume() {
+//        super.onResume();
+//        // The activity has become visible (it is now "resumed").
+//        //updateViewColor();
+//    }
     
     @SuppressLint("NewApi")
 	@Override
@@ -66,6 +72,7 @@ public class MainActivity extends Activity {
     			
         		toggleColorPref();
         		//updateViewColor();
+        		// recreate the view to use new theme
         		recreate();
     			
     			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();

@@ -1,5 +1,6 @@
 <resources>
 
     <style name="AppTheme" parent="android:Theme.Holo.Light" />
+    <style name="AppTheme2" parent="android:Theme.Holo" />
 
 </resources>
