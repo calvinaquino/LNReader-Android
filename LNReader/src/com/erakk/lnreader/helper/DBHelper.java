@@ -171,6 +171,17 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	Log.d(TAG, "Found Page: " + pageModel.toString());
 	    	break;
 	    }
+	    
+	    // check again for case insensitive	    
+	    if(pageModel == null) {
+		    cursor = db.rawQuery("select * from " + TABLE_PAGE + " where lower(" + COLUMN_PAGE + ") = lower(?) ", new String[] {page});
+			cursor.moveToFirst();
+		    while (!cursor.isAfterLast()) {
+		    	pageModel = cursorTopage(cursor);
+		    	Log.d(TAG, "Found Page: " + pageModel.toString());
+		    	break;
+		    }
+	    }
 		return pageModel;
 	}
 	

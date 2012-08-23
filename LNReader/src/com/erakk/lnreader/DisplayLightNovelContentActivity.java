@@ -56,6 +56,14 @@ public class DisplayLightNovelContentActivity extends Activity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+    	// set before create any view
+    	if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("invert_colors", false)) {    		
+    		setTheme(R.style.AppTheme2);
+    	}
+    	else {
+    		setTheme(R.style.AppTheme);
+    	}
+    	
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_display_light_novel_content);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -67,7 +75,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		//volume = intent.getStringExtra(Constants.EXTRA_VOLUME);
 		parentPage = intent.getStringExtra(Constants.EXTRA_NOVEL);
 
-		updateViewColor();
+		//updateViewColor();
 		try {
 			pageModel = dao.getPageModel(intent.getStringExtra(Constants.EXTRA_PAGE), null);
 			ToggleProgressBar(true);
@@ -126,7 +134,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 			 * Implement code to invert colors
 			 */
 			toggleColorPref();
-			updateViewColor();
+			//updateViewColor();
 			recreate();
 			Toast.makeText(getApplicationContext(), "Colors inverted: ", Toast.LENGTH_SHORT).show();
 			return true;
@@ -208,22 +216,22 @@ public class DisplayLightNovelContentActivity extends Activity {
     	//Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
     }
     
-    private void updateViewColor() {
-    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
-    	
-    	// Views to be changed
-        WebView webView = (WebView)findViewById(R.id.webView1);
-        // it is considered white background and black text to be the standard
-        // so we change to black background and white text if true
-        if (invertColors == true) {
-        	webView.setBackgroundColor(Color.BLACK);
-        }
-        else {
-        	webView.setBackgroundColor(Color.WHITE);
-        }
-//        updateContent(true);
-    }
+//    private void updateViewColor() {
+//    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+//    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
+//    	
+//    	// Views to be changed
+//        WebView webView = (WebView)findViewById(R.id.webView1);
+//        // it is considered white background and black text to be the standard
+//        // so we change to black background and white text if true
+//        if (invertColors == true) {
+//        	webView.setBackgroundColor(Color.BLACK);
+//        }
+//        else {
+//        	webView.setBackgroundColor(Color.WHITE);
+//        }
+////        updateContent(true);
+//    }
 	
     
 	private String readCSS(int id) {
@@ -362,9 +370,9 @@ public class DisplayLightNovelContentActivity extends Activity {
 					public void onNewPicture(WebView arg0, Picture arg1) {
 						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
 						if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
-							wv.scrollTo(content.getLastXScroll(), content.getLastYScroll());
+							//wv.scrollTo(content.getLastXScroll(), content.getLastYScroll());
 							//wv.setScrollX(value)
-							//wv.setScrollY(content.getLastYScroll());
+							wv.setScrollY(content.getLastYScroll());
 							needScroll = false;
 						}						
 					}					
