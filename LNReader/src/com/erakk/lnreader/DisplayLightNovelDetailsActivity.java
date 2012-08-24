@@ -473,7 +473,9 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			//executed on UI thread.
 			//TextView tv = (TextView) findViewById(R.id.loading);
 			//tv.setText(values[0]);
-			dialog.setTitle(values[0]);
+			synchronized (dialog) {
+				dialog.setMessage(values[0]);
+			}			
 		}
 		
 		@Override

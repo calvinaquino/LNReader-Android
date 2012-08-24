@@ -234,40 +234,51 @@ public class NovelsDao {
 	public NovelCollectionModel getNovelDetailsFromInternet(PageModel page, ICallbackNotifier notifier) throws Exception {
 		Log.d(TAG, "Getting Novel Details from internet: " + page.getPage());
 		NovelCollectionModel novel = null;
-
-		Response response = Jsoup.connect(Constants.BASE_URL + "/project/index.php?title=" + page.getPage()).timeout(60000).execute();
-		Document doc = response.parse();
-
-		novel = BakaTsukiParser.ParseNovelDetails(doc, page, context);
 		
-		// check if page model exist
-		PageModel novelPage = getPageModel(page.getPage(), notifier);
-		page.setParent("Main_Page"); // insurance
-		
-		novel.setLastUpdate(novelPage.getLastUpdate());
-
-		synchronized (dbh) {
-			// insert to DB and get saved value
-			SQLiteDatabase db = dbh.getWritableDatabase();
+		int retry = 0;
+		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
-				db.beginTransaction();
-				novel = dbh.insertNovelDetails(db, novel);
-				db.setTransactionSuccessful();
+				Response response = Jsoup.connect(Constants.BASE_URL + "/project/index.php?title=" + page.getPage()).timeout(60000).execute();
+				Document doc = response.parse();
+				novel = BakaTsukiParser.ParseNovelDetails(doc, page, context);
+			}catch(EOFException eof) {
+				++retry;
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));
+				}
+				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 			}
-			finally{
-				db.endTransaction();
-				db.close();
+			
+			// check if page model exist
+			PageModel novelPage = getPageModel(page.getPage(), notifier);
+			page.setParent("Main_Page"); // insurance
+			
+			novel.setLastUpdate(novelPage.getLastUpdate());
+	
+			synchronized (dbh) {
+				// insert to DB and get saved value
+				SQLiteDatabase db = dbh.getWritableDatabase();
+				try{
+					//db.beginTransaction();
+					novel = dbh.insertNovelDetails(db, novel);
+					//db.setTransactionSuccessful();
+				}
+				finally{
+					//db.endTransaction();
+					db.close();
+				}
 			}
+			// download cover image
+			if (novel.getCoverUrl() != null) {
+				DownloadFileTask task = new DownloadFileTask(notifier);
+				ImageModel image = task.downloadImage(novel.getCoverUrl());
+				// TODO: need to save to db?
+				Log.d("Image", image.toString());
+			}
+	
+			Log.d(TAG, "Complete getting Novel Details from internet: " + page.getPage());
+			break;
 		}
-		// download cover image
-		if (novel.getCoverUrl() != null) {
-			DownloadFileTask task = new DownloadFileTask(notifier);
-			ImageModel image = task.downloadImage(novel.getCoverUrl());
-			// TODO: need to save to db?
-			Log.d("Image", image.toString());
-		}
-
-		Log.d(TAG, "Complete getting Novel Details from internet: " + page.getPage());
 		return novel;
 	}
 
@@ -412,10 +423,9 @@ public class NovelsDao {
 					notifier.onCallback(new CallbackEventData("Retrying: " + url + " (" + retry + " of "+ Constants.IMAGE_DOWNLOAD_RETRY + ")"));
 				}
 				++retry;
-				if(retry < Constants.IMAGE_DOWNLOAD_RETRY) throw eof;
+				if(retry > Constants.IMAGE_DOWNLOAD_RETRY) throw eof;
 			}			
 		}		
 		return image;
 	}
-
 }

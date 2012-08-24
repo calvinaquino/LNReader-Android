@@ -20,6 +20,7 @@ public class Constants {
 	public static final String IMAGE_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/lnreader_cache";
 	
 	public static final int IMAGE_DOWNLOAD_RETRY = 3;
+	public static final int PAGE_DOWNLOAD_RETRY = 3;
 	
 	public static final String NOVEL_BOOK_DIVIDER = "%";
 	public static final int CHECK_INTERVAL = 7;

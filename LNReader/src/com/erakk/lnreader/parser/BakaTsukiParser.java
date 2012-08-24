@@ -181,7 +181,7 @@ public class BakaTsukiParser {
 										if(links.size() > 0) {
 											Element link = links.first();
 											PageModel p = new PageModel(context);
-											p.setTitle(sanitize(link.text()));
+											p.setTitle(sanitize(link.text()));	// sanitize title
 											p.setPage(link.attr("href").replace("/project/index.php?title=",""));
 											p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 											p.setType(PageModel.TYPE_CONTENT);
@@ -232,7 +232,7 @@ public class BakaTsukiParser {
 											if(links.size() > 0) {
 												Element link = links.first();
 												PageModel p = new PageModel(context);
-												p.setTitle(link.text());
+												p.setTitle(sanitize(link.text()));
 												p.setPage(link.attr("href").replace("/project/index.php?title=",""));
 												p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 												p.setType(PageModel.TYPE_CONTENT);

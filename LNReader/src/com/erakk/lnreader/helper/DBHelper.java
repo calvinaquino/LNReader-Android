@@ -23,7 +23,7 @@ import android.util.Log;
 public class DBHelper extends SQLiteOpenHelper {
 	public static final String TAG = DBHelper.class.toString();
 	public static final String TABLE_PAGE = "pages";
-	public static final String COLUMN_ID = "id";
+	public static final String COLUMN_ID = "_id";
 	public static final String COLUMN_PAGE = "page";
 	public static final String COLUMN_LAST_UPDATE = "last_update";
 	public static final String COLUMN_LAST_CHECK = "last_check";
@@ -52,7 +52,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_ZOOM = "lastZoom";
 
 	private static final String DATABASE_NAME = "pages.db";
-	private static final int DATABASE_VERSION = 16;
+	private static final int DATABASE_VERSION = 17;
 
 	// Database creation SQL statement
 	private static final String DATABASE_CREATE_PAGES = "create table "
@@ -258,7 +258,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			cv.put(COLUMN_IS_FINISHED_READ, temp.isFinishedRead());
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (temp.getLastCheck().getTime() / 1000));
 			cv.put(COLUMN_IS_DOWNLOADED, temp.isDownloaded());
-			int result = db.update(TABLE_PAGE, cv, "id = ?", new String[] {"" + temp.getId()});
+			int result = db.update(TABLE_PAGE, cv, COLUMN_ID + " = ?", new String[] {"" + temp.getId()});
 			Log.d(TAG, "Page Model Update Affected Row: " + result);
 		}
 		
@@ -315,9 +315,10 @@ public class DBHelper extends SQLiteOpenHelper {
 			cv2.put(COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000));
 			cv2.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			
-			BookModel tempBook = getBookModel(db, novelDetails.getPage(), book.getTitle());
+			BookModel tempBook = getBookModel(db, book.getId());
+			if(tempBook == null) tempBook = getBookModel(db, novelDetails.getPage(), book.getTitle());
 			if(tempBook == null) {
-				Log.d(TAG, "Inserting Novel Book: " + book.getPage() + "%" + book.getTitle());
+				Log.d(TAG, "Inserting Novel Book: " + novelDetails.getPage() + "%" + book.getTitle());
 				db.insertOrThrow(TABLE_NOVEL_BOOK, null, cv2);
 			}
 			else {
@@ -369,6 +370,18 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	break;
 	    }
 	    return novelDetails;
+	}
+	
+	private BookModel getBookModel(SQLiteDatabase db, int id) {
+		BookModel book = null;
+		Cursor cursor = db.rawQuery("select * from " + TABLE_NOVEL_BOOK + " where " + COLUMN_ID + " = ? ", new String[] {"" + id});
+		cursor.moveToFirst();
+	    while (!cursor.isAfterLast()) {
+	    	book = cursorToBookModel(cursor);
+	    	Log.d(TAG, "Found: " + book.getPage() + "%" + book.getTitle());
+	    	break;
+	    }
+	    return book;
 	}
 	
 	private BookModel getBookModel(SQLiteDatabase db, String page, String title) {
