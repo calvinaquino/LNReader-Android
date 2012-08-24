@@ -3,6 +3,7 @@
  */
 package com.erakk.lnreader.dao;
 
+import java.io.EOFException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -373,28 +374,47 @@ public class NovelsDao {
 	}
 
 	public ImageModel getImageModelFromInternet(String page, ICallbackNotifier notifier) throws Exception {
+		ImageModel image = null;
 		String url = page;
 		if (!url.startsWith("http"))
 			url = Constants.BASE_URL + url;
-		Response response = Jsoup.connect(url).timeout(60000).execute();
-		Document doc = response.parse();
-		// only return the full  image url
-		ImageModel image = BakaTsukiParser.parseImagePage(doc); 
-
-		DownloadFileTask downloader = new DownloadFileTask(notifier);
-		image = downloader.downloadImage(image.getUrl());
-		image.setReferer(page);
-
-		synchronized (dbh) {
-			// save to db and get the saved value
-			SQLiteDatabase db = dbh.getWritableDatabase();
-			try{
-				image = dbh.insertImage(db, image);
-			}
-			finally{
-				db.close();
-			}
+		
+		if(notifier != null) {
+			notifier.onCallback(new CallbackEventData("Parsing File Page: " + url));
 		}
+		
+		int retry = 0;
+		while(retry < Constants.IMAGE_DOWNLOAD_RETRY) {
+			try{
+				Response response = Jsoup.connect(url).timeout(60000).execute();
+				Document doc = response.parse();
+				
+				// only return the full  image url
+				image = BakaTsukiParser.parseImagePage(doc);
+				
+				DownloadFileTask downloader = new DownloadFileTask(notifier);
+				image = downloader.downloadImage(image.getUrl());
+				image.setReferer(page);
+
+				synchronized (dbh) {
+					// save to db and get the saved value
+					SQLiteDatabase db = dbh.getWritableDatabase();
+					try{
+						image = dbh.insertImage(db, image);
+					}
+					finally{
+						db.close();
+					}
+				}
+				break;
+			}catch(EOFException eof) {
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData("Retrying: " + url + " (" + retry + " of "+ Constants.IMAGE_DOWNLOAD_RETRY + ")"));
+				}
+				++retry;
+				if(retry < Constants.IMAGE_DOWNLOAD_RETRY) throw eof;
+			}			
+		}		
 		return image;
 	}
 

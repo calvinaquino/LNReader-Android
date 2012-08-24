@@ -2,3 +2,77 @@ body {
  background: #222222;
  color: #dddddd;
 }
+/*For Illustration Gallery*/
+ul {
+    line-height: 1.5em;
+    list-style-type: square;
+    margin: 0.3em 0 0 1.6em;
+    padding: 0;
+}
+ul.gallery {
+    display: block;
+    margin: 2px;
+    padding: 2px;
+}
+li {
+    margin-bottom: 0.1em;
+}
+li.gallerybox {
+    border: 2px solid #222222;
+    display: inline-block;
+    vertical-align: top;
+}
+li.gallerybox div.thumb {
+    background-color: #060606;
+    border: 1px solid #333333;
+    margin: 2px;
+    text-align: center;
+}
+div.thumb {
+    background-color: transparent;
+    margin-bottom: 0.5em;
+    width: auto;
+}
+div.gallerytext {
+    font-size: 94%;
+    overflow: hidden;
+    padding: 2px 4px;
+    word-wrap: break-word;
+}
+/*For Image Thumbnail in Content*/
+div.tright {
+    margin: 0.5em 0 1.3em 1.4em;
+}
+div.thumb {
+    background-color: transparent;
+    margin-bottom: 0.5em;
+    width: auto;
+}
+div.tright, div.floatright, table.floatright {
+    clear: right;
+    float: right;
+}
+div.thumbinner {
+    background-color: #060606;
+    border: 1px solid #333333;
+    font-size: 94%;
+    overflow: hidden;
+    padding: 3px !important;
+    text-align: center;
+}
+html .thumbcaption {
+    border: medium none;
+    font-size: 94%;
+    line-height: 1.4em;
+    padding: 3px !important;
+    text-align: left;
+}
+.thumbcaption {
+    text-align: left;
+}
+/*Link*/
+a {
+    background: none repeat scroll 0 0 transparent;
+    color: #F9BA52;
+    text-decoration: none;
+}

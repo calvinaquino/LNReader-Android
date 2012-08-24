@@ -7,16 +7,13 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.DownloadCallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -36,6 +33,13 @@ public class DisplayImageActivity extends Activity {
     @SuppressLint("NewApi")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
+    	// set before create any view
+    	if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("invert_colors", false)) {    		
+    		setTheme(R.style.AppTheme2);
+    	}
+    	else {
+    		setTheme(R.style.AppTheme);
+    	}
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_image);
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -58,7 +62,8 @@ public class DisplayImageActivity extends Activity {
     	// check running task
     	if(task != null){
     		if(!(task.getStatus() == Status.FINISHED)) {
-    			task.cancel(true);
+    			Toast.makeText(this, "Canceling task: " + task.toString(), Toast.LENGTH_SHORT).show();
+    			task.cancel(true);    			
     		}
     	}
     	super.onStop();
@@ -98,29 +103,18 @@ public class DisplayImageActivity extends Activity {
     
     @SuppressLint("NewApi")
 	private void ToggleProgressBar(boolean show) {
-//		ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
-//		TextView tv = (TextView) findViewById(R.id.loading);
 		if(show) {
-//			pb.setIndeterminate(true);
-//			pb.setActivated(true);
-//			pb.animate();
-//			pb.setVisibility(ProgressBar.VISIBLE);
 			dialog = ProgressDialog.show(this, "", "Loading. Please wait...", false);
-			dialog.setCanceledOnTouchOutside(true);
+//			dialog.setCanceledOnTouchOutside(true);
 		
 			if(refresh) {
-//				tv.setText("Refreshing...");
 				dialog.setMessage("Refreshing...");
 			}
 			else {
-//				tv.setText("Loading...");
 				dialog.setMessage("Loading...");
 			}
-//			tv.setVisibility(TextView.VISIBLE);
 		}
 		else {
-//			pb.setVisibility(ProgressBar.GONE);			
-//			tv.setVisibility(TextView.GONE);
 			dialog.dismiss();
 		}
 	}
@@ -129,6 +123,11 @@ public class DisplayImageActivity extends Activity {
 	
     @SuppressLint("NewApi")
 	public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTaskResult<ImageModel>> implements ICallbackNotifier {
+    	String url = "";
+    	public String toString() {
+    		return "LoadImageTask: " + url;
+    	}
+    	
     	public void onCallback(ICallbackEventData message) {
     		publishProgress(message);
     	}
@@ -141,8 +140,7 @@ public class DisplayImageActivity extends Activity {
     	
 		@Override
 		protected AsyncTaskResult<ImageModel> doInBackground(String... params) {
-			String url = params[0];
-			
+			this.url = params[0];			
 			try{
 				if(refresh) {
 					return new AsyncTaskResult<ImageModel>(dao.getImageModelFromInternet(url, this));
@@ -160,28 +158,22 @@ public class DisplayImageActivity extends Activity {
 			//executed on UI thread.
 			ICallbackEventData data = values[0];
 			dialog.setMessage(data.getMessage());
-//			TextView tv = (TextView) findViewById(R.id.loading);
-//			tv.setText(data.getMessage());
-			
+
 			if(data.getClass() == DownloadCallbackEventData.class) {
 				DownloadCallbackEventData downloadData = (DownloadCallbackEventData) data;
-//				ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
 				int percent = downloadData.getPercentage();
 				synchronized (dialog) {
 					if(percent > -1) {
 						// somehow doesn't works....
-//						pb.setIndeterminate(false);
-//						pb.setSecondaryProgress(percent);
-//						pb.setMax(100);
-//						pb.setProgress(percent);
 						dialog.setIndeterminate(false);
 						dialog.setSecondaryProgress(percent);
 						dialog.setMax(100);
 						dialog.setProgress(percent);
+						dialog.setMessage(data.getMessage());
 					}
 					else {
-//						pb.setIndeterminate(true);
 						dialog.setIndeterminate(true);
+						dialog.setMessage(data.getMessage());
 					}
 				}
 			}

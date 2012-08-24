@@ -23,10 +23,6 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 	private static final String TAG = DownloadFileTask.class.toString();
 	private ICallbackNotifier notifier = null;
 
-	//	public DownloadFileTask() {
-	//		super();
-	//	}
-
 	public DownloadFileTask(ICallbackNotifier notifier) {
 		super();
 		this.notifier = notifier;
@@ -130,13 +126,10 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 					input.close();
 				}
 			}
+			// Rename file
+			tempFilename.renameTo(decodedFile);
+			Log.d(TAG, "Downloading image complete, saved to: " + decodedUrl);
 		}
-
-		// Rename file
-		tempFilename.renameTo(decodedFile);
-
-		Log.d(TAG, "Downloading image complete, saved to: " + decodedUrl);
-
 
 		ImageModel image = new ImageModel();
 		image.setName(url.getFile());
