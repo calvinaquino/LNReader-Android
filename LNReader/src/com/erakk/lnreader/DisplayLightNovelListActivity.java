@@ -178,8 +178,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		case R.id.download_novel:			
 			/*
 			 * Implement code to download entire novel
-			 */			
-			//DownloadNovelDetailsTask downloadTask = new DownloadNovelDetailsTask();
+			 */
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 			if(info.position > -1) {
 				ToggleProgressBar(true);

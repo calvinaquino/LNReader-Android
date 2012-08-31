@@ -144,14 +144,10 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			return true;
 		case R.id.invert_colors:			
 			toggleColorPref();
-			//updateViewColor();
-//			updateContent(true);
-			recreate();
-			
+			recreate();			
 			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
 			return true;
         case android.R.id.home:
-            //NavUtils.navigateUpFromSameTask(this);
         	super.onBackPressed();
             return true;
         }
@@ -187,7 +183,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			/*
 			 * Implement code to download this volume
 			 */
-			BookModel book = novelCol.getBookCollections().get(groupPosition);//.getChapterCollection().get(childPosition);
+			BookModel book = novelCol.getBookCollections().get(groupPosition);
 			// get the chapter which not downloaded yet
 			ArrayList<PageModel> downloadingChapters = new ArrayList<PageModel>();
 			for(Iterator<PageModel> i = book.getChapterCollection().iterator(); i.hasNext();) {
@@ -216,8 +212,14 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			 * Implement code to mark entire volume as read
 			 */
 			
-			Toast.makeText(this, "Mark Volume as Read",
-					Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "Mark Volume as Read",	Toast.LENGTH_SHORT).show();
+			BookModel book2 = novelCol.getBookCollections().get(groupPosition);
+			for(Iterator<PageModel> iPage = book2.getChapterCollection().iterator(); iPage.hasNext();) {
+				PageModel page = iPage.next();
+				page.setFinishedRead(true);
+				dao.updatePageModel(page);
+			}
+			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		//Chapter cases
 		case R.id.download_chapter:
