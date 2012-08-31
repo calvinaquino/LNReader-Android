@@ -122,7 +122,7 @@ public class BakaTsukiParser {
 		return title;
 	}
 	
-	private static ArrayList<BookModel> parseNovelChapters(Document doc, NovelCollectionModel novel) {
+	private static void parseNovelChapters(Document doc, NovelCollectionModel novel) {
 		Log.d(TAG, "Start parsing book collections");
 		// parse the collection
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
@@ -150,6 +150,7 @@ public class BakaTsukiParser {
 					 * parse book method 1:
 					 * Look for <h3> after <h2> containing the volume list.
 					 */
+					Log.d(TAG, "method 1");
 					Element bookElement = h2;
 					boolean walkBook = true;
 					do{
@@ -198,6 +199,7 @@ public class BakaTsukiParser {
 					 * Look for <p> after <h2> containing the chapter list, usually only have 1 book.
 					 * See 7_Nights
 					 */
+					Log.d(TAG, "method 2");
 					if(books.size() == 0) {
 						Log.d(TAG, "No books found, use method 2");
 						bookElement = h2;
@@ -260,29 +262,19 @@ public class BakaTsukiParser {
 					}
 				}
 			}			
-			novel.setBookCollections(books);
 		} catch(Exception e) {e.printStackTrace();}
 		Log.d(TAG, "Complete parsing book collections: " + books.size());
 		
-		books = validateNovelChapters(books);
-		return books;
+		novel.setBookCollections(validateNovelBooks(books));
 	}
 	
-	private static ArrayList<BookModel> validateNovelChapters(ArrayList<BookModel> books) {
+	private static ArrayList<BookModel> validateNovelBooks(ArrayList<BookModel> books) {
 		ArrayList<BookModel> validatedBooks = new ArrayList<BookModel>();
 		for(Iterator<BookModel> iBooks = books.iterator(); iBooks.hasNext();){
 			BookModel book = iBooks.next();
 			BookModel validatedBook = new BookModel();
 			
-			ArrayList<PageModel> chapters = book.getChapterCollection();
-			ArrayList<PageModel> validatedChapters = new ArrayList<PageModel>(); 
-			for(Iterator<PageModel> iChapter = chapters.iterator(); iChapter.hasNext();) {
-				PageModel chapter = iChapter.next();
-				if(!chapter.getPage().contains("redlink=1") &&
-				   !chapter.getPage().contains("title=User:")) {
-					validatedChapters.add(chapter);
-				}
-			}
+			ArrayList<PageModel> validatedChapters = validateNovelChapters(book);
 			
 			// check if have any chapters
 			if(validatedChapters.size() > 0) {
@@ -292,6 +284,24 @@ public class BakaTsukiParser {
 			}
 		}
 		return validatedBooks;
+	}
+
+	private static ArrayList<PageModel> validateNovelChapters(BookModel book) {
+		ArrayList<PageModel> chapters = book.getChapterCollection();
+		ArrayList<PageModel> validatedChapters = new ArrayList<PageModel>(); 
+		for(Iterator<PageModel> iChapter = chapters.iterator(); iChapter.hasNext();) {
+			PageModel chapter = iChapter.next();
+			
+			if(!(chapter.getPage().contains("redlink=1") ||
+			     chapter.getPage().contains("User:"))) {
+				validatedChapters.add(chapter);
+				Log.d("validateNovelChapters", "Adding: " + chapter.getPage());
+			}
+			else{
+				Log.d("validateNovelChapters", "Removing: " + chapter.getPage());
+			}
+		}
+		return validatedChapters;
 	}
 
 	private static String parseNovelCover(Document doc, NovelCollectionModel novel) {

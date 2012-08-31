@@ -66,7 +66,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		
 		holder.chkIsWatched = (CheckBox)row.findViewById(R.id.novel_is_watched);
 		if(holder.chkIsWatched != null) {
-			Log.d(TAG, page.getId() + " " + page.getTitle() + " isWatched: " + page.isWatched());
+			//Log.d(TAG, page.getId() + " " + page.getTitle() + " isWatched: " + page.isWatched());
 			holder.chkIsWatched.setChecked(page.isWatched());
 			holder.chkIsWatched.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 

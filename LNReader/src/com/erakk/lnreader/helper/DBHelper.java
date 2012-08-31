@@ -134,11 +134,17 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 	
 	public void deletePagesDB(SQLiteDatabase db) {
-		db.execSQL("delete from " + TABLE_PAGE);
-		db.execSQL("delete from " + TABLE_NOVEL_DETAILS);
-		db.execSQL("delete from " + TABLE_IMAGE);
-		db.execSQL("delete from " + TABLE_NOVEL_BOOK);
-		db.execSQL("delete from " + TABLE_NOVEL_CONTENT);
+//		db.execSQL("delete from " + TABLE_PAGE);
+//		db.execSQL("delete from " + TABLE_NOVEL_DETAILS);
+//		db.execSQL("delete from " + TABLE_IMAGE);
+//		db.execSQL("delete from " + TABLE_NOVEL_BOOK);
+//		db.execSQL("delete from " + TABLE_NOVEL_CONTENT);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_PAGE);
+	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_IMAGE);
+	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_DETAILS);
+	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_BOOK);
+	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_CONTENT);
+	    onCreate(db);
 		Log.w(TAG,"Database Deleted.");
 	}
 	
@@ -241,7 +247,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_TITLE, page.getTitle());
 		cv.put(COLUMN_TYPE, page.getType());
 		cv.put(COLUMN_PARENT, page.getParent());
-		cv.put(COLUMN_LAST_UPDATE, "" + (int) (page.getLastUpdate().getTime()/ 1000));
+		cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
 		if(temp == null) {
 			Log.d(TAG, "Inserting: " + page.toString());
 			cv.put(COLUMN_IS_WATCHED, false);

@@ -87,7 +87,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		intent.putExtra(Constants.EXTRA_NOVEL, novel);
 		intent.putExtra(Constants.EXTRA_PAGE, o.getPage());
 		intent.putExtra(Constants.EXTRA_TITLE, o.getTitle());
-		intent.putExtra(Constants.EXTRA_ONLY_WATCHED, getIntent().getStringExtra(Constants.EXTRA_ONLY_WATCHED));
+		intent.putExtra(Constants.EXTRA_ONLY_WATCHED, getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false));
 		startActivity(intent);
 		Log.d("DisplayLightNovelsActivity", o.getPage() + " (" + o.getTitle() + ")");
 	}
@@ -317,7 +317,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 			PageModel page = params[0];
 			try {
 				publishProgress("Downloading chapter list...");
-				NovelCollectionModel novelCol = dao.getNovelDetails(page, this);
+				NovelCollectionModel novelCol = dao.getNovelDetailsFromInternet(page, this);
 				Log.d("DownloadNovelDetailsTask", "Downloaded: " + novelCol.getPage());				
 				return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 			} catch (Exception e) {

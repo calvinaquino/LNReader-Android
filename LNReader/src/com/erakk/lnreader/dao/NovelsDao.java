@@ -135,7 +135,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			try{
-				//db.beginTransaction();
+				db.beginTransaction();
 				mainPage = dbh.insertOrUpdatePageModel(db, mainPage);
 				Log.d(TAG, "Updated Main_Page");
 	
@@ -156,7 +156,7 @@ public class NovelsDao {
 						
 						// now get the saved value
 						list = dbh.getAllNovels(db);
-						//db.setTransactionSuccessful();
+						db.setTransactionSuccessful();
 						
 						if (notifier != null) {
 							notifier.onCallback(new CallbackEventData("Found: " + list.size() + " novels."));
@@ -171,7 +171,7 @@ public class NovelsDao {
 					}
 				}
 			}finally{
-				//db.endTransaction();
+				db.endTransaction();
 				db.close();
 			}
 		}
@@ -288,7 +288,6 @@ public class NovelsDao {
 				Response response = Jsoup.connect(Constants.BASE_URL + "/project/index.php?title=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
 				novel = BakaTsukiParser.ParseNovelDetails(doc, page);
-				break;
 			}catch(EOFException eof) {
 				++retry;
 				if(notifier != null) {
@@ -307,12 +306,12 @@ public class NovelsDao {
 				// insert to DB and get saved value
 				SQLiteDatabase db = dbh.getWritableDatabase();
 				try{
-					//db.beginTransaction();
+					db.beginTransaction();
 					novel = dbh.insertNovelDetails(db, novel);
-					//db.setTransactionSuccessful();
+					db.setTransactionSuccessful();
 				}
 				finally{
-					//db.endTransaction();
+					db.endTransaction();
 					db.close();
 				}
 			}
@@ -390,12 +389,12 @@ public class NovelsDao {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			try{
 				// TODO: somehow using transaction cause problem...
-				//db.beginTransaction();
+				db.beginTransaction();
 				content = dbh.insertNovelContent(db, content);
-				//db.setTransactionSuccessful();
+				db.setTransactionSuccessful();
 			}
 			finally{
-				//db.endTransaction();
+				db.endTransaction();
 				db.close();
 			}
 		}
