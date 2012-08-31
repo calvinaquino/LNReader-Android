@@ -4,10 +4,6 @@
     android:layout_height="match_parent"
     android:id="@+id/light_novel_list_screen" >
 
-
-    
-    
-
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
@@ -17,8 +13,14 @@
         android:layout_marginRight="8dp"
         android:choiceMode="multipleChoice"
         android:longClickable="true" >
-
     </ListView>
-
+
+    <TextView
+        android:id="@+id/emptyList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="List is Empty"
+        android:visibility="gone" />
 
 </RelativeLayout>

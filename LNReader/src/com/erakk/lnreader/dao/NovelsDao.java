@@ -107,20 +107,21 @@ public class NovelsDao {
 		if (notifier != null) {
 			notifier.onCallback(new CallbackEventData("Downloading novel list..."));
 		}
-		// get last updated page revision from internet
+		// get last updated main page revision from internet
 		PageModel mainPage = getPageModel("Main_Page", notifier);
 		mainPage.setType(PageModel.TYPE_OTHER);
 		mainPage.setParent("");
+		mainPage.setLastCheck(new Date());
 
 		ArrayList<PageModel> list = null;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			try{
-				db.beginTransaction();
+				//db.beginTransaction();
 				mainPage = dbh.insertOrUpdatePageModel(db, mainPage);
 				Log.d(TAG, "Updated Main_Page");
 	
-				// now get the list
+				// now get the novel list
 				list = new ArrayList<PageModel>();
 				String url = Constants.BASE_URL + "/project";
 				Response response = Jsoup.connect(url).timeout(60000).execute();
@@ -134,9 +135,13 @@ public class NovelsDao {
 				
 				// now get the saved value
 				list = dbh.getAllNovels(db);
-				db.setTransactionSuccessful();
+				//db.setTransactionSuccessful();
+				
+				if (notifier != null) {
+					notifier.onCallback(new CallbackEventData("Found: " + list.size() + " novels."));
+				}
 			}finally{
-				db.endTransaction();
+				//db.endTransaction();
 				db.close();
 			}
 		}

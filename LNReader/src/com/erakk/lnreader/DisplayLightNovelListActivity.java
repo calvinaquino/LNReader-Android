@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,6 +29,7 @@ import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 
 /*
@@ -40,10 +42,8 @@ public class DisplayLightNovelListActivity extends ListActivity{
 	private ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	private PageModelAdapter adapter;
 	private NovelsDao dao = new NovelsDao(this);
-	private boolean refreshOnly = false;
-	private boolean onlyWatched = false;
 	private LoadNovelsTask task = null;
-	
+	private DownloadNovelDetailsTask downloadTask = null;
 	private ProgressDialog dialog;
 
 	@SuppressLint("NewApi")
@@ -62,14 +62,10 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		setContentView(R.layout.activity_display_light_novel_list);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		registerForContextMenu(getListView());
-
-		//Intent intent = getIntent();
-		onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);//intent.getExtras().getBoolean(Constants.EXTRA_ONLY_WATCHED);
-		//onlyWatched = false;
-		//Toast.makeText(this, "intent: " + getIntent().getStringExtra(Constants.EXTRA_ONLY_WATCHED), Toast.LENGTH_SHORT).show();
+		boolean onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);//intent.getExtras().getBoolean(Constants.EXTRA_ONLY_WATCHED);
 
 		//Encapsulated in updateContent
-		updateContent();
+		updateContent(false, onlyWatched);
 		
 		if(onlyWatched){
 			setTitle("Watched Light Novels");
@@ -77,6 +73,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		else {
 			setTitle("Light Novels");
 		}
+		registerForContextMenu(getListView());
 	}
 
 	@Override
@@ -110,6 +107,12 @@ public class DisplayLightNovelListActivity extends ListActivity{
 				Log.d(TAG, "Stopping running task.");
 			}
 		}
+		if(downloadTask != null) {
+			if(!(downloadTask.getStatus() == Status.FINISHED)) {
+				downloadTask.cancel(true);
+				Log.d(TAG, "Stopping running download task.");
+			}
+		}
 		super.onStop();
 	}
 	
@@ -119,12 +122,6 @@ public class DisplayLightNovelListActivity extends ListActivity{
         super.onRestart();
         recreate();
     }
-//	@Override
-//    protected void onResume() {
-//        super.onResume();
-//        // The activity has become visible (it is now "resumed").
-//        //updateViewColor();
-//    }
 
 	@SuppressLint("NewApi")
 	@Override
@@ -134,23 +131,17 @@ public class DisplayLightNovelListActivity extends ListActivity{
 			Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
 			startActivity(launchNewIntent);
 			return true;
-		case R.id.menu_refresh_novel_list:
-			
+		case R.id.menu_refresh_novel_list:			
 			/*
 			 * Implement code to refresh novel list
 			 */
-			refreshOnly = true;
-			updateContent();
-			
+			boolean onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
+			updateContent(true, onlyWatched);			
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
 			return true;
-		case R.id.invert_colors:
-			
+		case R.id.invert_colors:			
 			toggleColorPref();
-    		//updateViewColor();
-			//updateContent();
-			recreate();
-			
+			recreate();			
 			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
 			return true;
 		case android.R.id.home:
@@ -169,74 +160,61 @@ public class DisplayLightNovelListActivity extends ListActivity{
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		//adapter.AdapterContextMenuInfo info = (adapter.AdapterContextMenuInfo) item.getMenuInfo();
-		//String[] names = getResources().getStringArray(R.array.novel_context_menu);
 		switch(item.getItemId()) {
-		case R.id.add_to_watch:
-			
+		case R.id.add_to_watch:			
 			/*
 			 * Implement code to toggle watch of this novel
 			 */
 	        CheckBox checkBox = (CheckBox) findViewById(R.id.novel_is_watched);
 	        if (checkBox.isChecked()) {
-	        	checkBox.setChecked(false);Toast.makeText(this, "Removed from Watch List",
-						Toast.LENGTH_SHORT).show();
+	        	checkBox.setChecked(false);
+	        	Toast.makeText(this, "Removed from Watch List", Toast.LENGTH_SHORT).show();
 	        }
 	        else {
-	        	checkBox.setChecked(true);Toast.makeText(this, "Added to Watch List",
-						Toast.LENGTH_SHORT).show();
+	        	checkBox.setChecked(true);
+	        	Toast.makeText(this, "Added to Watch List", Toast.LENGTH_SHORT).show();
 	        }
 			return true;
-		case R.id.download_novel:
-			
+		case R.id.download_novel:			
 			/*
 			 * Implement code to download entire novel
-			 */
-			
-			Toast.makeText(this, "Downloading Novel",
-					Toast.LENGTH_SHORT).show();
+			 */			
+			//DownloadNovelDetailsTask downloadTask = new DownloadNovelDetailsTask();
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+			if(info.position > -1) {
+				ToggleProgressBar(true);
+				PageModel novel = listItems.get(info.position);
+				downloadTask = new DownloadNovelDetailsTask();
+				downloadTask.execute(new PageModel[] {novel});
+				Toast.makeText(this, "Downloading Novel: " + novel.getTitle(), Toast.LENGTH_SHORT).show();
+			}
 			return true;
 		default:
 			return super.onContextItemSelected(item);
 		}
 	}
 	
-	private void updateContent () {
-		//SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	//boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
+	private void updateContent (boolean isRefresh, boolean onlyWatched) {
 		try {
 			if (adapter != null) {
 				adapter.setResourceId(R.layout.novel_list_item);
 			} else {
 				adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
 			}
-			new LoadNovelsTask().execute();
+			new LoadNovelsTask().execute(new Boolean[] {isRefresh, onlyWatched});
 			setListAdapter(adapter);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Toast t = Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT);
-			t.show();					
+			Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT).show();					
 		}
 	}
 	
 	@SuppressLint("NewApi")
 	private void ToggleProgressBar(boolean show) {
-		//ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
-		//TextView tv = (TextView) findViewById(R.id.loading);
-		
 		if(show) {
-//			pb.setIndeterminate(true);
-//			pb.setActivated(true);
-//			pb.animate();
-//			pb.setVisibility(ProgressBar.VISIBLE);
-//		
-//			tv.setText("Loading...");
-//			tv.setVisibility(TextView.VISIBLE);
 			dialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
 		}
 		else {
-//			pb.setVisibility(ProgressBar.GONE);			
-//			tv.setVisibility(TextView.INVISIBLE);
 			dialog.dismiss();
 		}
 	}
@@ -251,42 +229,14 @@ public class DisplayLightNovelListActivity extends ListActivity{
     		editor.putBoolean("invert_colors", true);
     	}
     	editor.commit();
-    	//Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
     }
-    
-//    private void updateViewColor() {
-//    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-//    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
-//    	
-//    	// Views to be changed
-//        View MainView = findViewById(R.id.light_novel_list_screen);
-//        // MainView.invalidate();
-//        // it is considered white background and black text to be the standard
-//        // so we change to black background and white text if true
-//        if (invertColors == true) {
-//        	MainView.setBackgroundColor(Color.BLACK);
-//        	adapter.setLayout( R.layout.novel_list_item_black);// = new PageModelAdapter(this, R.layout.novel_list_item_black, listItems);
-//        	int[] colors = {0, 0xFFFFFFFF, 0}; // blue
-//        	getListView().setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
-//        	getListView().setDividerHeight(1);
-////        	NovelNames.setTextColor(Color.WHITE);
-//        }
-//        else {
-//        	MainView.setBackgroundColor(Color.WHITE);
-//        	//adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
-//        	adapter.setLayout( R.layout.novel_list_item);
-//        	int[] colors = {0, 0xFF000000, 0}; // blue
-//        	getListView().setDivider(new GradientDrawable(Orientation.RIGHT_LEFT, colors));
-//        	getListView().setDividerHeight(1);
-////        	NovelNames.setTextColor(Color.BLACK);
-//        }
-//        MainView.invalidate();
-//        adapter.notifyDataSetInvalidated();
-//    }
-	
+    	
 	@SuppressLint("NewApi")
-	public class LoadNovelsTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>>  implements ICallbackNotifier {
-    	public void onCallback(ICallbackEventData message) {
+	public class LoadNovelsTask extends AsyncTask<Boolean, String, AsyncTaskResult<ArrayList<PageModel>>>  implements ICallbackNotifier {
+    	private boolean refreshOnly = false;
+    	private boolean onlyWatched = false;
+		
+		public void onCallback(ICallbackEventData message) {
     		publishProgress(message.getMessage());
     	}
 
@@ -297,8 +247,10 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		}
 		
 		@Override
-		protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(Void... arg0) {
+		protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(Boolean... arg0) {
 			// different thread from UI
+			this.refreshOnly = arg0[0];
+			this.onlyWatched = arg0[1];
 			try {
 				if (onlyWatched) {
 					publishProgress("Loading Watched List");
@@ -323,12 +275,10 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		
 		@Override
 		protected void onProgressUpdate (String... values){
-			//executed on UI thread.
-//			TextView tv = (TextView) findViewById(R.id.loading);
-//			tv.setText(values[0]);
 			dialog.setTitle(values[0]);
-			}
+		}
 		
+		@Override
 		protected void onPostExecute(AsyncTaskResult<ArrayList<PageModel>> result) {
 			//executed on UI thread.
 			ArrayList<PageModel> list = result.getResult();
@@ -340,21 +290,63 @@ public class DisplayLightNovelListActivity extends ListActivity{
 				
 				adapter.addAll(list);
 				ToggleProgressBar(false);
-				
+
+				// Show message if watch list is empty
 				if (list.size() == 0 && onlyWatched) {
-					// Show message if watch list is empty
-//					TextView tv = (TextView) findViewById(R.id.loading);
-//					tv.setVisibility(TextView.VISIBLE);
-//					tv.setText("Watch List is empty.");
+					TextView tv = (TextView) findViewById(R.id.emptyList);
+					tv.setVisibility(TextView.VISIBLE);
+					tv.setText("Watch List is empty.");
 				}
 			}
 			if(result.getError() != null) {
 				Exception e = result.getError();
 				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
-				
 				Log.e(this.getClass().toString(), e.getClass().toString() + ": " + e.getMessage());
 			}
 		}    	 
+	}
+	
+	public class DownloadNovelDetailsTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelCollectionModel>> implements ICallbackNotifier {
+
+		@Override
+		public void onCallback(ICallbackEventData message) {
+			publishProgress(message.getMessage());
+		}
+
+		@Override
+		protected AsyncTaskResult<NovelCollectionModel> doInBackground(PageModel... params) {
+			PageModel page = params[0];
+			try {
+				publishProgress("Downloading chapter list...");
+				NovelCollectionModel novelCol = dao.getNovelDetails(page, this);
+				Log.d("DownloadNovelDetailsTask", "Downloaded: " + novelCol.getPage());				
+				return new AsyncTaskResult<NovelCollectionModel>(novelCol);
+			} catch (Exception e) {
+				e.printStackTrace();
+				Log.e("DownloadNovelDetailsTask", e.getClass().toString() + ": " + e.getMessage());
+				return new AsyncTaskResult<NovelCollectionModel>(e);
+			}
+		}
+		
+		@Override
+		protected void onProgressUpdate (String... values){
+			//executed on UI thread.
+			dialog.setMessage(values[0]);
+		}
+		
+		@Override
+		protected void onPostExecute(AsyncTaskResult<NovelCollectionModel> result) {
+			Exception e = result.getError();
+			if(e == null) {
+				dialog.setMessage("Download complete.");
+			}
+			else {
+				e.printStackTrace();
+				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
+				Log.e(this.getClass().toString(), e.getClass().toString() + ": " + e.getMessage());
+			}
+			ToggleProgressBar(false);
+		}
 	}
 }
 
