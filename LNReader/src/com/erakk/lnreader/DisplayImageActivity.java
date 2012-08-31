@@ -82,8 +82,7 @@ public class DisplayImageActivity extends Activity {
 			Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
 			startActivity(launchNewIntent);
 			return true;
-		case R.id.menu_refresh_image:
-			
+		case R.id.menu_refresh_image:			
 			/*
 			 * Implement code to refresh image content
 			 */
@@ -94,7 +93,6 @@ public class DisplayImageActivity extends Activity {
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
 			return true;
 		case android.R.id.home:
-			//NavUtils.navigateUpFromSameTask(this);
 			super.onBackPressed();
 			return true;
 		}
@@ -105,7 +103,7 @@ public class DisplayImageActivity extends Activity {
 	private void ToggleProgressBar(boolean show) {
 		if(show) {
 			dialog = ProgressDialog.show(this, "", "Loading. Please wait...", false);
-//			dialog.setCanceledOnTouchOutside(true);
+			dialog.setCanceledOnTouchOutside(true);
 		
 			if(refresh) {
 				dialog.setMessage("Refreshing...");
@@ -118,9 +116,7 @@ public class DisplayImageActivity extends Activity {
 			dialog.dismiss();
 		}
 	}
-    
-
-	
+    	
     @SuppressLint("NewApi")
 	public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTaskResult<ImageModel>> implements ICallbackNotifier {
     	String url = "";

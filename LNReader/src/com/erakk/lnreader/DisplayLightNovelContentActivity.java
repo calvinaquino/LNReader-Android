@@ -348,6 +348,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 				wv.getSettings().setBuiltInZoomControls(true);
 				wv.getSettings().setLoadWithOverviewMode(true);
 				//wv.getSettings().setUseWideViewPort(true);
+				wv.getSettings().setLoadsImagesAutomatically(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("show_images", false));
 				
 				// custom link handler
 				BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(activity);
