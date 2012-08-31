@@ -50,7 +50,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 				if(titles.length == 2 && !(titles[1].length() == 0)) {
 					Toast.makeText(context, "Loading: " + titles[1], Toast.LENGTH_SHORT).show();
 					// check if have inside db
-					NovelsDao dao = new NovelsDao(context);
+					NovelsDao dao = NovelsDao.getInstance(context);
 					try {
 						// split anchor text
 						String[] titles2 = titles[1].split("#", 2 ); 

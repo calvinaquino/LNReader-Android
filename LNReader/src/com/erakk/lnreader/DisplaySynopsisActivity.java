@@ -25,7 +25,7 @@ import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 
 public class DisplaySynopsisActivity extends Activity {
-	NovelsDao dao = new NovelsDao(this);
+	NovelsDao dao = NovelsDao.getInstance(this);
 	NovelCollectionModel novelCol;
 	
     @SuppressLint({ "NewApi", "NewApi" })
@@ -37,7 +37,7 @@ public class DisplaySynopsisActivity extends Activity {
         //Get intent and message
         Intent intent = getIntent();
         String novel = intent.getStringExtra(Constants.EXTRA_NOVEL);
-        PageModel page = new PageModel(this); 
+        PageModel page = new PageModel(); 
         page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
         page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
         

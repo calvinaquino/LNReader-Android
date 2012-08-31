@@ -41,7 +41,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 	private static final String TAG = DisplayLightNovelListActivity.class.toString();
 	private ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	private PageModelAdapter adapter;
-	private NovelsDao dao = new NovelsDao(this);
+	private NovelsDao dao = NovelsDao.getInstance(this);
 	private LoadNovelsTask task = null;
 	private DownloadNovelDetailsTask downloadTask = null;
 	private ProgressDialog dialog;

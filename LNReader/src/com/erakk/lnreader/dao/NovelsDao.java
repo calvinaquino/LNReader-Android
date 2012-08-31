@@ -33,14 +33,32 @@ import com.erakk.lnreader.parser.BakaTsukiParser;
  */
 public class NovelsDao {
 	private static final String TAG = NovelsDao.class.toString();
-	private Context context;
 	private static DBHelper dbh;
 
-	public NovelsDao(Context context) {
+	private static NovelsDao instance;
+	private static Object lock = new Object();
+	public static NovelsDao getInstance(Context applicationContext) {
+		synchronized (lock){
+			if(instance == null) {
+				instance = new NovelsDao(applicationContext);
+			}
+		}
+		return instance;
+	}
+	
+	public static NovelsDao getInstance() {
+		synchronized (lock){
+			if(instance == null) {
+				throw new NullPointerException("NovelsDao is not Initialized!");
+			}
+		}
+		return instance;
+	}
+	
+	private NovelsDao(Context context) {
 		if (dbh == null) {
 			dbh = new DBHelper(context);
 		}
-		this.context = context;
 	}
 
 	public void deleteDB() {
@@ -130,7 +148,7 @@ public class NovelsDao {
 						Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
 						Document doc = response.parse();
 			
-						list = BakaTsukiParser.ParseNovelList(doc, context);
+						list = BakaTsukiParser.ParseNovelList(doc);
 						Log.d(TAG, "Found from internet: " + list.size() + " Novels");
 			
 						// saved to db and get saved value
@@ -194,7 +212,7 @@ public class NovelsDao {
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
 				Response response = Jsoup.connect("http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&titles=" + page).timeout(Constants.TIMEOUT).execute();
-				PageModel pageModel = BakaTsukiParser.parsePageAPI(page, response.parse(), context);
+				PageModel pageModel = BakaTsukiParser.parsePageAPI(page, response.parse());
 
 				synchronized (dbh) {
 					// save to db and get saved value
@@ -269,7 +287,7 @@ public class NovelsDao {
 			try{
 				Response response = Jsoup.connect(Constants.BASE_URL + "/project/index.php?title=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
-				novel = BakaTsukiParser.ParseNovelDetails(doc, page, context);
+				novel = BakaTsukiParser.ParseNovelDetails(doc, page);
 				break;
 			}catch(EOFException eof) {
 				++retry;
@@ -339,14 +357,14 @@ public class NovelsDao {
 	}
 
 	public NovelContentModel getNovelContentFromInternet(PageModel page, ICallbackNotifier notifier) throws Exception {
-		NovelContentModel content = new NovelContentModel(context);
+		NovelContentModel content = new NovelContentModel();
 		int retry = 0;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
 				Response response = Jsoup.connect(Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&page=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
 
-				content = BakaTsukiParser.ParseNovelContent(doc, page, context);
+				content = BakaTsukiParser.ParseNovelContent(doc, page);
 				break;
 			}catch(EOFException eof) {
 				++retry;

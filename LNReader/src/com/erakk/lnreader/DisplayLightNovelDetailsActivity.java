@@ -48,7 +48,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 	private static final String TAG = DisplayLightNovelDetailsActivity.class.toString();
 	private PageModel page;
 	private NovelCollectionModel novelCol;
-	private NovelsDao dao = new NovelsDao(this);
+	private NovelsDao dao = NovelsDao.getInstance(this);
 	
     private BookModelAdapter bookModelAdapter;
     private ExpandableListView expandList;
@@ -73,7 +73,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
         
         //Get intent and message
         Intent intent = getIntent();
-        page = new PageModel(this); 
+        page = new PageModel(); 
         page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
         page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
         setContentView(R.layout.activity_display_light_novel_details);

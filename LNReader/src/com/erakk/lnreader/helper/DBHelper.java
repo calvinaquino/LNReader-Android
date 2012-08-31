@@ -102,10 +102,8 @@ public class DBHelper extends SQLiteOpenHelper {
 				  				    + COLUMN_LAST_UPDATE + " integer, "
 				  				    + COLUMN_LAST_CHECK + " integer);";
 	
-	private Context context;
 	public DBHelper(Context context) {
 	    super(context, DATABASE_NAME, null, DATABASE_VERSION);
-	    this.context = context;
 	}
 	
 	@Override
@@ -268,7 +266,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 	
 	private PageModel cursorTopage(Cursor cursor) {
-		PageModel page = new PageModel(context);
+		PageModel page = new PageModel();
 		page.setId(cursor.getInt(0));
 		page.setPage(cursor.getString(1));
 		page.setTitle(cursor.getString(2));
@@ -336,11 +334,10 @@ public class DBHelper extends SQLiteOpenHelper {
 				cv3.put(COLUMN_TITLE, page.getTitle());
 				cv3.put(COLUMN_TYPE, page.getType());
 				cv3.put(COLUMN_PARENT, page.getParent());
-				cv3.put(COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000)); // TODO: get actual page revision
+				cv3.put(COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000)); 
 				cv3.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 				cv3.put(COLUMN_IS_WATCHED, false);
 				
-				// TODO: check db concurency
 				PageModel tempPage = getPageModel(db, page.getPage());
 				if(tempPage == null) {
 					Log.d(TAG, "Inserting Novel Chapter: " + page.getPage());
@@ -458,7 +455,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	private NovelCollectionModel cursorToNovelCollection(Cursor cursor) {
-		NovelCollectionModel novelDetails = new NovelCollectionModel(context);
+		NovelCollectionModel novelDetails = new NovelCollectionModel();
 		novelDetails.setId(cursor.getInt(0));
 		novelDetails.setPage(cursor.getString(1));
 		novelDetails.setSynopsis(cursor.getString(2));
@@ -589,7 +586,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			pageModel = insertOrUpdatePageModel(db, pageModel);
 		}
 		
-		// TODO: insert images to db
+		// TODO: insert images to db, but only have the thumb
 		
 		content = getNovelContent(db, content.getPage());
 		return content;
@@ -613,7 +610,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	private NovelContentModel cursorToNovelContent(Cursor cursor) {
-		NovelContentModel content = new NovelContentModel(context);
+		NovelContentModel content = new NovelContentModel();
 		content.setId(cursor.getInt(0));
 		content.setContent(cursor.getString(1));
 		content.setPage(cursor.getString(2));

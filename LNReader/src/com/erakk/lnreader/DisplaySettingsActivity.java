@@ -76,7 +76,7 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         		/*
         		 * CODE TO CLEAR DATABASE HERE
         		 */
-        		NovelsDao dao = new NovelsDao(getApplicationContext());
+        		NovelsDao dao = NovelsDao.getInstance(getApplicationContext());
         		dao.deleteDB();
         		Toast.makeText(getApplicationContext(), "Database cleared!", Toast.LENGTH_LONG).show();	
         		return true;

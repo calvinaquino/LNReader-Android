@@ -21,11 +21,6 @@ public class NovelContentModel {
 	private Date lastCheck;
 	
 	private ArrayList<ImageModel> images;
-	private Context context;
-	public NovelContentModel(Context context) {
-		this.context = context;
-	}
-	
 	
 	public int getId() {
 		return id;
@@ -47,7 +42,7 @@ public class NovelContentModel {
 	}
 	public PageModel getPageModel() throws Exception {
 		if(this.pageModel == null) {
-			NovelsDao dao = new NovelsDao(context);
+			NovelsDao dao = NovelsDao.getInstance();
 			this.pageModel = dao.getPageModel(this.page, null); 
 		}
 		return pageModel;
@@ -90,7 +85,5 @@ public class NovelContentModel {
 	}
 	public void setImages(ArrayList<ImageModel> images) {
 		this.images = images;
-	}
-	
-	
+	}	
 }

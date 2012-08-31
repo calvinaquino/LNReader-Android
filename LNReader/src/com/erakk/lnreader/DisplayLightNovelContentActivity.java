@@ -46,7 +46,7 @@ import com.erakk.lnreader.model.PageModel;
 public class DisplayLightNovelContentActivity extends Activity {
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
 	private final Activity activity = this;
-	private NovelsDao dao = new NovelsDao(this);
+	private NovelsDao dao = NovelsDao.getInstance(this);
 	private NovelContentModel content;
 	private NovelCollectionModel novelDetails;
 	private LoadNovelContentTask task;

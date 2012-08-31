@@ -10,7 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import org.jsoup.Jsoup;
@@ -18,7 +17,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
@@ -42,8 +40,8 @@ public class BakaTsukiParser {
 	 * @param doc parsed page for given pageName
 	 * @return PageModel status, no parent and type defined
 	 */
-	public static PageModel parsePageAPI(String pageName, Document doc, Context context) throws Exception {
-		PageModel pageModel = new PageModel(context);
+	public static PageModel parsePageAPI(String pageName, Document doc) throws Exception {
+		PageModel pageModel = new PageModel();
 		pageModel.setPage(pageName);
 		pageModel.setTitle(doc.select("page").first().attr("title"));
 		Log.d(TAG, "parsePageAPI Title: " + pageModel.getTitle());
@@ -62,7 +60,7 @@ public class BakaTsukiParser {
 	 * @param doc parsed page from Main_Page
 	 * @return list of novels in PageModel
 	 */
-	public static ArrayList<PageModel> ParseNovelList(Document doc, Context context) {
+	public static ArrayList<PageModel> ParseNovelList(Document doc) {
 		ArrayList<PageModel> result = new ArrayList<PageModel>();
 		
 		if(doc == null) throw new NullPointerException("Document cannot be null.");
@@ -75,38 +73,37 @@ public class BakaTsukiParser {
 			for (Iterator<Element> i = novels.iterator(); i .hasNext();) {
 				Element novel = i.next();
 				Element link = novel.select("a").first();
-				
-				PageModel page = new PageModel(context);
+
+				// TODO: get the actual last update time.
+				PageModel page = new PageModel();
 				page.setPage(link.attr("href").replace("/project/index.php?title=", ""));
 				page.setType(PageModel.TYPE_NOVEL);
 				page.setTitle(link.text());
-				// TODO: get the actual last update time. 
 				page.setLastUpdate(new Date());
 				page.setLastCheck(new Date());
 				page.setParent("Main_Page");
-				
 				result.add(page);
 				Log.d(TAG, "Add: "+ link.text());
 			}
 		}
 		return result;
-	}
-	
+	}	
 	
 	/**
+	 * Parse novel Title, Synopsis, Cover, and Chapter list.
 	 * @param doc
 	 * @param page
 	 * @return
 	 */
-	public static NovelCollectionModel ParseNovelDetails(Document doc, PageModel page, Context context) {
-		NovelCollectionModel novel = new NovelCollectionModel(context);
+	public static NovelCollectionModel ParseNovelDetails(Document doc, PageModel page) {
+		NovelCollectionModel novel = new NovelCollectionModel();
 		if(doc == null) throw new NullPointerException("Document cannot be null.");
 		novel.setPage(page.getPage());
 		novel.setPageModel(page);
 		
 		parseNovelSynopsis(doc, novel);		
 		parseNovelCover(doc, novel);				
-		parseNovelChapters(doc, novel, context);
+		parseNovelChapters(doc, novel);
 		
 		return novel;
 	}
@@ -125,7 +122,7 @@ public class BakaTsukiParser {
 		return title;
 	}
 	
-	private static ArrayList<BookModel> parseNovelChapters(Document doc, NovelCollectionModel novel, Context context) {
+	private static ArrayList<BookModel> parseNovelChapters(Document doc, NovelCollectionModel novel) {
 		Log.d(TAG, "Start parsing book collections");
 		// parse the collection
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
@@ -161,7 +158,7 @@ public class BakaTsukiParser {
 						else if(bookElement.tagName() == "h3") {
 							Log.d(TAG, "Found: " +bookElement.text());
 							BookModel book = new BookModel();
-							book.setTitle(sanitize(bookElement.text())); // TODO: need to sanitize the title.
+							book.setTitle(sanitize(bookElement.text()));
 							ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
 							
 							// parse the chapters.
@@ -180,7 +177,7 @@ public class BakaTsukiParser {
 										Elements links = chapter.select("a");
 										if(links.size() > 0) {
 											Element link = links.first();
-											PageModel p = new PageModel(context);
+											PageModel p = new PageModel();
 											p.setTitle(sanitize(link.text()));	// sanitize title
 											p.setPage(link.attr("href").replace("/project/index.php?title=",""));
 											p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
@@ -231,7 +228,7 @@ public class BakaTsukiParser {
 											Elements links = chapter.select("a");
 											if(links.size() > 0) {
 												Element link = links.first();
-												PageModel p = new PageModel(context);
+												PageModel p = new PageModel();
 												p.setTitle(sanitize(link.text()));
 												p.setPage(link.attr("href").replace("/project/index.php?title=",""));
 												p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
@@ -246,7 +243,7 @@ public class BakaTsukiParser {
 										Elements links = bookElement.select("a");
 										if(links.size() > 0) {
 											Element link = links.first();
-											PageModel p = new PageModel(context);
+											PageModel p = new PageModel();
 											p.setTitle(sanitize(link.text()));
 											p.setPage(link.attr("href").replace("/project/index.php?title=",""));
 											p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
@@ -313,7 +310,7 @@ public class BakaTsukiParser {
 			URL url = new URL(imageUrl);
 			novel.setCoverUrl(url);
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
+			// should happened
 			e.printStackTrace();
 		}
 		Log.d(TAG, "Complete parsing cover image");
@@ -361,8 +358,8 @@ public class BakaTsukiParser {
 		return synopsis;
 	}
 
-	public static NovelContentModel ParseNovelContent(Document doc, PageModel page, Context context) {
-		NovelContentModel content = new NovelContentModel(context);
+	public static NovelContentModel ParseNovelContent(Document doc, PageModel page) {
+		NovelContentModel content = new NovelContentModel();
 		page.setDownloaded(true);
 		content.setPage(page.getPage());
 		content.setPageModel(page);
@@ -384,7 +381,7 @@ public class BakaTsukiParser {
 			try {
 				image.setUrl(new URL(urlStr));
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
+				// shouldn't happened
 				e.printStackTrace();
 			}
 			images.add(image);
@@ -413,7 +410,7 @@ public class BakaTsukiParser {
 		try {
 			image.setUrl(new URL(Constants.BASE_URL + imageUrl));
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
+			// shouldn't happened
 			e.printStackTrace();
 		}
 		

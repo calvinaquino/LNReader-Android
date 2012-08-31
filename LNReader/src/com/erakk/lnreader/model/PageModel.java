@@ -24,12 +24,7 @@ public class PageModel {
 	private boolean isWatched;
 	private boolean isFinishedRead;
 	private boolean isDownloaded;
-	
-	private Context context;
-	public PageModel(Context context) {
-		this.context = context;
-	}
-	
+
 	public int getId() {
 		return id;
 	}
@@ -90,7 +85,7 @@ public class PageModel {
 	}
 	public PageModel getParentPageModel() throws Exception {
 		if(this.parentPageModel == null) {
-			NovelsDao dao = new NovelsDao(context);
+			NovelsDao dao = NovelsDao.getInstance();
 			if(this.type.contentEquals(TYPE_CONTENT)) {
 				String tempParent = parent.substring(0, parent.indexOf(Constants.NOVEL_BOOK_DIVIDER));
 				this.parentPageModel = dao.getPageModel(tempParent, null);

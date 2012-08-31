@@ -22,7 +22,7 @@ import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.ImageModel;
 
 public class DisplayImageActivity extends Activity {
-	private NovelsDao dao = new NovelsDao(this);
+	private NovelsDao dao = NovelsDao.getInstance(this);
 	private WebView imgWebView;
 	private LoadImageTask task;
 	private boolean refresh = false;
