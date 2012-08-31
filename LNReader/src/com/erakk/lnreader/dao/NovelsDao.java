@@ -124,21 +124,33 @@ public class NovelsDao {
 				// now get the novel list
 				list = new ArrayList<PageModel>();
 				String url = Constants.BASE_URL + "/project";
-				Response response = Jsoup.connect(url).timeout(60000).execute();
-				Document doc = response.parse();
-	
-				list = BakaTsukiParser.ParseNovelList(doc, context);
-				Log.d(TAG, "Found from internet: " + list.size() + " Novels");
-	
-				// saved to db and get saved value
-				list = dbh.insertAllNovel(db, list);
-				
-				// now get the saved value
-				list = dbh.getAllNovels(db);
-				//db.setTransactionSuccessful();
-				
-				if (notifier != null) {
-					notifier.onCallback(new CallbackEventData("Found: " + list.size() + " novels."));
+				int retry = 0;
+				while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
+					try{
+						Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
+						Document doc = response.parse();
+			
+						list = BakaTsukiParser.ParseNovelList(doc, context);
+						Log.d(TAG, "Found from internet: " + list.size() + " Novels");
+			
+						// saved to db and get saved value
+						list = dbh.insertAllNovel(db, list);
+						
+						// now get the saved value
+						list = dbh.getAllNovels(db);
+						//db.setTransactionSuccessful();
+						
+						if (notifier != null) {
+							notifier.onCallback(new CallbackEventData("Found: " + list.size() + " novels."));
+						}
+						break;
+					}catch(EOFException eof) {
+						++retry;
+						if(notifier != null) {
+							notifier.onCallback(new CallbackEventData("Retrying: Main_Page (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));
+						}
+						if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
+					}
 				}
 			}finally{
 				//db.endTransaction();
@@ -178,19 +190,31 @@ public class NovelsDao {
 	}
 
 	public PageModel getPageModelFromInternet(String page, ICallbackNotifier notifier) throws Exception {
-		Response response = Jsoup.connect("http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&titles=" + page).timeout(60000).execute();
-		PageModel pageModel = BakaTsukiParser.parsePageAPI(page, response.parse(), context);
-
-		synchronized (dbh) {
-			// save to db and get saved value
-			SQLiteDatabase db = dbh.getWritableDatabase();
+		int retry = 0;
+		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
-				pageModel = dbh.insertOrUpdatePageModel(db, pageModel);
-			}finally{
-				db.close();
+				Response response = Jsoup.connect("http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&titles=" + page).timeout(Constants.TIMEOUT).execute();
+				PageModel pageModel = BakaTsukiParser.parsePageAPI(page, response.parse(), context);
+
+				synchronized (dbh) {
+					// save to db and get saved value
+					SQLiteDatabase db = dbh.getWritableDatabase();
+					try{
+						pageModel = dbh.insertOrUpdatePageModel(db, pageModel);
+					}finally{
+						db.close();
+					}
+				}
+				return pageModel;
+			}catch(EOFException eof) {
+				++retry;
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData("Retrying: " + page + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));
+				}
+				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 			}
 		}
-		return pageModel;
+		return null;
 	}
 
 	public PageModel updatePageModel(PageModel page) {
@@ -243,9 +267,10 @@ public class NovelsDao {
 		int retry = 0;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
-				Response response = Jsoup.connect(Constants.BASE_URL + "/project/index.php?title=" + page.getPage()).timeout(60000).execute();
+				Response response = Jsoup.connect(Constants.BASE_URL + "/project/index.php?title=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
 				novel = BakaTsukiParser.ParseNovelDetails(doc, page, context);
+				break;
 			}catch(EOFException eof) {
 				++retry;
 				if(notifier != null) {
@@ -315,12 +340,22 @@ public class NovelsDao {
 
 	public NovelContentModel getNovelContentFromInternet(PageModel page, ICallbackNotifier notifier) throws Exception {
 		NovelContentModel content = new NovelContentModel(context);
+		int retry = 0;
+		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
+			try{
+				Response response = Jsoup.connect(Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&page=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
+				Document doc = response.parse();
 
-		Response response = Jsoup.connect(Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&page=" + page.getPage()).timeout(60000).execute();
-		Document doc = response.parse();
-
-		content = BakaTsukiParser.ParseNovelContent(doc, page, context);
-
+				content = BakaTsukiParser.ParseNovelContent(doc, page, context);
+				break;
+			}catch(EOFException eof) {
+				++retry;
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));
+				}
+				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
+			}
+		}
 		// download all attached images
 		DownloadFileTask task = new DownloadFileTask(notifier);
 		for (Iterator<ImageModel> i = content.getImages().iterator(); i.hasNext();) {
@@ -330,19 +365,19 @@ public class NovelsDao {
 				notifier.onCallback(new CallbackEventData("Start downloading: " + image.getUrl()));
 			}
 			image = task.downloadImage(image.getUrl());
-			// TODO: need to save image to db?
+			// TODO: need to save image to db? mostly thumbnail only
 		}
 		synchronized (dbh) {
 			// save to DB, and get the saved value
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			try{
 				// TODO: somehow using transaction cause problem...
-				db.beginTransaction();
+				//db.beginTransaction();
 				content = dbh.insertNovelContent(db, content);
-				db.setTransactionSuccessful();
+				//db.setTransactionSuccessful();
 			}
 			finally{
-				db.endTransaction();
+				//db.endTransaction();
 				db.close();
 			}
 		}
@@ -402,7 +437,7 @@ public class NovelsDao {
 		int retry = 0;
 		while(retry < Constants.IMAGE_DOWNLOAD_RETRY) {
 			try{
-				Response response = Jsoup.connect(url).timeout(60000).execute();
+				Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
 				
 				// only return the full  image url

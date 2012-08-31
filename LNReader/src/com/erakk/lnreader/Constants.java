@@ -24,4 +24,6 @@ public class Constants {
 	
 	public static final String NOVEL_BOOK_DIVIDER = "%";
 	public static final int CHECK_INTERVAL = 7;
+	
+	public static final int TIMEOUT = 60000;
 }
