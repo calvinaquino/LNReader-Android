@@ -58,7 +58,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	private LoadNovelContentTask task;
 	private PageModel pageModel;
 	private String volume;
-	private String parentPage;
+	//private String parentPage;
 	private boolean refresh = false;
 	private AlertDialog tocMenu = null;
 	private PageModelAdapter jumpAdapter = null;
@@ -79,21 +79,21 @@ public class DisplayLightNovelContentActivity extends Activity {
 		setContentView(R.layout.activity_display_light_novel_content);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
-		Intent intent = getIntent();
+		//Intent intent = getIntent();
 		//PageModel page = new PageModel(); 
 		//page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
 		//page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
 		//volume = intent.getStringExtra(Constants.EXTRA_VOLUME);
-		parentPage = intent.getStringExtra(Constants.EXTRA_NOVEL);
+		//parentPage = intent.getStringExtra(Constants.EXTRA_NOVEL);
 
 		try {
-			pageModel = dao.getPageModel(intent.getStringExtra(Constants.EXTRA_PAGE), null);
+			pageModel = dao.getPageModel(getIntent().getStringExtra(Constants.EXTRA_PAGE), null);
 			//ToggleProgressBar(true);
 			task = new LoadNovelContentTask();
 			task.execute(new PageModel[] {pageModel});
 		} catch (Exception e) {
 			e.printStackTrace();
-			Log.d(TAG, "Failed to get the PageModel for content: " + intent.getStringExtra(Constants.EXTRA_PAGE));
+			Log.d(TAG, "Failed to get the PageModel for content: " + getIntent().getStringExtra(Constants.EXTRA_PAGE));
 		}
 		Log.d(TAG, "onCreate called");
 	}
@@ -199,11 +199,9 @@ public class DisplayLightNovelContentActivity extends Activity {
 		if(show) {
 			dialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
 			dialog.setCanceledOnTouchOutside(true);
-			//Log.d("ProgressBar", "Show");
 		} 
 		else {
 			dialog.dismiss();
-			//Log.d("ProgressBar", "Dismiss");
 		}
 	}
 	
@@ -253,7 +251,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		Log.d("ReadCss", contents.toString());
+		//Log.d("ReadCss", contents.toString());
 		return contents.toString();
 	}
     
@@ -356,7 +354,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 				String html = "<html><head><style type=\"text/css\">" + readCSS(styleId) + "</style></head><body>" + content.getContent() + "</body></html>";
 				wv.loadDataWithBaseURL(Constants.BASE_URL, html, "text/html", "utf-8", "");
 				
-				Log.d("LoadNovelContentTask", content.getPage());
+				//Log.d("LoadNovelContentTask", content.getPage());
 				
 				wv.setInitialScale((int) (content.getLastZoom() * 100));
 				
