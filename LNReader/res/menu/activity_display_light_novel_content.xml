@@ -9,4 +9,5 @@
         android:title="Previous" android:showAsAction="ifRoom"/>
     <item android:id="@+id/menu_chapter_next" 
         android:title="Next" android:showAsAction="ifRoom"/>
+    <item android:id="@+id/menu_chapter_toc" android:title="Jump To"></item>
 </menu>

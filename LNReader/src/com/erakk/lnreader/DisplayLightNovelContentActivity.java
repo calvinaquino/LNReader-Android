@@ -5,10 +5,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -21,6 +25,7 @@ import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
+import android.text.AndroidCharacter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +37,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
@@ -54,6 +60,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 	private String volume;
 	private String parentPage;
 	private boolean refresh = false;
+	private AlertDialog tocMenu = null;
+	private PageModelAdapter jumpAdapter = null;
 
 	private ProgressDialog dialog;
 	
@@ -78,12 +86,11 @@ public class DisplayLightNovelContentActivity extends Activity {
 		//volume = intent.getStringExtra(Constants.EXTRA_VOLUME);
 		parentPage = intent.getStringExtra(Constants.EXTRA_NOVEL);
 
-		//updateViewColor();
 		try {
 			pageModel = dao.getPageModel(intent.getStringExtra(Constants.EXTRA_PAGE), null);
 			//ToggleProgressBar(true);
 			task = new LoadNovelContentTask();
-			task.execute(new PageModel[] {pageModel});	
+			task.execute(new PageModel[] {pageModel});
 		} catch (Exception e) {
 			e.printStackTrace();
 			Log.d(TAG, "Failed to get the PageModel for content: " + intent.getStringExtra(Constants.EXTRA_PAGE));
@@ -148,13 +155,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 			 */
 			PageModel prev = novelDetails.getPrev(pageModel.getPage());
 			if(prev!= null) {
-				setLastReadState();
-				// set the current intent
-				getIntent().putExtra(Constants.EXTRA_PAGE, prev.getPage());				
-				pageModel = prev;
-				task = new LoadNovelContentTask();
-				task.execute(prev);
-				//Toast.makeText(getApplicationContext(), "Go previous: " + prev.getTitle(), Toast.LENGTH_SHORT).show();
+				jumpTo(prev);
 			}
 			else {
 				Toast.makeText(getApplicationContext(), "First available chapter.", Toast.LENGTH_SHORT).show();
@@ -167,48 +168,60 @@ public class DisplayLightNovelContentActivity extends Activity {
 			 */
 			PageModel next = novelDetails.getNext(pageModel.getPage());
 			if(next!= null) {
-				setLastReadState();
-				getIntent().putExtra(Constants.EXTRA_PAGE, next.getPage());
-				pageModel = next;
-				task = new LoadNovelContentTask();
-				task.execute(next);
-				//Toast.makeText(getApplicationContext(), "Go next: " + next.getTitle(), Toast.LENGTH_SHORT).show();
+				jumpTo(next);
 			}
 			else {
 				Toast.makeText(getApplicationContext(), "Last available chapter.", Toast.LENGTH_SHORT).show();
 			}
 			
 			return true;
+		case R.id.menu_chapter_toc:
+			tocMenu.show();
+			return true;
 		case android.R.id.home:
-			//NavUtils.navigateUpFromSameTask(this);
 			super.onBackPressed();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 	
+	private void jumpTo(PageModel page){
+		setLastReadState();
+		getIntent().putExtra(Constants.EXTRA_PAGE, page.getPage());
+		pageModel = page;
+		task = new LoadNovelContentTask();
+		task.execute(page);
+	}
+	
 	@SuppressLint("NewApi")
 	private void ToggleProgressBar(boolean show) {
-//		ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
-//		TextView tv = (TextView) findViewById(R.id.loading);
 		Log.d("ProgressBar", "Toggle");
 		if(show) {
-//			pb.setIndeterminate(true);
-//			pb.setActivated(true);
-//			pb.animate();
-//			pb.setVisibility(ProgressBar.VISIBLE);
-//		
-//			tv.setText("Loading...");
-//			tv.setVisibility(TextView.VISIBLE);
 			dialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
 			dialog.setCanceledOnTouchOutside(true);
-			Log.d("ProgressBar", "Show");
+			//Log.d("ProgressBar", "Show");
 		} 
 		else {
-//			pb.setVisibility(ProgressBar.GONE);			
-//			tv.setVisibility(TextView.GONE);
 			dialog.dismiss();
-			Log.d("ProgressBar", "Dismiss");
+			//Log.d("ProgressBar", "Dismiss");
+		}
+	}
+	
+	private void buildTOCMenu() {
+		if(novelDetails != null) {			
+			ArrayList<PageModel> chapters =  pageModel.getBook().getChapterCollection();
+			jumpAdapter = new PageModelAdapter(this, R.layout.novel_list_item, chapters);
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Jump To");
+			builder.setAdapter(jumpAdapter, new OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					PageModel page = jumpAdapter.getItem(which);
+					jumpTo(page);
+					//Toast.makeText(getApplicationContext(), "You clicked: " + page.getTitle(), Toast.LENGTH_SHORT).show();					
+				}				
+			});
+			tocMenu = builder.create();
 		}
 	}
 	
@@ -222,26 +235,7 @@ public class DisplayLightNovelContentActivity extends Activity {
     		editor.putBoolean("invert_colors", true);
     	}
     	editor.commit();
-    	//Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
     }
-    
-//    private void updateViewColor() {
-//    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-//    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
-//    	
-//    	// Views to be changed
-//        WebView webView = (WebView)findViewById(R.id.webView1);
-//        // it is considered white background and black text to be the standard
-//        // so we change to black background and white text if true
-//        if (invertColors == true) {
-//        	webView.setBackgroundColor(Color.BLACK);
-//        }
-//        else {
-//        	webView.setBackgroundColor(Color.WHITE);
-//        }
-////        updateContent(true);
-//    }
-	
     
 	private String readCSS(int id) {
 		StringBuilder contents = new StringBuilder();
@@ -257,7 +251,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 			isr.close();
 			in.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Log.d("ReadCss", contents.toString());
@@ -274,7 +267,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 			try{
 				content = dao.updateNovelContent(content);
 			}catch(Exception ex) {
-				// TODO: need to handle properly
 				ex.printStackTrace();
 			}
 			if(wv.getContentHeight() <=  wv.getScrollY() + wv.getBottom()) {
@@ -329,8 +321,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 		@Override
 		protected void onProgressUpdate (String... values){
 			//executed on UI thread.
-//			TextView tv = (TextView) findViewById(R.id.loading);
-//			tv.setText(values[0]);
 			dialog.setMessage(values[0]);
 		}
 		
@@ -339,7 +329,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 			
 			if(e == null) {
 				content = result.getResult();
-				//setContent(content);
 				
 				// load the contents here
 				final WebView wv = (WebView) findViewById(R.id.webView1);
@@ -353,10 +342,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 				// custom link handler
 				BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(activity);
 				wv.setWebViewClient(client);
-				
-				//String html = Constants.WIKI_CSS_STYLE + "<body>" + content.getContent() + "</body></html>" ;
-				
-				
+
 				int styleId = -1;
 				if(getColorPreferences()) {
 					styleId = R.raw.style_dark;
@@ -381,8 +367,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 					public void onNewPicture(WebView arg0, Picture arg1) {
 						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
 						if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
-							//wv.scrollTo(content.getLastXScroll(), content.getLastYScroll());
-							//wv.setScrollX(value)
 							wv.setScrollY(content.getLastYScroll());
 							needScroll = false;
 						}						
@@ -398,6 +382,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 					ex.printStackTrace();
 				}
 				Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
+				
+				buildTOCMenu();
 			}
 			else {
 				e.printStackTrace();

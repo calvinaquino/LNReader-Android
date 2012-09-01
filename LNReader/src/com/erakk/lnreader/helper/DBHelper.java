@@ -203,10 +203,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		return pages;
 	}
 	
-	public ArrayList<PageModel> selectAllByColumn(SQLiteDatabase db, String column, String value) {
+	public ArrayList<PageModel> selectAllByColumn(SQLiteDatabase db, String whereQuery, String[] values) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
 		
-		Cursor cursor = db.rawQuery("select * from " + TABLE_PAGE + " where " + column + " = ?", new String[] {value});
+		Cursor cursor = db.rawQuery("select * from " + TABLE_PAGE + " where " + whereQuery, values);
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	PageModel page = cursorTopage(cursor);

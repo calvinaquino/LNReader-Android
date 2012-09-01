@@ -183,7 +183,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try{
-				watchedNovel = dbh.selectAllByColumn(db, DBHelper.COLUMN_IS_WATCHED, "1");
+				watchedNovel = dbh.selectAllByColumn(db, DBHelper.COLUMN_IS_WATCHED + " = ? and " + DBHelper.COLUMN_PARENT + " = ?", new String[] {"1", "Main_Page"});
 			}finally{
 				db.close();
 			}			

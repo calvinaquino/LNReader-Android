@@ -2,6 +2,7 @@
 package com.erakk.lnreader.model;
 
 import java.util.Date;
+import java.util.Iterator;
 
 import android.content.Context;
 
@@ -24,6 +25,7 @@ public class PageModel {
 	private boolean isWatched;
 	private boolean isFinishedRead;
 	private boolean isDownloaded;
+	private BookModel book;
 
 	public int getId() {
 		return id;
@@ -104,5 +106,32 @@ public class PageModel {
 	}
 	public void setDownloaded(boolean isDownloaded) {
 		this.isDownloaded = isDownloaded;
+	}
+	
+	public BookModel getBook() {
+		if(this.getType().equals(TYPE_CONTENT)) {
+			if(this.book == null) {
+				NovelsDao dao = NovelsDao.getInstance();
+				try {
+					String bookTitle = parent.substring(parent.indexOf(Constants.NOVEL_BOOK_DIVIDER)+1);
+					NovelCollectionModel details = dao.getNovelDetails(getParentPageModel(), null);
+					for(Iterator<BookModel> iBook = details.getBookCollections().iterator();iBook.hasNext();) {
+						BookModel tempBook = iBook.next();
+						if(tempBook.getTitle().equals(bookTitle)){
+							this.book = tempBook;
+							break;
+						}						
+					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}				
+			}
+			return this.book;
+		}
+		return null;
+	}
+	public void setBook(BookModel book) {
+		this.book = book;
 	}
 }
