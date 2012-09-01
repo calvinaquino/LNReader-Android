@@ -17,6 +17,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.helper.DBHelper;
@@ -122,6 +123,7 @@ public class NovelsDao {
 	}
 
 	public ArrayList<PageModel> getNovelsFromInternet(ICallbackNotifier notifier) throws Exception {
+		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
 		if (notifier != null) {
 			notifier.onCallback(new CallbackEventData("Downloading novel list..."));
 		}
@@ -208,6 +210,7 @@ public class NovelsDao {
 	}
 
 	public PageModel getPageModelFromInternet(String page, ICallbackNotifier notifier) throws Exception {
+		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
 		int retry = 0;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
@@ -279,6 +282,7 @@ public class NovelsDao {
 	}
 
 	public NovelCollectionModel getNovelDetailsFromInternet(PageModel page, ICallbackNotifier notifier) throws Exception {
+		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
 		Log.d(TAG, "Getting Novel Details from internet: " + page.getPage());
 		NovelCollectionModel novel = null;
 		
@@ -356,6 +360,7 @@ public class NovelsDao {
 	}
 
 	public NovelContentModel getNovelContentFromInternet(PageModel page, ICallbackNotifier notifier) throws Exception {
+		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
 		NovelContentModel content = new NovelContentModel();
 		int retry = 0;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
@@ -419,6 +424,8 @@ public class NovelsDao {
 	 */
 
 	public ImageModel getImageModel(String page, ICallbackNotifier notifier) throws Exception {
+		
+		
 		ImageModel image = null;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
@@ -442,6 +449,7 @@ public class NovelsDao {
 	}
 
 	public ImageModel getImageModelFromInternet(String page, ICallbackNotifier notifier) throws Exception {
+		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
 		ImageModel image = null;
 		String url = page;
 		if (!url.startsWith("http"))

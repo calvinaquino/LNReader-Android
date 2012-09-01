@@ -20,3 +20,13 @@
 
 //CHECK
   Unhandled exception when creating menus...
+
+//ANDROID PERMISSION LIST
+  android.permission.ACCESS_NETWORK_STATE
+  - For checking internet state.
+  android.permission.INTERNET
+  - For downloading data from Baka Tsuki.
+  android.permission.WRITE_EXTERNAL_STORAGE
+  - For saving image cache.
+  android.permission.READ_EXTERNAL_STORAGE
+  - For reading image cache.
