@@ -3,8 +3,6 @@ package com.erakk.lnreader.model;
 import java.util.ArrayList;
 import java.util.Date;
 
-import android.content.Context;
-
 import com.erakk.lnreader.dao.NovelsDao;
 
 public class NovelContentModel {

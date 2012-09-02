@@ -33,6 +33,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_IS_WATCHED = "is_watched";
 	public static final String COLUMN_IS_FINISHED_READ = "is_finished_read";
 	public static final String COLUMN_IS_DOWNLOADED = "is_downloaded";
+	public static final String COLUMN_ORDER = "_index";
 	
 	public static final String TABLE_IMAGE = "images";
 	public static final String COLUMN_IMAGE = "name";
@@ -52,20 +53,21 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_ZOOM = "lastZoom";
 
 	private static final String DATABASE_NAME = "pages.db";
-	private static final int DATABASE_VERSION = 17;
+	private static final int DATABASE_VERSION = 18;
 
 	// Database creation SQL statement
 	private static final String DATABASE_CREATE_PAGES = "create table "
-	      + TABLE_PAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-							 + COLUMN_PAGE + " text unique not null, "
-			  				 + COLUMN_TITLE + " text not null, "
-			  				 + COLUMN_TYPE + " text, "
-			  				 + COLUMN_PARENT + " text, "
-			  				 + COLUMN_LAST_UPDATE + " integer, "
-			  				 + COLUMN_LAST_CHECK + " integer, "
-			  				 + COLUMN_IS_WATCHED + " boolean, "
-			  				 + COLUMN_IS_FINISHED_READ + " boolean, "
-			  				 + COLUMN_IS_DOWNLOADED + " boolean );";
+	      + TABLE_PAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
+							 + COLUMN_PAGE + " text unique not null, "				// 1
+			  				 + COLUMN_TITLE + " text not null, "					// 2
+			  				 + COLUMN_TYPE + " text, "								// 3
+			  				 + COLUMN_PARENT + " text, "							// 4
+			  				 + COLUMN_LAST_UPDATE + " integer, "					// 5
+			  				 + COLUMN_LAST_CHECK + " integer, "						// 6
+			  				 + COLUMN_IS_WATCHED + " boolean, "						// 7
+			  				 + COLUMN_IS_FINISHED_READ + " boolean, "				// 8
+			  				 + COLUMN_IS_DOWNLOADED + " boolean, "					// 9
+			  				 + COLUMN_ORDER + " integer );";						// 10
 	
 	private static final String DATABASE_CREATE_IMAGES = "create table "
 		      + TABLE_IMAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -86,11 +88,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	// COLUMN_PAGE is not unique because being used for reference to the novel page. 
 	private static final String DATABASE_CREATE_NOVEL_BOOKS = "create table "
-		      + TABLE_NOVEL_BOOK + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-				 				  + COLUMN_PAGE + " text not null, "
-				  				  + COLUMN_TITLE + " text not null, "
-				  				  + COLUMN_LAST_UPDATE + " integer, "
-				  				  + COLUMN_LAST_CHECK + " integer);";
+		      + TABLE_NOVEL_BOOK + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
+				 				  + COLUMN_PAGE + " text not null, "						// 1
+				  				  + COLUMN_TITLE + " text not null, "						// 2
+				  				  + COLUMN_LAST_UPDATE + " integer, "						// 3
+				  				  + COLUMN_LAST_CHECK + " integer, "						// 4
+				  				  + COLUMN_ORDER + " integer);";							// 5
 
 	private static final String DATABASE_CREATE_NOVEL_CONTENT = "create table "
 		      + TABLE_NOVEL_CONTENT + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -134,11 +137,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 	
 	public void deletePagesDB(SQLiteDatabase db) {
-//		db.execSQL("delete from " + TABLE_PAGE);
-//		db.execSQL("delete from " + TABLE_NOVEL_DETAILS);
-//		db.execSQL("delete from " + TABLE_IMAGE);
-//		db.execSQL("delete from " + TABLE_NOVEL_BOOK);
-//		db.execSQL("delete from " + TABLE_NOVEL_CONTENT);
+		// use drop because it is faster and can avoid free row fragmentation
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_PAGE);
 	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_IMAGE);
 	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_DETAILS);
@@ -204,9 +203,18 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 	
 	public ArrayList<PageModel> selectAllByColumn(SQLiteDatabase db, String whereQuery, String[] values) {
+		return selectAllByColumn(db, whereQuery, values, null);
+	}
+	
+	public ArrayList<PageModel> selectAllByColumn(SQLiteDatabase db, String whereQuery, String[] values, String orderQuery) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
 		
-		Cursor cursor = db.rawQuery("select * from " + TABLE_PAGE + " where " + whereQuery, values);
+		String sql = "select * from " + TABLE_PAGE + " where " + whereQuery;
+		if(orderQuery != null && orderQuery.length() > 0) {
+			sql += " order by " + orderQuery; 
+		}
+		
+		Cursor cursor = db.rawQuery(sql, values);
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	PageModel page = cursorTopage(cursor);
@@ -221,7 +229,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		PageModel page = null;
 		
 		Cursor cursor = db.rawQuery("select * from " + TABLE_PAGE + " where " + column + " = ? ", new String[] {value});
-		//Cursor cursor = db.rawQuery("select * from " + TABLE_PAGE + " where " + column + " = '" + value + "'", null);
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	page = cursorTopage(cursor);
@@ -247,7 +254,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_TITLE, page.getTitle());
 		cv.put(COLUMN_TYPE, page.getType());
 		cv.put(COLUMN_PARENT, page.getParent());
-		cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
+		cv.put(COLUMN_ORDER, page.getOrder());
+		if(page.getLastUpdate() == null) 
+			cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
+		else 
+			cv.put(COLUMN_LAST_UPDATE, "" + (int) (page.getLastUpdate().getTime() / 1000));
 		if(temp == null) {
 			Log.d(TAG, "Inserting: " + page.toString());
 			cv.put(COLUMN_IS_WATCHED, false);
@@ -283,6 +294,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		page.setWatched(cursor.getInt(7) == 1 ? true : false);
 		page.setFinishedRead(cursor.getInt(8) == 1 ? true : false);
 		page.setDownloaded(cursor.getInt(9) == 1 ? true : false);
+		page.setOrder(cursor.getInt(10));
 	    return page;
 	}
 	
@@ -316,7 +328,11 @@ public class DBHelper extends SQLiteOpenHelper {
 			ContentValues cv2 = new ContentValues();
 			cv2.put(COLUMN_PAGE, novelDetails.getPage());
 			cv2.put(COLUMN_TITLE , book.getTitle());
-			cv2.put(COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000));
+			cv2.put(COLUMN_ORDER , book.getOrder());
+			if(novelDetails.getLastUpdate() != null)
+				cv2.put(COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000));
+			else
+				cv2.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
 			cv2.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			
 			BookModel tempBook = getBookModel(db, book.getId());
@@ -340,7 +356,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				cv3.put(COLUMN_TITLE, page.getTitle());
 				cv3.put(COLUMN_TYPE, page.getType());
 				cv3.put(COLUMN_PARENT, page.getParent());
-				cv3.put(COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000)); 
+				cv3.put(COLUMN_ORDER, page.getOrder());
+				if(novelDetails.getLastUpdate() != null)
+					cv3.put(COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000));
+				else
+					cv3.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
 				cv3.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 				cv3.put(COLUMN_IS_WATCHED, false);
 				
@@ -402,7 +422,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	private ArrayList<BookModel> getBookCollectionOnly(SQLiteDatabase db, String page) {
 		// get the books
 	    ArrayList<BookModel> bookCollection = new ArrayList<BookModel>(); 
-	    Cursor cursor = db.rawQuery("select * from " + TABLE_NOVEL_BOOK + " where " + COLUMN_PAGE + " = ? ", new String[] {page});
+	    Cursor cursor = db.rawQuery("select * from " + TABLE_NOVEL_BOOK + " where " + COLUMN_PAGE + " = ? order by " + COLUMN_ORDER, new String[] {page});
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			BookModel book = cursorToBookModel(cursor);
@@ -415,7 +435,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	private ArrayList<PageModel> getChapterCollection(SQLiteDatabase db, String parent) {
 		ArrayList<PageModel> chapters = new ArrayList<PageModel>();
-		Cursor cursor = db.rawQuery("select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ? ", new String[] {parent});
+		Cursor cursor = db.rawQuery("select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ? order by " + COLUMN_ORDER, new String[] {parent});
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			PageModel chapter = cursorTopage(cursor);
@@ -457,6 +477,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		book.setTitle(cursor.getString(2));
 		book.setLastUpdate(new Date(cursor.getInt(3)*1000));
 		book.setLastCheck(new Date(cursor.getInt(4)*1000));
+		book.setOrder(cursor.getInt(5));
 		return book;
 	}
 

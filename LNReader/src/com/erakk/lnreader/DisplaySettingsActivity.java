@@ -4,10 +4,7 @@ import java.io.File;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -15,7 +12,6 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +25,6 @@ public class DisplaySettingsActivity extends PreferenceActivity {
 	@SuppressWarnings("deprecation")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
-		Log.d("MainActivity", "onCreate");
     	// set before create any view
     	if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("invert_colors", false)) {    		
     		setTheme(R.style.AppTheme2);
@@ -108,8 +103,8 @@ public class DisplaySettingsActivity extends PreferenceActivity {
     
 	@SuppressWarnings("deprecation")
 	private void updateViewColor() {
-    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
+    	//SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	//boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
     	    	
     	// Views to be changed
     	// update category

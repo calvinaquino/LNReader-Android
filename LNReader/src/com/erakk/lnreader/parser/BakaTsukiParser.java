@@ -36,6 +36,7 @@ public class BakaTsukiParser {
 	private static final String TAG = "Parser";
 
 	/**
+	 * parse page info from Wiki API
 	 * @param pageName page name
 	 * @param doc parsed page for given pageName
 	 * @return PageModel status, no parent and type defined
@@ -70,6 +71,7 @@ public class BakaTsukiParser {
 			Log.d(TAG, "Found: #p-Light_Novels");
 			
 			Elements novels = stage.select("li");
+			int order = 0;
 			for (Iterator<Element> i = novels.iterator(); i .hasNext();) {
 				Element novel = i.next();
 				Element link = novel.select("a").first();
@@ -82,8 +84,10 @@ public class BakaTsukiParser {
 				page.setLastUpdate(new Date());
 				page.setLastCheck(new Date());
 				page.setParent("Main_Page");
+				page.setOrder(order);
 				result.add(page);
 				Log.d(TAG, "Add: "+ link.text());
+				++order;
 			}
 		}
 		return result;
@@ -153,6 +157,7 @@ public class BakaTsukiParser {
 					Log.d(TAG, "method 1");
 					Element bookElement = h2;
 					boolean walkBook = true;
+					int bookOrder = 0;
 					do{
 						bookElement = bookElement.nextElementSibling();
 						if(bookElement.tagName() == "h2") walkBook = false;
@@ -160,10 +165,12 @@ public class BakaTsukiParser {
 							Log.d(TAG, "Found: " +bookElement.text());
 							BookModel book = new BookModel();
 							book.setTitle(sanitize(bookElement.text()));
+							book.setOrder(bookOrder);
 							ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
 							
 							// parse the chapters.
 							boolean walkChapter = true;
+							int chapterOrder = 0;
 							Element chapterElement = bookElement;
 							do{
 								chapterElement = chapterElement.nextElementSibling();
@@ -183,14 +190,17 @@ public class BakaTsukiParser {
 											p.setPage(link.attr("href").replace("/project/index.php?title=",""));
 											p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 											p.setType(PageModel.TYPE_CONTENT);
+											p.setOrder(chapterOrder);
 											Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 											chapterCollection.add(p);
+											++chapterOrder;
 										}										
 									}
 								}
 								book.setChapterCollection(chapterCollection);
 							}while(walkChapter);
 							books.add(book);
+							++bookOrder;
 						}						
 					}while(walkBook);
 					
@@ -204,6 +214,7 @@ public class BakaTsukiParser {
 						Log.d(TAG, "No books found, use method 2");
 						bookElement = h2;
 						walkBook = true;
+						bookOrder = 0;
 						do{
 							bookElement = bookElement.nextElementSibling();
 							if(bookElement.tagName() == "h2") walkBook = false;
@@ -211,10 +222,12 @@ public class BakaTsukiParser {
 								Log.d(TAG, "Found: " +bookElement.text());
 								BookModel book = new BookModel();
 								book.setTitle(sanitize(bookElement.text()));
+								book.setOrder(bookOrder);
 								ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
 								
 								// parse the chapters.
 								boolean walkChapter = true;
+								int chapterOrder = 0;
 								Element chapterElement = bookElement;
 								do{	
 									chapterElement = chapterElement.nextElementSibling();
@@ -235,8 +248,10 @@ public class BakaTsukiParser {
 												p.setPage(link.attr("href").replace("/project/index.php?title=",""));
 												p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 												p.setType(PageModel.TYPE_CONTENT);
+												p.setOrder(chapterOrder);
 												Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 												chapterCollection.add(p);
+												++chapterOrder;
 											}										
 										}
 									}
@@ -250,13 +265,16 @@ public class BakaTsukiParser {
 											p.setPage(link.attr("href").replace("/project/index.php?title=",""));
 											p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 											p.setType(PageModel.TYPE_CONTENT);
+											p.setOrder(chapterOrder);
 											Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 											chapterCollection.add(p);
+											++chapterOrder;
 										}
 									}
 									book.setChapterCollection(chapterCollection);
 								}while(walkChapter);
 								books.add(book);
+								++bookOrder;
 							}							
 						}while(walkBook);
 					}
@@ -270,6 +288,7 @@ public class BakaTsukiParser {
 	
 	private static ArrayList<BookModel> validateNovelBooks(ArrayList<BookModel> books) {
 		ArrayList<BookModel> validatedBooks = new ArrayList<BookModel>();
+		int bookOrder = 0;
 		for(Iterator<BookModel> iBooks = books.iterator(); iBooks.hasNext();){
 			BookModel book = iBooks.next();
 			BookModel validatedBook = new BookModel();
@@ -280,7 +299,10 @@ public class BakaTsukiParser {
 			if(validatedChapters.size() > 0) {
 				validatedBook = book;
 				validatedBook.setChapterCollection(validatedChapters);
+				validatedBook.setOrder(bookOrder);
 				validatedBooks.add(validatedBook);
+				Log.d("validateNovelBooks", "Adding: " + validatedBook.getTitle() + " order: " + validatedBook.getOrder());
+				++bookOrder;
 			}
 		}
 		return validatedBooks;
@@ -288,18 +310,21 @@ public class BakaTsukiParser {
 
 	private static ArrayList<PageModel> validateNovelChapters(BookModel book) {
 		ArrayList<PageModel> chapters = book.getChapterCollection();
-		ArrayList<PageModel> validatedChapters = new ArrayList<PageModel>(); 
+		ArrayList<PageModel> validatedChapters = new ArrayList<PageModel>();
+		int chapterOrder = 0;
 		for(Iterator<PageModel> iChapter = chapters.iterator(); iChapter.hasNext();) {
 			PageModel chapter = iChapter.next();
 			
 			if(!(chapter.getPage().contains("redlink=1") ||
 			     chapter.getPage().contains("User:"))) {
+				chapter.setOrder(chapterOrder);
 				validatedChapters.add(chapter);
-				Log.d("validateNovelChapters", "Adding: " + chapter.getPage());
+				Log.d("validateNovelChapters", "Adding: " + chapter.getPage() + " order: " + chapter.getOrder());
+				++chapterOrder;
 			}
-			else{
-				Log.d("validateNovelChapters", "Removing: " + chapter.getPage());
-			}
+//			else{
+//				Log.d("validateNovelChapters", "Removing: " + chapter.getPage());
+//			}
 		}
 		return validatedChapters;
 	}

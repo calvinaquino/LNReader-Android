@@ -8,14 +8,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -24,16 +21,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.erakk.lnreader.DisplayLightNovelContentActivity.LoadNovelContentTask;
 import com.erakk.lnreader.adapter.BookModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -58,7 +51,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     
 	private ProgressDialog dialog;
     
-    @SuppressLint({ "NewApi", "NewApi" })
+	@SuppressLint("NewApi")
 	@Override
      public void onCreate(Bundle savedInstanceState) {
     	// set before create any view
@@ -71,13 +64,16 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     	
         super.onCreate(savedInstanceState);
         
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
+        	getActionBar().setDisplayHomeAsUpEnabled(true);
+        
         //Get intent and message
         Intent intent = getIntent();
         page = new PageModel(); 
         page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
         page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
         setContentView(R.layout.activity_display_light_novel_details);
-        getActionBar().setDisplayHomeAsUpEnabled(true);   
+
         
         updateContent(false);
        
@@ -92,10 +88,9 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 					
 					Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
 			        intent.putExtra(Constants.EXTRA_PAGE, p.getPage());
-			        intent.putExtra(Constants.EXTRA_TITLE, p.getTitle());
-			        intent.putExtra(Constants.EXTRA_NOVEL, novelCol.getPage());
-			        intent.putExtra(Constants.EXTRA_VOLUME, novelCol.getBookCollections().get(groupPosition).getTitle());
-			        
+//			        intent.putExtra(Constants.EXTRA_TITLE, p.getTitle());
+//			        intent.putExtra(Constants.EXTRA_NOVEL, novelCol.getPage());
+//			        intent.putExtra(Constants.EXTRA_VOLUME, novelCol.getBookCollections().get(groupPosition).getTitle());
 			        startActivity(intent);
 				}
 				return false;

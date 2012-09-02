@@ -1,7 +1,6 @@
 package com.erakk.lnreader;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,26 +14,18 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Picture;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NavUtils;
-import android.text.AndroidCharacter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.textservice.TextInfo;
 import android.webkit.WebView;
 import android.webkit.WebView.PictureListener;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.adapter.PageModelAdapter;
@@ -77,7 +68,9 @@ public class DisplayLightNovelContentActivity extends Activity {
     	
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_display_light_novel_content);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
+        	getActionBar().setDisplayHomeAsUpEnabled(false);
 
 		//Intent intent = getIntent();
 		//PageModel page = new PageModel(); 
@@ -278,6 +271,10 @@ public class DisplayLightNovelContentActivity extends Activity {
 					Log.d(TAG, "Error updating PageModel for Content: " + content.getPage());
 				}
 			}
+			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+	    	SharedPreferences.Editor editor = sharedPrefs.edit();
+	    	editor.putString("last_read", content.getPage());
+	    	editor.commit();
 		}
 	}
 	
@@ -336,7 +333,9 @@ public class DisplayLightNovelContentActivity extends Activity {
 				wv.getSettings().setLoadWithOverviewMode(true);
 				//wv.getSettings().setUseWideViewPort(true);
 				wv.getSettings().setLoadsImagesAutomatically(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("show_images", false));
-				
+				//wv.setBackgroundColor(0);
+				wv.setBackgroundColor(Color.TRANSPARENT);
+
 				// custom link handler
 				BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(activity);
 				wv.setWebViewClient(client);

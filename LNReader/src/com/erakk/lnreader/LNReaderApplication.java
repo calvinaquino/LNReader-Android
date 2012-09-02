@@ -26,7 +26,7 @@ public class LNReaderApplication extends Application {
 
 	protected void initSingletons()
 	{
-		novelsDao = NovelsDao.getInstance(getApplicationContext());
+		this.novelsDao = NovelsDao.getInstance(getApplicationContext());
 	}
 	
 	public boolean isOnline() {

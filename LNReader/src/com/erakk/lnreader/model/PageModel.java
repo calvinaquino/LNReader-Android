@@ -4,8 +4,6 @@ package com.erakk.lnreader.model;
 import java.util.Date;
 import java.util.Iterator;
 
-import android.content.Context;
-
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.dao.NovelsDao;
 
@@ -26,6 +24,8 @@ public class PageModel {
 	private boolean isFinishedRead;
 	private boolean isDownloaded;
 	private BookModel book;
+	
+	private int order;
 
 	public int getId() {
 		return id;
@@ -84,6 +84,12 @@ public class PageModel {
 	}
 	public void setFinishedRead(boolean isFinishedRead) {
 		this.isFinishedRead = isFinishedRead;
+	}
+	public int getOrder() {
+		return order;
+	}
+	public void setOrder(int order) {
+		this.order = order;
 	}
 	public PageModel getParentPageModel() throws Exception {
 		if(this.parentPageModel == null) {

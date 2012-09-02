@@ -13,7 +13,6 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.DisplayImageActivity;
 import com.erakk.lnreader.dao.NovelsDao;
-import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
 @TargetApi(11)

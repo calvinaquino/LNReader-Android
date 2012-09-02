@@ -11,6 +11,7 @@ public class BookModel {
 	
 	private Date lastUpdate;
 	private Date lastCheck;
+	private int order;	
 	
 	public int getId() {
 		return id;
@@ -41,6 +42,12 @@ public class BookModel {
 	}
 	public void setTitle(String title) {
 		this.title = title;
+	}
+	public int getOrder() {
+		return order;
+	}
+	public void setOrder(int order) {
+		this.order = order;
 	}
 	public ArrayList<PageModel> getChapterCollection() {
 		return chapterCollection;

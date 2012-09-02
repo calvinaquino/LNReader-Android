@@ -58,9 +58,17 @@ public class MainActivity extends Activity {
         		
         		/*
         		 * Implement code to load last chapter read
-        		 */        		
-        		Toast last = Toast.makeText(this, "Last Novel read option not implemented yet.", Toast.LENGTH_SHORT);
-        		last.show();
+        		 */
+        		String lastReadPage = PreferenceManager.getDefaultSharedPreferences(this).getString("last_read", "");
+        		if(lastReadPage.length() > 0) {
+        			Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
+			        intent.putExtra(Constants.EXTRA_PAGE, lastReadPage);
+			        startActivity(intent);
+        			Toast.makeText(this, "Loading: " + lastReadPage, Toast.LENGTH_SHORT).show();
+        		}
+        		else{
+        			Toast.makeText(this, "No last read novel.", Toast.LENGTH_SHORT).show();
+        		}
         		return true;
         	case R.id.invert_colors:
     			

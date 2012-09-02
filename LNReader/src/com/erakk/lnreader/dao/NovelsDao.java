@@ -96,7 +96,7 @@ public class NovelsDao {
 			// compare if less than 7 day
 			Date today = new Date();
 			long diff = today.getTime() - page.getLastCheck().getTime();
-			if (diff > (Constants.CHECK_INTERVAL * 24 * 3600 * 1000)) {
+			if (diff > (Constants.CHECK_INTERVAL * 24 * 3600 * 1000) && LNReaderApplication.getInstance().isOnline()) {
 				refresh = true;
 				Log.d(TAG, "Last check is over 7 days, checking online status");
 			}
