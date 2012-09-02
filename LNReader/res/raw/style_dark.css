@@ -76,3 +76,16 @@ a {
     color: #F9BA52;
     text-decoration: none;
 }
+
+.editsection {
+	display:none;
+}
+/* Modified for larger touch area */
+.reference {
+	letter-spacing: 10px;
+}
+.mw-cite-backlink{
+	font-size: xx-large;
+	letter-spacing: 10px;
+}
+}
