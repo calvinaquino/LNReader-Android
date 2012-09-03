@@ -18,62 +18,53 @@
         android:theme="@style/AppTheme"
         android:name="com.erakk.lnreader.LNReaderApplication" >
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".DisplayLightNovelListActivity"
+            android:name=".activity.DisplayLightNovelListActivity"
             android:label="@string/title_activity_display_light_novels" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.erakk.lnreader.MainActivity" />
+                android:value="com.erakk.lnreader.activity.MainActivity" />
         </activity>
         <activity
-            android:name=".DisplayWatchListActivity"
-            android:label="@string/title_activity_display_watch_list" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.erakk.lnreader.MainActivity" />
-        </activity>
-        <activity
-            android:name=".DisplaySettingsActivity"
+            android:name=".activity.DisplaySettingsActivity"
             android:label="@string/title_activity_display_settings" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.erakk.lnreader.MainActivity" />
+                android:value="com.erakk.lnreader.activity.MainActivity" />
         </activity>
-        <activity
-            android:name=".DisplayLightNovelDetailsActivity"
+        <activity 
+            android:name=".activity.DisplayLightNovelDetailsActivity"
             android:label="@string/title_activity_light_novel_chapters" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.erakk.lnreader.DisplayLightNovelListActivity" />
+                android:value="com.erakk.lnreader.activity.DisplayLightNovelListActivity" />
         </activity>
         <activity
-            android:name=".DisplaySynopsisActivity"
+       	 	android:name=".activity.DisplaySynopsisActivity"
             android:label="@string/title_activity_display_synopsys" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.erakk.lnreader" />
         </activity>
         <activity
-            android:name=".DisplayLightNovelContentActivity"
+       	 	android:name=".activity.DisplayLightNovelContentActivity"
             android:label="@string/title_activity_display_novel_content" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.erakk.lnreader.DisplayLightNovelDetailsActivity" />
+                android:value="com.erakk.lnreader.activity.DisplayLightNovelDetailsActivity" />
         </activity>
-        <activity
-            android:name=".DisplayImageActivity"
+        <activity			android:name=".activity.DisplayImageActivity"
             android:label="@string/title_activity_display_image" >
              <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.erakk.lnreader.DisplayLightNovelContentActivity" />
+                android:value="com.erakk.lnreader.activity.DisplayLightNovelContentActivity" />
         </activity>
     </application>
 
