@@ -73,7 +73,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		setContentView(R.layout.activity_display_light_novel_content);
 		
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
-        	getActionBar().setDisplayHomeAsUpEnabled(false);
+        	getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		//Intent intent = getIntent();
 		//PageModel page = new PageModel(); 
@@ -175,7 +175,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 			tocMenu.show();
 			return true;
 		case android.R.id.home:
-			super.onBackPressed();
+			tocMenu.show();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -230,27 +230,7 @@ public class DisplayLightNovelContentActivity extends Activity {
     	}
     	editor.commit();
     }
-    
-//	private String readCSS(int id) {
-//		StringBuilder contents = new StringBuilder();
-//		InputStream in =  this.getResources().openRawResource(id);
-//		InputStreamReader isr = new InputStreamReader(in);
-//		BufferedReader buff = new BufferedReader(isr);
-//		String temp = null;
-//		try {
-//			while((temp = buff.readLine()) != null){
-//				contents.append(temp);
-//			}
-//			buff.close();
-//			isr.close();
-//			in.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		//Log.d("ReadCss", contents.toString());
-//		return contents.toString();
-//	}
-    
+
 	private void setLastReadState() {
 		if(content!= null) {
 			// save last position and zoom
@@ -377,7 +357,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 					
 					volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
 					
-					setTitle(volume + " "+ pageModel.getTitle());
+					setTitle(pageModel.getTitle() + " (" + volume + ")");
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
