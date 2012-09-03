@@ -29,6 +29,7 @@ import android.webkit.WebView.PictureListener;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
@@ -230,25 +231,25 @@ public class DisplayLightNovelContentActivity extends Activity {
     	editor.commit();
     }
     
-	private String readCSS(int id) {
-		StringBuilder contents = new StringBuilder();
-		InputStream in =  this.getResources().openRawResource(id);
-		InputStreamReader isr = new InputStreamReader(in);
-		BufferedReader buff = new BufferedReader(isr);
-		String temp = null;
-		try {
-			while((temp = buff.readLine()) != null){
-				contents.append(temp);
-			}
-			buff.close();
-			isr.close();
-			in.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		//Log.d("ReadCss", contents.toString());
-		return contents.toString();
-	}
+//	private String readCSS(int id) {
+//		StringBuilder contents = new StringBuilder();
+//		InputStream in =  this.getResources().openRawResource(id);
+//		InputStreamReader isr = new InputStreamReader(in);
+//		BufferedReader buff = new BufferedReader(isr);
+//		String temp = null;
+//		try {
+//			while((temp = buff.readLine()) != null){
+//				contents.append(temp);
+//			}
+//			buff.close();
+//			isr.close();
+//			in.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		//Log.d("ReadCss", contents.toString());
+//		return contents.toString();
+//	}
     
 	private void setLastReadState() {
 		if(content!= null) {
@@ -351,8 +352,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 					styleId = R.raw.style;
 					Log.d("CSS", "CSS = normal");
 				}
-				
-				String html = "<html><head><style type=\"text/css\">" + readCSS(styleId) + "</style></head><body>" + content.getContent() + "</body></html>";
+				LNReaderApplication app = (LNReaderApplication) getApplication();
+				String html = "<html><head><style type=\"text/css\">" + app.ReadCss(styleId) + "</style></head><body>" + content.getContent() + "</body></html>";
 				wv.loadDataWithBaseURL(Constants.BASE_URL, html, "text/html", "utf-8", "");
 				
 				//Log.d("LoadNovelContentTask", content.getPage());
