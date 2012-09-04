@@ -263,7 +263,10 @@ public class DBHelper extends SQLiteOpenHelper {
 			Log.d(TAG, "Inserting: " + page.toString());
 			cv.put(COLUMN_IS_WATCHED, false);
 			cv.put(COLUMN_IS_FINISHED_READ, false);
-			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
+			if(page.getLastCheck() == null)
+				cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
+			else 
+				cv.put(COLUMN_LAST_CHECK, "" + (int) (page.getLastCheck().getTime() / 1000));
 			cv.put(COLUMN_IS_DOWNLOADED, false);
 			db.insertOrThrow(TABLE_PAGE, null, cv);
 		}
@@ -271,7 +274,10 @@ public class DBHelper extends SQLiteOpenHelper {
 			Log.d(TAG, "Updating: " + temp.toString());
 			cv.put(COLUMN_IS_WATCHED, temp.isWatched());
 			cv.put(COLUMN_IS_FINISHED_READ, temp.isFinishedRead());
-			cv.put(COLUMN_LAST_CHECK, "" + (int) (temp.getLastCheck().getTime() / 1000));
+			if(page.getLastCheck() == null)
+				cv.put(COLUMN_LAST_CHECK, "" + (int) (temp.getLastCheck().getTime() / 1000));
+			else
+				cv.put(COLUMN_LAST_CHECK, "" + (int) (page.getLastCheck().getTime() / 1000));
 			cv.put(COLUMN_IS_DOWNLOADED, temp.isDownloaded());
 			int result = db.update(TABLE_PAGE, cv, COLUMN_ID + " = ?", new String[] {"" + temp.getId()});
 			Log.d(TAG, "Page Model Update Affected Row: " + result);

@@ -369,6 +369,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 				Log.e(this.getClass().toString(), e.getClass().toString() + ": " + e.getMessage());
 			}
+			adapter.notifyDataSetChanged();
 			ToggleProgressBar(false);
 		}
 	}
