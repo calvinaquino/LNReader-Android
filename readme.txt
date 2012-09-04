@@ -6,6 +6,7 @@
 
 //LINE-ENDINGS & SOURCE ENCODING CONFIG
   Git Config: https://help.github.com/articles/dealing-with-line-endings
+              https://stackoverflow.com/questions/1889559/git-diff-to-ignore-m
   Eclipse Config: http://stackoverflow.com/questions/1886185/eclipse-and-windows-newlines
 
 //LIMITATION

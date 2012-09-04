@@ -35,6 +35,7 @@ import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
+import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
@@ -222,20 +223,23 @@ public class DisplayLightNovelContentActivity extends Activity {
 	}
 	
 	private void buildTOCMenu() {
-		if(novelDetails != null) {			
-			ArrayList<PageModel> chapters =  pageModel.getBook().getChapterCollection();
-			jumpAdapter = new PageModelAdapter(this, R.layout.novel_list_item, chapters);
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("Jump To");
-			builder.setAdapter(jumpAdapter, new OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					PageModel page = jumpAdapter.getItem(which);
-					jumpTo(page);
-					//Toast.makeText(getApplicationContext(), "You clicked: " + page.getTitle(), Toast.LENGTH_SHORT).show();					
-				}				
-			});
-			tocMenu = builder.create();
+		if(novelDetails != null) {
+			BookModel book = pageModel.getBook();
+			if(book != null) {
+				ArrayList<PageModel> chapters = book.getChapterCollection();
+				jumpAdapter = new PageModelAdapter(this, R.layout.novel_list_item, chapters);
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setTitle("Jump To");
+				builder.setAdapter(jumpAdapter, new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						PageModel page = jumpAdapter.getItem(which);
+						jumpTo(page);
+						//Toast.makeText(getApplicationContext(), "You clicked: " + page.getTitle(), Toast.LENGTH_SHORT).show();					
+					}				
+				});
+				tocMenu = builder.create();
+			}
 		}
 	}
 	

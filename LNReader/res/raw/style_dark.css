@@ -78,7 +78,7 @@ a {
 }
 
 /* Hide unwanted elements*/
-#siteSub, #catlinks, #jump-to-nav, .printfooter, .editsection, .thumbcaption /*, .toc*/ {
+#siteSub, #catlinks, #jump-to-nav, .printfooter, .editsection, .collapsed /*, .thumbcaption, .toc*/ {
 	display:none !important;
 }
 
