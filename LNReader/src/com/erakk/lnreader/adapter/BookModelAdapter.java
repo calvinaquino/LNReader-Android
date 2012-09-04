@@ -104,7 +104,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		
 		TextView tvLastCheck = (TextView) view.findViewById(R.id.novel_last_check);
 		if(tvLastCheck != null){
-			tvLastCheck.setText("Last Update: " + child.getLastCheck().toString());
+			tvLastCheck.setText("Last Check: " + child.getLastCheck().toString());
 		}
 		
 		return view;
