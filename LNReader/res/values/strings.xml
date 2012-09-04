@@ -23,5 +23,6 @@
     <string name="title_activity_display_novel_content">DisplayNovelContent</string>
     <string name="invert_colors">Invert Colors</string>
     <string name="title_activity_display_image">DisplayImageActivity</string>
+    <string name="novel_last_update">last update</string>
 
 </resources>

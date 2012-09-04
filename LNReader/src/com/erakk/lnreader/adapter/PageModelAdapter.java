@@ -59,10 +59,15 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			holder.txtNovel.setText(page.getTitle());// + " (" + page.getTitle() + ")");
 		}
 		
-//		holder.txtLastUpdate = (TextView)row.findViewById(R.id.novel_last_update);
-//		if(holder.txtLastUpdate != null) {
-//			holder.txtLastUpdate.setText(page.getLastUpdate().toString());
-//		}
+		holder.txtLastUpdate = (TextView)row.findViewById(R.id.novel_last_update);
+		if(holder.txtLastUpdate != null) {
+			holder.txtLastUpdate.setText("Last Update: " + page.getLastUpdate().toString());
+		}
+		
+		holder.txtLastCheck = (TextView)row.findViewById(R.id.novel_last_check);
+		if(holder.txtLastCheck != null) {
+			holder.txtLastCheck.setText(" Last Check: " + page.getLastCheck().toString());
+		}
 		
 		holder.chkIsWatched = (CheckBox)row.findViewById(R.id.novel_is_watched);
 		if(holder.chkIsWatched != null) {
@@ -94,14 +99,11 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 	{
 		TextView txtNovel;
 		TextView txtLastUpdate;
+		TextView txtLastCheck;
 		CheckBox chkIsWatched;
 	}
 
 	public void setResourceId (int id) {
 		this.layoutResourceId = id;
 	}
-//	
-//	public void notifyDataSetInvalidated() {
-//		super.notifyDataSetInvalidated();
-//	}
 }

@@ -304,6 +304,23 @@ public class NovelsDao {
 			PageModel novelPage = getPageModel(page.getPage(), notifier);
 			page.setParent("Main_Page"); // insurance
 			
+			// get the last update time
+			PageModel novelPageTemp = getPageModelFromInternet(page.getPage(), notifier);
+			if(novelPageTemp != null) {
+				page.setLastUpdate(novelPageTemp.getLastUpdate());
+				page.setLastCheck(new Date());
+			}
+			// save the changes
+			synchronized (dbh) {
+				SQLiteDatabase db = dbh.getWritableDatabase();
+				try{
+					page = dbh.insertOrUpdatePageModel(db, page);
+				}
+				finally{
+					db.close();
+				}
+			}
+			
 			novel.setLastUpdate(novelPage.getLastUpdate());
 	
 			synchronized (dbh) {

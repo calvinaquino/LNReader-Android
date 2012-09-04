@@ -15,17 +15,8 @@
         android:paddingRight="60dp"
         android:gravity="center_vertical"
         android:onClick="onListItemClick"
-        android:textSize="16dp" />
-
-    <TextView
-        android:id="@+id/novel_last_update"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/novel_is_watched"
-        android:gravity="center_vertical"
-        android:onClick="onListItemClick" 
-        android:textColor="#888888" />
+        android:textSize="16dp"
+        android:text="@string/novel_title" />
 
     <CheckBox
         android:id="@+id/novel_is_watched"
@@ -38,5 +29,30 @@
         android:focusable="false"
         android:gravity="center" 
         android:button="@android:drawable/btn_star" />
+
+    <TextView
+        android:id="@+id/novel_last_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/novel_name"
+        android:layout_alignParentLeft="true"
+        android:gravity="center_vertical"
+        android:onClick="onListItemClick"
+        android:text="@string/novel_last_update"
+        android:textColor="#888888"
+        android:textSize="10dp" />
+
+    <TextView
+        android:id="@+id/novel_last_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/novel_name"
+        android:layout_toRightOf="@+id/novel_last_update"
+        android:layout_marginLeft="10dp"
+        android:gravity="center_vertical"
+        android:onClick="onListItemClick"
+        android:text="@string/novel_last_update"
+        android:textColor="#888888"
+        android:textSize="10dp" />
     
 </RelativeLayout>

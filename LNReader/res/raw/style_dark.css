@@ -77,9 +77,11 @@ a {
     text-decoration: none;
 }
 
-.editsection {
-	display:none;
+/* Hide unwanted elements*/
+#siteSub, #catlinks, #jump-to-nav, .printfooter, .editsection, .thumbcaption /*, .toc*/ {
+	display:none !important;
 }
+
 /* Modified for larger touch area */
 .reference {
 	letter-spacing: 10px;
