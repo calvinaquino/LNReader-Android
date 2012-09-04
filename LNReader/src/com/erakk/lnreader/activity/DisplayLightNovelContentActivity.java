@@ -367,7 +367,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 					public void onNewPicture(WebView arg0, Picture arg1) {
 						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
 						if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
-							wv.setScrollY(content.getLastYScroll());
+							//wv.setScrollY(content.getLastYScroll());
+							wv.scrollTo(0, content.getLastYScroll());
 							needScroll = false;
 						}						
 					}					
