@@ -1,9 +1,5 @@
 package com.erakk.lnreader.activity;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
@@ -14,6 +10,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Picture;
 import android.os.AsyncTask;
@@ -70,6 +68,9 @@ public class DisplayLightNovelContentActivity extends Activity {
     	}
     	
 		super.onCreate(savedInstanceState);
+        
+		CheckScreenRotation();
+        
 		setContentView(R.layout.activity_display_light_novel_content);
 		
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
@@ -81,6 +82,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		//page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
 		//volume = intent.getStringExtra(Constants.EXTRA_VOLUME);
 		//parentPage = intent.getStringExtra(Constants.EXTRA_NOVEL);
+        
 
 		try {
 			pageModel = dao.getPageModel(getIntent().getStringExtra(Constants.EXTRA_PAGE), null);
@@ -187,6 +189,24 @@ public class DisplayLightNovelContentActivity extends Activity {
 		pageModel = page;
 		task = new LoadNovelContentTask();
 		task.execute(page);
+	}
+	
+	private void CheckScreenRotation()
+	{
+		if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("lock_horizontal", false)) {
+			switch (this.getResources().getConfiguration().orientation)
+		    {
+		    	case Configuration.ORIENTATION_PORTRAIT:
+		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		    		break;
+		    	case Configuration.ORIENTATION_LANDSCAPE:
+		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		    		break;
+		    }
+    	}
+    	else {
+    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    	}
 	}
 	
 	@SuppressLint("NewApi")

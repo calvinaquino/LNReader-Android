@@ -5,6 +5,7 @@ import java.io.File;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -38,6 +39,7 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         //This man is deprecated but but we may want to be bale to run on older API
         addPreferencesFromResource(R.xml.preferences);
         
+        CheckScreenRotation();
         updateViewColor();
         
         Preference lockHorizontal = (Preference)  findPreference("lock_horizontal");
@@ -101,6 +103,24 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         // The activity has become visible (it is now "resumed").
         recreate();
     }
+    
+    private void CheckScreenRotation()
+	{
+		if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("lock_horizontal", false)) {
+			switch (this.getResources().getConfiguration().orientation)
+		    {
+		    	case Configuration.ORIENTATION_PORTRAIT:
+		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		    		break;
+		    	case Configuration.ORIENTATION_LANDSCAPE:
+		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		    		break;
+		    }
+    	}
+    	else {
+    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    	}
+	}
     
 	@SuppressWarnings("deprecation")
 	private void updateViewColor() {

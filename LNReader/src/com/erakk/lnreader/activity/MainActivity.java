@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -33,7 +35,9 @@ public class MainActivity extends Activity {
     	}
     	
         super.onCreate(savedInstanceState);
-        
+
+    	CheckScreenRotation();
+    	
         setContentView(R.layout.activity_main);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
         	getActionBar().setDisplayHomeAsUpEnabled(false);
@@ -115,4 +119,22 @@ public class MainActivity extends Activity {
     	Intent intent = new Intent(this, DisplaySettingsActivity.class);
     	startActivity(intent);
     }
+    
+    private void CheckScreenRotation()
+	{
+		if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("lock_horizontal", false)) {
+			switch (this.getResources().getConfiguration().orientation)
+		    {
+		    	case Configuration.ORIENTATION_PORTRAIT:
+		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		    		break;
+		    	case Configuration.ORIENTATION_LANDSCAPE:
+		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		    		break;
+		    }
+    	}
+    	else {
+    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    	}
+	}
 }

@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Build;
@@ -65,6 +67,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     	}
     	
         super.onCreate(savedInstanceState);
+        CheckScreenRotation();
         setContentView(R.layout.activity_display_light_novel_details);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
         	getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -263,6 +266,24 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     	editor.commit();
     	//Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
     }
+	
+	private void CheckScreenRotation()
+	{
+		if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("lock_horizontal", false)) {
+			switch (this.getResources().getConfiguration().orientation)
+		    {
+		    	case Configuration.ORIENTATION_PORTRAIT:
+		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		    		break;
+		    	case Configuration.ORIENTATION_LANDSCAPE:
+		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		    		break;
+		    }
+    	}
+    	else {
+    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    	}
+	}
     	
     private void updateContent ( boolean willRefresh) {
 		task = new LoadNovelDetailsTask();

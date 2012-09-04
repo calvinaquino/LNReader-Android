@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,6 +37,7 @@ public class DisplaySynopsisActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        CheckScreenRotation();
         
         //Get intent and message
         Intent intent = getIntent();
@@ -104,6 +107,24 @@ public class DisplaySynopsisActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+    
+    private void CheckScreenRotation()
+	{
+		if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("lock_horizontal", false)) {
+			switch (this.getResources().getConfiguration().orientation)
+		    {
+		    	case Configuration.ORIENTATION_PORTRAIT:
+		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		    		break;
+		    	case Configuration.ORIENTATION_LANDSCAPE:
+		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		    		break;
+		    }
+    	}
+    	else {
+    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    	}
+	}
       
     public class LoadNovelDetailsTask extends AsyncTask<PageModel, ProgressBar, AsyncTaskResult<NovelCollectionModel>> {
     	public ICallbackNotifier notifier;
