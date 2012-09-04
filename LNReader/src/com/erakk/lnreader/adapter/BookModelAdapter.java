@@ -96,6 +96,17 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 				tvIsDownloaded.setVisibility(TextView.VISIBLE);
 			}
 		}
+		
+		TextView tvLastUpdate = (TextView) view.findViewById(R.id.novel_last_update);
+		if(tvLastUpdate != null){
+			tvLastUpdate.setText("Last Update: " + child.getLastUpdate().toString());
+		}
+		
+		TextView tvLastCheck = (TextView) view.findViewById(R.id.novel_last_check);
+		if(tvLastCheck != null){
+			tvLastCheck.setText("Last Update: " + child.getLastCheck().toString());
+		}
+		
 		return view;
 	}
 

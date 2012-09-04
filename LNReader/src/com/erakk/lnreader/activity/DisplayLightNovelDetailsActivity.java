@@ -426,8 +426,6 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 		@Override
 		protected void onProgressUpdate (String... values){
 			//executed on UI thread.
-			//TextView tv = (TextView) findViewById(R.id.loading);
-			//tv.setText(values[0]);
 			synchronized (dialog) {
 				dialog.setMessage(values[0]);
 			}			
@@ -452,7 +450,6 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 						}
 					}
 					bookModelAdapter.notifyDataSetChanged();
-//					updateContent(false);
 				}
 			}
 			else {

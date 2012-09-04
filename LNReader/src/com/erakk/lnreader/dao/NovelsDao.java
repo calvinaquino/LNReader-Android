@@ -406,6 +406,15 @@ public class NovelsDao {
 			image = task.downloadImage(image.getUrl());
 			// TODO: need to save image to db? mostly thumbnail only
 		}
+		
+		// get last updated info
+		PageModel contentPageModelTemp = getPageModelFromInternet(content.getPage(), notifier);
+		if(contentPageModelTemp != null) {
+			content.getPageModel().setLastUpdate(contentPageModelTemp.getLastUpdate());
+			content.getPageModel().setLastCheck(new Date());
+		}		
+		// page model will be also saved in insertNovelContent()
+		
 		synchronized (dbh) {
 			// save to DB, and get the saved value
 			SQLiteDatabase db = dbh.getWritableDatabase();
