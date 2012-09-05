@@ -1,16 +1,18 @@
-//REQUIRED:
+//DEVELOPMENT REQUIREMENT:
   Android SDK
   eclipse Juno + ADT
   JSoup
   Android 3+ (Honeycomb)
 
+//APPLICATION REQUIREMENT:
+  Recommended Android 3.0+ (API Level 11)
+  Minimum     Android 2.2  (API Level 8)
+  Some features might not working if running below the recommended version.
+
 //LINE-ENDINGS & SOURCE ENCODING CONFIG
   Git Config: https://help.github.com/articles/dealing-with-line-endings
               https://stackoverflow.com/questions/1889559/git-diff-to-ignore-m
   Eclipse Config: http://stackoverflow.com/questions/1886185/eclipse-and-windows-newlines
-
-//LIMITATION
-  Minimal OS: Honeycomb+ (Android 3++)
 
 //TODO:
   Remodel UI - Working

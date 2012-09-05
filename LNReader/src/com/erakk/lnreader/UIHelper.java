@@ -6,6 +6,9 @@ import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
+/*
+ * Class for handling all the UI with API Warning ==> @SuppressLint("NewApi")
+ */
 public class UIHelper {
 
 	private static void CheckScreenRotation(Activity activity)
