@@ -6,12 +6,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Hashtable;
 
-import com.erakk.lnreader.dao.NovelsDao;
-
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
+
+import com.erakk.lnreader.dao.NovelsDao;
 
 /*
  * http://www.devahead.com/blog/2011/06/extending-the-android-application-class-and-dealing-with-singleton/
@@ -26,10 +30,22 @@ public class LNReaderApplication extends Application {
 
 		// Initialize the singletons so their instances
 		// are bound to the application process.
+//		CheckScreenRotation();
 		initSingletons();
 		instance = this;
 	}
-
+	
+//	public void CheckScreenRotation()
+//	{
+//		if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("lock_horizontal", false)) {
+//			
+//		    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//    	}
+//    	else {
+//    		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
+//    	}
+//	}
+	
 	protected void initSingletons()
 	{
 		this.novelsDao = NovelsDao.getInstance(getApplicationContext());

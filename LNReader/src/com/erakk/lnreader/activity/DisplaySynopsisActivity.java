@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
@@ -36,8 +37,6 @@ public class DisplaySynopsisActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        CheckScreenRotation();
         
         //Get intent and message
         Intent intent = getIntent();
@@ -108,23 +107,6 @@ public class DisplaySynopsisActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
     
-    private void CheckScreenRotation()
-	{
-		if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("lock_horizontal", false)) {
-			switch (this.getResources().getConfiguration().orientation)
-		    {
-		    	case Configuration.ORIENTATION_PORTRAIT:
-		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		    		break;
-		    	case Configuration.ORIENTATION_LANDSCAPE:
-		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		    		break;
-		    }
-    	}
-    	else {
-    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-    	}
-	}
       
     public class LoadNovelDetailsTask extends AsyncTask<PageModel, ProgressBar, AsyncTaskResult<NovelCollectionModel>> {
     	public ICallbackNotifier notifier;

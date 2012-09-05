@@ -26,4 +26,6 @@ public class Constants {
 	public static final int CHECK_INTERVAL = 7;
 	
 	public static final int TIMEOUT = 60000;
+	
+	public static final String TAG = "LNReader";
 }

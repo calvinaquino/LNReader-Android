@@ -9,7 +9,7 @@
             android:key="updates_interval"
             android:title="Updates interval"
             android:summary="Define how often updates will be verified"
-            android:defaultValue="1000"
+            android:defaultValue="0"
             android:entries="@array/updateInterval"
             android:entryValues="@array/updateIntervalValues"
         />   

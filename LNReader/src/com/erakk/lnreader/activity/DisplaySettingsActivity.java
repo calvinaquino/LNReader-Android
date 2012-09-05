@@ -23,7 +23,7 @@ import com.erakk.lnreader.dao.NovelsDao;
 
 public class DisplaySettingsActivity extends PreferenceActivity {
 	//private static final String TAG = DisplayLightNovelsActivity.class.toString();
-	
+
 	@SuppressWarnings("deprecation")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,6 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         //This man is deprecated but but we may want to be bale to run on older API
         addPreferencesFromResource(R.xml.preferences);
         
-        CheckScreenRotation();
         updateViewColor();
         
         Preference lockHorizontal = (Preference)  findPreference("lock_horizontal");

@@ -70,8 +70,6 @@ public class DisplayLightNovelContentActivity extends Activity {
     	
 		super.onCreate(savedInstanceState);
         
-		CheckScreenRotation();
-        
 		setContentView(R.layout.activity_display_light_novel_content);
 		
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
@@ -192,23 +190,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 		task.execute(page);
 	}
 	
-	private void CheckScreenRotation()
-	{
-		if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("lock_horizontal", false)) {
-			switch (this.getResources().getConfiguration().orientation)
-		    {
-		    	case Configuration.ORIENTATION_PORTRAIT:
-		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		    		break;
-		    	case Configuration.ORIENTATION_LANDSCAPE:
-		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		    		break;
-		    }
-    	}
-    	else {
-    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-    	}
-	}
 	
 	@SuppressLint("NewApi")
 	private void ToggleProgressBar(boolean show) {

@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.adapter.BookModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
@@ -67,7 +68,6 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     	}
     	
         super.onCreate(savedInstanceState);
-        CheckScreenRotation();
         setContentView(R.layout.activity_display_light_novel_details);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
         	getActionBar().setDisplayHomeAsUpEnabled(true);

@@ -1,5 +1,7 @@
 package com.erakk.lnreader.activity;
 
+import java.util.zip.Checksum;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
@@ -17,11 +19,13 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.dao.NovelsDao;
 
 
 public class MainActivity extends Activity {
-
+	
     @SuppressLint("NewApi")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,8 +39,6 @@ public class MainActivity extends Activity {
     	}
     	
         super.onCreate(savedInstanceState);
-
-    	CheckScreenRotation();
     	
         setContentView(R.layout.activity_main);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
@@ -120,21 +122,4 @@ public class MainActivity extends Activity {
     	startActivity(intent);
     }
     
-    private void CheckScreenRotation()
-	{
-		if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("lock_horizontal", false)) {
-			switch (this.getResources().getConfiguration().orientation)
-		    {
-		    	case Configuration.ORIENTATION_PORTRAIT:
-		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		    		break;
-		    	case Configuration.ORIENTATION_LANDSCAPE:
-		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		    		break;
-		    }
-    	}
-    	else {
-    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-    	}
-	}
 }
