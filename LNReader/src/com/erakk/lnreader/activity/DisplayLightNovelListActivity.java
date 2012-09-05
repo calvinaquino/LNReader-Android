@@ -2,16 +2,12 @@ package com.erakk.lnreader.activity;
 
 import java.util.ArrayList;
 
-import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -28,8 +24,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -52,7 +48,6 @@ public class DisplayLightNovelListActivity extends ListActivity{
 	private DownloadNovelDetailsTask downloadTask = null;
 	private ProgressDialog dialog;
 
-	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
     	Log.d("MainActivity", "onCreate");
@@ -66,8 +61,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		super.onCreate(savedInstanceState);
         
 		setContentView(R.layout.activity_display_light_novel_list);
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
-			getActionBar().setDisplayHomeAsUpEnabled(true);
+		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 		
 		registerForContextMenu(getListView());
 		boolean onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);//intent.getExtras().getBoolean(Constants.EXTRA_ONLY_WATCHED);
@@ -124,14 +118,12 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		super.onStop();
 	}
 	
-    @SuppressLint("NewApi")
 	@Override
     protected void onRestart() {
         super.onRestart();
-        recreate();
+        UIHelper.Recreate(this);
     }
 
-	@SuppressLint("NewApi")
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -149,11 +141,10 @@ public class DisplayLightNovelListActivity extends ListActivity{
 			return true;
 		case R.id.invert_colors:			
 			toggleColorPref();
-			recreate();			
+			UIHelper.Recreate(this);		
 			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
 			return true;
 		case android.R.id.home:
-			//NavUtils.navigateUpFromSameTask(this);
 			super.onBackPressed();
 			return true;
 		}
@@ -216,7 +207,6 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		}
 	}
 	
-	@SuppressLint("NewApi")
 	private void ToggleProgressBar(boolean show) {
 		if(show) {
 			dialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
@@ -238,7 +228,6 @@ public class DisplayLightNovelListActivity extends ListActivity{
     	editor.commit();
     }
     	
-	@SuppressLint("NewApi")
 	public class LoadNovelsTask extends AsyncTask<Boolean, String, AsyncTaskResult<ArrayList<PageModel>>>  implements ICallbackNotifier {
     	private boolean refreshOnly = false;
     	private boolean onlyWatched = false;

@@ -31,7 +31,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		this.layoutResourceId = resourceId;
 		this.context = context;
 		this.data = objects;
-		Log.d("PageModelAdapter", "onConstruct Count = " + objects.size());
+		Log.d(TAG, "onConstruct Count = " + objects.size());
 	}
 
 	public void setLayout(int resourceId) {
@@ -41,7 +41,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 	@SuppressLint("NewApi")
 	public void addAll(List<PageModel> objects) {
 		super.addAll(objects);
-		Log.d("PageModelAdapter", "onAddAll Count = " + objects.size());
+		Log.d(TAG, "onAddAll Count = " + objects.size());
 	}
 
 	@Override

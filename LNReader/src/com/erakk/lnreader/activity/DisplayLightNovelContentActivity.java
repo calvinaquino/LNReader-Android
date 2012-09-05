@@ -2,7 +2,6 @@ package com.erakk.lnreader.activity;
 
 import java.util.ArrayList;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -10,13 +9,10 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Picture;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -29,6 +25,7 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -40,8 +37,7 @@ import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
-@SuppressWarnings("deprecation")
-@SuppressLint("NewApi")
+@SuppressWarnings({ "deprecation" })
 public class DisplayLightNovelContentActivity extends Activity {
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
 	private final Activity activity = this;
@@ -51,7 +47,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 	private LoadNovelContentTask task;
 	private PageModel pageModel;
 	private String volume;
-	//private String parentPage;
 	private boolean refresh = false;
 	private AlertDialog tocMenu = null;
 	private PageModelAdapter jumpAdapter = null;
@@ -72,16 +67,7 @@ public class DisplayLightNovelContentActivity extends Activity {
         
 		setContentView(R.layout.activity_display_light_novel_content);
 		
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
-        	getActionBar().setDisplayHomeAsUpEnabled(true);
-
-		//Intent intent = getIntent();
-		//PageModel page = new PageModel(); 
-		//page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
-		//page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
-		//volume = intent.getStringExtra(Constants.EXTRA_VOLUME);
-		//parentPage = intent.getStringExtra(Constants.EXTRA_NOVEL);
-        
+        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
 		try {
 			pageModel = dao.getPageModel(getIntent().getStringExtra(Constants.EXTRA_PAGE), null);
@@ -141,8 +127,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 			 * Implement code to invert colors
 			 */
 			toggleColorPref();
-			//updateViewColor();
-			recreate();
+			UIHelper.Recreate(this);
 			Toast.makeText(getApplicationContext(), "Colors inverted: ", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.menu_chapter_previous:
@@ -191,7 +176,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 	}
 	
 	
-	@SuppressLint("NewApi")
 	private void ToggleProgressBar(boolean show) {
 		Log.d("ProgressBar", "Toggle");
 		if(show) {
@@ -216,7 +200,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 					public void onClick(DialogInterface dialog, int which) {
 						PageModel page = jumpAdapter.getItem(which);
 						jumpTo(page);
-						//Toast.makeText(getApplicationContext(), "You clicked: " + page.getTitle(), Toast.LENGTH_SHORT).show();					
 					}				
 				});
 				tocMenu = builder.create();

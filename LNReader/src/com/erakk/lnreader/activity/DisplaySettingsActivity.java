@@ -2,10 +2,8 @@ package com.erakk.lnreader.activity;
 
 import java.io.File;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -19,6 +17,7 @@ import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
 
 public class DisplaySettingsActivity extends PreferenceActivity {
@@ -95,37 +94,14 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         
     }
     
-    @SuppressLint("NewApi")
 	@Override
     protected void onRestart() {
         super.onRestart();
-        // The activity has become visible (it is now "resumed").
-        recreate();
-    }
-    
-    private void CheckScreenRotation()
-	{
-		if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("lock_horizontal", false)) {
-			switch (this.getResources().getConfiguration().orientation)
-		    {
-		    	case Configuration.ORIENTATION_PORTRAIT:
-		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		    		break;
-		    	case Configuration.ORIENTATION_LANDSCAPE:
-		    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		    		break;
-		    }
-    	}
-    	else {
-    		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-    	}
-	}
+        UIHelper.Recreate(this);
+    }    
     
 	@SuppressWarnings("deprecation")
 	private void updateViewColor() {
-    	//SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	//boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
-    	    	
     	// Views to be changed
     	// update category
     	PreferenceCategory preferenceUpdateCategory = (PreferenceCategory) findPreference("update_category");

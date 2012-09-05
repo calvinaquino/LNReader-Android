@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -16,9 +14,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookModel;
-import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
 public class BookModelAdapter extends BaseExpandableListAdapter {
@@ -33,18 +29,6 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		this.context = context;
 		this.groups = groups;
 	}
-
-//	@Override
-//	public void notifyDataSetChanged() {
-//		for(Iterator<BookModel> iBook = groups.iterator(); iBook.hasNext();) {
-//			BookModel book = iBook.next();
-//			for(Iterator<PageModel> iPage = book.getChapterCollection().iterator(); iPage.hasNext();) {
-//				PageModel temp = iPage.next();
-//				Log.d("notifyDataSetChanged", "downloaded: " + temp.getTitle() + " " + temp.isDownloaded());
-//			}
-//		}
-//		super.notifyDataSetChanged();
-//	}
 	
 	public void addItem(PageModel item, BookModel group) {
 		if (!groups.contains(group)) {

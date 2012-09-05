@@ -1,11 +1,8 @@
 package com.erakk.lnreader.activity;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,8 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
@@ -33,7 +30,6 @@ public class DisplaySynopsisActivity extends Activity {
 	NovelsDao dao = NovelsDao.getInstance(this);
 	NovelCollectionModel novelCol;
 	
-    @SuppressLint({ "NewApi", "NewApi" })
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,9 +42,8 @@ public class DisplaySynopsisActivity extends Activity {
         page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
         
         setContentView(R.layout.activity_display_synopsis);
-        
-        
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+                
+        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
         
         View NovelView = findViewById(R.id.ligh_novel_synopsys_screen);
 
@@ -111,15 +106,9 @@ public class DisplaySynopsisActivity extends Activity {
     public class LoadNovelDetailsTask extends AsyncTask<PageModel, ProgressBar, AsyncTaskResult<NovelCollectionModel>> {
     	public ICallbackNotifier notifier;
     	
-		@SuppressLint("NewApi")
 		@Override
 		protected AsyncTaskResult<NovelCollectionModel> doInBackground(PageModel... arg0) {
 			PageModel page = arg0[0];
-//			ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
-//	    	pb.setIndeterminate(true);
-//	    	pb.setActivated(true);
-//	    	pb.animate();
-				        
 			try {
 				NovelCollectionModel novelCol = dao.getNovelDetails(page, notifier);
 				Log.d("LoadNovelDetailsTask", "Loaded: " + novelCol.getPage());				
@@ -131,26 +120,9 @@ public class DisplaySynopsisActivity extends Activity {
 			}
 		}
 		
-		@SuppressLint("NewApi")
 		protected void onPostExecute(AsyncTaskResult<NovelCollectionModel> result) {
-//			ProgressBar pb = (ProgressBar) findViewById(R.id.progressBar2);
-//			
-//			pb.setActivated(false);
-//			pb.setVisibility(ProgressBar.GONE);
-
-			// TODO: get image Cover and put in ImageView :)
-			//ImageView ImageViewCover = (ImageView) findViewById(R.id.cover);
-			//ImageViewCover.setImageBitmap( <TheImage> );
-
 			novelCol = result.getResult();
 			if(novelCol != null) {
-				
-				//Clear progressBar and string
-//				 TextView tv = (TextView) findViewById(R.id.loading);
-//				 tv.setVisibility(TextView.GONE);
-//		         pb.setActivated(false);
-//		         pb.setVisibility(ProgressBar.GONE);
-				
 				String details = "";
 				details += novelCol.getSynopsis();
 				

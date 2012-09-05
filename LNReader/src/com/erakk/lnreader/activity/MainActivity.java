@@ -1,14 +1,8 @@
 package com.erakk.lnreader.activity;
 
-import java.util.zip.Checksum;
-
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
@@ -19,14 +13,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.UIHelper;
 
 
 public class MainActivity extends Activity {
 	
-    @SuppressLint("NewApi")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
     	Log.d("MainActivity", "onCreate");
@@ -41,8 +33,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
     	
         setContentView(R.layout.activity_main);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
-        	getActionBar().setDisplayHomeAsUpEnabled(false);
+        UIHelper.SetActionBarDisplayHomeAsUp(this, false);
     }
 
     @Override
@@ -51,19 +42,16 @@ public class MainActivity extends Activity {
         return true;
     }
     
-    @SuppressLint("NewApi")
 	@Override
     protected void onRestart() {
         super.onRestart();
-        recreate();
+        UIHelper.Recreate(this);
     }
     
-    @SuppressLint("NewApi")
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        	case R.id.last_novel:
-        		
+        	case R.id.last_novel:        		
         		/*
         		 * Implement code to load last chapter read
         		 */
@@ -78,12 +66,9 @@ public class MainActivity extends Activity {
         			Toast.makeText(this, "No last read novel.", Toast.LENGTH_SHORT).show();
         		}
         		return true;
-        	case R.id.invert_colors:
-    			
+        	case R.id.invert_colors:    			
         		toggleColorPref();
-        		// recreate the view to use new theme
-        		recreate();
-    			
+        		UIHelper.Recreate(this);    			
     			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
     			return true;
             case android.R.id.home:
@@ -120,6 +105,5 @@ public class MainActivity extends Activity {
     public void openSettings(View view) {
     	Intent intent = new Intent(this, DisplaySettingsActivity.class);
     	startActivity(intent);
-    }
-    
+    }    
 }

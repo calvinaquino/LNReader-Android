@@ -1,12 +1,10 @@
 package com.erakk.lnreader.activity;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -16,8 +14,8 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.DownloadCallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -31,10 +29,8 @@ public class DisplayImageActivity extends Activity {
 	private LoadImageTask task;
 	private boolean refresh = false;
 	private String url;
-
 	private ProgressDialog dialog;
 	
-    @SuppressLint("NewApi")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
     	// set before create any view
@@ -46,8 +42,7 @@ public class DisplayImageActivity extends Activity {
     	}
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_image);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
-        	getActionBar().setDisplayHomeAsUpEnabled(true);
+        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
         Intent intent = getIntent();
         url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
@@ -104,7 +99,6 @@ public class DisplayImageActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
     
-    @SuppressLint("NewApi")
 	private void ToggleProgressBar(boolean show) {
 		if(show) {
 			dialog = ProgressDialog.show(this, "", "Loading. Please wait...", false);
@@ -122,7 +116,6 @@ public class DisplayImageActivity extends Activity {
 		}
 	}
     	
-    @SuppressLint("NewApi")
 	public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTaskResult<ImageModel>> implements ICallbackNotifier {
     	String url = "";
     	public String toString() {
