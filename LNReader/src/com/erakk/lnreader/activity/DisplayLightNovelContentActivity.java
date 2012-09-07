@@ -55,18 +55,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-    	// set before create any view
-    	if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("invert_colors", false)) {    		
-    		setTheme(R.style.AppTheme2);
-    	}
-    	else {
-    		setTheme(R.style.AppTheme);
-    	}
-    	
 		super.onCreate(savedInstanceState);
-        
-		setContentView(R.layout.activity_display_light_novel_content);
-		
+        UIHelper.SetTheme(this, R.layout.activity_display_light_novel_content);		
         UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
 		try {

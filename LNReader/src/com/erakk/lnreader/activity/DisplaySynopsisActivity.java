@@ -33,6 +33,8 @@ public class DisplaySynopsisActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        UIHelper.SetTheme(this, R.layout.activity_display_synopsis);
+        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
         
         //Get intent and message
         Intent intent = getIntent();
@@ -40,10 +42,7 @@ public class DisplaySynopsisActivity extends Activity {
         PageModel page = new PageModel(); 
         page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
         page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
-        
-        setContentView(R.layout.activity_display_synopsis);
-                
-        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
+
         
         View NovelView = findViewById(R.id.ligh_novel_synopsys_screen);
 

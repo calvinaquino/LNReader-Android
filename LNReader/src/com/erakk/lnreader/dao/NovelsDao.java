@@ -4,6 +4,7 @@
 package com.erakk.lnreader.dao;
 
 import java.io.EOFException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -387,7 +388,14 @@ public class NovelsDao {
 
 				content = BakaTsukiParser.ParseNovelContent(doc, page);
 				break;
-			}catch(EOFException eof) {
+			}/*catch(EOFException eof) {
+				++retry;
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));
+				}
+				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
+			}*/
+			catch(IOException eof) {
 				++retry;
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));

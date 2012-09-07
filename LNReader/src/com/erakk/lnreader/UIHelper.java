@@ -32,6 +32,23 @@ public class UIHelper {
 	public static void Recreate(Activity activity) {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
 			activity.recreate();
+		else{
+			activity.startActivity(activity.getIntent());
+			activity.finish();
+		}
 		CheckScreenRotation(activity);
-	}	
+	}
+	
+	public static void SetTheme(Activity activity, Integer layoutId) {
+		// set before create any view
+    	if(PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("invert_colors", false)) {    		
+    		activity.setTheme(R.style.AppTheme2);
+    	}
+    	else {
+    		activity.setTheme(R.style.AppTheme);
+    	}
+    	if(layoutId != null) {
+    		activity.setContentView(layoutId);
+    	}    	
+	}
 }

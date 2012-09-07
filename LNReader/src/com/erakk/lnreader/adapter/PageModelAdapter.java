@@ -1,10 +1,12 @@
 package com.erakk.lnreader.adapter;
 
+import java.util.Iterator;
 import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +42,13 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 	
 	@SuppressLint("NewApi")
 	public void addAll(List<PageModel> objects) {
-		super.addAll(objects);
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
+			super.addAll(objects);
+		else {
+			for(Iterator<PageModel> iPage = objects.iterator(); iPage.hasNext();) {
+				this.add(iPage.next());
+			}
+		}
 		Log.d(TAG, "onAddAll Count = " + objects.size());
 	}
 

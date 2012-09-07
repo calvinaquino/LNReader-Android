@@ -8,6 +8,7 @@
   Recommended Android 3.0+ (API Level 11)
   Minimum     Android 2.2  (API Level 8)
   Some features might not working if running below the recommended version.
+  - Invert Color doesn't work in 2.3.3 or less
 
 //LINE-ENDINGS & SOURCE ENCODING CONFIG
   Git Config: https://help.github.com/articles/dealing-with-line-endings

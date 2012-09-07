@@ -2,13 +2,13 @@ package com.erakk.lnreader.activity;
 
 import java.io.File;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
-import android.preference.PreferenceManager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.view.Menu;
@@ -22,19 +22,15 @@ import com.erakk.lnreader.dao.NovelsDao;
 
 public class DisplaySettingsActivity extends PreferenceActivity {
 	//private static final String TAG = DisplayLightNovelsActivity.class.toString();
-
+	private Activity activity;
+	
 	@SuppressWarnings("deprecation")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
-    	// set before create any view
-    	if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("invert_colors", false)) {    		
-    		setTheme(R.style.AppTheme2);
-    	}
-    	else {
-    		setTheme(R.style.AppTheme);
-    	}
-    	
-        super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState);
+		UIHelper.SetTheme(this, null);
+    	activity = this;
+        
         //This man is deprecated but but we may want to be bale to run on older API
         addPreferencesFromResource(R.xml.preferences);
         
@@ -60,7 +56,7 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         invertColors.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
         	@Override
             public boolean onPreferenceClick(Preference p) {
-        		recreate();
+        		UIHelper.Recreate(activity);
         		Toast.makeText(getApplicationContext(), "Color Inverted", Toast.LENGTH_LONG).show();        		
                 return true;
             }

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,15 +32,8 @@ public class DisplayImageActivity extends Activity {
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
-    	// set before create any view
-    	if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("invert_colors", false)) {    		
-    		setTheme(R.style.AppTheme2);
-    	}
-    	else {
-    		setTheme(R.style.AppTheme);
-    	}
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_display_image);
+		super.onCreate(savedInstanceState);
+    	UIHelper.SetTheme(this, R.layout.activity_display_image);
         UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
         Intent intent = getIntent();

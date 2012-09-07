@@ -50,17 +50,8 @@ public class DisplayLightNovelListActivity extends ListActivity{
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-    	Log.d("MainActivity", "onCreate");
-    	// set before create any view
-    	if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("invert_colors", false)) {    		
-    		setTheme(R.style.AppTheme2);
-    	}
-    	else {
-    		setTheme(R.style.AppTheme);
-    	}    	
 		super.onCreate(savedInstanceState);
-        
-		setContentView(R.layout.activity_display_light_novel_list);
+		UIHelper.SetTheme(this, R.layout.activity_display_light_novel_list);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 		
 		registerForContextMenu(getListView());

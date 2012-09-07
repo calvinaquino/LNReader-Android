@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,18 +20,8 @@ public class MainActivity extends Activity {
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
-    	Log.d("MainActivity", "onCreate");
-    	// set before create any view
-    	if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean("invert_colors", false)) {    		
-    		setTheme(R.style.AppTheme2);
-    	}
-    	else {
-    		setTheme(R.style.AppTheme);
-    	}
-    	
         super.onCreate(savedInstanceState);
-    	
-        setContentView(R.layout.activity_main);
+        UIHelper.SetTheme(this, R.layout.activity_main);
         UIHelper.SetActionBarDisplayHomeAsUp(this, false);
     }
 

@@ -149,9 +149,4 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 	public boolean isChildSelectable(int arg0, int arg1) {
 		return true;
 	}
-
-//	public void invertColorMode(boolean invert) {
-//		invertColors = invert;
-//		this.notifyDataSetInvalidated();
-//	}
 }
