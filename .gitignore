@@ -1,5 +1,6 @@
 *.class
 R.java
+LNReader/gen/*
 
 #################
 ## Eclipse
