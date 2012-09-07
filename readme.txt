@@ -8,6 +8,7 @@
   Recommended Android 3.0+ (API Level 11)
   Minimum     Android 2.2  (API Level 8)
   Some features might not working if running below the recommended version.
+  - Invert Color doesn't work in 2.3.3 or less
 
 //LINE-ENDINGS & SOURCE ENCODING CONFIG
   Git Config: https://help.github.com/articles/dealing-with-line-endings
@@ -20,6 +21,11 @@
   MAYBE Rename work. - Baka-Tsuki Reader / TsukiReader or another
   No Auto checking for novel translation updates
   Clear volume/chapter cache is not yet implemented
+
+//UNHANDLED EXCEPTION
+  - Performing pause of activity that is not resumed: {com.erakk.lnreader/com.erakk.lnreader.activity.DisplayLightNovelListActivity}
+    This can happen in any activity...
+
 
 //CHECK
   Unhandled exception when creating menus...
