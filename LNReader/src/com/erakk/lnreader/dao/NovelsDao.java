@@ -372,6 +372,23 @@ public class NovelsDao {
 		}
 	}
 	
+
+	public void deletePage(PageModel page) {
+		synchronized (dbh) {
+			// get from db
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			try{
+				PageModel tempPage = dbh.getPageModel(db, page.getId());
+				if(tempPage != null) {
+					dbh.deletePageModel(db, tempPage);
+				}
+			}
+			finally{
+				db.close();
+			}
+		}
+	}
+	
 	public ArrayList<PageModel> getChapterCollection(String page, String title) {
 		synchronized (dbh) {
 			// get from db
@@ -561,4 +578,5 @@ public class NovelsDao {
 		}		
 		return image;
 	}
+
 }

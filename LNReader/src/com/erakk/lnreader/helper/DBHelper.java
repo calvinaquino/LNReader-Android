@@ -187,6 +187,23 @@ public class DBHelper extends SQLiteOpenHelper {
 		    }
 	    }
 		return pageModel;
+	}	
+
+	public void deletePageModel(SQLiteDatabase db, PageModel tempPage) {
+		int result = delete(db, TABLE_PAGE, COLUMN_ID + " = ?", new String[]{"" + tempPage.getId()});
+		Log.d(TAG, "PageModel Deleted: " + result);
+	}
+	
+	public PageModel getPageModel(SQLiteDatabase db, int id) {
+		PageModel pageModel = null;		
+		Cursor cursor = rawQuery(db, "select * from " + TABLE_PAGE + " where " + COLUMN_ID + " = ? ", new String[] {"" + id});
+		cursor.moveToFirst();
+	    while (!cursor.isAfterLast()) {
+	    	pageModel = cursorTopage(cursor);
+	    	Log.d(TAG, "Found Page: " + pageModel.toString());
+	    	break;
+	    }
+	    return pageModel;
 	}
 	
 	public ArrayList<PageModel> getAllNovels(SQLiteDatabase db) {

@@ -218,6 +218,9 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			 */
 			chapter = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
 			Toast.makeText(this, "Clear this Chapter: " + chapter.getTitle(), Toast.LENGTH_SHORT).show();
+			dao.deletePage(chapter);
+			novelCol.getBookCollections().get(groupPosition).getChapterCollection().remove(childPosition);
+			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		case R.id.mark_read:
 			
