@@ -1,6 +1,8 @@
 body {
  background-color: #000000;
  color: #dddddd;
+ margin-left: 1mm;
+ margin-right: 1mm;
 }
 /*For Illustration Gallery*/
 ul {

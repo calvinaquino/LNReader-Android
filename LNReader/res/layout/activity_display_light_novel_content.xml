@@ -9,22 +9,6 @@
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="10dp" 
-        android:layout_marginRight="10dp"/>
-
-    <!-- <ProgressBar
-        android:id="@+id/progressBar2"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
-
-    <TextView
-        android:id="@+id/loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/progressBar2"
-        android:layout_centerHorizontal="true"
-        android:text="@string/loading" /> -->
-
+	/>
+    
 </RelativeLayout>
