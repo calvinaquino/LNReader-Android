@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
+import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
@@ -344,11 +345,11 @@ public class DBHelper extends SQLiteOpenHelper {
 			BookModel tempBook = getBookModel(db, book.getId());
 			if(tempBook == null) tempBook = getBookModel(db, novelDetails.getPage(), book.getTitle());
 			if(tempBook == null) {
-				Log.d(TAG, "Inserting Novel Book: " + novelDetails.getPage() + "%" + book.getTitle());
+				Log.d(TAG, "Inserting Novel Book: " + novelDetails.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 				insertOrThrow(db, TABLE_NOVEL_BOOK, null, cv2);
 			}
 			else {
-				Log.d(TAG, "Updating Novel Book: " + book.getPage() + "%" + book.getTitle() + " id: " + tempBook.getId());
+				Log.d(TAG, "Updating Novel Book: " + book.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle() + " id: " + tempBook.getId());
 				update(db, TABLE_NOVEL_BOOK, cv2, COLUMN_ID + " = ?", new String[] {"" + tempBook.getId()});
 			}
 		}
@@ -401,31 +402,45 @@ public class DBHelper extends SQLiteOpenHelper {
 	    return novelDetails;
 	}
 	
-	private BookModel getBookModel(SQLiteDatabase db, int id) {
+	public BookModel getBookModel(SQLiteDatabase db, int id) {
 		BookModel book = null;
 		Cursor cursor = rawQuery(db, "select * from " + TABLE_NOVEL_BOOK + " where " + COLUMN_ID + " = ? ", new String[] {"" + id});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	book = cursorToBookModel(cursor);
-	    	Log.d(TAG, "Found: " + book.getPage() + "%" + book.getTitle());
+	    	Log.d(TAG, "Found: " + book.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 	    	break;
 	    }
 	    return book;
 	}
 	
-	private BookModel getBookModel(SQLiteDatabase db, String page, String title) {
+	public BookModel getBookModel(SQLiteDatabase db, String page, String title) {
 		BookModel book = null;
 		Cursor cursor = rawQuery(db, "select * from " + TABLE_NOVEL_BOOK + " where " + COLUMN_PAGE + " = ? and " + COLUMN_TITLE + " = ?", new String[] {page, title});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	book = cursorToBookModel(cursor);
-	    	Log.d(TAG, "Found: " + book.getPage() + "%" + book.getTitle());
+	    	Log.d(TAG, "Found: " + book.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 	    	break;
 	    }
 	    return book;
 	}
 	
-	private ArrayList<BookModel> getBookCollectionOnly(SQLiteDatabase db, String page) {
+	public void deleteBookModel(SQLiteDatabase db, BookModel book) {
+		int chaptersCount = 0;
+		ArrayList<PageModel> chapters = book.getChapterCollection();
+		if(chapters != null && chapters.size() > 0) {
+			for(Iterator<PageModel> i = chapters.iterator(); i.hasNext();) {
+				PageModel page = i.next();
+				chaptersCount += delete(db, TABLE_PAGE, COLUMN_ID + " = ? ", new String[] {"" + page.getId()});
+			}
+			Log.d(TAG, "Deleted PageModel: " + chaptersCount);
+		}
+		int bookCount = delete(db, TABLE_NOVEL_BOOK, COLUMN_ID + " = ? ", new String[] { "" + book.getId() });
+		Log.d(TAG, "Deleted BookModel: " + bookCount);
+	}
+
+	public ArrayList<BookModel> getBookCollectionOnly(SQLiteDatabase db, String page) {
 		// get the books
 	    ArrayList<BookModel> bookCollection = new ArrayList<BookModel>(); 
 	    Cursor cursor = rawQuery(db, "select * from " + TABLE_NOVEL_BOOK + " where " + COLUMN_PAGE + " = ? order by " + COLUMN_ORDER, new String[] {page});
@@ -439,7 +454,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		return bookCollection;
 	}
 	
-	private ArrayList<PageModel> getChapterCollection(SQLiteDatabase db, String parent) {
+	public ArrayList<PageModel> getChapterCollection(SQLiteDatabase db, String parent) {
 		ArrayList<PageModel> chapters = new ArrayList<PageModel>();
 		Cursor cursor = rawQuery(db, "select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ? order by " + COLUMN_ORDER, new String[] {parent});
 		cursor.moveToFirst();
@@ -463,7 +478,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			// get the chapters
 			for(Iterator<BookModel> iBook = bookCollection.iterator(); iBook.hasNext();) {
 				BookModel book = iBook.next();
-				ArrayList<PageModel> chapters = getChapterCollection(db, novelDetails.getPage() + "%" + book.getTitle());
+				ArrayList<PageModel> chapters = getChapterCollection(db, novelDetails.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 				book.setChapterCollection(chapters);
 			}		
 			novelDetails.setBookCollections(bookCollection);
@@ -673,5 +688,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		if (!db.isOpen())
 			db = getWritableDatabase();
 		return db.insertOrThrow(table, nullColumnHack, cv);
+	}
+	
+	private int delete(SQLiteDatabase db, String table, String whereClause, String[] whereParams) {
+		if (!db.isOpen())
+			db = getWritableDatabase();
+		return db.delete(table, whereClause, whereParams);
 	}
 }

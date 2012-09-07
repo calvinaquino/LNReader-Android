@@ -3,6 +3,8 @@ package com.erakk.lnreader.model;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.erakk.lnreader.dao.NovelsDao;
+
 public class BookModel {
 	private int id;
 	private String title;
@@ -50,6 +52,9 @@ public class BookModel {
 		this.order = order;
 	}
 	public ArrayList<PageModel> getChapterCollection() {
+		if(chapterCollection == null){
+			chapterCollection = NovelsDao.getInstance().getChapterCollection(page, title);
+		}
 		return chapterCollection;
 	}
 	public void setChapterCollection(ArrayList<PageModel> chapterCollection) {

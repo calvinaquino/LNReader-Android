@@ -180,16 +180,17 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			/*
 			 * Implement code to clear this volume cache
 			 */
-			
-			Toast.makeText(this, "Clear this Volume",
-					Toast.LENGTH_SHORT).show();
+			BookModel bookDel = novelCol.getBookCollections().get(groupPosition);
+			Toast.makeText(this, "Clear this Volume: " + bookDel.getTitle(), Toast.LENGTH_SHORT).show();
+			dao.deleteBooks(bookDel);
+			novelCol.getBookCollections().remove(groupPosition);
+			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		case R.id.mark_volume:
 			
 			/*
 			 * Implement code to mark entire volume as read
-			 */
-			
+			 */			
 			Toast.makeText(this, "Mark Volume as Read",	Toast.LENGTH_SHORT).show();
 			BookModel book2 = novelCol.getBookCollections().get(groupPosition);
 			for(Iterator<PageModel> iPage = book2.getChapterCollection().iterator(); iPage.hasNext();) {
@@ -215,8 +216,8 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			/*
 			 * Implement code to clear this chapter cache
 			 */
-			
-			Toast.makeText(this, "Clear this Chapter", Toast.LENGTH_SHORT).show();
+			chapter = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
+			Toast.makeText(this, "Clear this Chapter: " + chapter.getTitle(), Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.mark_read:
 			

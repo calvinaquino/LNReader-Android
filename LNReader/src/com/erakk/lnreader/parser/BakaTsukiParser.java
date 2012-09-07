@@ -127,7 +127,7 @@ public class BakaTsukiParser {
 	}
 	
 	private static void parseNovelChapters(Document doc, NovelCollectionModel novel) {
-		Log.d(TAG, "Start parsing book collections");
+		Log.d(TAG, "Start parsing book collections for " + novel.getPage());
 		// parse the collection
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
 		try{
@@ -137,11 +137,14 @@ public class BakaTsukiParser {
 				//Log.d(TAG, "checking h2: " +h2.text() + "\n" + h2.id());
 				Elements spans = h2.select("span");
 				if(spans.size() > 0) {
-					// find span with id containing "_by_"
+					// find span with id containing "_by" or 'Full_Text' or start with Page Name
 					boolean containsBy = false;
 					for(Iterator<Element> iSpan = spans.iterator(); iSpan.hasNext(); ) {
 						Element s = iSpan.next();
-						if(s.id().contains("_by")) {
+						Log.d(TAG, "Checking: " + s.id());
+						if(s.id().contains("_by") || 
+						   s.id().contains("Full_Text")|| 
+						   s.id().startsWith(novel.getPage())) {
 							containsBy = true;
 							break;
 						}
@@ -154,129 +157,25 @@ public class BakaTsukiParser {
 					 * parse book method 1:
 					 * Look for <h3> after <h2> containing the volume list.
 					 */
-					Log.d(TAG, "method 1");
-					Element bookElement = h2;
-					boolean walkBook = true;
-					int bookOrder = 0;
-					do{
-						bookElement = bookElement.nextElementSibling();
-						if(bookElement.tagName() == "h2") walkBook = false;
-						else if(bookElement.tagName() == "h3") {
-							Log.d(TAG, "Found: " +bookElement.text());
-							BookModel book = new BookModel();
-							book.setTitle(sanitize(bookElement.text()));
-							book.setOrder(bookOrder);
-							ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
-							
-							// parse the chapters.
-							boolean walkChapter = true;
-							int chapterOrder = 0;
-							Element chapterElement = bookElement;
-							do{
-								chapterElement = chapterElement.nextElementSibling();
-								if(chapterElement.tagName() == "h3") walkChapter = false;
-								else if(chapterElement.tagName() == "dl" ||
-										chapterElement.tagName() == "ul" ||
-										chapterElement.tagName() == "div") {
-									Elements chapters = chapterElement.select("li");
-									for(Iterator<Element> i2 = chapters.iterator(); i2.hasNext();) {
-										Element chapter = i2.next();
-										if(chapter.tagName() != "li") break;
-										Elements links = chapter.select("a");
-										if(links.size() > 0) {
-											Element link = links.first();
-											PageModel p = new PageModel();
-											p.setTitle(sanitize(link.text()));	// sanitize title
-											p.setPage(link.attr("href").replace("/project/index.php?title=",""));
-											p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
-											p.setType(PageModel.TYPE_CONTENT);
-											p.setOrder(chapterOrder);
-											Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
-											chapterCollection.add(p);
-											++chapterOrder;
-										}										
-									}
-								}
-								book.setChapterCollection(chapterCollection);
-							}while(walkChapter);
-							books.add(book);
-							++bookOrder;
-						}						
-					}while(walkBook);
+					books = parseBooksMethod1(novel, h2);
 					
 					/*
 					 * parse book method 2:
 					 * Look for <p> after <h2> containing the chapter list, usually only have 1 book.
 					 * See 7_Nights
 					 */
-					Log.d(TAG, "method 2");
 					if(books.size() == 0) {
 						Log.d(TAG, "No books found, use method 2");
-						bookElement = h2;
-						walkBook = true;
-						bookOrder = 0;
-						do{
-							bookElement = bookElement.nextElementSibling();
-							if(bookElement.tagName() == "h2") walkBook = false;
-							else if(bookElement.tagName() == "p") {
-								Log.d(TAG, "Found: " +bookElement.text());
-								BookModel book = new BookModel();
-								book.setTitle(sanitize(bookElement.text()));
-								book.setOrder(bookOrder);
-								ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
-								
-								// parse the chapters.
-								boolean walkChapter = true;
-								int chapterOrder = 0;
-								Element chapterElement = bookElement;
-								do{	
-									chapterElement = chapterElement.nextElementSibling();
-									if(chapterElement == null) walkChapter = false;
-									else if(chapterElement.tagName() == "p") walkChapter = false;
-									else if(chapterElement.tagName() == "dl" ||
-											chapterElement.tagName() == "ul" ||
-											chapterElement.tagName() == "div") {
-										Elements chapters = chapterElement.select("li");
-										for(Iterator<Element> i2 = chapters.iterator(); i2.hasNext();) {
-											Element chapter = i2.next();
-											if(chapter.tagName() != "li") break;
-											Elements links = chapter.select("a");
-											if(links.size() > 0) {
-												Element link = links.first();
-												PageModel p = new PageModel();
-												p.setTitle(sanitize(link.text()));
-												p.setPage(link.attr("href").replace("/project/index.php?title=",""));
-												p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
-												p.setType(PageModel.TYPE_CONTENT);
-												p.setOrder(chapterOrder);
-												Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
-												chapterCollection.add(p);
-												++chapterOrder;
-											}										
-										}
-									}
-									// no subchapter
-									if(chapterCollection.size() == 0 ) {
-										Elements links = bookElement.select("a");
-										if(links.size() > 0) {
-											Element link = links.first();
-											PageModel p = new PageModel();
-											p.setTitle(sanitize(link.text()));
-											p.setPage(link.attr("href").replace("/project/index.php?title=",""));
-											p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
-											p.setType(PageModel.TYPE_CONTENT);
-											p.setOrder(chapterOrder);
-											Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
-											chapterCollection.add(p);
-											++chapterOrder;
-										}
-									}
-									book.setChapterCollection(chapterCollection);
-								}while(walkChapter);
-								books.add(book);
-								++bookOrder;
-							}							
-						}while(walkBook);
+						books = parseBooksMethod2(novel, h2);
+					}
+					/*
+					 * parse book method 3:
+					 * Look for <ul> after <h2> containing the chapter list, only have 1 book.
+					 * See Gekkou 
+					 */
+					if(books.size() == 0) {
+						Log.d(TAG, "No books found, use method 3");
+						books = parseBooksMethod3(novel, h2);
 					}
 				}
 			}			
@@ -284,6 +183,169 @@ public class BakaTsukiParser {
 		Log.d(TAG, "Complete parsing book collections: " + books.size());
 		
 		novel.setBookCollections(validateNovelBooks(books));
+	}
+	
+	private static ArrayList<BookModel> parseBooksMethod1(NovelCollectionModel novel, Element h2)
+	{
+		Log.d(TAG, "method 1");
+		ArrayList<BookModel> books = new ArrayList<BookModel>();
+		Element bookElement = h2;
+		boolean walkBook = true;
+		int bookOrder = 0;
+		do{
+			bookElement = bookElement.nextElementSibling();
+			if(bookElement.tagName() == "h2") walkBook = false;
+			else if(bookElement.tagName() == "h3") {
+				Log.d(TAG, "Found: " +bookElement.text());
+				BookModel book = new BookModel();
+				book.setTitle(sanitize(bookElement.text()));
+				book.setOrder(bookOrder);
+				ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
+				
+				// parse the chapters.
+				boolean walkChapter = true;
+				int chapterOrder = 0;
+				Element chapterElement = bookElement;
+				do{
+					chapterElement = chapterElement.nextElementSibling();
+					if(chapterElement.tagName() == "h3") walkChapter = false;
+					else if(chapterElement.tagName() == "dl" ||
+							chapterElement.tagName() == "ul" ||
+							chapterElement.tagName() == "div") {
+						Elements chapters = chapterElement.select("li");
+						for(Iterator<Element> i2 = chapters.iterator(); i2.hasNext();) {
+							Element chapter = i2.next();
+							if(chapter.tagName() != "li") break;
+							Elements links = chapter.select("a");
+							if(links.size() > 0) {
+								Element link = links.first();
+								PageModel p = new PageModel();
+								p.setTitle(sanitize(link.text()));	// sanitize title
+								p.setPage(link.attr("href").replace("/project/index.php?title=",""));
+								p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
+								p.setType(PageModel.TYPE_CONTENT);
+								p.setOrder(chapterOrder);
+								Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
+								chapterCollection.add(p);
+								++chapterOrder;
+							}										
+						}
+					}
+					book.setChapterCollection(chapterCollection);
+				}while(walkChapter);
+				books.add(book);
+				++bookOrder;
+			}						
+		}while(walkBook);
+		return books;
+	}
+	
+	private static ArrayList<BookModel> parseBooksMethod2(NovelCollectionModel novel, Element h2){
+		ArrayList<BookModel> books = new ArrayList<BookModel>();
+		Element bookElement = h2;
+		boolean walkBook = true;
+		int bookOrder = 0;
+		do{
+			bookElement = bookElement.nextElementSibling();
+			if(bookElement.tagName() == "h2") walkBook = false;
+			else if(bookElement.tagName() == "p") {
+				Log.d(TAG, "Found: " +bookElement.text());
+				BookModel book = new BookModel();
+				book.setTitle(sanitize(bookElement.text()));
+				book.setOrder(bookOrder);
+				ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
+				
+				// parse the chapters.
+				boolean walkChapter = true;
+				int chapterOrder = 0;
+				Element chapterElement = bookElement;
+				do{	
+					chapterElement = chapterElement.nextElementSibling();
+					if(chapterElement == null) walkChapter = false;
+					else if(chapterElement.tagName() == "p") walkChapter = false;
+					else if(chapterElement.tagName() == "dl" ||
+							chapterElement.tagName() == "ul" ||
+							chapterElement.tagName() == "div") {
+						Elements chapters = chapterElement.select("li");
+						for(Iterator<Element> i2 = chapters.iterator(); i2.hasNext();) {
+							Element chapter = i2.next();
+							if(chapter.tagName() != "li") break;
+							Elements links = chapter.select("a");
+							if(links.size() > 0) {
+								Element link = links.first();
+								PageModel p = new PageModel();
+								p.setTitle(sanitize(link.text()));
+								p.setPage(link.attr("href").replace("/project/index.php?title=",""));
+								p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
+								p.setType(PageModel.TYPE_CONTENT);
+								p.setOrder(chapterOrder);
+								Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
+								chapterCollection.add(p);
+								++chapterOrder;
+							}										
+						}
+					}
+					// no subchapter
+					if(chapterCollection.size() == 0 ) {
+						Elements links = bookElement.select("a");
+						if(links.size() > 0) {
+							Element link = links.first();
+							PageModel p = new PageModel();
+							p.setTitle(sanitize(link.text()));
+							p.setPage(link.attr("href").replace("/project/index.php?title=",""));
+							p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
+							p.setType(PageModel.TYPE_CONTENT);
+							p.setOrder(chapterOrder);
+							Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
+							chapterCollection.add(p);
+							++chapterOrder;
+						}
+					}
+					book.setChapterCollection(chapterCollection);
+				}while(walkChapter);
+				books.add(book);
+				++bookOrder;
+			}							
+		}while(walkBook);
+		return books;
+	}
+	
+	private static ArrayList<BookModel> parseBooksMethod3(NovelCollectionModel novel, Element h2){
+		ArrayList<BookModel> books = new ArrayList<BookModel>();
+		Element bookElement = h2;
+		boolean walkBook = true;
+		int bookOrder = 0;
+		do{
+			bookElement = bookElement.nextElementSibling();
+			if(bookElement.tagName() == "h2") walkBook = false;
+			else if(bookElement.tagName() == "ul") {
+				Log.d(TAG, "Found: " +bookElement.text());
+				BookModel book = new BookModel();
+				book.setTitle(sanitize(h2.text()));
+				book.setOrder(bookOrder);
+				ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
+				
+				// parse the chapters.
+				int chapterOrder = 0;
+				Elements links = bookElement.select("a");
+				for(Iterator<Element> i = links.iterator(); i.hasNext();) {
+					Element link = i.next();
+					PageModel p = new PageModel();
+					p.setTitle(sanitize(link.text()));
+					p.setPage(link.attr("href").replace("/project/index.php?title=",""));
+					p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
+					p.setType(PageModel.TYPE_CONTENT);
+					p.setOrder(chapterOrder);
+					Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
+					chapterCollection.add(p);
+					++chapterOrder;
+				}
+				book.setChapterCollection(chapterCollection);
+				books.add(book);
+				++bookOrder;
+			}							
+		}while(walkBook);
+		return books;
 	}
 	
 	private static ArrayList<BookModel> validateNovelBooks(ArrayList<BookModel> books) {

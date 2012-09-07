@@ -23,6 +23,7 @@ import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.DownloadFileTask;
+import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
@@ -322,7 +323,10 @@ public class NovelsDao {
 				}
 			}
 			
-			novel.setLastUpdate(novelPage.getLastUpdate());
+			if(novelPage!= null)
+				novel.setLastUpdate(novelPage.getLastUpdate());
+			else
+				novel.setLastUpdate(new Date());
 	
 			synchronized (dbh) {
 				// insert to DB and get saved value
@@ -351,6 +355,36 @@ public class NovelsDao {
 		return novel;
 	}
 
+
+	public void deleteBooks(BookModel bookDel) {
+		synchronized (dbh) {
+			// get from db
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			try{
+				BookModel tempBook = dbh.getBookModel(db, bookDel.getId());
+				if(tempBook != null) {
+					dbh.deleteBookModel(db, tempBook);
+				}
+			}
+			finally{
+				db.close();
+			}
+		}
+	}
+	
+	public ArrayList<PageModel> getChapterCollection(String page, String title) {
+		synchronized (dbh) {
+			// get from db
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			try{
+				return dbh.getChapterCollection(db, page + Constants.NOVEL_BOOK_DIVIDER + title);
+			}
+			finally{
+				db.close();
+			}
+		}
+	}
+	
 	/*
 	 * NovelContentModel
 	 */
