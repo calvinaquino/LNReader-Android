@@ -120,9 +120,11 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 							notifier.onCallback(new CallbackEventData("Downloading: " + url + "\nRetry: " + i+ "x"));
 						}
 					}
-				}finally{
-					output.flush();
-					output.close();
+				}finally{	
+					if(output != null) {
+						output.flush();
+						output.close();
+					}
 					input.close();
 				}
 			}

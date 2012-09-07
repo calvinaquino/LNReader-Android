@@ -4,6 +4,7 @@ package com.erakk.lnreader.model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -82,7 +83,9 @@ public class NovelCollectionModel {
 	public Bitmap getCoverBitmap() {
 		if(coverBitmap == null) {
 			try{
-				String filepath = Constants.IMAGE_ROOT + getCoverUrl().getFile();
+				// TODO: maybe it is better to use ImageModel
+				@SuppressWarnings("deprecation")
+				String filepath = Constants.IMAGE_ROOT + URLDecoder.decode(getCoverUrl().getFile());
 				Log.d("GetCover", filepath);
 				this.coverBitmap = BitmapFactory.decodeFile(filepath);
 			}catch(Exception e){
