@@ -14,13 +14,13 @@
         android:choiceMode="multipleChoice"
         android:longClickable="true" >
     </ListView>
-
+
     <TextView
         android:id="@+id/emptyList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="List is Empty"
+        android:text="@string/list_empty"
         android:visibility="gone" />
 
 </RelativeLayout>

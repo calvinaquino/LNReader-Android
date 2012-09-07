@@ -35,7 +35,6 @@
         android:layout_alignParentLeft="true"
         android:paddingLeft="17dp"
         android:gravity="center_vertical"
-        android:onClick="onListItemClick"
         android:text="@string/novel_last_update"
         android:textColor="#888888"
         android:textSize="10dp" />
@@ -48,7 +47,6 @@
         android:layout_toRightOf="@+id/novel_last_update"
         android:layout_marginLeft="10dp"
         android:gravity="center_vertical"
-        android:onClick="onListItemClick"
         android:text="@string/novel_last_update"
         android:textColor="#888888"
         android:textSize="10dp" />

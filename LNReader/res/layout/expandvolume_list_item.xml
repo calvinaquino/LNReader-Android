@@ -8,7 +8,6 @@
             android:layout_height="50dp"
             android:layout_width="match_parent"
             android:gravity="center_vertical"
-            android:onClick="onChapterItemClick"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="5dp" 
             android:textSize="16dp"
