@@ -16,6 +16,7 @@ import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
@@ -167,9 +168,9 @@ public class DisplayLightNovelContentActivity extends Activity {
 	
 	
 	private void ToggleProgressBar(boolean show) {
-		Log.d("ProgressBar", "Toggle");
 		if(show) {
-			dialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
+			dialog = ProgressDialog.show(this, "Novel Content", "Loading. Please wait...", true);
+			dialog.getWindow().setGravity(Gravity.CENTER);
 			dialog.setCanceledOnTouchOutside(true);
 		} 
 		else {

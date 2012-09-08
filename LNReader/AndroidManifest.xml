@@ -57,7 +57,7 @@
             android:label="@string/title_activity_display_synopsys" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.erakk.lnreader" />
+                android:value="com.erakk.lnreader.activity.DisplayLightNovelListActivity" />
         </activity>
         <activity
        	 	android:name=".activity.DisplayLightNovelContentActivity"

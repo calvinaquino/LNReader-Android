@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebView;
@@ -93,7 +94,8 @@ public class DisplayImageActivity extends Activity {
     
 	private void ToggleProgressBar(boolean show) {
 		if(show) {
-			dialog = ProgressDialog.show(this, "", "Loading. Please wait...", false);
+			dialog = ProgressDialog.show(this, "Display Image", "Loading. Please wait...", false);
+			dialog.getWindow().setGravity(Gravity.CENTER);
 			dialog.setCanceledOnTouchOutside(true);
 		
 			if(refresh) {

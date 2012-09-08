@@ -175,6 +175,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	Log.d(TAG, "Found Page: " + pageModel.toString());
 	    	break;
 	    }
+	    cursor.close();
 	    
 	    // check again for case insensitive	    
 	    if(pageModel == null) {
@@ -185,6 +186,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		    	Log.d(TAG, "Found Page: " + pageModel.toString());
 		    	break;
 		    }
+		    cursor.close();
 	    }
 		return pageModel;
 	}	
@@ -203,6 +205,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	Log.d(TAG, "Found Page: " + pageModel.toString());
 	    	break;
 	    }
+	    cursor.close();
 	    return pageModel;
 	}
 	
@@ -216,7 +219,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	PageModel page = cursorTopage(cursor);
 	    	pages.add(page);
 	    	cursor.moveToNext();
-	    }		
+	    }
+	    cursor.close();
 		return pages;
 	}
 	
@@ -238,7 +242,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	PageModel page = cursorTopage(cursor);
 	    	pages.add(page);
 	    	cursor.moveToNext();
-	    }		
+	    }
+	    cursor.close();		
 		return pages;
 	}
 	
@@ -252,7 +257,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	page = cursorTopage(cursor);
 	    	Log.d(TAG, "Found: " + page.toString());
 	    	break;
-	    }		
+	    }
+	    cursor.close();
 		return page;
 	}
 		
@@ -416,6 +422,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	Log.d(TAG, "Found: " + novelDetails.toString());
 	    	break;
 	    }
+	    cursor.close();
 	    return novelDetails;
 	}
 	
@@ -428,6 +435,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	Log.d(TAG, "Found: " + book.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 	    	break;
 	    }
+	    cursor.close();
 	    return book;
 	}
 	
@@ -440,6 +448,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	Log.d(TAG, "Found: " + book.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 	    	break;
 	    }
+	    cursor.close();
 	    return book;
 	}
 	
@@ -468,6 +477,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	Log.d(TAG, "Found: " + book.toString());
 	    	cursor.moveToNext();
 	    }
+	    cursor.close();
 		return bookCollection;
 	}
 	
@@ -481,6 +491,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	Log.d(TAG, "Found: " + chapter.toString());
 	    	cursor.moveToNext();
 	    }
+	    cursor.close();
 		return chapters;
 	}
 	
@@ -572,7 +583,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	image = cursorToImage(cursor);
 	    	Log.d(TAG, "Found: " + image.getName() + " id: " + image.getId());
 	    	break;
-	    }		
+	    }
+	    cursor.close();
 		
 		if(image == null) {
 			Log.d(TAG, "Not Found Image by Referer: " + url);
@@ -590,7 +602,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	image = cursorToImage(cursor);
 	    	Log.d(TAG, "Found: " + image.getName() + " id: " + image.getId());
 	    	break;
-	    }		
+	    }
+	    cursor.close();
 
 		if(image == null) {
 			Log.d(TAG, "Not Found Image: " + name);
@@ -666,6 +679,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	Log.d(TAG, "Found: " + content.getPage() + " id: " + content.getId());
 	    	break;
 	    }
+	    cursor.close();
 		if(content == null) {
 			Log.d(TAG, "Not Found Novel Content: " + page);
 		}		

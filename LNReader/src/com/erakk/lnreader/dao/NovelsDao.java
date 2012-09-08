@@ -173,6 +173,15 @@ public class NovelsDao {
 						}
 						if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 					}
+					catch(IOException eof) {
+						++retry;
+						String message = "Retrying: Main_Page (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")";
+						if(notifier != null) {
+							notifier.onCallback(new CallbackEventData(message));
+						}
+						Log.d(TAG, message, eof);
+						if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
+					}
 				}
 			}finally{
 				db.endTransaction();
@@ -234,6 +243,15 @@ public class NovelsDao {
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData("Retrying: " + page + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));
 				}
+				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
+			}
+			catch(IOException eof) {
+				++retry;
+				String message = "Retrying: " + page + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")";
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData(message));
+				}
+				Log.d(TAG, message, eof);
 				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 			}
 		}
@@ -299,6 +317,15 @@ public class NovelsDao {
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));
 				}
+				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
+			}
+			catch(IOException eof) {
+				++retry;
+				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")";
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData(message));
+				}
+				Log.d(TAG, message, eof);
 				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 			}
 			
@@ -439,18 +466,20 @@ public class NovelsDao {
 
 				content = BakaTsukiParser.ParseNovelContent(doc, page);
 				break;
-			}/*catch(EOFException eof) {
+			}catch(EOFException eof) {
 				++retry;
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));
 				}
 				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
-			}*/
+			}
 			catch(IOException eof) {
 				++retry;
+				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")";
 				if(notifier != null) {
-					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));
+					notifier.onCallback(new CallbackEventData(message));
 				}
+				Log.d(TAG, message, eof);
 				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 			}
 		}
@@ -574,7 +603,16 @@ public class NovelsDao {
 				}
 				++retry;
 				if(retry > Constants.IMAGE_DOWNLOAD_RETRY) throw eof;
-			}			
+			}
+			catch(IOException eof) {
+				++retry;
+				String message = "Retrying: " + url + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")";
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData(message));
+				}
+				Log.d(TAG, message, eof);
+				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
+			}	
 		}		
 		return image;
 	}

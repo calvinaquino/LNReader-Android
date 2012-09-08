@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -200,7 +201,8 @@ public class DisplayLightNovelListActivity extends ListActivity{
 	
 	private void ToggleProgressBar(boolean show) {
 		if(show) {
-			dialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
+			dialog = ProgressDialog.show(this, "Novel List", "Loading. Please wait...", true);
+			dialog.getWindow().setGravity(Gravity.CENTER);
 		}
 		else {
 			dialog.dismiss();

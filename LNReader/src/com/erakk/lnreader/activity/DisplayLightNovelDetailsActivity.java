@@ -14,6 +14,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -260,7 +261,8 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     
 	private void ToggleProgressBar(boolean show) {
 		if(show) {
-			dialog = ProgressDialog.show(this, "", "Loading. Please wait...", true);
+			dialog = ProgressDialog.show(this, "Novel Details", "Loading. Please wait...", true);
+			dialog.getWindow().setGravity(Gravity.CENTER);
 		}
 		else {
 			dialog.dismiss();
