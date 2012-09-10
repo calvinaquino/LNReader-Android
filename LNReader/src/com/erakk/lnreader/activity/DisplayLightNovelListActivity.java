@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -184,12 +185,19 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void updateContent (boolean isRefresh, boolean onlyWatched) {
 		try {
+			// Check size
+			int resourceId = R.layout.novel_list_item;
+			Display display = getWindowManager().getDefaultDisplay();
+			if(display.getWidth() < 600) {
+				resourceId = R.layout.novel_list_item_small; 
+			}
 			if (adapter != null) {
-				adapter.setResourceId(R.layout.novel_list_item);
+				adapter.setResourceId(resourceId);
 			} else {
-				adapter = new PageModelAdapter(this, R.layout.novel_list_item, listItems);
+				adapter = new PageModelAdapter(this, resourceId, listItems);
 			}
 			new LoadNovelsTask().execute(new Boolean[] {isRefresh, onlyWatched});
 			setListAdapter(adapter);

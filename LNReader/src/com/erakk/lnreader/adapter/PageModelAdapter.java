@@ -74,7 +74,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		
 		holder.txtLastCheck = (TextView)row.findViewById(R.id.novel_last_check);
 		if(holder.txtLastCheck != null) {
-			holder.txtLastCheck.setText(" Last Check: " + page.getLastCheck().toString());
+			holder.txtLastCheck.setText("Last Check: " + page.getLastCheck().toString());
 		}
 		
 		holder.chkIsWatched = (CheckBox)row.findViewById(R.id.novel_is_watched);

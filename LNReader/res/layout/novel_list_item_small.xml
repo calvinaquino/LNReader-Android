@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/novel_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:paddingTop="10dp"
+        android:paddingBottom="14dp"
+        android:paddingRight="50dp"
+        android:gravity="center_vertical"
+        android:textSize="16dp"
+        android:text="@string/novel_title" />
+
+    <TextView
+        android:id="@+id/novel_last_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/novel_name"
+        android:layout_toLeftOf="@+id/novel_is_watched"
+        android:layout_alignParentLeft="true"
+        android:gravity="center_vertical"
+        android:text="@string/novel_last_update"
+        android:textColor="#888888"
+        android:textSize="10dp" />
+    
+    <TextView
+        android:id="@+id/novel_last_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/novel_name"
+        android:gravity="center_vertical"
+        android:text="@string/novel_last_update"
+        android:textColor="#888888"
+        android:textSize="10dp" />
+    
+    <CheckBox
+        android:id="@+id/novel_is_watched"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignBottom="@+id/novel_last_check"
+        android:layout_alignParentRight="true"
+        android:button="@android:drawable/btn_star"
+        android:checked="false"
+        android:focusable="false"
+        android:gravity="center" />
+
+</RelativeLayout>

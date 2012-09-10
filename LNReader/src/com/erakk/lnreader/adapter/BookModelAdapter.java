@@ -3,10 +3,12 @@ package com.erakk.lnreader.adapter;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,10 +51,16 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		return childPosition;
 	}
 
+	@SuppressWarnings("deprecation")
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View view, ViewGroup parent) {
 		PageModel child = getChild(groupPosition, childPosition);
 		LayoutInflater infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		view = infalInflater.inflate(R.layout.expandchapter_list_item, null);
+		int resourceId = R.layout.expandchapter_list_item;
+		Display display = ((Activity)context).getWindowManager().getDefaultDisplay();
+		if(display.getWidth() < 600) {
+			resourceId = R.layout.expandchapter_list_item_small; 
+		}
+		view = infalInflater.inflate(resourceId, null);
 		
 		TextView tv = (TextView) view.findViewById(R.id.novel_chapter);
 		tv.setText(child.getTitle());

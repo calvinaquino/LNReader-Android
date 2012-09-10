@@ -16,15 +16,15 @@
         android:paddingRight="65dp"
         android:paddingTop="12dp"
         android:text="@string/novel_chapter" />
-
+
     <TextView
         android:id="@+id/novel_is_downloaded"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/novel_chapter"
+        android:layout_height="fill_parent"
         android:layout_alignBottom="@+id/novel_chapter"
         android:layout_alignParentRight="true"
         android:layout_marginRight="20dp"
+        android:gravity="center"
         android:text="@string/novel_chapter_dl" />
     
     <TextView

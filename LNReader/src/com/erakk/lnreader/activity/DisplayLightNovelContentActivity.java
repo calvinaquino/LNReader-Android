@@ -16,6 +16,7 @@ import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -183,7 +184,12 @@ public class DisplayLightNovelContentActivity extends Activity {
 			BookModel book = pageModel.getBook();
 			if(book != null) {
 				ArrayList<PageModel> chapters = book.getChapterCollection();
-				jumpAdapter = new PageModelAdapter(this, R.layout.novel_list_item, chapters);
+				int resourceId = R.layout.novel_list_item;
+				Display display = getWindowManager().getDefaultDisplay();
+				if(display.getWidth() < 600) {
+					resourceId = R.layout.novel_list_item_small; 
+				}
+				jumpAdapter = new PageModelAdapter(this, resourceId, chapters);
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setTitle("Jump To");
 				builder.setAdapter(jumpAdapter, new OnClickListener() {
