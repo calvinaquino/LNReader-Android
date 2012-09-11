@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.service.UpdateService;
 
 
 public class MainActivity extends Activity {
@@ -21,6 +22,7 @@ public class MainActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         UIHelper.SetTheme(this, R.layout.activity_main);
         UIHelper.SetActionBarDisplayHomeAsUp(this, false);
     }
