@@ -5,7 +5,8 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.widget.Toast;
+import android.util.DisplayMetrics;
+import android.view.Display;
 
 /*
  * Class for handling all the UI with API Warning ==> @SuppressLint("NewApi")
@@ -51,5 +52,16 @@ public class UIHelper {
     	if(layoutId != null) {
     		activity.setContentView(layoutId);
     	}    	
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static boolean IsSmallScreen(Activity activity) {
+		DisplayMetrics metrics = new DisplayMetrics();
+		activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		Display display = activity.getWindowManager().getDefaultDisplay();
+		if (display.getWidth() < (600 * metrics.density)) {
+			return true;
+		}
+		return false;
 	}
 }

@@ -16,7 +16,6 @@ import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,7 +38,7 @@ import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
-@SuppressWarnings({ "deprecation" })
+@SuppressWarnings("deprecation")
 public class DisplayLightNovelContentActivity extends Activity {
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
 	private final Activity activity = this;
@@ -185,8 +184,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 			if(book != null) {
 				ArrayList<PageModel> chapters = book.getChapterCollection();
 				int resourceId = R.layout.novel_list_item;
-				Display display = getWindowManager().getDefaultDisplay();
-				if(display.getWidth() < 600) {
+				if(UIHelper.IsSmallScreen(this)) {
 					resourceId = R.layout.novel_list_item_small; 
 				}
 				jumpAdapter = new PageModelAdapter(this, resourceId, chapters);

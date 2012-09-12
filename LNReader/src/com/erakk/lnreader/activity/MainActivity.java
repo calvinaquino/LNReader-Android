@@ -14,7 +14,6 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.service.UpdateService;
 
 
 public class MainActivity extends Activity {

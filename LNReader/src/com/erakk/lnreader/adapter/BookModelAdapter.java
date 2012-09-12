@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.PageModel;
 
@@ -51,13 +51,11 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		return childPosition;
 	}
 
-	@SuppressWarnings("deprecation")
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View view, ViewGroup parent) {
 		PageModel child = getChild(groupPosition, childPosition);
 		LayoutInflater infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		int resourceId = R.layout.expandchapter_list_item;
-		Display display = ((Activity)context).getWindowManager().getDefaultDisplay();
-		if(display.getWidth() < 600) {
+		if(UIHelper.IsSmallScreen(((Activity)context))) {
 			resourceId = R.layout.expandchapter_list_item_small; 
 		}
 		view = infalInflater.inflate(resourceId, null);
