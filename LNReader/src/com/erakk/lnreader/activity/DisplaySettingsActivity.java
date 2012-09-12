@@ -8,9 +8,6 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceCategory;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -29,13 +26,15 @@ public class DisplaySettingsActivity extends PreferenceActivity {
     public void onCreate(Bundle savedInstanceState) {
 		// must be set before create any view when there is no layout
     	UIHelper.SetTheme(this, null);
+		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
+    	
 		super.onCreate(savedInstanceState);
     	activity = this;
         
         //This man is deprecated but but we may want to be bale to run on older API
         addPreferencesFromResource(R.xml.preferences);
         
-        updateViewColor();
+//        updateViewColor();
         
         Preference lockHorizontal = (Preference)  findPreference("lock_horizontal");
         lockHorizontal.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -43,11 +42,11 @@ public class DisplaySettingsActivity extends PreferenceActivity {
             public boolean onPreferenceClick(Preference p) {
         		if(p.getSharedPreferences().getBoolean("lock_horizontal", false)){
         			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-	        		Toast.makeText(getApplicationContext(), "Orientation Locked" , Toast.LENGTH_LONG).show();
+	        		Toast.makeText(getApplicationContext(), "Orientation Locked" , Toast.LENGTH_SHORT).show();
         		}
         		else {
-        			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
-	        		Toast.makeText(getApplicationContext(), "Orientation Unlocked" , Toast.LENGTH_LONG).show();
+        			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+	        		Toast.makeText(getApplicationContext(), "Orientation Unlocked" , Toast.LENGTH_SHORT).show();
         		}        		
         		return true;
             }
@@ -97,75 +96,6 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         UIHelper.Recreate(this);
     }    
     
-	@SuppressWarnings("deprecation")
-	private void updateViewColor() {
-    	// Views to be changed
-    	// update category
-    	PreferenceCategory preferenceUpdateCategory = (PreferenceCategory) findPreference("update_category");
-    	Spannable titleUpdateCategory = new SpannableString ( preferenceUpdateCategory.toString() );
-    	// updates interval
-    	Preference preferenceUpdateInterval = (Preference) findPreference("updates_interval");
-    	Spannable titleUpdateInterval = new SpannableString ( preferenceUpdateInterval.getTitle() );
-    	Spannable summaryUpdateInterval = new SpannableString ( preferenceUpdateInterval.getSummary() );
-    	// layout category
-    	Preference preferenceLayoutCategory = (Preference) findPreference("layout_category");
-    	Spannable titleLayoutCategory = new SpannableString ( preferenceLayoutCategory.getTitle() );
-    	// invert colors
-    	Preference preferenceInvertColors = (Preference) findPreference("invert_colors");
-    	Spannable titleInvertColors = new SpannableString ( preferenceInvertColors.getTitle() );
-    	Spannable summaryInvertColors = new SpannableString ( preferenceInvertColors.getSummary() );
-    	// lock horizontal
-    	Preference preferenceLockHorizontal = (Preference) findPreference("lock_horizontal");
-    	Spannable titleLockHorizontal = new SpannableString ( preferenceLockHorizontal.getTitle() );
-    	Spannable summaryLockHorizontal = new SpannableString ( preferenceLockHorizontal.getSummary() );
-    	// show images
-    	Preference preferenceShowImages = (Preference) findPreference("show_images");
-    	Spannable titleShowImages = new SpannableString ( preferenceShowImages.getTitle() );
-    	Spannable summaryShowImages = new SpannableString ( preferenceShowImages.getSummary() );
-    	// storage category
-    	Preference preferenceStorageCategory = (Preference) findPreference("storage_category");
-    	Spannable titleStorageCategory = new SpannableString ( preferenceStorageCategory.getTitle() );
-    	// clear database
-    	Preference preferenceClearDatabase = (Preference) findPreference("clear_database");
-    	Spannable titleClearDatabase = new SpannableString ( preferenceClearDatabase.getTitle() );
-    	Spannable summaryClearDatabase = new SpannableString ( preferenceClearDatabase.getSummary() );
-    	// clear image cache
-    	Preference preferenceClearImageCache = (Preference) findPreference("clear_image_cache");
-    	Spannable titleClearImageCache = new SpannableString ( preferenceClearImageCache.getTitle() );
-    	Spannable summaryClearImageCache = new SpannableString ( preferenceClearImageCache.getSummary() );
-    	
-    	// =====
-    	// update category
-    	// =====
-        preferenceUpdateCategory.setTitle( titleUpdateCategory );
-    	// updates interval
-        preferenceUpdateInterval.setSummary( summaryUpdateInterval );
-        preferenceUpdateInterval.setTitle( titleUpdateInterval );
-    	// =====
-    	// layout category
-    	// =====
-        preferenceLayoutCategory.setTitle( titleLayoutCategory );
-    	// invert colors
-        preferenceInvertColors.setSummary( summaryInvertColors );
-        preferenceInvertColors.setTitle( titleInvertColors );
-    	// lock horizontal
-        preferenceLockHorizontal.setSummary( summaryLockHorizontal );
-        preferenceLockHorizontal.setTitle( titleLockHorizontal );
-
-    	// show images
-        preferenceShowImages.setSummary( summaryShowImages );
-        preferenceShowImages.setTitle( titleShowImages );
-    	// =====
-    	// storage category
-    	// =====
-        preferenceStorageCategory.setTitle( titleStorageCategory );
-    	// clear database
-        preferenceClearDatabase.setSummary( summaryClearDatabase );
-        preferenceClearDatabase.setTitle( titleClearDatabase );
-    	// clear image cache
-        preferenceClearImageCache.setSummary( summaryClearImageCache );
-        preferenceClearImageCache.setTitle( titleClearImageCache );
-    }
 	
 	private void DeleteRecursive(File fileOrDirectory) {
 	    if (fileOrDirectory.isDirectory())
@@ -174,21 +104,21 @@ public class DisplaySettingsActivity extends PreferenceActivity {
 	    fileOrDirectory.delete();
 	}
     
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-    	menu.add(Menu.NONE, 0, 0, "Show current settings");
-    	return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-    	switch (item.getItemId()) {
-    		case 0:
-    			startActivity(new Intent(this, DisplaySettingsActivity.class));
-    			return true;
-    	}
-    	return false;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//    	menu.add(Menu.NONE, 0, 0, "Show current settings");
+//    	return super.onCreateOptionsMenu(menu);
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//    	switch (item.getItemId()) {
+//    		case 0:
+//    			startActivity(new Intent(this, DisplaySettingsActivity.class));
+//    			return true;
+//    	}
+//    	return false;
+//    }
 
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		// TODO Auto-generated method stub

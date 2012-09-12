@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 /*
  * Class for handling all the UI with API Warning ==> @SuppressLint("NewApi")
@@ -15,9 +16,11 @@ public class UIHelper {
 	{
 		if(PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean("lock_horizontal", false)) {
 			activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    		Toast.makeText(activity, "Orientation Locked" , Toast.LENGTH_SHORT).show();
     	}
     	else {
-    		activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
+    		activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    		Toast.makeText(activity, "Orientation Unlocked" , Toast.LENGTH_SHORT).show();
     	}
 	}
 		
