@@ -157,7 +157,12 @@ public class BakaTsukiParser {
 					 * parse book method 1:
 					 * Look for <h3> after <h2> containing the volume list.
 					 */
-					books = parseBooksMethod1(novel, h2);
+					ArrayList<BookModel> tempBooks = parseBooksMethod1(novel, h2);
+					
+					if(tempBooks != null && tempBooks.size() > 0 ) 
+					{
+						books.addAll(tempBooks);
+					}
 					
 					/*
 					 * parse book method 2:
@@ -166,7 +171,11 @@ public class BakaTsukiParser {
 					 */
 					if(books.size() == 0) {
 						Log.d(TAG, "No books found, use method 2");
-						books = parseBooksMethod2(novel, h2);
+						tempBooks = parseBooksMethod2(novel, h2);
+						if(tempBooks != null && tempBooks.size() > 0 ) 
+						{
+							books.addAll(tempBooks);
+						}
 					}
 					/*
 					 * parse book method 3:
@@ -175,7 +184,11 @@ public class BakaTsukiParser {
 					 */
 					if(books.size() == 0) {
 						Log.d(TAG, "No books found, use method 3");
-						books = parseBooksMethod3(novel, h2);
+						tempBooks = parseBooksMethod3(novel, h2);
+						if(tempBooks != null && tempBooks.size() > 0 ) 
+						{
+							books.addAll(tempBooks);
+						}
 					}
 				}
 			}			
