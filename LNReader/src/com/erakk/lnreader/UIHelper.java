@@ -16,11 +16,9 @@ public class UIHelper {
 	{
 		if(PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean("lock_horizontal", false)) {
 			activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-    		Toast.makeText(activity, "Orientation Locked" , Toast.LENGTH_SHORT).show();
     	}
     	else {
     		activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-    		Toast.makeText(activity, "Orientation Unlocked" , Toast.LENGTH_SHORT).show();
     	}
 	}
 		
