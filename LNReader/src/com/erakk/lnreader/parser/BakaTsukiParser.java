@@ -137,14 +137,15 @@ public class BakaTsukiParser {
 				//Log.d(TAG, "checking h2: " +h2.text() + "\n" + h2.id());
 				Elements spans = h2.select("span");
 				if(spans.size() > 0) {
-					// find span with id containing "_by" or 'Full_Text' or start with Page Name
+					// find span with id containing "_by" or 'Full_Text' or contains with Page Name or "Side_Stor*"
 					boolean containsBy = false;
 					for(Iterator<Element> iSpan = spans.iterator(); iSpan.hasNext(); ) {
 						Element s = iSpan.next();
 						Log.d(TAG, "Checking: " + s.id());
 						if(s.id().contains("_by") || 
-						   s.id().contains("Full_Text")|| 
-						   s.id().startsWith(novel.getPage())) {
+						   s.id().contains("Full_Text") || 
+						   s.id().contains(novel.getPage()) ||
+						   s.id().contains("Side_Stor")) {
 							containsBy = true;
 							break;
 						}
