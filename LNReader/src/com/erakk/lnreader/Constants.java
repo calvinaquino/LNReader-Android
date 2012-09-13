@@ -15,7 +15,7 @@ public class Constants {
 	public static final String EXTRA_ONLY_WATCHED = "com.erakk.lnreader.ONLY_WATCHED";
 	public static final String EXTRA_IMAGE_URL = "com.erakk.lnreader.IMAGE_URL";
 	
-	public static final String IMAGE_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/lnreader_cache";
+	public static final String IMAGE_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files";
 	
 	public static final int IMAGE_DOWNLOAD_RETRY = 3;
 	public static final int PAGE_DOWNLOAD_RETRY = 3;
