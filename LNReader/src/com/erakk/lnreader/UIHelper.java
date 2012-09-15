@@ -23,7 +23,12 @@ public class UIHelper {
     		activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     	}
 	}
-		
+	
+	/**
+	 * Set action bar behaviour, only for API Level 11 and up.
+	 * @param activity target activity
+	 * @param enable enable up behaviour
+	 */
 	@SuppressLint("NewApi")
 	public static void SetActionBarDisplayHomeAsUp(Activity activity, boolean enable) {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
@@ -31,6 +36,10 @@ public class UIHelper {
 		CheckScreenRotation(activity);
 	}
 	
+	/**
+	 * Recreate the activity
+	 * @param activity target activity
+	 */
 	@SuppressLint("NewApi")
 	public static void Recreate(Activity activity) {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
@@ -42,8 +51,12 @@ public class UIHelper {
 		CheckScreenRotation(activity);
 	}
 	
+	/**
+	 * Set up the application theme based on Preferences:Constants.PREF_INVERT_COLOR
+	 * @param activity target activity
+	 * @param layoutId layout to use
+	 */
 	public static void SetTheme(Activity activity, Integer layoutId) {
-		// set before create any view
     	if(PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, false)) {    		
     		activity.setTheme(R.style.AppTheme2);
     	}
@@ -55,6 +68,11 @@ public class UIHelper {
     	}    	
 	}
 	
+	/**
+	 * Check whether the screen width is less than 600dp
+	 * @param activity target activity
+	 * @return true if less than 600dp
+	 */
 	@SuppressWarnings("deprecation")
 	public static boolean IsSmallScreen(Activity activity) {
 		DisplayMetrics metrics = new DisplayMetrics();
@@ -66,6 +84,10 @@ public class UIHelper {
 		return false;
 	}
 	
+	/**
+	 * Toggle the Preferences:Constants.PREF_INVERT_COLOR
+	 * @param activity target activity
+	 */
 	public static void ToggleColorPref(Activity activity) { 
     	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(activity);
     	SharedPreferences.Editor editor = sharedPrefs.edit();
