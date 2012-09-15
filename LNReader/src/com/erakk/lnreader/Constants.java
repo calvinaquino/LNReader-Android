@@ -26,4 +26,9 @@ public class Constants {
 	public static final int TIMEOUT = 60000;
 	
 	public static final String TAG = "LNReader";
+	
+	// Shared Preferences keys
+	public static final String PREF_INVERT_COLOR = "invert_colors";
+	public static final String PREF_LOCK_HORIZONTAL = "lock_horizontal";
+	public static final String PREF_LAST_READ = "last_read";
 }

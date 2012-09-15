@@ -10,6 +10,7 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 
 import com.erakk.lnreader.dao.NovelsDao;
 
@@ -19,6 +20,7 @@ import com.erakk.lnreader.dao.NovelsDao;
 public class LNReaderApplication extends Application {
 	private NovelsDao novelsDao;
 	private static LNReaderApplication instance;
+	
 	@Override
 	public void onCreate()
 	{

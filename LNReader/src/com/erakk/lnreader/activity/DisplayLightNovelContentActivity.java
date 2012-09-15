@@ -62,14 +62,12 @@ public class DisplayLightNovelContentActivity extends Activity {
 
 		try {
 			pageModel = dao.getPageModel(getIntent().getStringExtra(Constants.EXTRA_PAGE), null);
-			//ToggleProgressBar(true);
 			task = new LoadNovelContentTask();
 			task.execute(new PageModel[] {pageModel});
 		} catch (Exception e) {
 			e.printStackTrace();
 			Log.d(TAG, "Failed to get the PageModel for content: " + getIntent().getStringExtra(Constants.EXTRA_PAGE));
 		}
-		Log.d(TAG, "onCreate called");
 	}
 	
 	@Override
@@ -94,7 +92,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 		return true;
 	}
 
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -117,9 +114,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 			/*
 			 * Implement code to invert colors
 			 */
-			toggleColorPref();
+			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);
-			Toast.makeText(getApplicationContext(), "Colors inverted: ", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.menu_chapter_previous:
 			
@@ -201,18 +197,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 			}
 		}
 	}
-	
-	private void toggleColorPref () { 
-    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	SharedPreferences.Editor editor = sharedPrefs.edit();
-    	if (sharedPrefs.getBoolean("invert_colors", false)) {
-    		editor.putBoolean("invert_colors", false);
-    	}
-    	else {
-    		editor.putBoolean("invert_colors", true);
-    	}
-    	editor.commit();
-    }
 
 	private void setLastReadState() {
 		if(content!= null) {
@@ -239,7 +223,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 			}
 			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 	    	SharedPreferences.Editor editor = sharedPrefs.edit();
-	    	editor.putString("last_read", content.getPage());
+	    	editor.putString(Constants.PREF_LAST_READ, content.getPage());
 	    	editor.commit();
 		}
 	}
@@ -250,7 +234,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	
 	public boolean getColorPreferences(){
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	return sharedPrefs.getBoolean("invert_colors", false);
+    	return sharedPrefs.getBoolean(Constants.PREF_INVERT_COLOR, false);
 	}
 	
 	public class LoadNovelContentTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelContentModel>> implements ICallbackNotifier{
@@ -318,9 +302,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 				LNReaderApplication app = (LNReaderApplication) getApplication();
 				String html = "<html><head><style type=\"text/css\">" + app.ReadCss(styleId) + "</style></head><body>" + content.getContent() + "</body></html>";
 				wv.loadDataWithBaseURL(Constants.BASE_URL, html, "text/html", "utf-8", "");
-				
-				//Log.d("LoadNovelContentTask", content.getPage());
-				
+
 				wv.setInitialScale((int) (content.getLastZoom() * 100));
 				
 				wv.setPictureListener(new PictureListener(){
@@ -330,7 +312,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 					public void onNewPicture(WebView arg0, Picture arg1) {
 						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
 						if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
-							//wv.setScrollY(content.getLastYScroll());
 							wv.scrollTo(0, content.getLastYScroll());
 							needScroll = false;
 						}						
@@ -343,14 +324,14 @@ public class DisplayLightNovelContentActivity extends Activity {
 					
 					setTitle(pageModel.getTitle() + " (" + volume + ")");
 				} catch (Exception ex) {
-					ex.printStackTrace();
+					Log.e(TAG, "Error when setting title: " + ex.getMessage(), ex);
 				}
 				Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 				
 				buildTOCMenu();
 			}
 			else {
-				e.printStackTrace();
+				Log.e(TAG, "Error when loading novel content: " + e.getMessage(), e);
 				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 			}
 			ToggleProgressBar(false);

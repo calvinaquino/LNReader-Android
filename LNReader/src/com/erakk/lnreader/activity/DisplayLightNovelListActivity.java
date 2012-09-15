@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -48,7 +47,8 @@ public class DisplayLightNovelListActivity extends ListActivity{
 	private LoadNovelsTask task = null;
 	private DownloadNovelDetailsTask downloadTask = null;
 	private ProgressDialog dialog;
-
+	private boolean isInverted;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -56,7 +56,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 		
 		registerForContextMenu(getListView());
-		boolean onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);//intent.getExtras().getBoolean(Constants.EXTRA_ONLY_WATCHED);
+		boolean onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
 
 		//Encapsulated in updateContent
 		updateContent(false, onlyWatched);
@@ -68,6 +68,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 			setTitle("Light Novels");
 		}
 		registerForContextMenu(getListView());
+		isInverted = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
 	}
 
 	@Override
@@ -113,7 +114,9 @@ public class DisplayLightNovelListActivity extends ListActivity{
 	@Override
     protected void onRestart() {
         super.onRestart();
-        UIHelper.Recreate(this);
+        if(isInverted != PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false)) {
+        	UIHelper.Recreate(this);
+        }
     }
 
 	@Override
@@ -132,9 +135,8 @@ public class DisplayLightNovelListActivity extends ListActivity{
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.invert_colors:			
-			toggleColorPref();
-			UIHelper.Recreate(this);		
-			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
+			UIHelper.ToggleColorPref(this);
+			UIHelper.Recreate(this);
 			return true;
 		case android.R.id.home:
 			super.onBackPressed();
@@ -159,11 +161,9 @@ public class DisplayLightNovelListActivity extends ListActivity{
 	        CheckBox checkBox = (CheckBox) findViewById(R.id.novel_is_watched);
 	        if (checkBox.isChecked()) {
 	        	checkBox.setChecked(false);
-	        	Toast.makeText(this, "Removed from Watch List", Toast.LENGTH_SHORT).show();
 	        }
 	        else {
 	        	checkBox.setChecked(true);
-	        	Toast.makeText(this, "Added to Watch List", Toast.LENGTH_SHORT).show();
 	        }
 			return true;
 		case R.id.download_novel:			
@@ -176,7 +176,6 @@ public class DisplayLightNovelListActivity extends ListActivity{
 				PageModel novel = listItems.get(info.position);
 				downloadTask = new DownloadNovelDetailsTask();
 				downloadTask.execute(new PageModel[] {novel});
-				Toast.makeText(this, "Downloading Novel: " + novel.getTitle(), Toast.LENGTH_SHORT).show();
 			}
 			return true;
 		default:
@@ -199,8 +198,8 @@ public class DisplayLightNovelListActivity extends ListActivity{
 			new LoadNovelsTask().execute(new Boolean[] {isRefresh, onlyWatched});
 			setListAdapter(adapter);
 		} catch (Exception e) {
-			e.printStackTrace();
-			Toast.makeText(this, e.getClass().toString() +": " + e.getMessage(), Toast.LENGTH_SHORT).show();					
+			Log.e(TAG, e.getMessage(), e);
+			Toast.makeText(this, "Error when updating: " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
 	
@@ -213,19 +212,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 			dialog.dismiss();
 		}
 	}
-	
-	private void toggleColorPref () { 
-    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	SharedPreferences.Editor editor = sharedPrefs.edit();
-    	if (sharedPrefs.getBoolean("invert_colors", false)) {
-    		editor.putBoolean("invert_colors", false);
-    	}
-    	else {
-    		editor.putBoolean("invert_colors", true);
-    	}
-    	editor.commit();
-    }
-    	
+		
 	public class LoadNovelsTask extends AsyncTask<Boolean, String, AsyncTaskResult<ArrayList<PageModel>>>  implements ICallbackNotifier {
     	private boolean refreshOnly = false;
     	private boolean onlyWatched = false;
@@ -260,7 +247,6 @@ public class DisplayLightNovelListActivity extends ListActivity{
 						return new AsyncTaskResult<ArrayList<PageModel>>(dao.getNovels(this));
 					}
 				}
-				//return new AsyncTaskResult<ArrayList<PageModel>>(listItems);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return new AsyncTaskResult<ArrayList<PageModel>>(e);

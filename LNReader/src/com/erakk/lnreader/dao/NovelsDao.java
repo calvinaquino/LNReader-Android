@@ -329,55 +329,57 @@ public class NovelsDao {
 				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 			}
 			
-			// check if page model exist
-			PageModel novelPage = getPageModel(page.getPage(), notifier);
-			page.setParent("Main_Page"); // insurance
-			
-			// get the last update time
-			PageModel novelPageTemp = getPageModelFromInternet(page.getPage(), notifier);
-			if(novelPageTemp != null) {
-				page.setLastUpdate(novelPageTemp.getLastUpdate());
-				page.setLastCheck(new Date());
-			}
-			// save the changes
-			synchronized (dbh) {
-				SQLiteDatabase db = dbh.getWritableDatabase();
-				try{
-					page = dbh.insertOrUpdatePageModel(db, page);
+			if(novel != null){
+				page.setParent("Main_Page"); // insurance
+				// get the last update time from internet
+				PageModel novelPageTemp = getPageModelFromInternet(page.getPage(), notifier);
+				if(novelPageTemp != null) {
+					page.setLastUpdate(novelPageTemp.getLastUpdate());
+					page.setLastCheck(new Date());
+					novel.setLastUpdate(novelPageTemp.getLastUpdate());
+					novel.setLastCheck(new Date());
 				}
-				finally{
-					db.close();
+				else {
+					page.setLastUpdate(new Date());
+					page.setLastCheck(new Date());
+					novel.setLastUpdate(new Date());
+					novel.setLastCheck(new Date());
 				}
-			}
-			
-			if(novelPage!= null)
-				novel.setLastUpdate(novelPage.getLastUpdate());
-			else
-				novel.setLastUpdate(new Date());
-	
-			synchronized (dbh) {
-				// insert to DB and get saved value
-				SQLiteDatabase db = dbh.getWritableDatabase();
-				try{
-					db.beginTransaction();
-					novel = dbh.insertNovelDetails(db, novel);
-					db.setTransactionSuccessful();
+				// save the changes
+				synchronized (dbh) {
+					SQLiteDatabase db = dbh.getWritableDatabase();
+					try{
+						page = dbh.insertOrUpdatePageModel(db, page);
+					}
+					finally{
+						db.close();
+					}
 				}
-				finally{
-					db.endTransaction();
-					db.close();
+
+				synchronized (dbh) {
+					// insert to DB and get saved value
+					SQLiteDatabase db = dbh.getWritableDatabase();
+					try{
+						db.beginTransaction();
+						novel = dbh.insertNovelDetails(db, novel);
+						db.setTransactionSuccessful();
+					}
+					finally{
+						db.endTransaction();
+						db.close();
+					}
 				}
+				// download cover image
+				if (novel.getCoverUrl() != null) {
+					DownloadFileTask task = new DownloadFileTask(notifier);
+					ImageModel image = task.downloadImage(novel.getCoverUrl());
+					// TODO: need to save to db?
+					Log.d("Image", image.toString());
+				}
+
+				Log.d(TAG, "Complete getting Novel Details from internet: " + page.getPage());
+				break;
 			}
-			// download cover image
-			if (novel.getCoverUrl() != null) {
-				DownloadFileTask task = new DownloadFileTask(notifier);
-				ImageModel image = task.downloadImage(novel.getCoverUrl());
-				// TODO: need to save to db?
-				Log.d("Image", image.toString());
-			}
-	
-			Log.d(TAG, "Complete getting Novel Details from internet: " + page.getPage());
-			break;
 		}
 		return novel;
 	}

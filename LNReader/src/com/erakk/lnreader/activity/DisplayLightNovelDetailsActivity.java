@@ -6,7 +6,6 @@ import java.util.Iterator;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -52,6 +51,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     private LoadNovelDetailsTask task = null;
     
 	private ProgressDialog dialog;
+	private boolean isInverted;
     
 	@Override
      public void onCreate(Bundle savedInstanceState) {
@@ -85,12 +85,15 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 		});
     	
         setTitle(page.getTitle());
+        isInverted = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
     }
     
 	@Override
     protected void onRestart() {
         super.onRestart();
-        UIHelper.Recreate(this);
+        if(isInverted != PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false)) {
+        	UIHelper.Recreate(this);
+        }
     }
     
     public void onStop(){
@@ -122,9 +125,8 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.invert_colors:			
-			toggleColorPref();
+			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);
-			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
 			return true;
         case android.R.id.home:
         	super.onBackPressed();
@@ -172,9 +174,6 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			
 			downloadTask = new DownloadNovelContentTask((PageModel[]) downloadingChapters.toArray(new PageModel[downloadingChapters.size()]));
 			downloadTask.execute();
-			
-			Toast.makeText(this, "Download this Volume: " + book.getTitle(),
-					Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.clear_volume:
 			
@@ -210,7 +209,6 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			chapter = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
 			downloadTask = new DownloadNovelContentTask(new PageModel[] { chapter});
 			downloadTask.execute();
-			Toast.makeText(this, "Download this chapter: " + chapter.getTitle(), Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.clear_chapter:
 			
@@ -240,19 +238,6 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 		}
 	}
 	
-	private void toggleColorPref () { 
-    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	SharedPreferences.Editor editor = sharedPrefs.edit();
-    	if (sharedPrefs.getBoolean("invert_colors", false)) {
-    		editor.putBoolean("invert_colors", false);
-    	}
-    	else {
-    		editor.putBoolean("invert_colors", true);
-    	}
-    	editor.commit();
-    	//Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
-    }
-
     private void updateContent ( boolean willRefresh) {
 		task = new LoadNovelDetailsTask();
 		task.refresh = willRefresh;
@@ -298,8 +283,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 					return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				Log.e(TAG, e.getClass().toString() + ": " + e.getMessage());
+				Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
 				return new AsyncTaskResult<NovelCollectionModel>(e);
 			}
 		}
@@ -342,14 +326,13 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 		        	bookModelAdapter = new BookModelAdapter(DisplayLightNovelDetailsActivity.this, novelCol.getBookCollections());
 		        	expandList.setAdapter(bookModelAdapter);
 				} catch (Exception e2) {
-					e2.getStackTrace();
+					Log.e(TAG, "Error when setting up chapter list: " + e2.getMessage(), e2);
 					Toast.makeText(DisplayLightNovelDetailsActivity.this, e2.getClass().toString() +": " + e2.getMessage(), Toast.LENGTH_SHORT).show();
 				}				
 			}
 			else {
-				e.printStackTrace();
+				Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
 				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
-				Log.e(TAG, e.getClass().toString() + ": " + e.getMessage());
 			}
 			ToggleProgressBar(false);
 		}		
@@ -419,7 +402,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 				}
 			}
 			else {
-				e.printStackTrace();
+				Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
 				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 			}
 			ToggleProgressBar(false);

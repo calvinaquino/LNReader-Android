@@ -31,30 +31,28 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         //This man is deprecated but but we may want to be bale to run on older API
         addPreferencesFromResource(R.xml.preferences);
         
-//        updateViewColor();
-        
-        Preference lockHorizontal = (Preference)  findPreference("lock_horizontal");
+        Preference lockHorizontal = (Preference)  findPreference(Constants.PREF_LOCK_HORIZONTAL);
         lockHorizontal.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
         	@Override
             public boolean onPreferenceClick(Preference p) {
-        		if(p.getSharedPreferences().getBoolean("lock_horizontal", false)){
+        		if(p.getSharedPreferences().getBoolean(Constants.PREF_LOCK_HORIZONTAL, false)){
         			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-	        		Toast.makeText(getApplicationContext(), "Orientation Locked" , Toast.LENGTH_SHORT).show();
+	        		//Toast.makeText(getApplicationContext(), "Orientation Locked" , Toast.LENGTH_SHORT).show();
         		}
         		else {
         			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-	        		Toast.makeText(getApplicationContext(), "Orientation Unlocked" , Toast.LENGTH_SHORT).show();
+	        		//Toast.makeText(getApplicationContext(), "Orientation Unlocked" , Toast.LENGTH_SHORT).show();
         		}        		
         		return true;
             }
         });
         
-        Preference invertColors = (Preference)  findPreference("invert_colors");
+        Preference invertColors = (Preference)  findPreference(Constants.PREF_INVERT_COLOR);
         invertColors.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
         	@Override
             public boolean onPreferenceClick(Preference p) {
         		UIHelper.Recreate(activity);
-        		Toast.makeText(getApplicationContext(), "Color Inverted", Toast.LENGTH_LONG).show();        		
+        		//Toast.makeText(getApplicationContext(), "Color Inverted", Toast.LENGTH_LONG).show();        		
                 return true;
             }
         });
@@ -91,8 +89,7 @@ public class DisplaySettingsActivity extends PreferenceActivity {
     protected void onRestart() {
         super.onRestart();
         UIHelper.Recreate(this);
-    }    
-    
+    }
 	
 	private void DeleteRecursive(File fileOrDirectory) {
 	    if (fileOrDirectory.isDirectory())
@@ -100,23 +97,7 @@ public class DisplaySettingsActivity extends PreferenceActivity {
 	            DeleteRecursive(child);
 	    fileOrDirectory.delete();
 	}
-    
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//    	menu.add(Menu.NONE, 0, 0, "Show current settings");
-//    	return super.onCreateOptionsMenu(menu);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//    	switch (item.getItemId()) {
-//    		case 0:
-//    			startActivity(new Intent(this, DisplaySettingsActivity.class));
-//    			return true;
-//    	}
-//    	return false;
-//    }
-
+	
 	public boolean onPreferenceChange(Preference preference, Object newValue) {
 		// TODO Auto-generated method stub
 		return false;

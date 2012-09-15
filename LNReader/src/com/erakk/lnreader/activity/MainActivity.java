@@ -2,7 +2,6 @@ package com.erakk.lnreader.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
@@ -45,7 +44,7 @@ public class MainActivity extends Activity {
         		/*
         		 * Implement code to load last chapter read
         		 */
-        		String lastReadPage = PreferenceManager.getDefaultSharedPreferences(this).getString("last_read", "");
+        		String lastReadPage = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LAST_READ, "");
         		if(lastReadPage.length() > 0) {
         			Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
 			        intent.putExtra(Constants.EXTRA_PAGE, lastReadPage);
@@ -57,9 +56,8 @@ public class MainActivity extends Activity {
         		}
         		return true;
         	case R.id.invert_colors:    			
-        		toggleColorPref();
+        		UIHelper.ToggleColorPref(this);
         		UIHelper.Recreate(this);    			
-    			Toast.makeText(getApplicationContext(), "Colors inverted", Toast.LENGTH_SHORT).show();
     			return true;
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
@@ -67,19 +65,7 @@ public class MainActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
-    
-    private void toggleColorPref () { 
-    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	SharedPreferences.Editor editor = sharedPrefs.edit();
-    	if (sharedPrefs.getBoolean("invert_colors", false)) {
-    		editor.putBoolean("invert_colors", false);
-    	}
-    	else {
-    		editor.putBoolean("invert_colors", true);
-    	}
-    	editor.commit();
-    }
-    
+	
     public void openNovelList(View view) {
     	Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
     	intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);

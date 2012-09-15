@@ -2,6 +2,7 @@ package com.erakk.lnreader;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -15,7 +16,7 @@ public class UIHelper {
 
 	private static void CheckScreenRotation(Activity activity)
 	{
-		if(PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean("lock_horizontal", false)) {
+		if(PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_LOCK_HORIZONTAL, false)) {
 			activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     	}
     	else {
@@ -43,7 +44,7 @@ public class UIHelper {
 	
 	public static void SetTheme(Activity activity, Integer layoutId) {
 		// set before create any view
-    	if(PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("invert_colors", false)) {    		
+    	if(PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, false)) {    		
     		activity.setTheme(R.style.AppTheme2);
     	}
     	else {
@@ -64,4 +65,16 @@ public class UIHelper {
 		}
 		return false;
 	}
+	
+	public static void ToggleColorPref(Activity activity) { 
+    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(activity);
+    	SharedPreferences.Editor editor = sharedPrefs.edit();
+    	if (sharedPrefs.getBoolean(Constants.PREF_INVERT_COLOR, false)) {
+    		editor.putBoolean(Constants.PREF_INVERT_COLOR, false);
+    	}
+    	else {
+    		editor.putBoolean(Constants.PREF_INVERT_COLOR, true);
+    	}
+    	editor.commit();
+    }
 }
