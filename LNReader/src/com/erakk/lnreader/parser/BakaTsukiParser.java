@@ -222,7 +222,11 @@ public class BakaTsukiParser {
 				Element chapterElement = bookElement;
 				do{
 					chapterElement = chapterElement.nextElementSibling();
-					if(chapterElement.tagName() == "h3") walkChapter = false;
+					if(chapterElement == null || 
+					   chapterElement.tagName() == "h2" || 
+					   chapterElement.tagName() == "h3") {
+						walkChapter = false;
+					}
 					else if(chapterElement.tagName() == "dl" ||
 							chapterElement.tagName() == "ul" ||
 							chapterElement.tagName() == "div") {
