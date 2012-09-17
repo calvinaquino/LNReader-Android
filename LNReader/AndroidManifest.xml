@@ -11,19 +11,13 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:icon="@drawable/ic_launcher_lnreader"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:name="com.erakk.lnreader.LNReaderApplication" >
-        <service 
-            android:name=".service.UpdateService"
-            android:enabled="true"
-            android:process=":NovelUpdate" 
-  			android:icon="@drawable/ic_launcher"
-  			android:label="@string/app_name" >
-        </service>
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/title_activity_main" >
@@ -73,6 +67,21 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.erakk.lnreader.activity.DisplayLightNovelContentActivity" />
         </activity>
+        
+        <service
+            android:name="UpdateService"
+            android:icon="@drawable/ic_launcher_lnreader"
+            android:label="@string/service_name" >
+        </service>
+
+        <receiver android:name="MyScheduleReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="MyStartServiceReceiver" >
+        </receiver>
+        
     </application>
 
 </manifest>

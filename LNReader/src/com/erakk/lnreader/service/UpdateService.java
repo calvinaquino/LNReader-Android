@@ -1,51 +1,53 @@
 package com.erakk.lnreader.service;
 
-import android.R;
-import android.app.IntentService;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import android.app.Service;
 import android.content.Intent;
-import android.util.Log;
+import android.os.Binder;
+import android.os.IBinder;
 
-import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.activity.DisplayLightNovelDetailsActivity;
+public class UpdateService extends Service {
+  private final IBinder mBinder = new MyBinder();
+  private ArrayList<String> list = new ArrayList<String>();
 
-public class UpdateService extends IntentService {
+  @Override
+  public int onStartCommand(Intent intent, int flags, int startId) {
 
-	String ns = Context.NOTIFICATION_SERVICE;
-	NotificationManager NotificationManager = (NotificationManager) getSystemService(ns);
-	
-	public UpdateService() {
-		super(Constants.TAG);
-	}
-	
-	@Override
-	protected void onHandleIntent(Intent intent) {
-	    Log.d(Constants.TAG, "onHandleIntent for action: " + intent.getAction());
-	    notifyUser();
-	    
-	}
+    Random random = new Random();
+    if (random.nextBoolean()) {
+      list.add("Linux");
+    }
+    if (random.nextBoolean()) {
+      list.add("Android");
+    }
+    if (random.nextBoolean()) {
+      list.add("iPhone");
+    }
+    if (random.nextBoolean()) {
+      list.add("Windows7");
+    }
+    if (list.size() >= 20) {
+      list.remove(0);
+    }
+    return Service.START_NOT_STICKY;
+  }
 
-	@SuppressWarnings({ "deprecation", "unused" })
-	private void notifyUser() {
-		int icon = R.drawable.arrow_down_float;
-		CharSequence tickerText = "Hello";
-		long when = System.currentTimeMillis();
+  @Override
+  public IBinder onBind(Intent arg0) {
+    return mBinder;
+  }
 
-		Notification notification = new Notification(icon, tickerText, when);
-		
-		Context context = getApplicationContext();
-		CharSequence contentTitle = "LNReader Notification";
-		CharSequence contentText = "Novel Update Test";
-		Intent notificationIntent = new Intent(this, DisplayLightNovelDetailsActivity.class);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+  public class MyBinder extends Binder {
+    public UpdateService getService() {
+      return UpdateService.this;
+    }
+  }
 
-		notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
-		
-		final int HELLO_ID = 1;
+  public List<String> getWordList() {
+    return list;
+  }
 
-		NotificationManager.notify(HELLO_ID, notification);
-	}
-}
+} 

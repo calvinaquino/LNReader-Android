@@ -21,5 +21,6 @@
     <string name="novel_chapter">Novel Chapter</string>
     <string name="novel_chapter_dl">(DL)</string>
     <string name="list_empty">List is Empty</string>
+    <string name="service_name">LNReader Update</string>
 
 </resources>

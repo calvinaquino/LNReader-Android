@@ -1,21 +1,30 @@
 package com.erakk.lnreader.activity;
 
+import java.util.List;
+
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.service.UpdateService;
 
 
 public class MainActivity extends Activity {
+	  private UpdateService s;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -23,6 +32,8 @@ public class MainActivity extends Activity {
 
         UIHelper.SetTheme(this, R.layout.activity_main);
         UIHelper.SetActionBarDisplayHomeAsUp(this, false);
+
+        doBindService();
     }
 
     @Override
@@ -65,6 +76,38 @@ public class MainActivity extends Activity {
         }
         return super.onOptionsItemSelected(item);
     }
+	
+	private ServiceConnection mConnection = new ServiceConnection() {
+
+	    public void onServiceConnected(ComponentName className, IBinder binder) {
+	      s = ((UpdateService.MyBinder) binder).getService();
+	      Toast.makeText(MainActivity.this, "Connected",
+	          Toast.LENGTH_SHORT).show();
+	    }
+
+	    public void onServiceDisconnected(ComponentName className) {
+	      s = null;
+	    }
+	  };
+	  
+	  private ArrayAdapter<String> adapter;
+	  private List<String> wordList;
+
+	  void doBindService() {
+	    bindService(new Intent(this, UpdateService.class), mConnection,
+	        Context.BIND_AUTO_CREATE);
+	  }
+
+	  public void showServiceData(View view) {
+	    if (s != null) {
+
+	      Toast.makeText(this, "Number of elements" + s.getWordList().size(),
+	          Toast.LENGTH_SHORT).show();
+	      wordList.clear();
+	      wordList.addAll(s.getWordList());
+	      adapter.notifyDataSetChanged();
+	    }
+	  }
 	
     public void openNovelList(View view) {
     	Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
