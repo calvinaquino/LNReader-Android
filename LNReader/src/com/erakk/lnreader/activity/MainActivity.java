@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +25,7 @@ import com.erakk.lnreader.service.UpdateService;
 
 
 public class MainActivity extends Activity {
-	  private UpdateService s;
+	  private UpdateService service;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,20 +87,22 @@ public class MainActivity extends Activity {
 	private ServiceConnection mConnection = new ServiceConnection() {
 
 	    public void onServiceConnected(ComponentName className, IBinder binder) {
-	      s = ((UpdateService.MyBinder) binder).getService();
-	      Toast.makeText(MainActivity.this, "Connected", Toast.LENGTH_SHORT).show();
+	    	service = ((UpdateService.MyBinder) binder).getService();
+			Log.d("DERVICE", "onServiceConnected");
+	      	Toast.makeText(MainActivity.this, "Connected", Toast.LENGTH_SHORT).show();
 	    }
 
 	    public void onServiceDisconnected(ComponentName className) {
-	      s = null;
-	    }
-	  };
+	    	service = null;
+			Log.d("DERVICE", "onServiceDisconnected");
+	   	}
+	};
 	  
 
-	  void doBindService() {
-	    bindService(new Intent(this, UpdateService.class), mConnection,
-	        Context.BIND_AUTO_CREATE);
-	  }
+	void doBindService() {
+	    bindService(new Intent(this, UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+		Log.d("DERVICE", "doBindService");
+	}
 
 //	  public void showServiceData(View view) {
 //	      Toast.makeText(this, "ShowServiceData", Toast.LENGTH_SHORT).show();

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.erakk.lnreader.activity.MainActivity;
 
@@ -16,28 +17,34 @@ public class UpdateService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		Log.d("DERVICE", "onStartCommand");
 	    return Service.START_NOT_STICKY;
 	}
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
+		Log.d("DERVICE", "onBind");
 	    return mBinder;
 	}
 	
 	@Override
     public void onCreate() {
         // Display a notification about us starting.  We put an icon in the status bar.
+		Log.d("DERVICE", "onCreate");
         sendNotification();
     }
 	
 	public class MyBinder extends Binder {
 	    public UpdateService getService() {
+
+			Log.d("DERVICE", "getService");
 	    	return UpdateService.this;
 	    }
 	}
 	
 	@SuppressWarnings("deprecation")
 	public void sendNotification() {
+		Log.d("DERVICE", "sendNotification");
 		String ns = Context.NOTIFICATION_SERVICE;
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
 		
