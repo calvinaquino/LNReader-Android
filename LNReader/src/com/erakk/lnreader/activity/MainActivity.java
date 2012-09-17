@@ -47,6 +47,12 @@ public class MainActivity extends Activity {
         super.onRestart();
         UIHelper.Recreate(this);
     }
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unbindService(mConnection);
+	}
     
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -81,8 +87,7 @@ public class MainActivity extends Activity {
 
 	    public void onServiceConnected(ComponentName className, IBinder binder) {
 	      s = ((UpdateService.MyBinder) binder).getService();
-	      Toast.makeText(MainActivity.this, "Connected",
-	          Toast.LENGTH_SHORT).show();
+	      Toast.makeText(MainActivity.this, "Connected", Toast.LENGTH_SHORT).show();
 	    }
 
 	    public void onServiceDisconnected(ComponentName className) {
@@ -90,24 +95,15 @@ public class MainActivity extends Activity {
 	    }
 	  };
 	  
-	  private ArrayAdapter<String> adapter;
-	  private List<String> wordList;
 
 	  void doBindService() {
 	    bindService(new Intent(this, UpdateService.class), mConnection,
 	        Context.BIND_AUTO_CREATE);
 	  }
 
-	  public void showServiceData(View view) {
-	    if (s != null) {
-
-	      Toast.makeText(this, "Number of elements" + s.getWordList().size(),
-	          Toast.LENGTH_SHORT).show();
-	      wordList.clear();
-	      wordList.addAll(s.getWordList());
-	      adapter.notifyDataSetChanged();
-	    }
-	  }
+//	  public void showServiceData(View view) {
+//	      Toast.makeText(this, "ShowServiceData", Toast.LENGTH_SHORT).show();
+//	  }
 	
     public void openNovelList(View view) {
     	Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
