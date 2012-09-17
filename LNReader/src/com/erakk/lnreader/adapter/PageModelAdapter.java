@@ -83,7 +83,6 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			holder.chkIsWatched.setChecked(page.isWatched());
 			holder.chkIsWatched.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
-				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 					if(isChecked){
 						Toast.makeText(context, "Added to watch list: " + page.getTitle(),	Toast.LENGTH_SHORT).show();

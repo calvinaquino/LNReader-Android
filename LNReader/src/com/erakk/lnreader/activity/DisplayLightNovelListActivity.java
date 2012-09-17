@@ -288,7 +288,6 @@ public class DisplayLightNovelListActivity extends ListActivity{
 	
 	public class DownloadNovelDetailsTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelCollectionModel>> implements ICallbackNotifier {
 
-		@Override
 		public void onCallback(ICallbackEventData message) {
 			publishProgress(message.getMessage());
 		}

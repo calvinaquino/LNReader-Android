@@ -71,7 +71,6 @@ public class DisplayLightNovelDetailsActivity extends Activity {
         expandList = (ExpandableListView) findViewById(R.id.chapter_list);
         registerForContextMenu(expandList);
         expandList.setOnChildClickListener(new OnChildClickListener() {			
-			@Override
 			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 				if(novelCol != null) {
 					PageModel p = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
@@ -352,7 +351,6 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			ToggleProgressBar(true);
 		}
 		
-		@Override
 		public void onCallback(ICallbackEventData message) {
     		publishProgress(message.getMessage());
     	}

@@ -33,7 +33,6 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         
         Preference lockHorizontal = (Preference)  findPreference(Constants.PREF_LOCK_HORIZONTAL);
         lockHorizontal.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-        	@Override
             public boolean onPreferenceClick(Preference p) {
         		if(p.getSharedPreferences().getBoolean(Constants.PREF_LOCK_HORIZONTAL, false)){
         			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -49,7 +48,6 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         
         Preference invertColors = (Preference)  findPreference(Constants.PREF_INVERT_COLOR);
         invertColors.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-        	@Override
             public boolean onPreferenceClick(Preference p) {
         		UIHelper.Recreate(activity);
         		//Toast.makeText(getApplicationContext(), "Color Inverted", Toast.LENGTH_LONG).show();        		
@@ -58,7 +56,6 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         });
         Preference clearDatabase = (Preference)  findPreference("clear_database");
         clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-        	@Override
             public boolean onPreferenceClick(Preference p) {
         		/*
         		 * CODE TO CLEAR DATABASE HERE
@@ -71,7 +68,6 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         });
         Preference clearImages = (Preference)  findPreference("clear_image_cache");
         clearImages.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-        	@Override
             public boolean onPreferenceClick(Preference p) {
         		/*
         		 * CODE TO CLEAR IMAGE CACHE HERE

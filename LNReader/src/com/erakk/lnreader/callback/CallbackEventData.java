@@ -9,12 +9,10 @@ public class CallbackEventData implements ICallbackEventData {
 		this.message = message;
 	}
 	
-	@Override
 	public String getMessage() {
 		return message;
 	}
 
-	@Override
 	public void setMessage(String message) {
 		this.message = message;
 	}

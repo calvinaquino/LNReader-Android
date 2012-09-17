@@ -187,7 +187,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setTitle("Jump To");
 				builder.setAdapter(jumpAdapter, new OnClickListener() {
-					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						PageModel page = jumpAdapter.getItem(which);
 						jumpTo(page);
@@ -307,7 +306,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 				
 				wv.setPictureListener(new PictureListener(){
 					boolean needScroll = true;
-					@Override
 					@Deprecated
 					public void onNewPicture(WebView arg0, Picture arg1) {
 						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());

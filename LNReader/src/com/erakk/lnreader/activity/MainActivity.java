@@ -1,7 +1,5 @@
 package com.erakk.lnreader.activity;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,7 +13,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
@@ -47,6 +44,7 @@ public class MainActivity extends Activity {
     protected void onRestart() {
         super.onRestart();
         UIHelper.Recreate(this);
+        doBindService();
     }
 	
 	@Override
