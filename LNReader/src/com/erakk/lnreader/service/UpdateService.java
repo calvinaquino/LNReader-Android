@@ -49,14 +49,14 @@ public class UpdateService extends Service {
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
 		
 		int icon = android.R.drawable.arrow_up_float; //Just a placeholder
-		CharSequence tickerText = "Hello";
+		CharSequence tickerText = "Novel Update";
 		long when = System.currentTimeMillis();
 
 		Notification notification = new Notification(icon, tickerText, when);
 		
 		Context context = getApplicationContext();
-		CharSequence contentTitle = "Notification Title";
-		CharSequence contentText = "Update test for LNReader";
+		CharSequence contentTitle = "Novel Name";
+		CharSequence contentText = "Volume/Chapter Updated";
 		Intent notificationIntent = new Intent(this, MainActivity.class);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 

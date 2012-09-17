@@ -101,10 +101,6 @@ public class MainActivity extends Activity {
 	    bindService(new Intent(this, UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
 		Log.d("DERVICE", "doBindService");
 	}
-
-//	  public void showServiceData(View view) {
-//	      Toast.makeText(this, "ShowServiceData", Toast.LENGTH_SHORT).show();
-//	  }
 	
     public void openNovelList(View view) {
     	Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
