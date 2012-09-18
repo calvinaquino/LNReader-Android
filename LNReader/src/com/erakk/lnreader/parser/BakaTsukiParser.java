@@ -511,7 +511,7 @@ public class BakaTsukiParser {
 		
 		content.setLastXScroll(0);
 		content.setLastYScroll(0);
-		content.setLastZoom(1);
+		content.setLastZoom(Constants.DISPLAY_SCALE);
 		return content;
 	}
 	
