@@ -24,7 +24,7 @@ import com.erakk.lnreader.model.PageModel;
 
 public class UpdateService extends Service {
 	private final IBinder mBinder = new MyBinder();
-	private final String TAG = this.getClass().toString();
+	public final static String TAG = UpdateService.class.toString();
 	private static int NOTIF_ID = 1;
 	
 	@Override
@@ -111,10 +111,14 @@ public class UpdateService extends Service {
 				Log.e(TAG, text, e);
 				Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
 			}
+			
+			// Reschedule for next run
+			MyScheduleReceiver.reschedule(getApplicationContext());
 		}
 	}
 	
 	public ArrayList<PageModel> GetUpdatedChapters() throws Exception {
+		Log.d(TAG, "Checking Updates...");
 		ArrayList<PageModel> updates = new ArrayList<PageModel>();
 		NovelsDao dao = NovelsDao.getInstance();
 		
@@ -129,6 +133,7 @@ public class UpdateService extends Service {
 				// different timestamp
 				if(!novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
 					Log.d(TAG, "Different Timestamp for: " + novel.getPage());
+					Log.d(TAG, novel.getLastUpdate().toString() + " != " + updatedNovel.getLastUpdate().toString());
 					ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, null).getFlattedChapterList();
 					NovelCollectionModel updatedNovelDetails = dao.getNovelDetailsFromInternet(novel, null);
 					if(updatedNovelDetails!= null){

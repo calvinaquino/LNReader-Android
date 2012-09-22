@@ -500,9 +500,10 @@ public class DBHelper extends SQLiteOpenHelper {
 	public NovelCollectionModel getNovelDetails(SQLiteDatabase db, String page) {
 		Log.d(TAG, "Selecting Novel Details: " + page);
 		NovelCollectionModel novelDetails = getNovelDetailsOnly(db, page);
-		novelDetails.setPageModel(getPageModel(db, page));
 		
 	    if(novelDetails != null) {
+	    	novelDetails.setPageModel(getPageModel(db, page));
+			
 		    // get the books
 		    ArrayList<BookModel> bookCollection = getBookCollectionOnly(db, page, novelDetails);	
 			// get the chapters

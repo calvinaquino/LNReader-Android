@@ -11,6 +11,6 @@ public class MyStartServiceReceiver extends BroadcastReceiver {
   public void onReceive(Context context, Intent intent) {
     Intent service = new Intent(context, UpdateService.class);
     context.startService(service);
-	Log.d("DERVICE", "onReceive_Start");
+	Log.d(UpdateService.TAG, "onReceive_Start");
   }
 } 

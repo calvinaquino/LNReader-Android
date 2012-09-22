@@ -24,8 +24,8 @@ import com.erakk.lnreader.service.UpdateService;
  * http://www.devahead.com/blog/2011/06/extending-the-android-application-class-and-dealing-with-singleton/
  */
 public class LNReaderApplication extends Application {
-	private NovelsDao novelsDao;
-	private UpdateService service;
+	private NovelsDao novelsDao = null;
+	private UpdateService service = null;
 	private static LNReaderApplication instance;
 	
 	@Override
@@ -43,7 +43,7 @@ public class LNReaderApplication extends Application {
 		
 	protected void initSingletons()
 	{
-		this.novelsDao = NovelsDao.getInstance(getApplicationContext());
+		novelsDao = NovelsDao.getInstance(getApplicationContext());
 	}
 	
 	public boolean isOnline() {
@@ -64,19 +64,19 @@ public class LNReaderApplication extends Application {
 
 	    public void onServiceConnected(ComponentName className, IBinder binder) {
 	    	service = ((UpdateService.MyBinder) binder).getService();
-			Log.d("DERVICE", "onServiceConnected");
+			Log.d(UpdateService.TAG, "onServiceConnected");
 	      	Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
 	    }
 
 	    public void onServiceDisconnected(ComponentName className) {
 	    	service = null;
-			Log.d("DERVICE", "onServiceDisconnected");
+			Log.d(UpdateService.TAG, "onServiceDisconnected");
 	   	}
 	};
 	
 	void doBindService() {
 	    bindService(new Intent(this, UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
-		Log.d("DERVICE", "doBindService");
+		Log.d(UpdateService.TAG, "doBindService");
 	}
 		
 	private Hashtable<Integer, String> cssCache = null;

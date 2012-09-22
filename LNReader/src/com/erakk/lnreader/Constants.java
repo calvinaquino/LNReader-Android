@@ -31,6 +31,7 @@ public class Constants {
 	public static final String PREF_INVERT_COLOR = "invert_colors";
 	public static final String PREF_LOCK_HORIZONTAL = "lock_horizontal";
 	public static final String PREF_LAST_READ = "last_read";
+	public static final String PREF_UPDATE_INTERVAL = "updates_interval";
 	
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 	

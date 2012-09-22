@@ -31,26 +31,25 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         //This man is deprecated but but we may want to be bale to run on older API
         addPreferencesFromResource(R.xml.preferences);
         
+        // Screen Orientation
         Preference lockHorizontal = (Preference)  findPreference(Constants.PREF_LOCK_HORIZONTAL);
         lockHorizontal.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
         		if(p.getSharedPreferences().getBoolean(Constants.PREF_LOCK_HORIZONTAL, false)){
         			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-	        		//Toast.makeText(getApplicationContext(), "Orientation Locked" , Toast.LENGTH_SHORT).show();
         		}
         		else {
         			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-	        		//Toast.makeText(getApplicationContext(), "Orientation Unlocked" , Toast.LENGTH_SHORT).show();
         		}        		
         		return true;
             }
         });
         
+        // Invert Color
         Preference invertColors = (Preference)  findPreference(Constants.PREF_INVERT_COLOR);
         invertColors.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
         		UIHelper.Recreate(activity);
-        		//Toast.makeText(getApplicationContext(), "Color Inverted", Toast.LENGTH_LONG).show();        		
                 return true;
             }
         });
