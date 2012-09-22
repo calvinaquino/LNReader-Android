@@ -71,7 +71,8 @@
         <service
             android:name=".service.UpdateService"
             android:icon="@drawable/ic_launcher_lnreader"
-            android:label="@string/service_name" >
+            android:label="@string/service_name"
+            android:process="" >
         </service>
 
         <receiver android:name=".service.MyScheduleReceiver" >

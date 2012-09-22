@@ -7,18 +7,25 @@ import java.io.InputStreamReader;
 import java.util.Hashtable;
 
 import android.app.Application;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.preference.PreferenceManager;
+import android.os.IBinder;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.service.UpdateService;
 
 /*
  * http://www.devahead.com/blog/2011/06/extending-the-android-application-class-and-dealing-with-singleton/
  */
 public class LNReaderApplication extends Application {
 	private NovelsDao novelsDao;
+	private UpdateService service;
 	private static LNReaderApplication instance;
 	
 	@Override
@@ -30,6 +37,8 @@ public class LNReaderApplication extends Application {
 		// are bound to the application process.
 		initSingletons();
 		instance = this;
+		
+		doBindService();
 	}
 		
 	protected void initSingletons()
@@ -51,6 +60,25 @@ public class LNReaderApplication extends Application {
 		return instance;
 	}
 	
+	private ServiceConnection mConnection = new ServiceConnection() {
+
+	    public void onServiceConnected(ComponentName className, IBinder binder) {
+	    	service = ((UpdateService.MyBinder) binder).getService();
+			Log.d("DERVICE", "onServiceConnected");
+	      	Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
+	    }
+
+	    public void onServiceDisconnected(ComponentName className) {
+	    	service = null;
+			Log.d("DERVICE", "onServiceDisconnected");
+	   	}
+	};
+	
+	void doBindService() {
+	    bindService(new Intent(this, UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+		Log.d("DERVICE", "doBindService");
+	}
+		
 	private Hashtable<Integer, String> cssCache = null;
 	public String ReadCss(int styleId) {
 		if(cssCache == null)
@@ -74,5 +102,11 @@ public class LNReaderApplication extends Application {
 			cssCache.put(styleId, contents.toString());
 		}
 		return cssCache.get(styleId);
-	}	
+	}
+	
+	@Override
+	public void onLowMemory () {
+		unbindService(mConnection);
+		super.onLowMemory();		
+	}
 }

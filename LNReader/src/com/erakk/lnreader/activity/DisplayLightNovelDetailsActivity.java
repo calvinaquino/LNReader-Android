@@ -19,8 +19,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ExpandableListView;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -302,14 +305,33 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 				try {
 					// Prepare header
 					if(expandList.getHeaderViewsCount() == 0) {  
+						page = novelCol.getPageModel();
 						LayoutInflater layoutInflater = getLayoutInflater();
 						View synopsis = layoutInflater.inflate(R.layout.activity_display_synopsis, null);
 						TextView textViewTitle = (TextView) synopsis.findViewById(R.id.title);
 						TextView textViewSynopsis = (TextView) synopsis.findViewById(R.id.synopsys);
 						textViewTitle.setTextSize(20);
 						textViewSynopsis.setTextSize(16); 
-						textViewTitle.setText(novelCol.getPageModel().getTitle());
+						textViewTitle.setText(page.getTitle());
 						textViewSynopsis.setText(novelCol.getSynopsis());
+						
+						CheckBox isWatched = (CheckBox) synopsis.findViewById(R.id.isWatched);
+						isWatched.setChecked(page.isWatched());
+						isWatched.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+								if(isChecked){
+									Toast.makeText(getApplicationContext(), "Added to watch list: " + page.getTitle(),	Toast.LENGTH_SHORT).show();
+								}
+								else {
+									Toast.makeText(getApplicationContext(), "Removed from watch list: " + page.getTitle(),	Toast.LENGTH_SHORT).show();
+								}
+								// update the db!
+								page.setWatched(isChecked);
+								NovelsDao dao = NovelsDao.getInstance(getApplicationContext());
+								dao.updatePageModel(page);
+							}
+						});
 
 						ImageView ImageViewCover = (ImageView) synopsis.findViewById(R.id.cover);
 						if (novelCol.getCoverBitmap() == null) {

@@ -36,7 +36,6 @@ public class UpdateService extends Service {
 	
 	public class MyBinder extends Binder {
 	    public UpdateService getService() {
-
 			Log.d("DERVICE", "getService");
 	    	return UpdateService.this;
 	    }
