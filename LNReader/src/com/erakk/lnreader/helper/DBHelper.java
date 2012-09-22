@@ -276,17 +276,17 @@ public class DBHelper extends SQLiteOpenHelper {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_PAGE, page.getPage());
 		cv.put(COLUMN_TITLE, page.getTitle());
-		cv.put(COLUMN_TYPE, page.getType());
-		cv.put(COLUMN_PARENT, page.getParent());
-		cv.put(COLUMN_ORDER, page.getOrder());
-		if(page.getLastUpdate() == null) 
-			cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
-		else 
-			cv.put(COLUMN_LAST_UPDATE, "" + (int) (page.getLastUpdate().getTime() / 1000));
+		cv.put(COLUMN_ORDER, page.getOrder());		
 		if(temp == null) {
 			Log.d(TAG, "Inserting: " + page.toString());
+			cv.put(COLUMN_PARENT, page.getParent());
+			cv.put(COLUMN_TYPE, page.getType());
 			cv.put(COLUMN_IS_WATCHED, false);
 			cv.put(COLUMN_IS_FINISHED_READ, false);
+			if(page.getLastUpdate() == null) 
+				cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
+			else 
+				cv.put(COLUMN_LAST_UPDATE, "" + (int) (page.getLastUpdate().getTime() / 1000));
 			if(page.getLastCheck() == null)
 				cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			else 
@@ -297,8 +297,14 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 		else {
 			Log.d(TAG, "Updating: " + temp.toString());
+			cv.put(COLUMN_PARENT, temp.getParent());
+			cv.put(COLUMN_TYPE, temp.getType());
 			cv.put(COLUMN_IS_WATCHED, temp.isWatched());
 			cv.put(COLUMN_IS_FINISHED_READ, temp.isFinishedRead());
+			if(page.getLastUpdate() == null) 
+				cv.put(COLUMN_LAST_UPDATE, "" + (int) (temp.getLastUpdate().getTime() / 1000));
+			else 
+				cv.put(COLUMN_LAST_UPDATE, "" + (int) (page.getLastUpdate().getTime() / 1000));
 			if(page.getLastCheck() == null)
 				cv.put(COLUMN_LAST_CHECK, "" + (int) (temp.getLastCheck().getTime() / 1000));
 			else
