@@ -7,7 +7,7 @@ import java.util.Iterator;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.dao.NovelsDao;
 
-public class PageModel implements Comparable<PageModel>{
+public class PageModel{
 	public static final String TYPE_NOVEL = "Novel";
 	public static final String TYPE_OTHER = "Other";
 	public static final String TYPE_CONTENT = "Content";
@@ -24,7 +24,6 @@ public class PageModel implements Comparable<PageModel>{
 	private boolean isFinishedRead;
 	private boolean isDownloaded;
 	private BookModel book;
-	
 	private int order;
 
 	public int getId() {
@@ -139,17 +138,5 @@ public class PageModel implements Comparable<PageModel>{
 	}
 	public void setBook(BookModel book) {
 		this.book = book;
-	}
-	
-	@Override
-	public int compareTo(PageModel another) {
-		if(this.page == null) return -1;
-		else if(another.page == null) return 1;
-		return this.page.compareTo(another.page);
-	}
-	
-	public boolean equals(PageModel another) {
-		if(this.page == another.page) return true;
-		return false;
 	}
 }

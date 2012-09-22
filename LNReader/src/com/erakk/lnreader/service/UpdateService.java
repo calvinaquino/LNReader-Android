@@ -3,6 +3,7 @@ package com.erakk.lnreader.service;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -24,6 +25,7 @@ import com.erakk.lnreader.model.PageModel;
 public class UpdateService extends Service {
 	private final IBinder mBinder = new MyBinder();
 	private final String TAG = this.getClass().toString();
+	private static int NOTIF_ID = 1;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -37,12 +39,13 @@ public class UpdateService extends Service {
 	    return mBinder;
 	}
 	
+	@SuppressLint("NewApi")
 	@Override
     public void onCreate() {
         // Display a notification about us starting.  We put an icon in the status bar.
 		Log.d(TAG, "onCreate");
 		GetUpdatedChaptersTask task = new GetUpdatedChaptersTask();
-		task.execute();
+		task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 	
 	public class MyBinder extends Binder {
@@ -63,22 +66,25 @@ public class UpdateService extends Service {
 			CharSequence tickerText = "Novel Update";
 			long when = System.currentTimeMillis();		
 		
-			int i = 0;
 			for(Iterator<PageModel> iChapter = updatedChapters.iterator(); iChapter.hasNext();) {
 				PageModel chapter = iChapter.next();
 				Notification notification = new Notification(icon, tickerText, when);
 				
 				Context context = getApplicationContext();
-				CharSequence contentTitle = "Novel Name";
-				CharSequence contentText = chapter.getTitle();
+				CharSequence contentTitle = "N/A";
+				try{
+					contentTitle = chapter.getBook().getParent().getPageModel().getTitle();
+				}
+				catch(Exception ex){
+					Log.e(TAG, "Error when getting Novel title", ex);
+				}
+				CharSequence contentText = chapter.getTitle() + " (" + chapter.getBook().getTitle() + ")";
 				Intent notificationIntent = new Intent(this, MainActivity.class);
 				PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 		
 				notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
 				
-				final int NOTIF_ID = ++i;
-		
-				mNotificationManager.notify(NOTIF_ID, notification);
+				mNotificationManager.notify(++NOTIF_ID, notification);
 			}		
 		}
 	}
@@ -89,7 +95,8 @@ public class UpdateService extends Service {
 		protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(Void... arg0) {
 			try{
 				return new AsyncTaskResult<ArrayList<PageModel>>(GetUpdatedChapters());
-			}catch(Exception ex) {
+			}
+			catch(Exception ex) {
 				return new AsyncTaskResult<ArrayList<PageModel>>(ex);
 			}
 		}
@@ -120,19 +127,20 @@ public class UpdateService extends Service {
 				PageModel updatedNovel = dao.getPageModelFromInternet(novel.getPage(), null);
 				
 				// different timestamp
-				if(!novel.getLastUpdate().equals(updatedNovel.getPage())) {
+				if(true) {//!novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
 					Log.d(TAG, "Different Timestamp for: " + novel.getPage());
 					ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, null).getFlattedChapterList();
 					NovelCollectionModel updatedNovelDetails = dao.getNovelDetailsFromInternet(novel, null);
 					if(updatedNovelDetails!= null){
 						ArrayList<PageModel> updatedNovelDetailsChapters = updatedNovelDetails.getFlattedChapterList();
 						
+						updates = updatedNovelDetailsChapters;
 						// compare the chapters!
-						for(Iterator<PageModel> iChapters = novelDetailsChapters.iterator(); iChapters.hasNext();){
-							PageModel chapter = iChapters.next();
-							if(!updatedNovelDetailsChapters.contains(chapter)) {
-								updates.add(chapter);
-								Log.d(TAG, "Found updated chapter: " + chapter.getPage());
+						for(int i = 0 ; i < novelDetailsChapters.size() ; ++i) {
+							for(int j = 0; j < updatedNovelDetailsChapters.size(); j++) {
+								if(updatedNovelDetailsChapters.get(j).getPage().compareTo(novelDetailsChapters.get(i).getPage()) == 0) {
+									updates.remove(updatedNovelDetailsChapters.get(j));
+								}
 							}
 						}
 					}

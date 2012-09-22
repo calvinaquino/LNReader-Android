@@ -418,12 +418,12 @@ public class NovelsDao {
 		}
 	}
 	
-	public ArrayList<PageModel> getChapterCollection(String page, String title) {
+	public ArrayList<PageModel> getChapterCollection(String page, String title, BookModel book) {
 		synchronized (dbh) {
 			// get from db
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try{
-				return dbh.getChapterCollection(db, page + Constants.NOVEL_BOOK_DIVIDER + title);
+				return dbh.getChapterCollection(db, page + Constants.NOVEL_BOOK_DIVIDER + title, book);
 			}
 			finally{
 				db.close();

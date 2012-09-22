@@ -15,6 +15,8 @@ public class BookModel {
 	private Date lastCheck;
 	private int order;	
 	
+	private NovelCollectionModel parent;
+	
 	public int getId() {
 		return id;
 	}
@@ -53,12 +55,19 @@ public class BookModel {
 	}
 	public ArrayList<PageModel> getChapterCollection() {
 		if(chapterCollection == null){
-			chapterCollection = NovelsDao.getInstance().getChapterCollection(page, title);
+			chapterCollection = NovelsDao.getInstance().getChapterCollection(page, title, this);
 		}
 		return chapterCollection;
 	}
 	public void setChapterCollection(ArrayList<PageModel> chapterCollection) {
 		this.chapterCollection = chapterCollection;
+	}
+	
+	public NovelCollectionModel getParent() {
+		return parent;
+	}
+	public void setParent(NovelCollectionModel parent) {
+		this.parent = parent;
 	}
 	
 	public String toString() {
