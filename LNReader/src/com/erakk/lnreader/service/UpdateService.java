@@ -26,10 +26,16 @@ public class UpdateService extends Service {
 	private final IBinder mBinder = new MyBinder();
 	public final static String TAG = UpdateService.class.toString();
 	private static int NOTIF_ID = 1;
+	private static boolean isRunning;
 	
+	@SuppressLint("NewApi")
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.d(TAG, "onStartCommand");
+		if(!isRunning) {
+			GetUpdatedChaptersTask task = new GetUpdatedChaptersTask();
+			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		}
 	    return Service.START_NOT_STICKY;
 	}
 	
@@ -93,6 +99,7 @@ public class UpdateService extends Service {
 
 		@Override
 		protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(Void... arg0) {
+			isRunning = true;
 			try{
 				return new AsyncTaskResult<ArrayList<PageModel>>(GetUpdatedChapters());
 			}
@@ -114,6 +121,7 @@ public class UpdateService extends Service {
 			
 			// Reschedule for next run
 			MyScheduleReceiver.reschedule(getApplicationContext());
+			isRunning = false;
 		}
 	}
 	
