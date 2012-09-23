@@ -13,6 +13,8 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.service.MyScheduleReceiver;
+import com.erakk.lnreader.service.UpdateService;
 
 public class DisplaySettingsActivity extends PreferenceActivity {
 	//private static final String TAG = DisplayLightNovelsActivity.class.toString();
@@ -53,6 +55,7 @@ public class DisplaySettingsActivity extends PreferenceActivity {
                 return true;
             }
         });
+        
         Preference clearDatabase = (Preference)  findPreference("clear_database");
         clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
@@ -65,6 +68,7 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         		return true;
             }
         });
+        
         Preference clearImages = (Preference)  findPreference("clear_image_cache");
         clearImages.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
@@ -74,6 +78,14 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         		DeleteRecursive(new File(Constants.IMAGE_ROOT));
         		Toast.makeText(getApplicationContext(), "Image cache cleared!", Toast.LENGTH_LONG).show();	
         		
+                return true;
+            }
+        });
+        
+        Preference updatesInterval = (Preference)  findPreference("updates_interval");
+        updatesInterval.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference p) {
+            	MyScheduleReceiver.reschedule(getApplicationContext());
                 return true;
             }
         });

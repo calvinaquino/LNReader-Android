@@ -14,7 +14,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class MyScheduleReceiver extends BroadcastReceiver {
-	private static boolean isScheduled; 
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -22,46 +21,43 @@ public class MyScheduleReceiver extends BroadcastReceiver {
 	}
 
 	public static void reschedule(Context context) {
-		if(!isScheduled) {
-			isScheduled = true;
-			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-			String updatesIntervalStr = preferences.getString(Constants.PREF_UPDATE_INTERVAL, "0");
-			int updatesInterval = Integer.parseInt(updatesIntervalStr);	
-			long repeatTime = 0;
-			switch (updatesInterval) {
-				case 1:
-					repeatTime = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
-					break;
-				case 2:
-					repeatTime = AlarmManager.INTERVAL_HALF_HOUR;
-					break;
-				case 3:
-					repeatTime = AlarmManager.INTERVAL_HOUR;
-					break;
-				case 4:
-					repeatTime = AlarmManager.INTERVAL_HALF_DAY;
-					break;
-				case 5:
-					repeatTime = AlarmManager.INTERVAL_DAY;
-					break;
-				default:
-					break;
-			}
-			
-			Log.d(UpdateService.TAG, "onReceive_Schedule");
-			AlarmManager service = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-			Intent i = new Intent(context, MyStartServiceReceiver.class);
-			PendingIntent pending = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
-			
-			// Start 10 seconds after boot completed
-			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.SECOND, 30);
-	
-			// InexactRepeating allows Android to optimize the energy consumption
-			Log.d(UpdateService.TAG, "Repeating in: " + repeatTime);
-			if (repeatTime != 0){			
-				service.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), repeatTime, pending);
-			}
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		String updatesIntervalStr = preferences.getString(Constants.PREF_UPDATE_INTERVAL, "0");
+		int updatesInterval = Integer.parseInt(updatesIntervalStr);	
+		long repeatTime = 0;
+		switch (updatesInterval) {
+			case 1:
+				repeatTime = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+				break;
+			case 2:
+				repeatTime = AlarmManager.INTERVAL_HALF_HOUR;
+				break;
+			case 3:
+				repeatTime = AlarmManager.INTERVAL_HOUR;
+				break;
+			case 4:
+				repeatTime = AlarmManager.INTERVAL_HALF_DAY;
+				break;
+			case 5:
+				repeatTime = AlarmManager.INTERVAL_DAY;
+				break;
+			default:
+				break;
 		}
+		
+		Log.d(UpdateService.TAG, "onReceive_Schedule");
+		AlarmManager service = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		Intent i = new Intent(context, MyStartServiceReceiver.class);
+		PendingIntent pending = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+		
+		// Start 10 seconds after boot completed
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.SECOND, 30);
+
+		// InexactRepeating allows Android to optimize the energy consumption
+		Log.d(UpdateService.TAG, "Repeating in: " + repeatTime);
+		if (repeatTime != 0){			
+			service.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), repeatTime, pending);
+		}		
 	}
 } 
