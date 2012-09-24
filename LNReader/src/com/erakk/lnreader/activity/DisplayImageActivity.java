@@ -1,9 +1,11 @@
 package com.erakk.lnreader.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,9 +38,6 @@ public class DisplayImageActivity extends Activity {
 		super.onCreate(savedInstanceState);
     	UIHelper.SetTheme(this, R.layout.activity_display_image);
         UIHelper.SetActionBarDisplayHomeAsUp(this, true);
-
-        Intent intent = getIntent();
-        url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
         
         imgWebView = (WebView) findViewById(R.id.webView1);
         imgWebView.getSettings().setAllowFileAccess(true);
@@ -46,10 +45,20 @@ public class DisplayImageActivity extends Activity {
         imgWebView.getSettings().setLoadWithOverviewMode(true);
         imgWebView.getSettings().setUseWideViewPort(true);
         
-        task = new LoadImageTask();
-        task.execute(new String[] {url});
-        
+        Intent intent = getIntent();
+        url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
+        executeTask(url);
     }
+	
+	@SuppressLint("NewApi")
+	private void executeTask(String url) {        
+		task = new LoadImageTask();        
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new String[] {url});
+		else
+			task.execute(new String[] {url});
+	}
+	
     @Override
     protected void onStop() {
     	// check running task
@@ -80,10 +89,7 @@ public class DisplayImageActivity extends Activity {
 			 * Implement code to refresh image content
 			 */
 			refresh = true;
-			task = new LoadImageTask();
-			task.execute(url);
-			
-			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
+			executeTask(url);			
 			return true;
 		case android.R.id.home:
 			super.onBackPressed();

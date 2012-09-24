@@ -130,6 +130,19 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);
 			return true;
+		case R.id.menu_download_all:
+			/*
+			 * Download all chapters
+			 */
+			ArrayList<PageModel> availableChapters = novelCol.getFlattedChapterList();
+			ArrayList<PageModel> notDownloadedChapters = new ArrayList<PageModel>(); 
+			for(Iterator<PageModel> i = availableChapters.iterator(); i.hasNext();) {
+				PageModel temp = i.next();
+				if(!temp.isDownloaded()) notDownloadedChapters.add(temp);
+			}
+			downloadTask = new DownloadNovelContentTask((PageModel[]) notDownloadedChapters.toArray(new PageModel[notDownloadedChapters.size()]));
+			downloadTask.execute();
+			return true;
         case android.R.id.home:
         	super.onBackPressed();
             return true;
