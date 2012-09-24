@@ -3,7 +3,7 @@ package com.erakk.lnreader.service;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -27,15 +28,11 @@ public class UpdateService extends Service {
 	public final static String TAG = UpdateService.class.toString();
 	private static int NOTIF_ID = 1;
 	private static boolean isRunning;
-	
-	@SuppressLint("NewApi")
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.d(TAG, "onStartCommand");
-		if(!isRunning) {
-			GetUpdatedChaptersTask task = new GetUpdatedChaptersTask();
-			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		}
+		execute();
 	    return Service.START_NOT_STICKY;
 	}
 	
@@ -44,15 +41,24 @@ public class UpdateService extends Service {
 		Log.d(TAG, "onBind");
 	    return mBinder;
 	}
-	
-	@SuppressLint("NewApi")
+
 	@Override
     public void onCreate() {
         // Display a notification about us starting.  We put an icon in the status bar.
 		Log.d(TAG, "onCreate");
-		GetUpdatedChaptersTask task = new GetUpdatedChaptersTask();
-		task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		execute();
     }
+	
+	@TargetApi(11)
+	private void execute() {
+		if(!isRunning) {
+			GetUpdatedChaptersTask task = new GetUpdatedChaptersTask();
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			else
+				task.execute();
+		}
+	}
 	
 	public class MyBinder extends Binder {
 	    public UpdateService getService() {
