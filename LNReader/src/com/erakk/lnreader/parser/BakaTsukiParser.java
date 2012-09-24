@@ -53,7 +53,6 @@ public class BakaTsukiParser {
 		pageModel.setLastUpdate(lastUpdate);
 		//Log.d(TAG, "parsePageAPI Last Update: " + pageModel.getLastUpdate());
 		
-		//pageModel.setType(PageModel.TYPE_OTHER);
 		return pageModel;				
 	}
 	
@@ -126,13 +125,11 @@ public class BakaTsukiParser {
 		if(metaLink != null && metaLink.size() > 0) {
 			for(Iterator<Element> i = metaLink.iterator(); i.hasNext();) {
 				Element link = i.next();
-				Log.d(TAG,"Checking: " + link.text());
-				if(link.attributes().hasKey("rel")) {
-					if(link.attributes().get("rel") == "canonical") {
-					String redir = link.attr("href").replace("/project/index.php?title=", "");
+				//Log.d(TAG,"Checking: " + link.html() + " : " + link.attr("rel"));
+				if(link.attributes().get("rel").contains("canonical")) {
+					String redir = link.attr("href").replace("/project/index.php?title=", "").trim();
 					Log.d(TAG, "Redirected from: " + page.getPage()+ " to: " + redir);
 					return redir;
-					}
 				}
 			}
 		}
