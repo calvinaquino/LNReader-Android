@@ -26,6 +26,8 @@ public class NovelCollectionModel {
 	private String synopsis;	
 	private ArrayList<BookModel> bookCollections; 
 	
+	private String redirectTo;
+	
 	private Date lastUpdate;
 	private Date lastCheck;
 	
@@ -163,6 +165,12 @@ public class NovelCollectionModel {
 		if(index != -1 && index - 1 >= 0)
 			return getFlattedChapterList().get(index - 1);
 		else return null;
+	}
+	public String getRedirectTo() {
+		return redirectTo;
+	}
+	public void setRedirectTo(String redirectTo) {
+		this.redirectTo = redirectTo;
 	}
 
 }

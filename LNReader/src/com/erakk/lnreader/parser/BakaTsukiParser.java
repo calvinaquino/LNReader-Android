@@ -45,13 +45,13 @@ public class BakaTsukiParser {
 		PageModel pageModel = new PageModel();
 		pageModel.setPage(pageName);
 		pageModel.setTitle(doc.select("page").first().attr("title"));
-		Log.d(TAG, "parsePageAPI Title: " + pageModel.getTitle());
+		//Log.d(TAG, "parsePageAPI Title: " + pageModel.getTitle());
 		//2012-08-03T02:41:50Z
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		Date lastUpdate = formatter.parse(doc.select("page").first().attr("touched"));
 		pageModel.setLastUpdate(lastUpdate);
-		Log.d(TAG, "parsePageAPI Last Update: " + pageModel.getLastUpdate());
+		//Log.d(TAG, "parsePageAPI Last Update: " + pageModel.getLastUpdate());
 		
 		//pageModel.setType(PageModel.TYPE_OTHER);
 		return pageModel;				
@@ -68,7 +68,7 @@ public class BakaTsukiParser {
 		
 		Element stage = doc.select("#p-Light_Novels").first();
 		if (stage != null) {
-			Log.d(TAG, "Found: #p-Light_Novels");
+			//Log.d(TAG, "Found: #p-Light_Novels");
 			
 			Elements novels = stage.select("li");
 			int order = 0;
@@ -86,7 +86,7 @@ public class BakaTsukiParser {
 				page.setParent("Main_Page");
 				page.setOrder(order);
 				result.add(page);
-				Log.d(TAG, "Add: "+ link.text());
+				//Log.d(TAG, "Add: "+ link.text());
 				++order;
 			}
 		}
@@ -104,12 +104,39 @@ public class BakaTsukiParser {
 		if(doc == null) throw new NullPointerException("Document cannot be null.");
 		novel.setPage(page.getPage());
 		novel.setPageModel(page);
+
+		String redirected = redirectedFrom(doc, page);
+		novel.setRedirectTo(redirected);
 		
 		parseNovelSynopsis(doc, novel);		
 		parseNovelCover(doc, novel);				
 		parseNovelChapters(doc, novel);
 		
 		return novel;
+	}
+	
+	/**
+	 * Check if the page is redirected. Return null if not.
+	 * @param doc
+	 * @param page
+	 * @return
+	 */
+	private static String redirectedFrom(Document doc, PageModel page) {
+		Elements metaLink = doc.select("link");
+		if(metaLink != null && metaLink.size() > 0) {
+			for(Iterator<Element> i = metaLink.iterator(); i.hasNext();) {
+				Element link = i.next();
+				Log.d(TAG,"Checking: " + link.text());
+				if(link.attributes().hasKey("rel")) {
+					if(link.attributes().get("rel") == "canonical") {
+					String redir = link.attr("href").replace("/project/index.php?title=", "");
+					Log.d(TAG, "Redirected from: " + page.getPage()+ " to: " + redir);
+					return redir;
+					}
+				}
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -137,22 +164,25 @@ public class BakaTsukiParser {
 				//Log.d(TAG, "checking h2: " +h2.text() + "\n" + h2.id());
 				Elements spans = h2.select("span");
 				if(spans.size() > 0) {
-					// find span with id containing "_by" or 'Full_Text' or contains with Page Name or "Side_Stor*"
+					// find span with id containing "_by" or 'Full_Text' 
+					// or contains with Page Name or "Side_Stor*"
+					// or if redirected, use the redirect page name.
 					boolean containsBy = false;
 					for(Iterator<Element> iSpan = spans.iterator(); iSpan.hasNext(); ) {
 						Element s = iSpan.next();
-						Log.d(TAG, "Checking: " + s.id());
+						//Log.d(TAG, "Checking: " + s.id());
 						if(s.id().contains("_by") || 
 						   s.id().contains("Full_Text") || 
 						   s.id().contains(novel.getPage()) ||
-						   s.id().contains("Side_Stor")) {
+						   s.id().contains("Side_Stor") ||
+						   (novel.getRedirectTo() != null && s.id().contains(novel.getRedirectTo())) ) {
 							containsBy = true;
 							break;
 						}
 					}
 					if(!containsBy) continue;
 					
-					Log.d(TAG, "Found h2: " +h2.text());
+					//Log.d(TAG, "Found h2: " +h2.text());
 					
 					/*
 					 * parse book method 1:
@@ -194,7 +224,7 @@ public class BakaTsukiParser {
 				}
 			}			
 		} catch(Exception e) {e.printStackTrace();}
-		Log.d(TAG, "Complete parsing book collections: " + books.size());
+		//Log.d(TAG, "Complete parsing book collections: " + books.size());
 		
 		novel.setBookCollections(validateNovelBooks(books));
 	}
@@ -381,7 +411,7 @@ public class BakaTsukiParser {
 				validatedBook.setChapterCollection(validatedChapters);
 				validatedBook.setOrder(bookOrder);
 				validatedBooks.add(validatedBook);
-				Log.d("validateNovelBooks", "Adding: " + validatedBook.getTitle() + " order: " + validatedBook.getOrder());
+				//Log.d("validateNovelBooks", "Adding: " + validatedBook.getTitle() + " order: " + validatedBook.getOrder());
 				++bookOrder;
 			}
 		}
@@ -399,7 +429,7 @@ public class BakaTsukiParser {
 			     chapter.getPage().contains("User:"))) {
 				chapter.setOrder(chapterOrder);
 				validatedChapters.add(chapter);
-				Log.d("validateNovelChapters", "Adding: " + chapter.getPage() + " order: " + chapter.getOrder());
+				//Log.d("validateNovelChapters", "Adding: " + chapter.getPage() + " order: " + chapter.getOrder());
 				++chapterOrder;
 			}
 //			else{
