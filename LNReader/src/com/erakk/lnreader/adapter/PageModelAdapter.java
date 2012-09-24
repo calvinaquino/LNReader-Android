@@ -7,7 +7,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
+//import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +23,7 @@ import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
 
 public class PageModelAdapter extends ArrayAdapter<PageModel> {
-	private static final String TAG = PageModelAdapter.class.toString();
+	//private static final String TAG = PageModelAdapter.class.toString();
 	private Context context;
 	private int layoutResourceId;
 	private List<PageModel> data;
@@ -33,7 +33,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		this.layoutResourceId = resourceId;
 		this.context = context;
 		this.data = objects;
-		Log.d(TAG, "onConstruct Count = " + objects.size());
+		//Log.d(TAG, "onConstruct Count = " + objects.size());
 	}
 
 	public void setLayout(int resourceId) {
@@ -49,7 +49,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 				this.add(iPage.next());
 			}
 		}
-		Log.d(TAG, "onAddAll Count = " + objects.size());
+		//Log.d(TAG, "onAddAll Count = " + objects.size());
 	}
 
 	@Override
@@ -58,6 +58,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		PageModelHolder holder = null;
 
 		final PageModel page = data.get(position);
+		
 		LayoutInflater inflater = ((Activity)context).getLayoutInflater();
 		row = inflater.inflate(layoutResourceId, parent, false);
 

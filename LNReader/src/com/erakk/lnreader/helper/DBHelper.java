@@ -165,14 +165,14 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 	
 	public PageModel getPageModel(SQLiteDatabase db, String page) {
-		Log.d(TAG, "Select Page: " + page);
+		//Log.d(TAG, "Select Page: " + page);
 		PageModel pageModel = null;
 		
 		Cursor cursor = rawQuery(db, "select * from " + TABLE_PAGE + " where " + COLUMN_PAGE + " = ? ", new String[] {page});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	pageModel = cursorTopage(cursor);
-	    	Log.d(TAG, "Found Page: " + pageModel.toString());
+	    	//Log.d(TAG, "Found Page: " + pageModel.toString());
 	    	break;
 	    }
 	    cursor.close();
@@ -183,7 +183,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			cursor.moveToFirst();
 		    while (!cursor.isAfterLast()) {
 		    	pageModel = cursorTopage(cursor);
-		    	Log.d(TAG, "Found Page: " + pageModel.toString());
+		    	//Log.d(TAG, "Found Page: " + pageModel.toString());
 		    	break;
 		    }
 		    cursor.close();
@@ -202,7 +202,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	pageModel = cursorTopage(cursor);
-	    	Log.d(TAG, "Found Page: " + pageModel.toString());
+	    	//Log.d(TAG, "Found Page: " + pageModel.toString());
 	    	break;
 	    }
 	    cursor.close();
@@ -481,7 +481,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			BookModel book = cursorToBookModel(cursor);
 			book.setParent(novelDetails);
 			bookCollection.add(book);
-	    	Log.d(TAG, "Found: " + book.toString());
+	    	//Log.d(TAG, "Found: " + book.toString());
 	    	cursor.moveToNext();
 	    }
 	    cursor.close();

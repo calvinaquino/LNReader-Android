@@ -156,7 +156,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	
 	private void jumpTo(PageModel page){
 		setLastReadState();
-		getIntent().putExtra(Constants.EXTRA_PAGE, page.getPage());
+		this.setIntent(getIntent().putExtra(Constants.EXTRA_PAGE, page.getPage()));
 		pageModel = page;
 		task = new LoadNovelContentTask();
 		task.execute(page);
@@ -331,7 +331,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 			else {
 				Log.e(TAG, "Error when loading novel content: " + e.getMessage(), e);
 				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
-			}
+			}			
 			ToggleProgressBar(false);
 			refresh = false;
 		}
