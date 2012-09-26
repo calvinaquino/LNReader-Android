@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 //import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +24,7 @@ import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
 
 public class PageModelAdapter extends ArrayAdapter<PageModel> {
-	//private static final String TAG = PageModelAdapter.class.toString();
+	private static final String TAG = PageModelAdapter.class.toString();
 	private Context context;
 	private int layoutResourceId;
 	private List<PageModel> data;
@@ -103,6 +104,20 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		return row;
 	}
 
+	@Override
+	public void notifyDataSetChanged() {
+		// refresh the data
+		for(int i = 0; i< data.size();++i) {
+			try {
+				PageModel temp = NovelsDao.getInstance(context).getPageModel(data.get(i).getPage(), null);
+				data.set(i, temp);
+			} catch (Exception e) {
+				Log.e(TAG, "Error when refreshing PageModel: " + data.get(i).getPage(), e);
+			}
+		}
+		super.notifyDataSetChanged();
+	}
+	
 	static class PageModelHolder
 	{
 		TextView txtNovel;

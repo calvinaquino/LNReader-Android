@@ -2,6 +2,7 @@ package com.erakk.lnreader.activity;
 
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -13,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.Picture;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -62,8 +64,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 
 		try {
 			pageModel = dao.getPageModel(getIntent().getStringExtra(Constants.EXTRA_PAGE), null);
-			task = new LoadNovelContentTask();
-			task.execute(new PageModel[] {pageModel});
+			executeTask(pageModel);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Log.d(TAG, "Failed to get the PageModel for content: " + getIntent().getStringExtra(Constants.EXTRA_PAGE));
@@ -105,8 +106,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 			 * Implement code to refresh chapter content
 			 */
 			refresh = true;
-			task = new LoadNovelContentTask();
-			task.execute(pageModel);
+			executeTask(pageModel);
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.invert_colors:
@@ -158,8 +158,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		setLastReadState();
 		this.setIntent(getIntent().putExtra(Constants.EXTRA_PAGE, page.getPage()));
 		pageModel = page;
-		task = new LoadNovelContentTask();
-		task.execute(page);
+		executeTask(page);
 	}
 	
 	
@@ -225,6 +224,15 @@ public class DisplayLightNovelContentActivity extends Activity {
 	    	editor.putString(Constants.PREF_LAST_READ, content.getPage());
 	    	editor.commit();
 		}
+	}
+	
+	@SuppressLint("NewApi")
+	private void executeTask(PageModel pageModel) {
+		task = new LoadNovelContentTask();
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {pageModel});
+		else
+			task.execute(new PageModel[] {pageModel});
 	}
 	
 	public void setContent(NovelContentModel content) {

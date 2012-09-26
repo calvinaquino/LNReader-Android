@@ -16,11 +16,12 @@ import android.widget.TextView;
 
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.PageModel;
 
 public class BookModelAdapter extends BaseExpandableListAdapter {
-
+	private static final String TAG = BookModelAdapter.class.toString();
 	private Context context;
 	private ArrayList<BookModel> groups;
 	private int read = Color.parseColor("#888888");
@@ -154,5 +155,21 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 
 	public boolean isChildSelectable(int arg0, int arg1) {
 		return true;
+	}
+	
+	@Override
+	public void notifyDataSetChanged() {
+		// refresh the data
+		for(int i = 0; i< groups.size();++i) {
+			ArrayList<PageModel> chapters = groups.get(i).getChapterCollection();
+			for(int j = 0; j < chapters.size(); ++j)
+			try {
+				PageModel temp = NovelsDao.getInstance(context).getPageModel(chapters.get(j).getPage(), null);
+				chapters.set(j, temp);
+			} catch (Exception e) {
+				Log.e(TAG, "Error when refreshing PageModel: " + chapters.get(j).getPage(), e);
+			}
+		}
+		super.notifyDataSetChanged();
 	}
 }

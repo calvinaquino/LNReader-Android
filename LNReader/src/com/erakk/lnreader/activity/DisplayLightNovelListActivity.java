@@ -114,9 +114,10 @@ public class DisplayLightNovelListActivity extends ListActivity{
 	@Override
     protected void onRestart() {
         super.onRestart();
-        //if(isInverted != PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false)) {
+        if(isInverted != PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false)) {
         	UIHelper.Recreate(this);
-        //}
+        }
+        adapter.notifyDataSetChanged();
     }
 
 	@Override

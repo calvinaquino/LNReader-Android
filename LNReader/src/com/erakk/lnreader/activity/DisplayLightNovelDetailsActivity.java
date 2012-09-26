@@ -20,10 +20,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.ExpandableListView;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -96,6 +96,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
         if(isInverted != PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false)) {
         	UIHelper.Recreate(this);
         }
+        bookModelAdapter.notifyDataSetChanged();
     }
     
     public void onStop(){
