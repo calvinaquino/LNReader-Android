@@ -17,7 +17,8 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.erakk.lnreader.activity.MainActivity;
+import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.NovelCollectionModel;
@@ -26,7 +27,6 @@ import com.erakk.lnreader.model.PageModel;
 public class UpdateService extends Service {
 	private final IBinder mBinder = new MyBinder();
 	public final static String TAG = UpdateService.class.toString();
-	private static int NOTIF_ID = 1;
 	private static boolean isRunning;
 
 	@Override
@@ -75,14 +75,15 @@ public class UpdateService extends Service {
 			NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
 			
 			int icon = android.R.drawable.arrow_up_float; //Just a placeholder
-			CharSequence tickerText = "Novel Update";
+			CharSequence tickerText = "New Chapters Update";
 			long when = System.currentTimeMillis();		
 		
+			int id = 0;
 			for(Iterator<PageModel> iChapter = updatedChapters.iterator(); iChapter.hasNext();) {
+				final int notifId = ++id;
 				PageModel chapter = iChapter.next();
-				Notification notification = new Notification(icon, tickerText, when);
 				
-				Context context = getApplicationContext();
+				Notification notification = new Notification(icon, tickerText, when);
 				CharSequence contentTitle = "N/A";
 				try{
 					contentTitle = chapter.getBook().getParent().getPageModel().getTitle();
@@ -91,12 +92,13 @@ public class UpdateService extends Service {
 					Log.e(TAG, "Error when getting Novel title", ex);
 				}
 				CharSequence contentText = chapter.getTitle() + " (" + chapter.getBook().getTitle() + ")";
-				Intent notificationIntent = new Intent(this, MainActivity.class);
-				PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
+				Intent notificationIntent = new Intent(this, DisplayLightNovelContentActivity.class);
+				notificationIntent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
+				PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, 0);
 		
-				notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+				notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
 				
-				mNotificationManager.notify(++NOTIF_ID, notification);
+				mNotificationManager.notify(notifId, notification);
 			}		
 		}
 	}
@@ -145,7 +147,7 @@ public class UpdateService extends Service {
 				PageModel updatedNovel = dao.getPageModelFromInternet(novel.getPage(), null);
 				
 				// different timestamp
-				if(!novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
+				if(true) { //!novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
 					Log.d(TAG, "Different Timestamp for: " + novel.getPage());
 					Log.d(TAG, novel.getLastUpdate().toString() + " != " + updatedNovel.getLastUpdate().toString());
 					ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, null).getFlattedChapterList();
