@@ -147,7 +147,7 @@ public class UpdateService extends Service {
 				PageModel updatedNovel = dao.getPageModelFromInternet(novel.getPage(), null);
 				
 				// different timestamp
-				if(true) { //!novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
+				if(!novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
 					Log.d(TAG, "Different Timestamp for: " + novel.getPage());
 					Log.d(TAG, novel.getLastUpdate().toString() + " != " + updatedNovel.getLastUpdate().toString());
 					ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, null).getFlattedChapterList();
