@@ -3,11 +3,13 @@ package com.erakk.lnreader.activity;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -68,7 +70,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
         page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
         page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
                 
-        updateContent(false);
+        executeTask(page, false);
        
         // setup listener
         expandList = (ExpandableListView) findViewById(R.id.chapter_list);
@@ -117,6 +119,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     }
     
 	@Override
+	@SuppressLint({ "NewApi" })
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     	case R.id.menu_settings:
@@ -124,7 +127,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     		startActivity(launchNewIntent);
     		return true;
     	case R.id.menu_refresh_chapter_list:			
-			updateContent(true);
+    		executeTask(page, true);
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.invert_colors:			
@@ -142,7 +145,10 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 				if(!temp.isDownloaded()) notDownloadedChapters.add(temp);
 			}
 			downloadTask = new DownloadNovelContentTask((PageModel[]) notDownloadedChapters.toArray(new PageModel[notDownloadedChapters.size()]));
-			downloadTask.execute();
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			else
+				downloadTask.execute();
 			return true;
         case android.R.id.home:
         	super.onBackPressed();
@@ -165,6 +171,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     }
 
 	@Override
+	@SuppressLint({ "NewApi" })
 	public boolean onContextItemSelected(MenuItem item) {
     	ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
     	// unpacking
@@ -189,7 +196,10 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			}
 			
 			downloadTask = new DownloadNovelContentTask((PageModel[]) downloadingChapters.toArray(new PageModel[downloadingChapters.size()]));
-			downloadTask.execute();
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			else
+				downloadTask.execute();
 			return true;
 		case R.id.clear_volume:
 			
@@ -253,13 +263,17 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			return super.onContextItemSelected(item);
 		}
 	}
-	
-    private void updateContent ( boolean willRefresh) {
+    
+	@SuppressLint("NewApi")
+	private void executeTask(PageModel pageModel, boolean willRefresh) {
 		task = new LoadNovelDetailsTask();
 		task.refresh = willRefresh;
-		task.execute(page);
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {pageModel});
+		else
+			task.execute(new PageModel[] {pageModel});
 	}
-    
+	
 	private void ToggleProgressBar(boolean show) {
 		if(show) {
 			dialog = ProgressDialog.show(this, "Novel Details", "Loading. Please wait...", true);

@@ -169,7 +169,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 			return true;
 		case R.id.download_novel:			
 			/*
-			 * Implement code to download entire novel
+			 * Implement code to download novel synopsis
 			 */
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 			if(info.position > -1) {
