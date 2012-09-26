@@ -92,4 +92,26 @@ a {
 	font-size: xx-large;
 	letter-spacing: 10px;
 }
+
+/* Wikitable */
+table.wikitable {
+	margin: 1em 1em 1em 0;
+	background-color: #060606;
+	border: 1px #555 solid;
+	border-collapse: collapse;
+	color: white;
+}
+
+table.wikitable>tr>th,table.wikitable>tr>td,table.wikitable>*>tr>th,table.wikitable>*>tr>td {
+	border: 1px #555 solid;
+	padding: 0.2em;
+}
+
+table.wikitable>tr>th,table.wikitable>*>tr>th {
+	background-color: #0D0D0D;
+	text-align: center;
+}
+
+table.wikitable>caption {
+	font-weight: bold;
 }
