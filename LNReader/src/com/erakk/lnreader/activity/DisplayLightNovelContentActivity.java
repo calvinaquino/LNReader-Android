@@ -40,7 +40,6 @@ import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
-@SuppressWarnings("deprecation")
 public class DisplayLightNovelContentActivity extends Activity {
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
 	private final Activity activity = this;
@@ -53,7 +52,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 	private boolean refresh = false;
 	private AlertDialog tocMenu = null;
 	private PageModelAdapter jumpAdapter = null;
-
 	private ProgressDialog dialog;
 	
 	@Override
@@ -64,11 +62,10 @@ public class DisplayLightNovelContentActivity extends Activity {
 
 		try {
 			pageModel = dao.getPageModel(getIntent().getStringExtra(Constants.EXTRA_PAGE), null);
-			executeTask(pageModel);
 		} catch (Exception e) {
-			e.printStackTrace();
-			Log.d(TAG, "Failed to get the PageModel for content: " + getIntent().getStringExtra(Constants.EXTRA_PAGE));
+			Log.e(TAG, "Failed to get the PageModel for content: " + getIntent().getStringExtra(Constants.EXTRA_PAGE), e);
 		}
+		Log.d(TAG, "OnCreate Completed");
 	}
 	
 	@Override
@@ -76,6 +73,14 @@ public class DisplayLightNovelContentActivity extends Activity {
 		setLastReadState();
 		Log.d(TAG, "Pausing activity");
 		super.onPause();
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		Log.d(TAG, "Resuming activity");
+		// the actual loading
+		executeTask(pageModel);
 	}
 	
 	@Override
@@ -156,11 +161,9 @@ public class DisplayLightNovelContentActivity extends Activity {
 	
 	private void jumpTo(PageModel page){
 		setLastReadState();
-		this.setIntent(getIntent().putExtra(Constants.EXTRA_PAGE, page.getPage()));
 		pageModel = page;
 		executeTask(page);
-	}
-	
+	}	
 	
 	private void ToggleProgressBar(boolean show) {
 		if(show) {
@@ -196,6 +199,26 @@ public class DisplayLightNovelContentActivity extends Activity {
 		}
 	}
 
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		try {
+			savedInstanceState.putString(Constants.EXTRA_PAGE, content.getPageModel().getPage());
+		} catch (Exception e) {
+			Log.e(TAG, "Error when saving instance", e);
+		}
+	}
+
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		try {
+			// replace the current pageModel with the saved instance
+			pageModel = dao.getPageModel(savedInstanceState.getString(Constants.EXTRA_PAGE), null);
+		} catch (Exception e) {
+			Log.e(TAG, "Error when restoring instance", e);
+		}
+		Log.d(TAG, "onRestoreInstanceState Completed");
+	}
+	
 	private void setLastReadState() {
 		if(content!= null) {
 			// save last position and zoom
@@ -213,7 +236,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 					PageModel page = content.getPageModel();
 					page.setFinishedRead(true);
 					page = dao.updatePageModel(page);
-					Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());			
+					Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 				}catch(Exception ex) {
 					ex.printStackTrace();
 					Log.d(TAG, "Error updating PageModel for Content: " + content.getPage());
@@ -276,6 +299,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 			dialog.setMessage(values[0]);
 		}
 		
+		@SuppressWarnings("deprecation")
 		protected void onPostExecute(AsyncTaskResult<NovelContentModel> result) {
 			Exception e = result.getError();
 			
