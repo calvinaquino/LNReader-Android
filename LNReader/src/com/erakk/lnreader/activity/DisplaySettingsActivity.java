@@ -22,14 +22,13 @@ public class DisplaySettingsActivity extends PreferenceActivity {
 	@SuppressWarnings("deprecation")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
-		// must be set before create any view when there is no layout
-    	UIHelper.SetTheme(this, null);
-		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
-    	
 		super.onCreate(savedInstanceState);
+    	UIHelper.SetTheme(this, null);
+		UIHelper.SetActionBarDisplayHomeAsUp(this, true);   	
+		
     	activity = this;
         
-        //This man is deprecated but but we may want to be bale to run on older API
+        //This man is deprecated but but we may want to be able to run on older API
         addPreferencesFromResource(R.xml.preferences);
         
         // Screen Orientation

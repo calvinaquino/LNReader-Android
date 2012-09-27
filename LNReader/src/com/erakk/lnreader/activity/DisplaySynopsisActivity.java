@@ -42,7 +42,6 @@ public class DisplaySynopsisActivity extends Activity {
         PageModel page = new PageModel(); 
         page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
         page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
-
         
         View NovelView = findViewById(R.id.ligh_novel_synopsys_screen);
 
