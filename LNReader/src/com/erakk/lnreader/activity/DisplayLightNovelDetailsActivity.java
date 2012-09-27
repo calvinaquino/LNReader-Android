@@ -119,7 +119,6 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     }
     
 	@Override
-	@SuppressLint({ "NewApi" })
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     	case R.id.menu_settings:
@@ -144,11 +143,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 				PageModel temp = i.next();
 				if(!temp.isDownloaded()) notDownloadedChapters.add(temp);
 			}
-			downloadTask = new DownloadNovelContentTask((PageModel[]) notDownloadedChapters.toArray(new PageModel[notDownloadedChapters.size()]));
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-			else
-				downloadTask.execute();
+			executeDownloadTask(notDownloadedChapters);
 			return true;
         case android.R.id.home:
         	super.onBackPressed();
@@ -171,7 +166,6 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     }
 
 	@Override
-	@SuppressLint({ "NewApi" })
 	public boolean onContextItemSelected(MenuItem item) {
     	ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
     	// unpacking
@@ -194,12 +188,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 				PageModel temp = i.next();
 				if(!temp.isDownloaded()) downloadingChapters.add(temp);
 			}
-			
-			downloadTask = new DownloadNovelContentTask((PageModel[]) downloadingChapters.toArray(new PageModel[downloadingChapters.size()]));
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-			else
-				downloadTask.execute();
+			executeDownloadTask(downloadingChapters);
 			return true;
 		case R.id.clear_volume:
 			
@@ -272,6 +261,15 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {pageModel});
 		else
 			task.execute(new PageModel[] {pageModel});
+	}
+	
+	@SuppressLint("NewApi")
+	private void executeDownloadTask(ArrayList<PageModel> chapters) {
+		downloadTask = new DownloadNovelContentTask((PageModel[]) chapters.toArray(new PageModel[chapters.size()]));
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		else
+			downloadTask.execute();
 	}
 	
 	private void ToggleProgressBar(boolean show) {

@@ -2,11 +2,13 @@ package com.erakk.lnreader.activity;
 
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -175,8 +177,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 			if(info.position > -1) {
 				ToggleProgressBar(true);
 				PageModel novel = listItems.get(info.position);
-				downloadTask = new DownloadNovelDetailsTask();
-				downloadTask.execute(new PageModel[] {novel});
+				executeDownloadTask(novel);
 			}
 			return true;
 		default:
@@ -196,12 +197,30 @@ public class DisplayLightNovelListActivity extends ListActivity{
 			} else {
 				adapter = new PageModelAdapter(this, resourceId, listItems);
 			}
-			new LoadNovelsTask().execute(new Boolean[] {isRefresh, onlyWatched});
+			executeTask(isRefresh, onlyWatched);
 			setListAdapter(adapter);
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
 			Toast.makeText(this, "Error when updating: " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
+	}
+	
+	@SuppressLint("NewApi")
+	private void executeTask(boolean isRefresh, boolean onlyWatched) {
+		task = new LoadNovelsTask();
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new Boolean[] {isRefresh, onlyWatched});
+		else
+			task.execute(new Boolean[] {isRefresh, onlyWatched});
+	}
+	
+	@SuppressLint("NewApi")
+	private void executeDownloadTask(PageModel novel) {
+		downloadTask = new DownloadNovelDetailsTask();		
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {novel});
+		else
+			downloadTask.execute(new PageModel[] {novel});
 	}
 	
 	private void ToggleProgressBar(boolean show) {

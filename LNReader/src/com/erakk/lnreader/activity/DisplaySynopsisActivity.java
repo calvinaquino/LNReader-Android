@@ -64,8 +64,7 @@ public class DisplaySynopsisActivity extends Activity {
         	textViewTitle.setTextColor(Color.WHITE);
         	NovelView.setBackgroundColor(Color.BLACK);
         	
-        }
-        
+        }        
 
         Log.d(null, "start Default");
         
