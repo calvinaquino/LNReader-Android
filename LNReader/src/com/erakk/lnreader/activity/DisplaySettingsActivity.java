@@ -22,8 +22,8 @@ public class DisplaySettingsActivity extends PreferenceActivity {
 	@SuppressWarnings("deprecation")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
+		UIHelper.SetTheme(this, null);
 		super.onCreate(savedInstanceState);
-    	UIHelper.SetTheme(this, null);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);   	
 		
     	activity = this;
