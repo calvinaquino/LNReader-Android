@@ -2,13 +2,60 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-    
+
     <WebView
         android:id="@+id/webView1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-	/>
-    
+        android:layout_below="@+id/searchBox" />
+
+    <RelativeLayout
+        android:id="@+id/searchBox"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <Button
+            android:id="@+id/btnClose"
+            android:layout_width="35dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/searchText"
+            android:text="X"
+            android:textSize="10dp"
+            android:onClick="closeSearchBox" />
+
+        <EditText
+            android:id="@+id/searchText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/btnPrev"
+            android:layout_toRightOf="@+id/btnClose"
+            android:ems="10"
+            android:hint="@string/hint_search"
+            android:textSize="10dp" />
+
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="35dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/btnPrev"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:text=">"
+            android:textSize="10dp"
+            android:onClick="searchNext" />
+
+        <Button
+            android:id="@+id/btnPrev"
+            android:layout_width="35dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/searchText"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/btnNext"
+            android:text="&lt;"
+            android:textSize="10dp"
+            android:onClick="searchPrev" />
+
+    </RelativeLayout>
+
 </RelativeLayout>

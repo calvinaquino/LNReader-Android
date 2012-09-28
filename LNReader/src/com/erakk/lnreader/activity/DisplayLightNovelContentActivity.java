@@ -17,12 +17,17 @@ import android.os.AsyncTask.Status;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebView.PictureListener;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
@@ -53,6 +58,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	private AlertDialog tocMenu = null;
 	private PageModelAdapter jumpAdapter = null;
 	private ProgressDialog dialog;
+	private WebView webView;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -65,7 +71,41 @@ public class DisplayLightNovelContentActivity extends Activity {
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to get the PageModel for content: " + getIntent().getStringExtra(Constants.EXTRA_PAGE), e);
 		}
+		
+		
+		// search box
+		EditText searchText = (EditText) findViewById(R.id.searchText);
+		searchText.addTextChangedListener(new TextWatcher(){
+
+			public void afterTextChanged(Editable arg0) { }
+
+			public void beforeTextChanged(CharSequence s, int start, int count,	int after) { }
+
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				search(s.toString());				
+			}						
+		});
+		
+		webView = (WebView) findViewById(R.id.webView1);
 		Log.d(TAG, "OnCreate Completed");
+	}
+	
+	@SuppressWarnings("deprecation")
+	private void search(String string) {
+		webView.findAll(string);
+	}
+	
+	public void searchNext(View view) {
+		webView.findNext(true);
+	}
+	
+	public void searchPrev(View view) {
+		webView.findNext(false);
+	}
+	
+	public void closeSearchBox(View view) {
+		RelativeLayout searchBox = (RelativeLayout) findViewById(R.id.searchBox);
+		searchBox.setVisibility(View.GONE);
 	}
 	
 	@Override
@@ -151,6 +191,10 @@ public class DisplayLightNovelContentActivity extends Activity {
 			return true;
 		case R.id.menu_chapter_toc:
 			tocMenu.show();
+			return true;
+		case R.id.menu_search:
+			RelativeLayout searchBox = (RelativeLayout) findViewById(R.id.searchBox);
+			searchBox.setVisibility(View.VISIBLE);
 			return true;
 		case android.R.id.home:
 			tocMenu.show();
