@@ -71,8 +71,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to get the PageModel for content: " + getIntent().getStringExtra(Constants.EXTRA_PAGE), e);
 		}
-		
-		
+				
 		// search box
 		EditText searchText = (EditText) findViewById(R.id.searchText);
 		searchText.addTextChangedListener(new TextWatcher(){
@@ -82,7 +81,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 			public void beforeTextChanged(CharSequence s, int start, int count,	int after) { }
 
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				search(s.toString());				
+				search(s.toString());
 			}						
 		});
 		
@@ -92,7 +91,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 	
 	@SuppressWarnings("deprecation")
 	private void search(String string) {
-		webView.findAll(string);
+		if(string != null && string.length() > 0)
+			webView.findAll(string);
 	}
 	
 	public void searchNext(View view) {
@@ -106,6 +106,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	public void closeSearchBox(View view) {
 		RelativeLayout searchBox = (RelativeLayout) findViewById(R.id.searchBox);
 		searchBox.setVisibility(View.GONE);
+		webView.clearMatches();
 	}
 	
 	@Override
