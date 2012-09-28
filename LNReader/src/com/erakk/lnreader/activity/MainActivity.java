@@ -47,7 +47,7 @@ public class MainActivity extends Activity {
         			Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
 			        intent.putExtra(Constants.EXTRA_PAGE, lastReadPage);
 			        startActivity(intent);
-        			Toast.makeText(this, "Loading: " + lastReadPage, Toast.LENGTH_SHORT).show();
+        			//Toast.makeText(this, "Loading: " + lastReadPage, Toast.LENGTH_SHORT).show();
         		}
         		else{
         			Toast.makeText(this, "No last read novel.", Toast.LENGTH_SHORT).show();

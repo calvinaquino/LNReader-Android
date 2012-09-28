@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.widget.Toast;
 
@@ -81,12 +82,12 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         });
         
         Preference updatesInterval = (Preference)  findPreference("updates_interval");
-        updatesInterval.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference p) {
-            	MyScheduleReceiver.reschedule(getApplicationContext());
+        updatesInterval.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				MyScheduleReceiver.reschedule(getApplicationContext());
                 return true;
-            }
-        });
+			}
+		});
         
     }
     

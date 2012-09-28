@@ -34,7 +34,7 @@
             android:ems="10"
             android:hint="@string/hint_search"
             android:textSize="12dp"
-            android:imeActionLabel="actionSearch"
+            android:imeActionLabel="@android:string/search_go"
             android:inputType="text" />
 
         <Button

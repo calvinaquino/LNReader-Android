@@ -17,18 +17,17 @@ import android.os.AsyncTask.Status;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.webkit.WebView;
 import android.webkit.WebView.PictureListener;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
@@ -74,16 +73,12 @@ public class DisplayLightNovelContentActivity extends Activity {
 		}
 				
 		// search box
-		EditText searchText = (EditText) findViewById(R.id.searchText);
-		searchText.addTextChangedListener(new TextWatcher(){
-
-			public void afterTextChanged(Editable arg0) { }
-
-			public void beforeTextChanged(CharSequence s, int start, int count,	int after) { }
-
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				search(s.toString());
-			}						
+		final EditText searchText = (EditText) findViewById(R.id.searchText);
+		searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+		    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		        search(searchText.getText().toString());
+		        return false;
+		    }
 		});
 		
 		webView = (WebView) findViewById(R.id.webView1);

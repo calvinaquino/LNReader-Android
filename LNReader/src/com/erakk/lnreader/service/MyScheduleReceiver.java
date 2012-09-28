@@ -45,19 +45,19 @@ public class MyScheduleReceiver extends BroadcastReceiver {
 				break;
 		}
 		
-		Log.d(UpdateService.TAG, "onReceive_Schedule");
-		AlarmManager service = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		Intent i = new Intent(context, MyStartServiceReceiver.class);
-		PendingIntent pending = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
-		
-		// Start 10 seconds after boot completed
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.SECOND, 30);
-
-		// InexactRepeating allows Android to optimize the energy consumption
-		Log.d(UpdateService.TAG, "Repeating in: " + repeatTime);
-		if (repeatTime != 0){			
+		if(repeatTime > 0) {
+			Log.d(UpdateService.TAG, "onReceive_Schedule");
+			AlarmManager service = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+			Intent i = new Intent(context, MyStartServiceReceiver.class);
+			PendingIntent pending = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+			
+			// Start repeatTime seconds after boot completed
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.SECOND, 60);
+	
+			// InexactRepeating allows Android to optimize the energy consumption
+			Log.d(UpdateService.TAG, "Repeating in: " + repeatTime);
 			service.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), repeatTime, pending);
-		}		
+		}
 	}
 } 

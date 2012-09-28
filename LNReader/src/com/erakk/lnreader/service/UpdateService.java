@@ -10,10 +10,12 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -51,6 +53,11 @@ public class UpdateService extends Service {
 	
 	@TargetApi(11)
 	private void execute() {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		String updatesIntervalStr = preferences.getString(Constants.PREF_UPDATE_INTERVAL, "0");
+		Log.d(TAG, "updatesIntervalStr = " + updatesIntervalStr);
+		if(updatesIntervalStr.startsWith("0")) return;
+		
 		if(!isRunning) {
 			GetUpdatedChaptersTask task = new GetUpdatedChaptersTask();
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
