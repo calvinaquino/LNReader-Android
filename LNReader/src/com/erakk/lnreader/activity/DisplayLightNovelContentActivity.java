@@ -24,6 +24,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.webkit.WebView;
 import android.webkit.WebView.PictureListener;
 import android.widget.EditText;
@@ -96,7 +97,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	}
 	
 	public void searchNext(View view) {
-		webView.findNext(true);
+		webView.findNext(true);		
 	}
 	
 	public void searchPrev(View view) {
