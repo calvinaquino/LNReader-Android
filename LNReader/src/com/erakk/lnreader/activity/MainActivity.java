@@ -16,11 +16,14 @@ import com.erakk.lnreader.UIHelper;
 
 
 public class MainActivity extends Activity {
+	private boolean isInverted;
+
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         UIHelper.SetTheme(this, R.layout.activity_main);
         UIHelper.SetActionBarDisplayHomeAsUp(this, false);
+        isInverted = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
     }
 
     @Override
@@ -32,7 +35,9 @@ public class MainActivity extends Activity {
 	@Override
     protected void onRestart() {
         super.onRestart();
-        UIHelper.Recreate(this);
+        if(isInverted != PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false)) {
+        	UIHelper.Recreate(this);
+        }
     }
 	
 	@Override

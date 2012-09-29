@@ -1,6 +1,7 @@
 package com.erakk.lnreader.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 import android.annotation.TargetApi;
@@ -52,13 +53,18 @@ public class UpdateService extends Service {
     }
 	
 	@TargetApi(11)
-	private void execute() {
+	public void execute() {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		String updatesIntervalStr = preferences.getString(Constants.PREF_UPDATE_INTERVAL, "0");
 		Log.d(TAG, "updatesIntervalStr = " + updatesIntervalStr);
 		if(updatesIntervalStr.startsWith("0")) return;
 		
 		if(!isRunning) {
+			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+	    	SharedPreferences.Editor editor = sharedPrefs.edit();
+	    	editor.putString(Constants.PREF_RUN_UPDATES, "Running...");
+	    	editor.commit();
+	    	
 			GetUpdatedChaptersTask task = new GetUpdatedChaptersTask();
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -85,7 +91,7 @@ public class UpdateService extends Service {
 			CharSequence tickerText = "New Chapters Update";
 			long when = System.currentTimeMillis();		
 		
-			int id = 0;
+			int id = (int)(new Date().getTime() / 1000);
 			for(Iterator<PageModel> iChapter = updatedChapters.iterator(); iChapter.hasNext();) {
 				final int notifId = ++id;
 				PageModel chapter = iChapter.next();
@@ -101,6 +107,7 @@ public class UpdateService extends Service {
 				
 				String mode = "New: ";
 				if(chapter.isUpdated()) mode = "Update: ";
+				
 				CharSequence contentText = mode + chapter.getTitle() + " (" + chapter.getBook().getTitle() + ")";
 				Intent notificationIntent = new Intent(this, DisplayLightNovelContentActivity.class);
 				notificationIntent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
@@ -111,6 +118,12 @@ public class UpdateService extends Service {
 				mNotificationManager.notify(notifId, notification);
 			}		
 		}
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	SharedPreferences.Editor editor = sharedPrefs.edit();
+    	editor.putString(Constants.PREF_RUN_UPDATES, new Date().toString());
+    	editor.commit();
+    	
+    	Toast.makeText(getApplicationContext(), "Update Service completed", Toast.LENGTH_SHORT).show();
 	}
 
 	public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>>{
@@ -144,7 +157,7 @@ public class UpdateService extends Service {
 		}
 	}
 	
-	public ArrayList<PageModel> GetUpdatedChapters() throws Exception {
+	private ArrayList<PageModel> GetUpdatedChapters() throws Exception {
 		Log.d(TAG, "Checking Updates...");
 		ArrayList<PageModel> updates = new ArrayList<PageModel>();
 		NovelsDao dao = NovelsDao.getInstance();

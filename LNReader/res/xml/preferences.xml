@@ -12,7 +12,8 @@
             android:defaultValue="0"
             android:entries="@array/updateInterval"
             android:entryValues="@array/updateIntervalValues"
-        />   
+        />
+        <Preference android:title="Run Update" android:key="run_update"/>   
              
     </PreferenceCategory>
  

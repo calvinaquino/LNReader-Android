@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Date;
 import java.util.Hashtable;
 
 import android.app.Application;
@@ -74,7 +75,7 @@ public class LNReaderApplication extends Application {
 	   	}
 	};
 	
-	void doBindService() {
+	private void doBindService() {
 	    bindService(new Intent(this, UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
 		Log.d(UpdateService.TAG, "doBindService");
 	}
@@ -109,4 +110,12 @@ public class LNReaderApplication extends Application {
 		unbindService(mConnection);
 		super.onLowMemory();		
 	}
+	
+	public void runUpdateService() {
+		if(service == null){
+			doBindService();
+		}
+		else
+			service.onStartCommand(null, BIND_AUTO_CREATE, (int)(new Date().getTime()/1000));
+	}	
 }

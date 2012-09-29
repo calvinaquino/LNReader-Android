@@ -84,7 +84,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		});
 		
 		webView = (WebView) findViewById(R.id.webView1);
-		Log.d(TAG, "OnCreate Completed");
+		Log.d(TAG, "OnCreate Completed: " + pageModel.getPage());
 	}
 	
 	@Override

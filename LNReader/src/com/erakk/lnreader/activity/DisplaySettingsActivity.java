@@ -6,11 +6,13 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
@@ -19,6 +21,7 @@ import com.erakk.lnreader.service.MyScheduleReceiver;
 public class DisplaySettingsActivity extends PreferenceActivity {
 	//private static final String TAG = DisplayLightNovelsActivity.class.toString();
 	private Activity activity;
+	private boolean isInverted;
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -90,12 +93,26 @@ public class DisplaySettingsActivity extends PreferenceActivity {
 			}
 		});
         
+        final Preference runUpdates = (Preference) findPreference(Constants.PREF_RUN_UPDATES);
+        runUpdates.setSummary("Last Run: " + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES, "None"));
+        runUpdates.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference p) {
+        		LNReaderApplication.getInstance().runUpdateService();
+        		Toast.makeText(getApplicationContext(), "Running Update", Toast.LENGTH_SHORT).show();
+        		runUpdates.setSummary("Last Run: Running...");
+                return true;
+            }
+        });      
+        
+        isInverted = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
     }
     
 	@Override
     protected void onRestart() {
         super.onRestart();
-        UIHelper.Recreate(this);
+        if(isInverted != PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false)) {
+        	UIHelper.Recreate(this);
+        }
     }
 	
 	private void DeleteRecursive(File fileOrDirectory) {
