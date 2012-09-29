@@ -28,6 +28,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 	private Context context;
 	private int layoutResourceId;
 	private List<PageModel> data;
+	private boolean isAdding = false;
 
 	public PageModelAdapter(Context context, int resourceId, List<PageModel> objects) {
 		super(context, resourceId, objects);
@@ -47,8 +48,11 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			super.addAll(objects);
 		else {
 			for(Iterator<PageModel> iPage = objects.iterator(); iPage.hasNext();) {
+				isAdding = true;
 				this.add(iPage.next());
 			}
+			isAdding = false;
+			this.notifyDataSetChanged();
 		}
 		//Log.d(TAG, "onAddAll Count = " + objects.size());
 	}
@@ -106,16 +110,19 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 
 	@Override
 	public void notifyDataSetChanged() {
-		// refresh the data
-		for(int i = 0; i< data.size();++i) {
-			try {
-				PageModel temp = NovelsDao.getInstance(context).getPageModel(data.get(i).getPage(), null);
-				data.set(i, temp);
-			} catch (Exception e) {
-				Log.e(TAG, "Error when refreshing PageModel: " + data.get(i).getPage(), e);
+		if(!isAdding) {
+			// refresh the data
+			Log.d(TAG, "Refreshing data");
+			for(int i = 0; i< data.size();++i) {
+				try {
+					PageModel temp = NovelsDao.getInstance(context).getPageModel(data.get(i).getPage(), null);
+					data.set(i, temp);
+				} catch (Exception e) {
+					Log.e(TAG, "Error when refreshing PageModel: " + data.get(i).getPage(), e);
+				}
 			}
+			super.notifyDataSetChanged();
 		}
-		super.notifyDataSetChanged();
 	}
 	
 	static class PageModelHolder
