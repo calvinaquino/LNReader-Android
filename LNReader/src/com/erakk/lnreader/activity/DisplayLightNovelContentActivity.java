@@ -1,6 +1,8 @@
 package com.erakk.lnreader.activity;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -72,7 +74,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 			Log.e(TAG, "Failed to get the PageModel for content: " + getIntent().getStringExtra(Constants.EXTRA_PAGE), e);
 		}
 				
-		// search box
+		// compatibility search box
 		final EditText searchText = (EditText) findViewById(R.id.searchText);
 		searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 		    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -83,26 +85,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 		
 		webView = (WebView) findViewById(R.id.webView1);
 		Log.d(TAG, "OnCreate Completed");
-	}
-	
-	@SuppressWarnings("deprecation")
-	private void search(String string) {
-		if(string != null && string.length() > 0)
-			webView.findAll(string);
-	}
-	
-	public void searchNext(View view) {
-		webView.findNext(true);		
-	}
-	
-	public void searchPrev(View view) {
-		webView.findNext(false);
-	}
-	
-	public void closeSearchBox(View view) {
-		RelativeLayout searchBox = (RelativeLayout) findViewById(R.id.searchBox);
-		searchBox.setVisibility(View.GONE);
-		webView.clearMatches();
 	}
 	
 	@Override
@@ -190,8 +172,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 			tocMenu.show();
 			return true;
 		case R.id.menu_search:
-			RelativeLayout searchBox = (RelativeLayout) findViewById(R.id.searchBox);
-			searchBox.setVisibility(View.VISIBLE);
+			showSearchBox();
 			return true;
 		case android.R.id.home:
 			tocMenu.show();
@@ -199,6 +180,43 @@ public class DisplayLightNovelContentActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	@SuppressLint("NewApi")
+	private void showSearchBox() {
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
+			webView.showFindDialog("", true);
+		else {
+			RelativeLayout searchBox = (RelativeLayout) findViewById(R.id.searchBox);
+			searchBox.setVisibility(View.VISIBLE);
+		}
+	}
+
+	// Compatibility search method for older android version
+	@SuppressWarnings("deprecation")
+	private void search(String string) {
+		if (string != null && string.length() > 0)
+			webView.findAll(string);
+		
+		try {
+			Method m = WebView.class.getMethod("setFindIsUp", Boolean.TYPE);
+			m.invoke(webView, true);
+		} catch (Exception ignored) { }
+	}
+	
+	public void searchNext(View view) {
+		webView.findNext(true);		
+	}
+	
+	public void searchPrev(View view) {
+		webView.findNext(false);
+	}
+	
+	public void closeSearchBox(View view) {
+		RelativeLayout searchBox = (RelativeLayout) findViewById(R.id.searchBox);
+		searchBox.setVisibility(View.GONE);
+		webView.clearMatches();
+	}
+	// end of Compatibility search method for older android version
 	
 	private void jumpTo(PageModel page){
 		setLastReadState();
