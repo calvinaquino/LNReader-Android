@@ -311,7 +311,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				cv.put(COLUMN_LAST_CHECK, "" + (int) (page.getLastCheck().getTime() / 1000));
 			cv.put(COLUMN_IS_DOWNLOADED, temp.isDownloaded());
 			int result = update(db, TABLE_PAGE, cv, COLUMN_ID + " = ?", new String[] {"" + temp.getId()});
-			Log.i(TAG, "Page Model Updated, Affected Row: " + result);
+			Log.i(TAG, "Page Model: " + page.getPage() + " Updated, Affected Row: " + result);
 		}
 		
 		// get the updated data.
@@ -365,20 +365,21 @@ public class DBHelper extends SQLiteOpenHelper {
 			cv2.put(COLUMN_PAGE, novelDetails.getPage());
 			cv2.put(COLUMN_TITLE , book.getTitle());
 			cv2.put(COLUMN_ORDER , book.getOrder());
-			if(novelDetails.getLastUpdate() != null)
-				cv2.put(COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000));
-			else
-				cv2.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
 			cv2.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			
 			BookModel tempBook = getBookModel(db, book.getId());
 			if(tempBook == null) tempBook = getBookModel(db, novelDetails.getPage(), book.getTitle());
 			if(tempBook == null) {
 				//Log.d(TAG, "Inserting Novel Book: " + novelDetails.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
+				if(novelDetails.getLastUpdate() != null)
+					cv2.put(COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000));
+				else
+					cv2.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
 				insertOrThrow(db, TABLE_NOVEL_BOOK, null, cv2);
 			}
 			else {
 				//Log.d(TAG, "Updating Novel Book: " + tempBook.getPage() + Constants.NOVEL_BOOK_DIVIDER + tempBook.getTitle() + " id: " + tempBook.getId());
+				cv2.put(COLUMN_LAST_UPDATE, "" + (int) (tempBook.getLastUpdate().getTime() / 1000));
 				update(db, TABLE_NOVEL_BOOK, cv2, COLUMN_ID + " = ?", new String[] {"" + tempBook.getId()});
 			}
 		}
@@ -393,19 +394,18 @@ public class DBHelper extends SQLiteOpenHelper {
 				cv3.put(COLUMN_TYPE, page.getType());
 				cv3.put(COLUMN_PARENT, page.getParent());
 				cv3.put(COLUMN_ORDER, page.getOrder());
-				if(novelDetails.getLastUpdate() != null)
-					cv3.put(COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000));
-				else
-					cv3.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
+				
 				cv3.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 				cv3.put(COLUMN_IS_WATCHED, false);
 				
 				PageModel tempPage = getPageModel(db, page.getPage());
 				if(tempPage == null) {
 					//Log.d(TAG, "Inserting Novel Chapter: " + page.getPage());
+					cv3.put(COLUMN_LAST_UPDATE, 0);
 					insertOrThrow(db, TABLE_PAGE, null, cv3);
 				}
 				else {
+					cv3.put(COLUMN_LAST_UPDATE, "" + (int) (tempPage.getLastUpdate().getTime() / 1000));
 					//Log.d(TAG, "Updating Novel Chapter: " + page.getPage() + " id: " +tempPage.getId());
 					update(db, TABLE_PAGE, cv3, COLUMN_ID + " = ?", new String[] {"" + tempPage.getId()});
 				}

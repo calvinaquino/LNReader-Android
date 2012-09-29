@@ -82,6 +82,7 @@ public class BakaTsukiParser {
 				
 				page.setLastUpdate(new Date(0)); // set to min value if never open
 				try {
+					//always get the page date
 					PageModel temp = NovelsDao.getInstance().getPageModel(page.getPage(), null);
 					if(temp != null) {
 						page.setLastUpdate(temp.getLastUpdate());
@@ -278,6 +279,7 @@ public class BakaTsukiParser {
 								p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 								p.setType(PageModel.TYPE_CONTENT);
 								p.setOrder(chapterOrder);
+								p.setLastUpdate(new Date(0));
 								//Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 								chapterCollection.add(p);
 								++chapterOrder;
@@ -332,6 +334,7 @@ public class BakaTsukiParser {
 								p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 								p.setType(PageModel.TYPE_CONTENT);
 								p.setOrder(chapterOrder);
+								p.setLastUpdate(new Date(0));
 								//Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 								chapterCollection.add(p);
 								++chapterOrder;
@@ -349,6 +352,7 @@ public class BakaTsukiParser {
 							p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 							p.setType(PageModel.TYPE_CONTENT);
 							p.setOrder(chapterOrder);
+							p.setLastUpdate(new Date(0));
 							//Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 							chapterCollection.add(p);
 							++chapterOrder;
@@ -389,6 +393,7 @@ public class BakaTsukiParser {
 					p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 					p.setType(PageModel.TYPE_CONTENT);
 					p.setOrder(chapterOrder);
+					p.setLastUpdate(new Date(0));
 					//Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 					chapterCollection.add(p);
 					++chapterOrder;

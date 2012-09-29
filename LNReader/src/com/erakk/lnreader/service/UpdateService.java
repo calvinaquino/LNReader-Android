@@ -173,8 +173,8 @@ public class UpdateService extends Service {
 								PageModel oldChapter = novelDetailsChapters.get(i);
 								PageModel newChapter = updatedNovelDetailsChapters.get(j);
 								if(newChapter.getPage().compareTo(oldChapter.getPage()) == 0) {
-									// check if last update date is different
-									if(newChapter.getLastUpdate() != oldChapter.getLastUpdate())
+									// check if last update date is newer
+									if(newChapter.getLastUpdate().getTime() > oldChapter.getLastUpdate().getTime())
 										newChapter.setUpdated(true);
 									else
 										updates.remove(newChapter);

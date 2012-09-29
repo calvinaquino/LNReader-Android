@@ -139,7 +139,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			try{
-				db.beginTransaction();
+				//db.beginTransaction();
 				mainPage = dbh.insertOrUpdatePageModel(db, mainPage);
 				Log.d(TAG, "Updated Main_Page");
 	
@@ -160,7 +160,7 @@ public class NovelsDao {
 						
 						// now get the saved value
 						list = dbh.getAllNovels(db);
-						db.setTransactionSuccessful();
+						//db.setTransactionSuccessful();
 						
 						if (notifier != null) {
 							notifier.onCallback(new CallbackEventData("Found: " + list.size() + " novels."));
@@ -184,7 +184,7 @@ public class NovelsDao {
 					}
 				}
 			}finally{
-				db.endTransaction();
+				//db.endTransaction();
 				db.close();
 			}
 		}
@@ -329,6 +329,7 @@ public class NovelsDao {
 				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 			}
 			
+			// Novel details' Page Model
 			if(novel != null){
 				page.setParent("Main_Page"); // insurance
 				// get the last update time from internet
@@ -340,9 +341,9 @@ public class NovelsDao {
 					novel.setLastCheck(new Date());
 				}
 				else {
-					page.setLastUpdate(new Date());
+					page.setLastUpdate(new Date(0));
 					page.setLastCheck(new Date());
-					novel.setLastUpdate(new Date());
+					novel.setLastUpdate(new Date(0));
 					novel.setLastCheck(new Date());
 				}
 				// save the changes
