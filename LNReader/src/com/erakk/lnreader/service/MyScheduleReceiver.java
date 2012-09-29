@@ -24,6 +24,11 @@ public class MyScheduleReceiver extends BroadcastReceiver {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 		String updatesIntervalStr = preferences.getString(Constants.PREF_UPDATE_INTERVAL, "0");
 		int updatesInterval = Integer.parseInt(updatesIntervalStr);	
+		
+		reschedule(context, updatesInterval);
+	}
+	
+	public static void reschedule(Context context, int updatesInterval) {		
 		long repeatTime = 0;
 		switch (updatesInterval) {
 			case 1:

@@ -81,10 +81,11 @@ public class DisplaySettingsActivity extends PreferenceActivity {
             }
         });
         
-        Preference updatesInterval = (Preference)  findPreference("updates_interval");
+        final Preference updatesInterval = (Preference)  findPreference(Constants.PREF_UPDATE_INTERVAL);
         updatesInterval.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				MyScheduleReceiver.reschedule(getApplicationContext());
+				int updatesIntervalInt = Integer.parseInt(newValue.toString());	
+				MyScheduleReceiver.reschedule(getApplicationContext(), updatesIntervalInt);
                 return true;
 			}
 		});
@@ -102,10 +103,5 @@ public class DisplaySettingsActivity extends PreferenceActivity {
 	        for (File child : fileOrDirectory.listFiles())
 	            DeleteRecursive(child);
 	    fileOrDirectory.delete();
-	}
-	
-	public boolean onPreferenceChange(Preference preference, Object newValue) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 }
