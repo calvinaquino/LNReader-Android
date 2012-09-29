@@ -98,7 +98,10 @@ public class UpdateService extends Service {
 				catch(Exception ex){
 					Log.e(TAG, "Error when getting Novel title", ex);
 				}
-				CharSequence contentText = chapter.getTitle() + " (" + chapter.getBook().getTitle() + ")";
+				
+				String mode = "New: ";
+				if(chapter.isUpdated()) mode = "Update: ";
+				CharSequence contentText = mode + chapter.getTitle() + " (" + chapter.getBook().getTitle() + ")";
 				Intent notificationIntent = new Intent(this, DisplayLightNovelContentActivity.class);
 				notificationIntent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
 				PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, 0);
@@ -116,7 +119,8 @@ public class UpdateService extends Service {
 		protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(Void... arg0) {
 			isRunning = true;
 			try{
-				return new AsyncTaskResult<ArrayList<PageModel>>(GetUpdatedChapters());
+				ArrayList<PageModel> result = GetUpdatedChapters();
+				return new AsyncTaskResult<ArrayList<PageModel>>(result);
 			}
 			catch(Exception ex) {
 				return new AsyncTaskResult<ArrayList<PageModel>>(ex);
@@ -166,8 +170,14 @@ public class UpdateService extends Service {
 						// compare the chapters!
 						for(int i = 0 ; i < novelDetailsChapters.size() ; ++i) {
 							for(int j = 0; j < updatedNovelDetailsChapters.size(); j++) {
-								if(updatedNovelDetailsChapters.get(j).getPage().compareTo(novelDetailsChapters.get(i).getPage()) == 0) {
-									updates.remove(updatedNovelDetailsChapters.get(j));
+								PageModel oldChapter = novelDetailsChapters.get(i);
+								PageModel newChapter = updatedNovelDetailsChapters.get(j);
+								if(newChapter.getPage().compareTo(oldChapter.getPage()) == 0) {
+									// check if last update date is different
+									if(newChapter.getLastUpdate() != oldChapter.getLastUpdate())
+										newChapter.setUpdated(true);
+									else
+										updates.remove(newChapter);
 								}
 							}
 						}

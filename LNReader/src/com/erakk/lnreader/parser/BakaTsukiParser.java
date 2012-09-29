@@ -20,6 +20,7 @@ import org.jsoup.select.Elements;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
@@ -74,17 +75,24 @@ public class BakaTsukiParser {
 			for (Iterator<Element> i = novels.iterator(); i .hasNext();) {
 				Element novel = i.next();
 				Element link = novel.select("a").first();
-
-				// TODO: get the actual last update time.
 				PageModel page = new PageModel();
 				page.setPage(link.attr("href").replace("/project/index.php?title=", ""));
 				page.setType(PageModel.TYPE_NOVEL);
 				page.setTitle(link.text());
-				page.setLastUpdate(new Date());
+				
+				page.setLastUpdate(new Date(0)); // set to min value if never open
+				try {
+					PageModel temp = NovelsDao.getInstance().getPageModel(page.getPage(), null);
+					if(temp != null) {
+						page.setLastUpdate(temp.getLastUpdate());
+					}
+				} catch (Exception e) {
+					Log.e(TAG, "Error when getting pageModel: " + page.getPage(), e);
+				}				
 				page.setLastCheck(new Date());
 				page.setParent("Main_Page");
 				page.setOrder(order);
-				result.add(page);
+				result.add(page);				
 				//Log.d(TAG, "Add: "+ link.text());
 				++order;
 			}
@@ -128,7 +136,7 @@ public class BakaTsukiParser {
 				//Log.d(TAG,"Checking: " + link.html() + " : " + link.attr("rel"));
 				if(link.attributes().get("rel").contains("canonical")) {
 					String redir = link.attr("href").replace("/project/index.php?title=", "").trim();
-					Log.d(TAG, "Redirected from: " + page.getPage()+ " to: " + redir);
+					//Log.d(TAG, "Redirected from: " + page.getPage()+ " to: " + redir);
 					return redir;
 				}
 			}
@@ -151,7 +159,7 @@ public class BakaTsukiParser {
 	}
 	
 	private static void parseNovelChapters(Document doc, NovelCollectionModel novel) {
-		Log.d(TAG, "Start parsing book collections for " + novel.getPage());
+		//Log.d(TAG, "Start parsing book collections for " + novel.getPage());
 		// parse the collection
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
 		try{
@@ -228,7 +236,7 @@ public class BakaTsukiParser {
 	
 	private static ArrayList<BookModel> parseBooksMethod1(NovelCollectionModel novel, Element h2)
 	{
-		Log.d(TAG, "method 1");
+		//Log.d(TAG, "method 1");
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
 		Element bookElement = h2;
 		boolean walkBook = true;
@@ -237,7 +245,7 @@ public class BakaTsukiParser {
 			bookElement = bookElement.nextElementSibling();
 			if(bookElement.tagName() == "h2") walkBook = false;
 			else if(bookElement.tagName() == "h3") {
-				Log.d(TAG, "Found: " +bookElement.text());
+				//Log.d(TAG, "Found: " +bookElement.text());
 				BookModel book = new BookModel();
 				book.setTitle(sanitize(bookElement.text()));
 				book.setOrder(bookOrder);
@@ -270,7 +278,7 @@ public class BakaTsukiParser {
 								p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 								p.setType(PageModel.TYPE_CONTENT);
 								p.setOrder(chapterOrder);
-								Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
+								//Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 								chapterCollection.add(p);
 								++chapterOrder;
 							}										
@@ -294,7 +302,7 @@ public class BakaTsukiParser {
 			bookElement = bookElement.nextElementSibling();
 			if(bookElement.tagName() == "h2") walkBook = false;
 			else if(bookElement.tagName() == "p") {
-				Log.d(TAG, "Found: " +bookElement.text());
+				//Log.d(TAG, "Found: " +bookElement.text());
 				BookModel book = new BookModel();
 				book.setTitle(sanitize(bookElement.text()));
 				book.setOrder(bookOrder);
@@ -324,7 +332,7 @@ public class BakaTsukiParser {
 								p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 								p.setType(PageModel.TYPE_CONTENT);
 								p.setOrder(chapterOrder);
-								Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
+								//Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 								chapterCollection.add(p);
 								++chapterOrder;
 							}										
@@ -341,7 +349,7 @@ public class BakaTsukiParser {
 							p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 							p.setType(PageModel.TYPE_CONTENT);
 							p.setOrder(chapterOrder);
-							Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
+							//Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 							chapterCollection.add(p);
 							++chapterOrder;
 						}
@@ -364,7 +372,7 @@ public class BakaTsukiParser {
 			bookElement = bookElement.nextElementSibling();
 			if(bookElement.tagName() == "h2") walkBook = false;
 			else if(bookElement.tagName() == "ul") {
-				Log.d(TAG, "Found: " +bookElement.text());
+				//Log.d(TAG, "Found: " +bookElement.text());
 				BookModel book = new BookModel();
 				book.setTitle(sanitize(h2.text()));
 				book.setOrder(bookOrder);
@@ -381,7 +389,7 @@ public class BakaTsukiParser {
 					p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 					p.setType(PageModel.TYPE_CONTENT);
 					p.setOrder(chapterOrder);
-					Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
+					//Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 					chapterCollection.add(p);
 					++chapterOrder;
 				}
@@ -437,7 +445,7 @@ public class BakaTsukiParser {
 	}
 
 	private static String parseNovelCover(Document doc, NovelCollectionModel novel) {
-		Log.d(TAG, "Start parsing cover image");
+		//Log.d(TAG, "Start parsing cover image");
 		// parse the cover image
 		String imageUrl = "";
 		Elements images = doc.select(".thumbimage");
@@ -455,12 +463,12 @@ public class BakaTsukiParser {
 			// should happened
 			e.printStackTrace();
 		}
-		Log.d(TAG, "Complete parsing cover image");
+		//Log.d(TAG, "Complete parsing cover image");
 		return imageUrl;
 	}
 
 	private static String parseNovelSynopsis(Document doc, NovelCollectionModel novel) {
-		Log.d(TAG, "Start parsing synopsis");
+		//Log.d(TAG, "Start parsing synopsis");
 		// parse the synopsis
 		String synopsis = "";
 		String source = "#Story_Synopsis";
@@ -470,7 +478,7 @@ public class BakaTsukiParser {
 		if(stage == null || stage.size() <= 0) {
 			source = "#mw-content-text,p";
 			stage = doc.select(source);
-			Log.d(TAG, "From: " + source);
+			//Log.d(TAG, "From: " + source);
 		}
 		
 		if(stage.size() > 0) {
@@ -483,7 +491,7 @@ public class BakaTsukiParser {
 				if(synopsisE == null) break;
 				if(synopsisE.tagName() != "p") {
 					synopsisE = synopsisE.nextElementSibling();
-					Log.d(TAG, synopsisE.html());
+					//Log.d(TAG, synopsisE.html());
 					continue;
 				}
 				i++;
@@ -496,7 +504,7 @@ public class BakaTsukiParser {
 		}
 
 		novel.setSynopsis(synopsis);
-		Log.d(TAG, "Completed parsing synopsis.");
+		//Log.d(TAG, "Completed parsing synopsis.");
 		return synopsis;
 	}
 
@@ -527,13 +535,13 @@ public class BakaTsukiParser {
 				e.printStackTrace();
 			}
 			images.add(image);
-			Log.d("ParseNovelContent", image.getName() + "==>" + image.getUrl().toString());
+			//Log.d("ParseNovelContent", image.getName() + "==>" + image.getUrl().toString());
 		}
 		content.setImages(images);
 		
 		// clean up the text
 		String cleanedText = text.replace("src=\"/project/images/", "src=\"file://" + Constants.IMAGE_ROOT + "/project/images/");
-		Log.d("Result", cleanedText);
+		//Log.d("Result", cleanedText);
 		content.setContent(cleanedText);
 		
 		content.setLastXScroll(0);

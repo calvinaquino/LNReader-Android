@@ -78,7 +78,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		}
 		
 		TextView tvIsDownloaded = (TextView) view.findViewById(R.id.novel_is_downloaded);
-		Log.d("getChildView", "Downloaded " + child.getTitle() + " id " + child.getId() + " : " + child.isDownloaded() );
+		//Log.d("getChildView", "Downloaded " + child.getTitle() + " id " + child.getId() + " : " + child.isDownloaded() );
 		if(tvIsDownloaded != null) {
 			if(!child.isDownloaded()) {
 				tvIsDownloaded.setVisibility(TextView.GONE);

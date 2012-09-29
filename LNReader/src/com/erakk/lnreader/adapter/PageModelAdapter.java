@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
-//import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -112,7 +111,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 	public void notifyDataSetChanged() {
 		if(!isAdding) {
 			// refresh the data
-			Log.d(TAG, "Refreshing data");
+			//Log.d(TAG, "Refreshing data");
 			for(int i = 0; i< data.size();++i) {
 				try {
 					PageModel temp = NovelsDao.getInstance(context).getPageModel(data.get(i).getPage(), null);

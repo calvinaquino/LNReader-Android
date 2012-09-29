@@ -25,6 +25,9 @@ public class PageModel{
 	private boolean isDownloaded;
 	private BookModel book;
 	private int order;
+	
+	// not saved to db
+	private boolean isUpdated = false;
 
 	public int getId() {
 		return id;
@@ -138,5 +141,11 @@ public class PageModel{
 	}
 	public void setBook(BookModel book) {
 		this.book = book;
+	}
+	public boolean isUpdated() {
+		return isUpdated;
+	}
+	public void setUpdated(boolean isUpdated) {
+		this.isUpdated = isUpdated;
 	}
 }
