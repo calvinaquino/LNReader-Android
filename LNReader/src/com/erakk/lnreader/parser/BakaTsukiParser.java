@@ -42,17 +42,15 @@ public class BakaTsukiParser {
 	 * @param doc parsed page for given pageName
 	 * @return PageModel status, no parent and type defined
 	 */
-	public static PageModel parsePageAPI(String pageName, Document doc) throws Exception {
-		PageModel pageModel = new PageModel();
-		pageModel.setPage(pageName);
+	public static PageModel parsePageAPI(PageModel pageModel, Document doc) throws Exception {
 		pageModel.setTitle(doc.select("page").first().attr("title"));
-		//Log.d(TAG, "parsePageAPI Title: " + pageModel.getTitle());
 		//2012-08-03T02:41:50Z
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-		Date lastUpdate = formatter.parse(doc.select("page").first().attr("touched"));
+		String temp = doc.select("page").first().attr("touched");
+		Date lastUpdate = formatter.parse(temp);
 		pageModel.setLastUpdate(lastUpdate);
-		//Log.d(TAG, "parsePageAPI Last Update: " + pageModel.getLastUpdate());
+		Log.d(TAG, "parsePageAPI "+ pageModel.getPage() + " Last Update: " + pageModel.getLastUpdate());
 		
 		return pageModel;				
 	}
@@ -83,7 +81,7 @@ public class BakaTsukiParser {
 				page.setLastUpdate(new Date(0)); // set to min value if never open
 				try {
 					//always get the page date
-					PageModel temp = NovelsDao.getInstance().getPageModel(page.getPage(), null);
+					PageModel temp = NovelsDao.getInstance().getPageModel(page, null);
 					if(temp != null) {
 						page.setLastUpdate(temp.getLastUpdate());
 					}

@@ -19,6 +19,7 @@ public class PageModel{
 	private Date lastUpdate;
 	private String parent;
 	private PageModel parentPageModel;
+	private PageModel pageModel;
 	private Date lastCheck;
 	private boolean isWatched;
 	private boolean isFinishedRead;
@@ -59,10 +60,7 @@ public class PageModel{
 	public void setType(String type) {
 		this.type = type;
 	}
-	
-	public String toString() {
-		return title;
-	}
+
 	public String getParent() {
 		return parent;
 	}
@@ -96,18 +94,32 @@ public class PageModel{
 	public PageModel getParentPageModel() throws Exception {
 		if(this.parentPageModel == null) {
 			NovelsDao dao = NovelsDao.getInstance();
+			PageModel tempPage = new PageModel();
 			if(this.type.contentEquals(TYPE_CONTENT)) {
 				String tempParent = parent.substring(0, parent.indexOf(Constants.NOVEL_BOOK_DIVIDER));
-				this.parentPageModel = dao.getPageModel(tempParent, null);
+				tempPage.setPage(tempParent);
 			}
 			else {
-				this.parentPageModel = dao.getPageModel(this.parent, null);
+				tempPage.setPage(this.parent);
 			}
+			this.parentPageModel = dao.getPageModel(tempPage, null);
 		}
 		return parentPageModel;
 	}
 	public void setParentPageModel(PageModel parentPageModel) {
 		this.parentPageModel = parentPageModel;
+	}
+	public PageModel getPageModel() throws Exception {
+		if(this.pageModel == null) {
+			NovelsDao dao = NovelsDao.getInstance();
+			PageModel tempPage = new PageModel();
+			tempPage.setPage(this.page);
+			this.pageModel = dao.getPageModel(tempPage, null);
+		}
+		return pageModel;
+	}
+	public void setPageModel(PageModel pageModel) {
+		this.pageModel = pageModel;
 	}
 	public boolean isDownloaded() {
 		return isDownloaded;

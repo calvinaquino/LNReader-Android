@@ -114,7 +114,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			//Log.d(TAG, "Refreshing data");
 			for(int i = 0; i< data.size();++i) {
 				try {
-					PageModel temp = NovelsDao.getInstance(context).getPageModel(data.get(i).getPage(), null);
+					PageModel temp = NovelsDao.getInstance(context).getPageModel(data.get(i), null);
 					data.set(i, temp);
 				} catch (Exception e) {
 					Log.e(TAG, "Error when refreshing PageModel: " + data.get(i).getPage(), e);

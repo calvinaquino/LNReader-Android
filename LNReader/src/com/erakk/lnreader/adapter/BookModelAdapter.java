@@ -164,7 +164,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			ArrayList<PageModel> chapters = groups.get(i).getChapterCollection();
 			for(int j = 0; j < chapters.size(); ++j)
 			try {
-				PageModel temp = NovelsDao.getInstance(context).getPageModel(chapters.get(j).getPage(), null);
+				PageModel temp = NovelsDao.getInstance(context).getPageModel(chapters.get(j), null);
 				chapters.set(j, temp);
 			} catch (Exception e) {
 				Log.e(TAG, "Error when refreshing PageModel: " + chapters.get(j).getPage(), e);

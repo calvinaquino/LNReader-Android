@@ -130,7 +130,10 @@ public class NovelsDao {
 			notifier.onCallback(new CallbackEventData("Downloading novel list..."));
 		}
 		// get last updated main page revision from internet
-		PageModel mainPage = getPageModel("Main_Page", notifier);
+		
+		PageModel mainPage = new PageModel();
+		mainPage.setPage("Main_Page");
+		mainPage = getPageModel(mainPage, notifier);
 		mainPage.setType(PageModel.TYPE_OTHER);
 		mainPage.setParent("");
 		mainPage.setLastCheck(new Date());
@@ -204,12 +207,12 @@ public class NovelsDao {
 		return watchedNovel;
 	}
 
-	public PageModel getPageModel(String page, ICallbackNotifier notifier) throws Exception {
+	public PageModel getPageModel(PageModel page, ICallbackNotifier notifier) throws Exception {
 		PageModel pageModel = null;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try{
-				pageModel = dbh.getPageModel(db, page);
+				pageModel = dbh.getPageModel(db, page.getPage());
 			}finally{
 				db.close();
 			}
@@ -220,14 +223,18 @@ public class NovelsDao {
 		return pageModel;
 	}
 
-	public PageModel getPageModelFromInternet(String page, ICallbackNotifier notifier) throws Exception {
+	public PageModel getPageModelFromInternet(PageModel page, ICallbackNotifier notifier) throws Exception {
 		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
+		Log.d(TAG, "PageModel = " + page.getPage());
+		
 		int retry = 0;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
-				Response response = Jsoup.connect("http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&titles=" + page).timeout(Constants.TIMEOUT).execute();
+				Response response = Jsoup.connect("http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&titles=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
 				PageModel pageModel = BakaTsukiParser.parsePageAPI(page, response.parse());
-
+				pageModel.setFinishedRead(page.isFinishedRead());
+				pageModel.setWatched(page.isWatched());
+				
 				synchronized (dbh) {
 					// save to db and get saved value
 					SQLiteDatabase db = dbh.getWritableDatabase();
@@ -333,7 +340,7 @@ public class NovelsDao {
 			if(novel != null){
 				page.setParent("Main_Page"); // insurance
 				// get the last update time from internet
-				PageModel novelPageTemp = getPageModelFromInternet(page.getPage(), notifier);
+				PageModel novelPageTemp = getPageModelFromInternet(page, notifier);
 				if(novelPageTemp != null) {
 					page.setLastUpdate(novelPageTemp.getLastUpdate());
 					page.setLastCheck(new Date());
@@ -499,7 +506,7 @@ public class NovelsDao {
 		}
 		
 		// get last updated info
-		PageModel contentPageModelTemp = getPageModelFromInternet(content.getPage(), notifier);
+		PageModel contentPageModelTemp = getPageModelFromInternet(content.getPageModel(), notifier);
 		if(contentPageModelTemp != null) {
 			content.getPageModel().setLastUpdate(contentPageModelTemp.getLastUpdate());
 			content.getPageModel().setLastCheck(new Date());

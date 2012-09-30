@@ -168,12 +168,12 @@ public class UpdateService extends Service {
 			for(Iterator<PageModel> iNovels = watchedNovels.iterator(); iNovels.hasNext();){
 				// get last update date from internet
 				PageModel novel = iNovels.next();
-				PageModel updatedNovel = dao.getPageModelFromInternet(novel.getPage(), null);
+				PageModel updatedNovel = dao.getPageModelFromInternet(novel.getPageModel(), null);
 				
 				// different timestamp
 				if(!novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
 					Log.d(TAG, "Different Timestamp for: " + novel.getPage());
-					Log.d(TAG, novel.getLastUpdate().toString() + " != " + updatedNovel.getLastUpdate().toString());
+					Log.d(TAG, "old: " + novel.getLastUpdate().toString() + " != " + updatedNovel.getLastUpdate().toString());
 					ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, null).getFlattedChapterList();
 					NovelCollectionModel updatedNovelDetails = dao.getNovelDetailsFromInternet(novel, null);
 					if(updatedNovelDetails!= null){

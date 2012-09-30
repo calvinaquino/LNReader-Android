@@ -69,7 +69,9 @@ public class DisplayLightNovelContentActivity extends Activity {
         UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
 		try {
-			pageModel = dao.getPageModel(getIntent().getStringExtra(Constants.EXTRA_PAGE), null);
+			PageModel tempPage = new PageModel();
+			tempPage.setPage(getIntent().getStringExtra(Constants.EXTRA_PAGE));
+			pageModel = dao.getPageModel(tempPage, null);
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to get the PageModel for content: " + getIntent().getStringExtra(Constants.EXTRA_PAGE), e);
 		}
@@ -271,7 +273,9 @@ public class DisplayLightNovelContentActivity extends Activity {
 		super.onRestoreInstanceState(savedInstanceState);
 		try {
 			// replace the current pageModel with the saved instance
-			pageModel = dao.getPageModel(savedInstanceState.getString(Constants.EXTRA_PAGE), null);
+			PageModel tempPage = new PageModel();
+			tempPage.setPage(savedInstanceState.getString(Constants.EXTRA_PAGE));
+			pageModel = dao.getPageModel(tempPage, null);
 		} catch (Exception e) {
 			Log.e(TAG, "Error when restoring instance", e);
 		}

@@ -264,19 +264,21 @@ public class DBHelper extends SQLiteOpenHelper {
 		
 	public PageModel insertOrUpdatePageModel(SQLiteDatabase db, PageModel page){
 		//Log.d(TAG, page.toString());
-		
+			
 		PageModel temp = selectFirstBy(db, COLUMN_PAGE, page.getPage());
-		
+				
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_PAGE, page.getPage());
 		cv.put(COLUMN_TITLE, page.getTitle());
-		cv.put(COLUMN_ORDER, page.getOrder());		
+		cv.put(COLUMN_ORDER, page.getOrder());
+		cv.put(COLUMN_PARENT, page.getParent());
+		cv.put(COLUMN_TYPE, page.getType());
+		cv.put(COLUMN_IS_WATCHED, page.isWatched());
+		cv.put(COLUMN_IS_FINISHED_READ, page.isFinishedRead());
+		cv.put(COLUMN_IS_DOWNLOADED, page.isDownloaded());
+		
 		if(temp == null) {
 			//Log.d(TAG, "Inserting: " + page.toString());
-			cv.put(COLUMN_PARENT, page.getParent());
-			cv.put(COLUMN_TYPE, page.getType());
-			cv.put(COLUMN_IS_WATCHED, false);
-			cv.put(COLUMN_IS_FINISHED_READ, false);
 			if(page.getLastUpdate() == null) 
 				cv.put(COLUMN_LAST_UPDATE, 0);
 			else 
@@ -285,16 +287,12 @@ public class DBHelper extends SQLiteOpenHelper {
 				cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			else 
 				cv.put(COLUMN_LAST_CHECK, "" + (int) (page.getLastCheck().getTime() / 1000));
-			cv.put(COLUMN_IS_DOWNLOADED, false);
+
 			long id = insertOrThrow(db, TABLE_PAGE, null, cv);
 			Log.i(TAG, "Page Model Inserted, New Id: " + id);
 		}
 		else {
-			//Log.d(TAG, "Updating: " + temp.toString());
-			cv.put(COLUMN_PARENT, temp.getParent());
-			cv.put(COLUMN_TYPE, temp.getType());
-			cv.put(COLUMN_IS_WATCHED, temp.isWatched());
-			cv.put(COLUMN_IS_FINISHED_READ, temp.isFinishedRead());
+			//Log.d(TAG, "Updating: " + temp.toString());			
 			if(page.getLastUpdate() == null) 
 				cv.put(COLUMN_LAST_UPDATE, "" + (int) (temp.getLastUpdate().getTime() / 1000));
 			else 
@@ -303,7 +301,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				cv.put(COLUMN_LAST_CHECK, "" + (int) (temp.getLastCheck().getTime() / 1000));
 			else
 				cv.put(COLUMN_LAST_CHECK, "" + (int) (page.getLastCheck().getTime() / 1000));
-			cv.put(COLUMN_IS_DOWNLOADED, temp.isDownloaded());
+			
 			int result = update(db, TABLE_PAGE, cv, COLUMN_ID + " = ?", new String[] {"" + temp.getId()});
 			Log.i(TAG, "Page Model: " + page.getPage() + " Updated, Affected Row: " + result);
 		}

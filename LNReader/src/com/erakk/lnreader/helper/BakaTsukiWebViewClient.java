@@ -57,7 +57,9 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 						// check if load different page.
 						String currentPage = caller.getIntent().getStringExtra(Constants.EXTRA_PAGE);
 						if(!currentPage.equalsIgnoreCase(titles2[0])) {
-							PageModel pageModel =  dao.getPageModel(titles2[0], null);
+							PageModel tempPage = new PageModel();
+							tempPage.setPage(titles2[0]);
+							PageModel pageModel =  dao.getPageModel(tempPage, null);
 							Log.d("shouldOverrideUrlLoading", "different : " + pageModel.getPage());
 							caller.getIntent().putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
 							caller.recreate();
