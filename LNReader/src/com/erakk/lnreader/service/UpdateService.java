@@ -97,18 +97,19 @@ public class UpdateService extends Service {
 				PageModel chapter = iChapter.next();
 				
 				Notification notification = new Notification(icon, tickerText, when);
-				CharSequence contentTitle = "N/A";
+				
+				CharSequence contentTitle = "New Chapter";
+				if(chapter.isUpdated()) contentTitle = "Chapter Updated";
+
+				String novelTitle = "";
 				try{
-					contentTitle = chapter.getBook().getParent().getPageModel().getTitle();
+					novelTitle = chapter.getBook().getParent().getPageModel().getTitle() + " ";
 				}
 				catch(Exception ex){
 					Log.e(TAG, "Error when getting Novel title", ex);
 				}
-				
-				String mode = "New: ";
-				if(chapter.isUpdated()) mode = "Update: ";
-				
-				CharSequence contentText = mode + chapter.getTitle() + " (" + chapter.getBook().getTitle() + ")";
+								
+				CharSequence contentText = novelTitle + chapter.getTitle() + " (" + chapter.getBook().getTitle() + ")";
 				Intent notificationIntent = new Intent(this, DisplayLightNovelContentActivity.class);
 				notificationIntent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
 				PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, 0);

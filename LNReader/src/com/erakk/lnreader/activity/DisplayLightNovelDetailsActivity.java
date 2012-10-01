@@ -66,10 +66,14 @@ public class DisplayLightNovelDetailsActivity extends Activity {
         
         //Get intent and message
         Intent intent = getIntent();
-        page = new PageModel(); 
+        page = new PageModel();
         page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
-        page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
-                
+        //page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
+        try {
+			page = NovelsDao.getInstance(this).getPageModel(page, null);
+		} catch (Exception e) {
+			Log.e(TAG, "Error when getting Page Model for " + page.getPage(), e);
+		}                
         executeTask(page, false);
        
         // setup listener
