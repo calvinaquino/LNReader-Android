@@ -92,11 +92,31 @@ public class DisplayLightNovelContentActivity extends Activity {
 		restored = false;
 	}
 	
+	protected void onStart() {
+		super.onStart();
+		Log.d(TAG, "onStart Completed");
+	}
+
+	protected void onRestart() {
+		super.onRestart();
+		Log.d(TAG, "onRestart Completed");
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		// moved page loading here rather than onCreate
+		// to avoid only the first page loaded when resume from sleep
+		// when the user navigate using next/prev/jumpTo
+		if(!restored) executeTask(pageModel);
+		Log.d(TAG, "onResume Completed");
+	}
+
 	@Override
 	public void onPause() {
-		setLastReadState();
-		Log.d(TAG, "Pausing activity");
 		super.onPause();
+		setLastReadState();
+		Log.d(TAG, "onPause Completed");
 	}
 	
 	public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -106,6 +126,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		} catch (Exception e) {
 			Log.e(TAG, "Error when saving instance", e);
 		}
+		Log.d(TAG, "onSaveInstanceState Completed");
 	}
 
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -126,22 +147,13 @@ public class DisplayLightNovelContentActivity extends Activity {
 	}
 	
 	@Override
-	public void onResume() {
-		super.onResume();
-		Log.d(TAG, "Resume activity");
-		// moved page loading here rather than onCreate
-		// to avoid only the first page loaded when resume from sleep
-		// when the user navigate using next/prev/jumpTo
-		if(!restored) executeTask(pageModel);
-	}
-
-	@Override
 	public void onStop() {
+		super.onStop();
 		if(task.getStatus() != Status.FINISHED) {
 			task.cancel(true);
-		}
-		Log.d(TAG, "Stopping activity");
-		super.onStop();
+		}		
+		
+		Log.d(TAG, "onStop Completed");
 	}
 	
 	@Override
