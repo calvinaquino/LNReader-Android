@@ -61,6 +61,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	private PageModelAdapter jumpAdapter = null;
 	private ProgressDialog dialog;
 	private WebView webView;
+	private boolean restored;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -87,6 +88,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 		
 		webView = (WebView) findViewById(R.id.webView1);
 		Log.d(TAG, "OnCreate Completed: " + pageModel.getPage());
+		
+		restored = false;
 	}
 	
 	@Override
@@ -96,6 +99,32 @@ public class DisplayLightNovelContentActivity extends Activity {
 		super.onPause();
 	}
 	
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		try {
+			savedInstanceState.putString(Constants.EXTRA_PAGE, content.getPageModel().getPage());
+		} catch (Exception e) {
+			Log.e(TAG, "Error when saving instance", e);
+		}
+	}
+
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		try {
+			// replace the current pageModel with the saved instance
+			PageModel tempPage = new PageModel();
+			tempPage.setPage(savedInstanceState.getString(Constants.EXTRA_PAGE));
+			//if(pageModel == null) {
+				pageModel = dao.getPageModel(tempPage, null);
+				executeTask(pageModel);
+			//}
+		} catch (Exception e) {
+			Log.e(TAG, "Error when restoring instance", e);
+		}
+		Log.d(TAG, "onRestoreInstanceState Completed");
+		restored = true;
+	}
+	
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -103,9 +132,9 @@ public class DisplayLightNovelContentActivity extends Activity {
 		// moved page loading here rather than onCreate
 		// to avoid only the first page loaded when resume from sleep
 		// when the user navigate using next/prev/jumpTo
-		executeTask(pageModel);
+		if(!restored) executeTask(pageModel);
 	}
-	
+
 	@Override
 	public void onStop() {
 		if(task.getStatus() != Status.FINISHED) {
@@ -229,13 +258,15 @@ public class DisplayLightNovelContentActivity extends Activity {
 	}	
 	
 	private void ToggleProgressBar(boolean show) {
-		if(show) {
-			dialog = ProgressDialog.show(this, "Novel Content", "Loading. Please wait...", true);
-			dialog.getWindow().setGravity(Gravity.CENTER);
-			dialog.setCanceledOnTouchOutside(true);
-		} 
-		else {
-			dialog.dismiss();
+		synchronized (this) {
+			if(show) {
+				dialog = ProgressDialog.show(this, "Novel Content", "Loading. Please wait...", true);
+				dialog.getWindow().setGravity(Gravity.CENTER);
+				dialog.setCanceledOnTouchOutside(true);
+			} 
+			else {
+				dialog.dismiss();
+			}
 		}
 	}
 	
@@ -262,28 +293,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 		}
 	}
 
-	public void onSaveInstanceState(Bundle savedInstanceState) {
-		super.onSaveInstanceState(savedInstanceState);
-		try {
-			savedInstanceState.putString(Constants.EXTRA_PAGE, content.getPageModel().getPage());
-		} catch (Exception e) {
-			Log.e(TAG, "Error when saving instance", e);
-		}
-	}
-
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		try {
-			// replace the current pageModel with the saved instance
-			PageModel tempPage = new PageModel();
-			tempPage.setPage(savedInstanceState.getString(Constants.EXTRA_PAGE));
-			pageModel = dao.getPageModel(tempPage, null);
-		} catch (Exception e) {
-			Log.e(TAG, "Error when restoring instance", e);
-		}
-		Log.d(TAG, "onRestoreInstanceState Completed");
-	}
-	
 	public void setLastReadState() {
 		if(content!= null) {
 			// save last position and zoom
@@ -371,6 +380,9 @@ public class DisplayLightNovelContentActivity extends Activity {
 			
 			if(e == null) {
 				content = result.getResult();
+				
+				if(content.getLastUpdate().getTime() != pageModel.getLastUpdate().getTime())
+					Toast.makeText(getApplicationContext(), "Content might be updated: " + content.getLastUpdate().toString() + " != " + pageModel.getLastUpdate().toString(), Toast.LENGTH_LONG).show();
 				
 				// load the contents here
 				final WebView wv = (WebView) findViewById(R.id.webView1);

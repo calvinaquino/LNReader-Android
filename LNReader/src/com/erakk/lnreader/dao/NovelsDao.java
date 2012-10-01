@@ -467,6 +467,9 @@ public class NovelsDao {
 
 	public NovelContentModel getNovelContentFromInternet(PageModel page, ICallbackNotifier notifier) throws Exception {
 		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
+		
+		String oldTitle = page.getTitle();
+		
 		NovelContentModel content = new NovelContentModel();
 		int retry = 0;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
@@ -506,10 +509,16 @@ public class NovelsDao {
 		}
 		
 		// get last updated info
+		
 		PageModel contentPageModelTemp = getPageModelFromInternet(content.getPageModel(), notifier);
 		if(contentPageModelTemp != null) {
+			// overwrite the old title
+			content.getPageModel().setTitle(oldTitle);
+			//syncronize the date
 			content.getPageModel().setLastUpdate(contentPageModelTemp.getLastUpdate());
 			content.getPageModel().setLastCheck(new Date());
+			content.setLastUpdate(contentPageModelTemp.getLastUpdate());
+			content.setLastCheck(new Date());
 		}		
 		// page model will be also saved in insertNovelContent()
 		

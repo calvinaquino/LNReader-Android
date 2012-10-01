@@ -97,14 +97,14 @@ public class DBHelper extends SQLiteOpenHelper {
 				  				  + COLUMN_ORDER + " integer);";							// 5
 
 	private static final String DATABASE_CREATE_NOVEL_CONTENT = "create table "
-		      + TABLE_NOVEL_CONTENT + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-				 				    + COLUMN_CONTENT + " text not null, "
-		      						+ COLUMN_PAGE + " text unique not null, "
-				  				    + COLUMN_LAST_X + " integer, "
-				  				    + COLUMN_LAST_Y + " integer, "
-				  				    + COLUMN_ZOOM + " double, "
-				  				    + COLUMN_LAST_UPDATE + " integer, "
-				  				    + COLUMN_LAST_CHECK + " integer);";
+		      + TABLE_NOVEL_CONTENT + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
+				 				    + COLUMN_CONTENT + " text not null, "						// 1
+		      						+ COLUMN_PAGE + " text unique not null, "					// 2
+				  				    + COLUMN_LAST_X + " integer, "								// 3
+				  				    + COLUMN_LAST_Y + " integer, "								// 4
+				  				    + COLUMN_ZOOM + " double, "									// 5
+				  				    + COLUMN_LAST_UPDATE + " integer, "							// 6
+				  				    + COLUMN_LAST_CHECK + " integer);";							// 7
 	
 	public DBHelper(Context context) {
 	    super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -661,7 +661,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 		else {
 			//Log.d(TAG, "Updating Novel Content: " + content.getPage() + " id: " + temp.getId());
-			cv.put(COLUMN_LAST_UPDATE, "" + (int) (temp.getLastUpdate().getTime() / 1000));
+			if(content.getLastUpdate() == null)
+				cv.put(COLUMN_LAST_UPDATE, "" + (int) (temp.getLastUpdate().getTime() / 1000));
+			else
+				cv.put(COLUMN_LAST_UPDATE, "" + (int) (content.getLastUpdate().getTime() / 1000));		
 			int result = update(db, TABLE_NOVEL_CONTENT, cv, COLUMN_ID + " = ? ", new String[] {"" + temp.getId()});
 			Log.i(TAG, "Novel Content:" + content.getPage() + " Updated, Affected Row: "  + result);
 		}
@@ -703,8 +706,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		content.setLastXScroll(cursor.getInt(3));
 		content.setLastYScroll(cursor.getInt(4));
 		content.setLastZoom(cursor.getDouble(5));
-		content.setLastUpdate(new Date(cursor.getInt(6)*1000));
-		content.setLastCheck(new Date(cursor.getInt(7)*1000));
+		content.setLastUpdate(new Date(cursor.getLong(6)*1000));
+		content.setLastCheck(new Date(cursor.getLong(7)*1000));
 		return content;
 	}
 	

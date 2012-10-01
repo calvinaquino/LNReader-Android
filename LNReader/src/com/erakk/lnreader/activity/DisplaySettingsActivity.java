@@ -98,7 +98,7 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         					  "\nStatus: " + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES_STATUS, "Unknown"));
         runUpdates.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
-        		LNReaderApplication.getInstance().runUpdateService();
+        		LNReaderApplication.getInstance().runUpdateService(true);
         		runUpdates.setSummary("Running...");
                 return true;
             }

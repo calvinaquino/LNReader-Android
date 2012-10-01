@@ -111,11 +111,13 @@ public class LNReaderApplication extends Application {
 		super.onLowMemory();		
 	}
 	
-	public void runUpdateService() {
+	public void runUpdateService(boolean force) {
 		if(service == null){
 			doBindService();
+			service.force = force;
 		}
 		else
+			service.force = force;
 			service.onStartCommand(null, BIND_AUTO_CREATE, (int)(new Date().getTime()/1000));
 	}	
 }

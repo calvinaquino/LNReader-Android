@@ -29,6 +29,7 @@ import com.erakk.lnreader.model.PageModel;
 
 public class UpdateService extends Service {
 	private final IBinder mBinder = new MyBinder();
+	public boolean force = false;
 	public final static String TAG = UpdateService.class.toString();
 	private static boolean isRunning;
 
@@ -57,7 +58,7 @@ public class UpdateService extends Service {
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		String updatesIntervalStr = preferences.getString(Constants.PREF_UPDATE_INTERVAL, "0");
 		Log.d(TAG, "updatesIntervalStr = " + updatesIntervalStr);
-		if(updatesIntervalStr.startsWith("0")) return;
+		if(updatesIntervalStr.startsWith("0") && !force) return;
 		
 		if(!isRunning) {
 			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -178,7 +179,7 @@ public class UpdateService extends Service {
 				PageModel updatedNovel = dao.getPageModelFromInternet(novel.getPageModel(), null);
 				
 				// different timestamp
-				if(!novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
+				if(force || !novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
 					Log.d(TAG, "Different Timestamp for: " + novel.getPage());
 					Log.d(TAG, "old: " + novel.getLastUpdate().toString() + " != " + updatedNovel.getLastUpdate().toString());
 					ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, null).getFlattedChapterList();
@@ -194,6 +195,7 @@ public class UpdateService extends Service {
 								PageModel newChapter = updatedNovelDetailsChapters.get(j);
 								if(newChapter.getPage().compareTo(oldChapter.getPage()) == 0) {
 									// check if last update date is newer
+									//Log.i(TAG, oldChapter.getPage() +  " new: " + newChapter.getLastUpdate().toString() + " old: " + oldChapter.getLastUpdate().toString());
 									if(newChapter.getLastUpdate().getTime() > oldChapter.getLastUpdate().getTime())
 										newChapter.setUpdated(true);
 									else
@@ -202,8 +204,9 @@ public class UpdateService extends Service {
 							}
 						}
 					}
-				}				
+				}
 			}
+			force = false;
 		}
 		
 		return updates;
