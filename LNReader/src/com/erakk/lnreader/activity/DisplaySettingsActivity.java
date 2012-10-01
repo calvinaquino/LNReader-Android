@@ -94,11 +94,11 @@ public class DisplaySettingsActivity extends PreferenceActivity {
 		});
         
         final Preference runUpdates = (Preference) findPreference(Constants.PREF_RUN_UPDATES);
-        runUpdates.setSummary("Last Run: " + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES, "None"));
+        runUpdates.setSummary("Last Run: " + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES, "None") + 
+        					  "\nStatus: " + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES_STATUS, "Unknown"));
         runUpdates.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
         		LNReaderApplication.getInstance().runUpdateService();
-        		Toast.makeText(getApplicationContext(), "Running Update", Toast.LENGTH_SHORT).show();
         		runUpdates.setSummary("Last Run: Running...");
                 return true;
             }

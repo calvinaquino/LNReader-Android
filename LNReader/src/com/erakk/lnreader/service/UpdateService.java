@@ -63,6 +63,7 @@ public class UpdateService extends Service {
 			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 	    	SharedPreferences.Editor editor = sharedPrefs.edit();
 	    	editor.putString(Constants.PREF_RUN_UPDATES, "Running...");
+	    	editor.putString(Constants.PREF_RUN_UPDATES_STATUS, "");
 	    	editor.commit();
 	    	
 			GetUpdatedChaptersTask task = new GetUpdatedChaptersTask();
@@ -119,12 +120,16 @@ public class UpdateService extends Service {
 				mNotificationManager.notify(notifId, notification);
 			}		
 		}
+		updateStatus("OK");    	
+    	Toast.makeText(getApplicationContext(), "Update Service completed", Toast.LENGTH_SHORT).show();
+	}
+
+	private void updateStatus(String status) {
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
     	SharedPreferences.Editor editor = sharedPrefs.edit();
     	editor.putString(Constants.PREF_RUN_UPDATES, new Date().toString());
+    	editor.putString(Constants.PREF_RUN_UPDATES_STATUS, status);
     	editor.commit();
-    	
-    	Toast.makeText(getApplicationContext(), "Update Service completed", Toast.LENGTH_SHORT).show();
 	}
 
 	public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>>{
@@ -149,6 +154,7 @@ public class UpdateService extends Service {
 			else {
 				String text = "Error when getting updates: " + e.getMessage();
 				Log.e(TAG, text, e);
+				updateStatus("ERROR==>" +  e.getMessage());
 				Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
 			}
 			
