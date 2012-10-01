@@ -105,6 +105,11 @@ public class DisplayLightNovelDetailsActivity extends Activity {
         bookModelAdapter.notifyDataSetChanged();
     }
     
+	protected void onResume(){
+		super.onResume();
+		Log.d(TAG, "OnResume: " + task.getStatus().toString());
+	}
+	
     public void onStop(){
     	// check running task
     	if(task != null && !(task.getStatus() == Status.FINISHED)) {
@@ -280,6 +285,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 		if(show) {
 			dialog = ProgressDialog.show(this, "Novel Details", "Loading. Please wait...", true);
 			dialog.getWindow().setGravity(Gravity.CENTER);
+			dialog.setCanceledOnTouchOutside(true);
 		}
 		else {
 			dialog.dismiss();
@@ -311,7 +317,6 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 				else {
 					publishProgress("Loading chapter list...");
 					NovelCollectionModel novelCol = dao.getNovelDetails(page, this);
-					Log.d(TAG, "Loaded: " + novelCol.getPage());				
 					return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 				}
 			} catch (Exception e) {
@@ -322,7 +327,8 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 		
 		@Override
 		protected void onProgressUpdate (String... values){
-			dialog.setMessage(values[0]);
+			if(dialog.isShowing())
+				dialog.setMessage(values[0]);
 		}
 		
 		@Override
@@ -386,6 +392,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 			}
 			ToggleProgressBar(false);
+			Log.d(TAG, "Loaded: " + novelCol.getPage());
 		}		
     }
 
@@ -426,7 +433,8 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 		protected void onProgressUpdate (String... values){
 			//executed on UI thread.
 			synchronized (dialog) {
-				dialog.setMessage(values[0]);
+				if(dialog.isShowing())
+					dialog.setMessage(values[0]);
 			}			
 		}
 		

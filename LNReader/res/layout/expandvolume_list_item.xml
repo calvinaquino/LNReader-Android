@@ -6,6 +6,7 @@
     <TextView
             android:id="@+id/novel_volume"
             android:layout_height="wrap_content"
+            android:minHeight="40dp"
             android:layout_width="match_parent"
             android:gravity="center_vertical"
             android:layout_marginLeft="40dp"

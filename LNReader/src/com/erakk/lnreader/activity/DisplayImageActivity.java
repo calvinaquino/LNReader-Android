@@ -150,24 +150,26 @@ public class DisplayImageActivity extends Activity {
 		@Override
 		protected void onProgressUpdate (ICallbackEventData... values){
 			//executed on UI thread.
-			ICallbackEventData data = values[0];
-			dialog.setMessage(data.getMessage());
-
-			if(data.getClass() == DownloadCallbackEventData.class) {
-				DownloadCallbackEventData downloadData = (DownloadCallbackEventData) data;
-				int percent = downloadData.getPercentage();
-				synchronized (dialog) {
-					if(percent > -1) {
-						// somehow doesn't works....
-						dialog.setIndeterminate(false);
-						dialog.setSecondaryProgress(percent);
-						dialog.setMax(100);
-						dialog.setProgress(percent);
-						dialog.setMessage(data.getMessage());
-					}
-					else {
-						dialog.setIndeterminate(true);
-						dialog.setMessage(data.getMessage());
+			if(dialog.isShowing()){
+				ICallbackEventData data = values[0];
+				dialog.setMessage(data.getMessage());
+	
+				if(data.getClass() == DownloadCallbackEventData.class) {
+					DownloadCallbackEventData downloadData = (DownloadCallbackEventData) data;
+					int percent = downloadData.getPercentage();
+					synchronized (dialog) {
+						if(percent > -1) {
+							// somehow doesn't works....
+							dialog.setIndeterminate(false);
+							dialog.setSecondaryProgress(percent);
+							dialog.setMax(100);
+							dialog.setProgress(percent);
+							dialog.setMessage(data.getMessage());
+						}
+						else {
+							dialog.setIndeterminate(true);
+							dialog.setMessage(data.getMessage());
+						}
 					}
 				}
 			}

@@ -187,23 +187,11 @@ public class BakaTsukiParser {
 					if(!containsBy) continue;
 					
 					//Log.d(TAG, "Found h2: " +h2.text());
-					
-					/*
-					 * parse book method 1:
-					 * Look for <h3> after <h2> containing the volume list.
-					 */
-					ArrayList<BookModel> tempBooks = parseBooksMethod1(novel, h2);
-					
+					ArrayList<BookModel> tempBooks = parseBooksMethod1(novel, h2);					
 					if(tempBooks != null && tempBooks.size() > 0 ) 
 					{
 						books.addAll(tempBooks);
-					}
-					
-					/*
-					 * parse book method 2:
-					 * Look for <p> after <h2> containing the chapter list, usually only have 1 book.
-					 * See 7_Nights
-					 */
+					}										
 					if(books.size() == 0) {
 						Log.d(TAG, "No books found, use method 2");
 						tempBooks = parseBooksMethod2(novel, h2);
@@ -212,11 +200,6 @@ public class BakaTsukiParser {
 							books.addAll(tempBooks);
 						}
 					}
-					/*
-					 * parse book method 3:
-					 * Look for <ul> after <h2> containing the chapter list, only have 1 book.
-					 * See Gekkou 
-					 */
 					if(books.size() == 0) {
 						Log.d(TAG, "No books found, use method 3");
 						tempBooks = parseBooksMethod3(novel, h2);
@@ -233,6 +216,13 @@ public class BakaTsukiParser {
 		novel.setBookCollections(validateNovelBooks(books));
 	}
 	
+	/***
+	 * Look for <h3> after <h2> containing the volume list.
+	 * Treat each li in dl/ul/div as the chapters. 
+	 * @param novel
+	 * @param h2
+	 * @return
+	 */
 	private static ArrayList<BookModel> parseBooksMethod1(NovelCollectionModel novel, Element h2)
 	{
 		//Log.d(TAG, "method 1");
@@ -293,6 +283,14 @@ public class BakaTsukiParser {
 		return books;
 	}
 	
+	/***
+	 * parse book method 2:
+	 * Look for <p> after <h2> containing the chapter list, usually only have 1 book.
+	 * See 7_Nights
+	 * @param novel
+	 * @param h2
+	 * @return
+	 */
 	private static ArrayList<BookModel> parseBooksMethod2(NovelCollectionModel novel, Element h2){
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
 		Element bookElement = h2;
@@ -302,7 +300,7 @@ public class BakaTsukiParser {
 			bookElement = bookElement.nextElementSibling();
 			if(bookElement.tagName() == "h2") walkBook = false;
 			else if(bookElement.tagName() == "p") {
-				//Log.d(TAG, "Found: " +bookElement.text());
+				//Log.d(TAG, "Found: " + bookElement.text());
 				BookModel book = new BookModel();
 				book.setTitle(sanitize(bookElement.text()));
 				book.setOrder(bookOrder);
@@ -365,6 +363,13 @@ public class BakaTsukiParser {
 		return books;
 	}
 	
+	/***
+	 * Only have 1 book, chapter list is nested in ul/dl, e.g:Fate/Apocrypha, Gekkou
+	 * Parse the li as the chapters.
+	 * @param novel
+	 * @param h2
+	 * @return
+	 */
 	private static ArrayList<BookModel> parseBooksMethod3(NovelCollectionModel novel, Element h2){
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
 		Element bookElement = h2;
@@ -373,7 +378,8 @@ public class BakaTsukiParser {
 		do{
 			bookElement = bookElement.nextElementSibling();
 			if(bookElement.tagName() == "h2") walkBook = false;
-			else if(bookElement.tagName() == "ul") {
+			else if(bookElement.tagName() == "ul" ||
+					bookElement.tagName() == "dl") {
 				//Log.d(TAG, "Found: " +bookElement.text());
 				BookModel book = new BookModel();
 				book.setTitle(sanitize(h2.text()));
@@ -382,12 +388,14 @@ public class BakaTsukiParser {
 				
 				// parse the chapters.
 				int chapterOrder = 0;
-				Elements links = bookElement.select("a");
+				Elements links = bookElement.select("li");
 				for(Iterator<Element> i = links.iterator(); i.hasNext();) {
 					Element link = i.next();
 					PageModel p = new PageModel();
 					p.setTitle(sanitize(link.text()));
-					p.setPage(link.attr("href").replace("/project/index.php?title=",""));
+					// get the url, usually the first one...
+					Element as = bookElement.select("a").first();					
+					p.setPage(as.attr("href").replace("/project/index.php?title=",""));
 					p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 					p.setType(PageModel.TYPE_CONTENT);
 					p.setOrder(chapterOrder);

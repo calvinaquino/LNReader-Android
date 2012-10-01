@@ -227,6 +227,7 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		if(show) {
 			dialog = ProgressDialog.show(this, "Novel List", "Loading. Please wait...", true);
 			dialog.getWindow().setGravity(Gravity.CENTER);
+			dialog.setCanceledOnTouchOutside(true);
 		}
 		else {
 			dialog.dismiss();
@@ -275,7 +276,8 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		
 		@Override
 		protected void onProgressUpdate (String... values){
-			dialog.setTitle(values[0]);
+			if(dialog.isShowing())
+				dialog.setMessage(values[0]);
 		}
 		
 		@Override
@@ -330,7 +332,8 @@ public class DisplayLightNovelListActivity extends ListActivity{
 		@Override
 		protected void onProgressUpdate (String... values){
 			//executed on UI thread.
-			dialog.setMessage(values[0]);
+			if(dialog.isShowing())
+				dialog.setMessage(values[0]);
 		}
 		
 		@Override

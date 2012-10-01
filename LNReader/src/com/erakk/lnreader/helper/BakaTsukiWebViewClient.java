@@ -1,7 +1,6 @@
 package com.erakk.lnreader.helper;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,25 +11,22 @@ import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.activity.DisplayImageActivity;
+import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
 
 @TargetApi(11)
 public class BakaTsukiWebViewClient extends WebViewClient {
-	private Activity caller;
+	private DisplayLightNovelContentActivity caller;
 	
-	public BakaTsukiWebViewClient(Activity caller) {
+	public BakaTsukiWebViewClient(DisplayLightNovelContentActivity caller) {
 		super();
 		this.caller = caller;
 	}
 	
 	@Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
-//        if (Uri.parse(url).getHost().equals("www.example.com")) {
-//            // This is my web site, so do not override; let my WebView load the page
-//            return false;
-//        }
-
+		caller.setLastReadState();
 		Log.d("shouldOverrideUrlLoading", url);
 		
 		Context context = view.getContext();

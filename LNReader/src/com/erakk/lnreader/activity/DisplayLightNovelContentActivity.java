@@ -49,7 +49,7 @@ import com.erakk.lnreader.model.PageModel;
 
 public class DisplayLightNovelContentActivity extends Activity {
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
-	private final Activity activity = this;
+	private final DisplayLightNovelContentActivity activity = this;
 	private NovelsDao dao = NovelsDao.getInstance(this);
 	private NovelContentModel content;
 	private NovelCollectionModel novelDetails;
@@ -99,8 +99,10 @@ public class DisplayLightNovelContentActivity extends Activity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.d(TAG, "Resuming activity");
-		// the actual loading
+		Log.d(TAG, "Resume activity");
+		// moved page loading here rather than onCreate
+		// to avoid only the first page loaded when resume from sleep
+		// when the user navigate using next/prev/jumpTo
 		executeTask(pageModel);
 	}
 	
@@ -282,7 +284,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		Log.d(TAG, "onRestoreInstanceState Completed");
 	}
 	
-	private void setLastReadState() {
+	public void setLastReadState() {
 		if(content!= null) {
 			// save last position and zoom
 			WebView wv = (WebView) findViewById(R.id.webView1);
@@ -359,7 +361,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 		@Override
 		protected void onProgressUpdate (String... values){
 			//executed on UI thread.
-			dialog.setMessage(values[0]);
+			if(dialog.isShowing())
+				dialog.setMessage(values[0]);
 		}
 		
 		@SuppressWarnings("deprecation")
