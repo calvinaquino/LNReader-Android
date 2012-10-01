@@ -5,11 +5,13 @@
     
     <TextView
             android:id="@+id/novel_volume"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:gravity="center_vertical"
             android:layout_marginLeft="40dp"
-            android:layout_marginRight="5dp" 
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" 
             android:textSize="16dp"
         />
 

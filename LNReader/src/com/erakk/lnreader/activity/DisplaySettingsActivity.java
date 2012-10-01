@@ -99,7 +99,7 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         runUpdates.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
         		LNReaderApplication.getInstance().runUpdateService();
-        		runUpdates.setSummary("Last Run: Running...");
+        		runUpdates.setSummary("Running...");
                 return true;
             }
         });      
