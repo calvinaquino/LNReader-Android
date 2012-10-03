@@ -22,6 +22,9 @@ import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
+import com.erakk.lnreader.callback.CallbackEventData;
+import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.NovelCollectionModel;
@@ -32,6 +35,7 @@ public class UpdateService extends Service {
 	public boolean force = false;
 	public final static String TAG = UpdateService.class.toString();
 	private static boolean isRunning;
+	public ICallbackNotifier notifier;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -93,7 +97,7 @@ public class UpdateService extends Service {
 			CharSequence tickerText = "New Chapters Update";
 			long when = System.currentTimeMillis();		
 		
-			int id = (int)(new Date().getTime() / 1000);
+			int id = Constants.NOTIFIER_ID;
 			for(Iterator<PageModel> iChapter = updatedChapters.iterator(); iChapter.hasNext();) {
 				final int notifId = ++id;
 				PageModel chapter = iChapter.next();
@@ -121,28 +125,30 @@ public class UpdateService extends Service {
 				mNotificationManager.notify(notifId, notification);
 			}		
 		}
-		updateStatus("OK");    	
+		updateStatus("OK");
     	Toast.makeText(getApplicationContext(), "Update Service completed", Toast.LENGTH_SHORT).show();
 	}
 
 	private void updateStatus(String status) {
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
     	SharedPreferences.Editor editor = sharedPrefs.edit();
-    	editor.putString(Constants.PREF_RUN_UPDATES, new Date().toString());
+    	String date = new Date().toString();
+    	editor.putString(Constants.PREF_RUN_UPDATES, date);
     	editor.putString(Constants.PREF_RUN_UPDATES_STATUS, status);
     	editor.commit();
+    	if(notifier != null) notifier.onCallback(new CallbackEventData("Last Run: " + date + "\nStatus: " + status));
 	}
 
-	public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>>{
-
+	public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>> implements ICallbackNotifier{
 		@Override
 		protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(Void... arg0) {
 			isRunning = true;
 			try{
-				ArrayList<PageModel> result = GetUpdatedChapters();
+				ArrayList<PageModel> result = GetUpdatedChapters(this);
 				return new AsyncTaskResult<ArrayList<PageModel>>(result);
 			}
 			catch(Exception ex) {
+				Log.e("GetUpdatedChaptersTask", "Error when updating", ex);
 				return new AsyncTaskResult<ArrayList<PageModel>>(ex);
 			}
 		}
@@ -163,52 +169,78 @@ public class UpdateService extends Service {
 			MyScheduleReceiver.reschedule(getApplicationContext());
 			isRunning = false;
 		}
-	}
-	
-	private ArrayList<PageModel> GetUpdatedChapters() throws Exception {
-		Log.d(TAG, "Checking Updates...");
-		ArrayList<PageModel> updates = new ArrayList<PageModel>();
-		NovelsDao dao = NovelsDao.getInstance();
 		
-		// check only watched novel
-		ArrayList<PageModel> watchedNovels = dao.getWatchedNovel();
-		if(watchedNovels != null){
-			for(Iterator<PageModel> iNovels = watchedNovels.iterator(); iNovels.hasNext();){
-				// get last update date from internet
-				PageModel novel = iNovels.next();
-				PageModel updatedNovel = dao.getPageModelFromInternet(novel.getPageModel(), null);
-				
-				// different timestamp
-				if(force || !novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
-					Log.d(TAG, "Different Timestamp for: " + novel.getPage());
-					Log.d(TAG, "old: " + novel.getLastUpdate().toString() + " != " + updatedNovel.getLastUpdate().toString());
-					ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, null).getFlattedChapterList();
-					NovelCollectionModel updatedNovelDetails = dao.getNovelDetailsFromInternet(novel, null);
-					if(updatedNovelDetails!= null){
-						ArrayList<PageModel> updatedNovelDetailsChapters = updatedNovelDetails.getFlattedChapterList();
+		private ArrayList<PageModel> GetUpdatedChapters(ICallbackNotifier callback) throws Exception {
+			Log.d(TAG, "Checking Updates...");
+			ArrayList<PageModel> updates = new ArrayList<PageModel>();
+			NovelsDao dao = NovelsDao.getInstance();
+			
+			// check only watched novel
+			if(callback != null) callback.onCallback(new CallbackEventData("Getting watched novel."));
+			ArrayList<PageModel> watchedNovels = dao.getWatchedNovel();
+			if(watchedNovels != null){
+				for(Iterator<PageModel> iNovels = watchedNovels.iterator(); iNovels.hasNext();){
+					// get last update date from internet
+					PageModel novel = iNovels.next();
+					if(callback != null) callback.onCallback(new CallbackEventData("Checking: " + novel.getTitle()));
+					PageModel updatedNovel = dao.getPageModelFromInternet(novel.getPageModel(), callback);
+					
+					// different timestamp
+					if(force || !novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
+						if(force) {
+							Log.i(TAG, "Force Mode: " + novel.getPage());
+						}
+						else {
+							Log.d(TAG, "Different Timestamp for: " + novel.getPage());
+							Log.d(TAG, "old: " + novel.getLastUpdate().toString() + " != " + updatedNovel.getLastUpdate().toString());
+						}
+						ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, callback).getFlattedChapterList();
 						
-						updates = updatedNovelDetailsChapters;
-						// compare the chapters!
-						for(int i = 0 ; i < novelDetailsChapters.size() ; ++i) {
-							for(int j = 0; j < updatedNovelDetailsChapters.size(); j++) {
+						if(callback != null) callback.onCallback(new CallbackEventData("Getting updated chapters: " + novel.getTitle()));
+						NovelCollectionModel updatedNovelDetails = dao.getNovelDetailsFromInternet(novel, callback);
+						if(updatedNovelDetails!= null){
+							ArrayList<PageModel> updatedNovelDetailsChapters = updatedNovelDetails.getFlattedChapterList();
+							
+							updates = updatedNovelDetailsChapters;
+							// compare the chapters!
+							for(int i = 0 ; i < novelDetailsChapters.size() ; ++i) {
 								PageModel oldChapter = novelDetailsChapters.get(i);
-								PageModel newChapter = updatedNovelDetailsChapters.get(j);
-								if(newChapter.getPage().compareTo(oldChapter.getPage()) == 0) {
-									// check if last update date is newer
-									//Log.i(TAG, oldChapter.getPage() +  " new: " + newChapter.getLastUpdate().toString() + " old: " + oldChapter.getLastUpdate().toString());
-									if(newChapter.getLastUpdate().getTime() > oldChapter.getLastUpdate().getTime())
-										newChapter.setUpdated(true);
-									else
-										updates.remove(newChapter);
+								//if(callback != null) callback.onCallback(new CallbackEventData("Checking: " + oldChapter.getTitle()));
+								for(int j = 0; j < updatedNovelDetailsChapters.size(); j++) {								
+									PageModel newChapter = updatedNovelDetailsChapters.get(j);
+									if(callback != null) callback.onCallback(new CallbackEventData("Checking: " + oldChapter.getTitle() + " ==> " + newChapter.getTitle()));
+									// check if the same page
+									if(newChapter.getPage().compareTo(oldChapter.getPage()) == 0) {
+										// check if last update date is newer
+										//Log.i(TAG, oldChapter.getPage() +  " new: " + newChapter.getLastUpdate().toString() + " old: " + oldChapter.getLastUpdate().toString());
+										if(newChapter.getLastUpdate().getTime() != oldChapter.getLastUpdate().getTime()){
+											newChapter.setUpdated(true);
+											Log.i(TAG, "Found updated chapter: " + newChapter.getTitle());
+										}
+										else{
+											updates.remove(newChapter);
+										}											
+										break;
+									}
 								}
 							}
 						}
 					}
 				}
+				force = false;
 			}
-			force = false;
+			
+			return updates;
+		}
+
+		@Override
+		public void onCallback(ICallbackEventData message) {
+			publishProgress(message.getMessage());
 		}
 		
-		return updates;
+		@Override
+		protected void onProgressUpdate (String... values){
+			if(notifier != null) notifier.onCallback(new CallbackEventData(values[0]));
+		}
 	}
 } 

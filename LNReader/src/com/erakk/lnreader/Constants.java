@@ -37,6 +37,8 @@ public class Constants {
 	
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 
+	public static final int NOTIFIER_ID = 100;
+
 	
 	
 }

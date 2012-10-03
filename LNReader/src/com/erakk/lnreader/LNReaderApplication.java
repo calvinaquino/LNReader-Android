@@ -18,6 +18,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.service.UpdateService;
 
@@ -111,13 +112,21 @@ public class LNReaderApplication extends Application {
 		super.onLowMemory();		
 	}
 	
-	public void runUpdateService(boolean force) {
+	public void setUpdateServiceListener(ICallbackNotifier notifier){
+		if(service != null){
+			service.notifier = notifier;
+		}
+	}
+	
+	public void runUpdateService(boolean force, ICallbackNotifier notifier) {
 		if(service == null){
 			doBindService();
 			service.force = force;
+			service.notifier = notifier;
 		}
 		else
 			service.force = force;
+			service.notifier = notifier;
 			service.onStartCommand(null, BIND_AUTO_CREATE, (int)(new Date().getTime()/1000));
 	}	
 }

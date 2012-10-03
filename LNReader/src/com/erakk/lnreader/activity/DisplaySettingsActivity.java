@@ -2,25 +2,26 @@ package com.erakk.lnreader.activity;
 
 import java.io.File;
 
-import android.app.Activity;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.service.MyScheduleReceiver;
 
-public class DisplaySettingsActivity extends PreferenceActivity {
+public class DisplaySettingsActivity extends PreferenceActivity implements ICallbackNotifier{
 	//private static final String TAG = DisplayLightNovelsActivity.class.toString();
-	private Activity activity;
 	private boolean isInverted;
 	
 	@SuppressWarnings("deprecation")
@@ -29,9 +30,7 @@ public class DisplaySettingsActivity extends PreferenceActivity {
 		UIHelper.SetTheme(this, null);
 		super.onCreate(savedInstanceState);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);   	
-		
-    	activity = this;
-        
+
         //This man is deprecated but but we may want to be able to run on older API
         addPreferencesFromResource(R.xml.preferences);
         
@@ -53,7 +52,7 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         Preference invertColors = (Preference)  findPreference(Constants.PREF_INVERT_COLOR);
         invertColors.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
-        		UIHelper.Recreate(activity);
+            	recreateUI();
                 return true;
             }
         });
@@ -93,20 +92,34 @@ public class DisplaySettingsActivity extends PreferenceActivity {
 			}
 		});
         
-        final Preference runUpdates = (Preference) findPreference(Constants.PREF_RUN_UPDATES);
+        Preference runUpdates = (Preference) findPreference(Constants.PREF_RUN_UPDATES);
         runUpdates.setSummary("Last Run: " + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES, "None") + 
         					  "\nStatus: " + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES_STATUS, "Unknown"));
         runUpdates.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
-        		LNReaderApplication.getInstance().runUpdateService(true);
-        		runUpdates.setSummary("Running...");
+            	runUpdate();
                 return true;
             }
-        });      
+        });
+
+        Preference appVersion = (Preference) findPreference("app_version");
+        try {
+			appVersion.setSummary(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
+		} catch (NameNotFoundException e) {
+			appVersion.setSummary("N/A");
+		}
         
+        LNReaderApplication.getInstance().setUpdateServiceListener(this);
         isInverted = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
     }
-    
+	
+	@SuppressWarnings("deprecation")
+	private void runUpdate() {
+		LNReaderApplication.getInstance().runUpdateService(true, this);
+		Preference runUpdates = (Preference) findPreference(Constants.PREF_RUN_UPDATES);
+		runUpdates.setSummary("Running...");
+	}
+	
 	@Override
     protected void onRestart() {
         super.onRestart();
@@ -115,10 +128,27 @@ public class DisplaySettingsActivity extends PreferenceActivity {
         }
     }
 	
+	@Override
+	protected void onStop(){
+		super.onStop();
+		LNReaderApplication.getInstance().setUpdateServiceListener(null);
+	}
+	
 	private void DeleteRecursive(File fileOrDirectory) {
 	    if (fileOrDirectory.isDirectory())
 	        for (File child : fileOrDirectory.listFiles())
 	            DeleteRecursive(child);
 	    fileOrDirectory.delete();
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public void onCallback(ICallbackEventData message) {
+		Preference runUpdates = (Preference) findPreference(Constants.PREF_RUN_UPDATES);
+		runUpdates.setSummary(message.getMessage());
+	}
+	
+	private void recreateUI() {
+		UIHelper.Recreate(this);
 	}
 }

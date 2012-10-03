@@ -230,7 +230,7 @@ public class NovelsDao {
 		int retry = 0;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
-				Response response = Jsoup.connect("http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&titles=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
+				Response response = Jsoup.connect("http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
 				PageModel pageModel = BakaTsukiParser.parsePageAPI(page, response.parse());
 				pageModel.setFinishedRead(page.isFinishedRead());
 				pageModel.setWatched(page.isWatched());
@@ -363,7 +363,7 @@ public class NovelsDao {
 						db.close();
 					}
 				}
-
+					
 				synchronized (dbh) {
 					// insert to DB and get saved value
 					SQLiteDatabase db = dbh.getWritableDatabase();
@@ -377,6 +377,14 @@ public class NovelsDao {
 						db.close();
 					}
 				}
+				
+				// update info for each chapters
+				// get updated info for each chapter
+				for(Iterator<PageModel> i = novel.getFlattedChapterList().iterator(); i.hasNext();) {
+					PageModel chapter = i.next();
+					chapter = getPageModelFromInternet(chapter, notifier);
+				}
+				
 				// download cover image
 				if (novel.getCoverUrl() != null) {
 					DownloadFileTask task = new DownloadFileTask(notifier);
@@ -476,7 +484,6 @@ public class NovelsDao {
 			try{
 				Response response = Jsoup.connect(Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&page=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
-
 				content = BakaTsukiParser.ParseNovelContent(doc, page);
 				break;
 			}catch(EOFException eof) {
@@ -521,7 +528,7 @@ public class NovelsDao {
 			content.setLastCheck(new Date());
 		}		
 		// page model will be also saved in insertNovelContent()
-		
+
 		synchronized (dbh) {
 			// save to DB, and get the saved value
 			SQLiteDatabase db = dbh.getWritableDatabase();

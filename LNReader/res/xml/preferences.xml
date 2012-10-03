@@ -56,5 +56,8 @@
             android:title="Clear Image Cache"
         />
     </PreferenceCategory>
+     <PreferenceCategory android:title="Application Info" android:key="application_info">
+         <Preference android:key="app_version" android:title="Version"/>
+     </PreferenceCategory>
      
 </PreferenceScreen>
