@@ -39,6 +39,7 @@ public class Constants {
 	
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 
-	public static final int NOTIFIER_ID = (int)(new Date().getTime() - 61286169600000L);	
+	@SuppressWarnings("deprecation")
+	public static final int NOTIFIER_ID = (int)(new Date().getTime() - new Date(2012, 1, 1).getTime());	
 	
 }

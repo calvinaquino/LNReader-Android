@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.Iterator;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -104,9 +103,12 @@ public class UpdateService extends Service {
 				PageModel chapter = iChapter.next();
 				
 				Notification notification = new Notification(icon, tickerText, when);
+				notification.flags = Notification.FLAG_AUTO_CANCEL;
+				notification.defaults = Notification.DEFAULT_ALL;
+				notification.audioStreamType =  Notification.STREAM_DEFAULT; 
 				
 				CharSequence contentTitle = "New Chapter";
-				if(chapter.isUpdated()) contentTitle = "Chapter Updated";
+				if(chapter.isUpdated()) contentTitle = "Updated Chapter";
 
 				String novelTitle = "";
 				try{
@@ -119,7 +121,7 @@ public class UpdateService extends Service {
 				CharSequence contentText = novelTitle + chapter.getTitle() + " (" + chapter.getBook().getTitle() + ")";
 				Intent notificationIntent = new Intent(this, DisplayLightNovelContentActivity.class);
 				notificationIntent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
-				PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT );
+				PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, Intent.FLAG_ACTIVITY_MULTIPLE_TASK|PendingIntent.FLAG_CANCEL_CURRENT|PendingIntent.FLAG_ONE_SHOT );
 		
 				notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
 				

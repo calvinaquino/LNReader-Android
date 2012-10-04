@@ -63,7 +63,7 @@ public class MainActivity extends Activity {
         		UIHelper.Recreate(this);    			
     			return true;
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);

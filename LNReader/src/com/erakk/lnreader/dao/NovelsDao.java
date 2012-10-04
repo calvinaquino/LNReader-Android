@@ -427,7 +427,7 @@ public class NovelsDao {
 			// request the page
 			while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 				try{
-					Log.d(TAG, "Trying to get: " + baseUrl + titles);
+					//Log.d(TAG, "Trying to get: " + baseUrl + titles);
 					Response response = Jsoup.connect(baseUrl + titles).timeout(Constants.TIMEOUT).execute();
 					Document doc = response.parse();
 					ArrayList<PageModel> updatedPageModels = BakaTsukiParser.parsePageAPI(checkedPageModel, doc);
