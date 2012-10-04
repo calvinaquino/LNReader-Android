@@ -145,7 +145,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 	@SuppressWarnings("deprecation")
 	public void onCallback(ICallbackEventData message) {
 		Preference runUpdates = (Preference) findPreference(Constants.PREF_RUN_UPDATES);
-		runUpdates.setSummary(message.getMessage());
+		runUpdates.setSummary("Status: " + message.getMessage());
 	}
 	
 	private void recreateUI() {

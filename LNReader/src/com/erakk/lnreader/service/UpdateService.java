@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -118,7 +119,7 @@ public class UpdateService extends Service {
 				CharSequence contentText = novelTitle + chapter.getTitle() + " (" + chapter.getBook().getTitle() + ")";
 				Intent notificationIntent = new Intent(this, DisplayLightNovelContentActivity.class);
 				notificationIntent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
-				PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, 0);
+				PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT );
 		
 				notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
 				

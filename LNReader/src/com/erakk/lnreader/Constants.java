@@ -1,5 +1,7 @@
 package com.erakk.lnreader;
 
+import java.util.Date;
+
 import android.os.Environment;
 
 public class Constants {
@@ -37,8 +39,6 @@ public class Constants {
 	
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 
-	public static final int NOTIFIER_ID = 100;
-
-	
+	public static final int NOTIFIER_ID = (int)(new Date().getTime() - 61286169600000L);	
 	
 }

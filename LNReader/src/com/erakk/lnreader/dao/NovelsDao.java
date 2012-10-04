@@ -379,11 +379,8 @@ public class NovelsDao {
 				}
 				
 				// update info for each chapters
-				// get updated info for each chapter
-				for(Iterator<PageModel> i = novel.getFlattedChapterList().iterator(); i.hasNext();) {
-					PageModel chapter = i.next();
-					chapter = getPageModelFromInternet(chapter, notifier);
-				}
+				getUpdateInfo(novel.getFlattedChapterList(), notifier);
+				
 				
 				// download cover image
 				if (novel.getCoverUrl() != null) {
@@ -400,6 +397,67 @@ public class NovelsDao {
 		return novel;
 	}
 
+
+	/***
+	 * Bulk update page info through wiki API
+	 * @param pageModels
+	 * @param notifier
+	 * @return
+	 * @throws Exception
+	 */
+	private ArrayList<PageModel> getUpdateInfo(ArrayList<PageModel> pageModels, ICallbackNotifier notifier) throws Exception {
+		ArrayList<PageModel> resultPageModel = new ArrayList<PageModel>();
+		String baseUrl = Constants.BASE_URL + "/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=";
+		int i = 0;
+		int retry = 0;
+		while(i < pageModels.size()) {
+			String titles = pageModels.get(i).getPage();
+			++i;
+			ArrayList<PageModel> checkedPageModel = new ArrayList<PageModel>();
+			while(i < pageModels.size()) {
+				if(titles.length() + pageModels.get(i).getPage().length() < 2000) {
+					titles += "|" + pageModels.get(i).getPage();
+					checkedPageModel.add(pageModels.get(i));
+					++i;
+				}
+				else {
+					break;
+				}
+			}
+			// request the page
+			while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
+				try{
+					Log.d(TAG, "Trying to get: " + baseUrl + titles);
+					Response response = Jsoup.connect(baseUrl + titles).timeout(Constants.TIMEOUT).execute();
+					Document doc = response.parse();
+					ArrayList<PageModel> updatedPageModels = BakaTsukiParser.parsePageAPI(checkedPageModel, doc);
+					resultPageModel.addAll(updatedPageModels);
+					break;
+				}catch(EOFException eof) {
+					++retry;
+					if(notifier != null) {
+						notifier.onCallback(new CallbackEventData("Retrying: Get Pages Info (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));
+					}
+					if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
+				}
+				catch(IOException eof) {
+					++retry;
+					String message = "Retrying: Get Pages Info (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")";
+					if(notifier != null) {
+						notifier.onCallback(new CallbackEventData(message));
+					}
+					Log.d(TAG, message, eof);
+					if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
+				}
+			}
+		}
+		
+		for (PageModel pageModel : resultPageModel) {
+			updatePageModel(pageModel);
+		}
+		
+		return resultPageModel;
+	}
 
 	public void deleteBooks(BookModel bookDel) {
 		synchronized (dbh) {

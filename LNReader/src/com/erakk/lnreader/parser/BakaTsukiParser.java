@@ -38,7 +38,7 @@ public class BakaTsukiParser {
 
 	/**
 	 * parse page info from Wiki API
-	 * @param pageName page name
+	 * @param pageModel page name
 	 * @param doc parsed page for given pageName
 	 * @return PageModel status, no parent and type defined
 	 */
@@ -53,6 +53,54 @@ public class BakaTsukiParser {
 		Log.d(TAG, "parsePageAPI "+ pageModel.getPage() + " Last Update: " + pageModel.getLastUpdate());
 		
 		return pageModel;				
+	}
+	
+	/**
+	 * parse pages info from Wiki API
+	 * @param pageModels ArrayList of pages
+	 * @param doc parsed page for given pages
+	 * @return PageModel status, no parent and type defined
+	 */
+	public static ArrayList<PageModel> parsePageAPI(ArrayList<PageModel> pageModels, Document doc) throws Exception {
+		Elements normalized = doc.select("n");
+		Elements redirects = doc.select("r");
+		Elements pages = doc.select("page");
+		
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+		
+		for(int i = 0; i < pageModels.size(); ++i) {
+			PageModel temp = pageModels.get(i);
+			// get normalized value for this page
+			Elements nElements = normalized.select("n[from="+ temp.getPage() + "]");
+			if(nElements != null && nElements.size() > 0){
+				Element nElement = nElements.first();
+				String to = nElement.attr("to");
+				//Log.d(TAG, "parsePageAPI normalized: " + to);
+				
+				// check redirects
+				if(redirects != null && redirects.size() > 0 ) {
+					Elements rElements = normalized.select("r[from="+ to + "]");
+					if(rElements != null && rElements.size() > 0) {
+						Element rElement = rElements.first();
+						to = rElement.attr("to");
+						Log.w(TAG, "parsePageAPI redirected: " + to);
+					}
+				}
+				Element pElement = pages.select("page[title="+ to + "]").first();
+				if(!pElement.hasAttr("missing")) {
+					// parse date
+					String tempDate = pElement.attr("touched");
+					Date lastUpdate = formatter.parse(tempDate);
+					temp.setLastUpdate(lastUpdate);
+					//Log.d(TAG, "parsePageAPI "+ temp.getPage() + " Last Update: " + temp.getLastUpdate());
+				}
+				else {
+					Log.w(TAG, "parsePageAPI missing: " + to);
+				}
+			}
+		}		
+		return pageModels;				
 	}
 	
 	/**
