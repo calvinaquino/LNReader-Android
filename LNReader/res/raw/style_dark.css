@@ -96,22 +96,26 @@ a {
 /* Wikitable */
 table.wikitable {
 	margin: 1em 1em 1em 0;
-	background-color: #060606;
+	background-color: #060606 !important;
 	border: 1px #555 solid;
 	border-collapse: collapse;
 	color: white;
 }
 
-table.wikitable>tr>th,table.wikitable>tr>td,table.wikitable>*>tr>th,table.wikitable>*>tr>td {
+table.wikitable>tr>th, table.wikitable>tr>td,table.wikitable>*>tr>th,table.wikitable>*>tr>td {
 	border: 1px #555 solid;
 	padding: 0.2em;
 }
 
-table.wikitable>tr>th,table.wikitable>*>tr>th {
-	background-color: #0D0D0D;
+table.wikitable>tr>th, table.wikitable>*>tr>th {
+	background-color: #0D0D0D !important;
 	text-align: center;
 }
 
 table.wikitable>caption {
 	font-weight: bold;
+}
+
+table {
+	background-color: #1D1D1D !important;
 }

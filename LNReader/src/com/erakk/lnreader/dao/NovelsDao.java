@@ -508,7 +508,7 @@ public class NovelsDao {
 	 * NovelContentModel
 	 */
 
-	public NovelContentModel getNovelContent(PageModel page, ICallbackNotifier notifier) throws Exception {
+	public NovelContentModel getNovelContent(PageModel page, boolean download, ICallbackNotifier notifier) throws Exception {
 		NovelContentModel content = null;
 
 		synchronized (dbh) {
@@ -522,7 +522,7 @@ public class NovelsDao {
 			}
 		}
 		// get from Internet;
-		if (content == null) {
+		if (download && content == null) {
 			Log.d("getNovelContent", "Get from Internet: " + page.getPage());
 			content = getNovelContentFromInternet(page, notifier);
 		}

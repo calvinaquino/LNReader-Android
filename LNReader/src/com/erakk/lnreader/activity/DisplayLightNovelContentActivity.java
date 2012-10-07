@@ -373,7 +373,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 					return new AsyncTaskResult<NovelContentModel>(dao.getNovelContentFromInternet(p, this));
 				}
 				else {
-					return new AsyncTaskResult<NovelContentModel>(dao.getNovelContent(p, this));
+					return new AsyncTaskResult<NovelContentModel>(dao.getNovelContent(p, true, this));
 				}
 			}catch(Exception e) {
 				return new AsyncTaskResult<NovelContentModel>(e);

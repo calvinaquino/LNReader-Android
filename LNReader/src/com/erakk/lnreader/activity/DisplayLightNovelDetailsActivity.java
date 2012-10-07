@@ -195,7 +195,22 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			ArrayList<PageModel> downloadingChapters = new ArrayList<PageModel>();
 			for(Iterator<PageModel> i = book.getChapterCollection().iterator(); i.hasNext();) {
 				PageModel temp = i.next();
-				if(!temp.isDownloaded()) downloadingChapters.add(temp);
+				if(temp.isDownloaded()) {
+					try {
+						NovelContentModel content = dao.getNovelContent(temp, false, null);
+						if(content != null) {
+							// check if content is updated
+							if(content.getLastUpdate().getTime() != temp.getLastUpdate().getTime()) {
+								downloadingChapters.add(temp);
+							}
+						}
+					} catch (Exception e) {
+						Log.e(TAG, "Failed to get novel content", e);
+					}
+				}
+				else {
+					downloadingChapters.add(temp);
+				}
 			}
 			executeDownloadTask(downloadingChapters);
 			return true;
@@ -419,7 +434,10 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			try{
 				NovelContentModel[] contents = new NovelContentModel[chapters.length];
 				for(int i = 0; i < chapters.length; ++i) {
-					publishProgress("Downloading: " + chapters[i].getTitle());
+					NovelContentModel oldContent = dao.getNovelContent(chapters[i], false, null);
+					if(oldContent == null) publishProgress("Downloading: " + chapters[i].getTitle());
+					else publishProgress("Updating: " + chapters[i].getTitle());
+					
 					NovelContentModel temp = dao.getNovelContentFromInternet(chapters[i], this);
 					contents[i] = temp;
 				}
