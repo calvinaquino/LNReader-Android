@@ -16,6 +16,9 @@ public class Constants {
 	public static final String EXTRA_VOLUME = "com.erakk.lnreader.volume";
 	public static final String EXTRA_ONLY_WATCHED = "com.erakk.lnreader.ONLY_WATCHED";
 	public static final String EXTRA_IMAGE_URL = "com.erakk.lnreader.IMAGE_URL";
+	public static final String EXTRA_SCROLL_X = "com.erakk.lnreader.SCROLL_X";
+	public static final String EXTRA_SCROLL_Y = "com.erakk.lnreader.SCROLL_Y";
+	
 	
 	public static final String IMAGE_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files";
 	

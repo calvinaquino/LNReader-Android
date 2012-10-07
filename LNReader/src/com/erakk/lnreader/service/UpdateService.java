@@ -169,7 +169,7 @@ public class UpdateService extends Service {
 			}
 			
 			// Reschedule for next run
-			MyScheduleReceiver.reschedule(getApplicationContext());
+			MyScheduleReceiver.reschedule();
 			isRunning = false;
 		}
 		

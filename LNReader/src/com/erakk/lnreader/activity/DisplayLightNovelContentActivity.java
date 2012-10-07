@@ -123,6 +123,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 		try {
 			savedInstanceState.putString(Constants.EXTRA_PAGE, content.getPageModel().getPage());
+			savedInstanceState.putInt(Constants.EXTRA_SCROLL_X, webView.getScrollX());
+			savedInstanceState.putInt(Constants.EXTRA_SCROLL_Y, webView.getScrollY());			
 		} catch (Exception e) {
 			Log.e(TAG, "Error when saving instance", e);
 		}
@@ -135,10 +137,9 @@ public class DisplayLightNovelContentActivity extends Activity {
 			// replace the current pageModel with the saved instance
 			PageModel tempPage = new PageModel();
 			tempPage.setPage(savedInstanceState.getString(Constants.EXTRA_PAGE));
-			//if(pageModel == null) {
-				pageModel = dao.getPageModel(tempPage, null);
-				executeTask(pageModel);
-			//}
+			pageModel = dao.getPageModel(tempPage, null);
+			executeTask(pageModel);
+			webView.scrollTo(savedInstanceState.getInt(Constants.EXTRA_SCROLL_X), savedInstanceState.getInt(Constants.EXTRA_SCROLL_Y));
 		} catch (Exception e) {
 			Log.e(TAG, "Error when restoring instance", e);
 		}
@@ -406,6 +407,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 				wv.getSettings().setLoadsImagesAutomatically(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("show_images", false));
 				//wv.setBackgroundColor(0);
 				wv.setBackgroundColor(Color.TRANSPARENT);
+
 
 				// custom link handler
 				BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(activity);

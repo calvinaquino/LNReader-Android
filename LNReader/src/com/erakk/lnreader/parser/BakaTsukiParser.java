@@ -132,6 +132,9 @@ public class BakaTsukiParser {
 					PageModel temp = NovelsDao.getInstance().getPageModel(page, null);
 					if(temp != null) {
 						page.setLastUpdate(temp.getLastUpdate());
+						page.setWatched(temp.isWatched());
+						page.setFinishedRead(temp.isFinishedRead());
+						page.setDownloaded(temp.isDownloaded());
 					}
 				} catch (Exception e) {
 					Log.e(TAG, "Error when getting pageModel: " + page.getPage(), e);

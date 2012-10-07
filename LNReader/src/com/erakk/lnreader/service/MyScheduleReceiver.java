@@ -3,6 +3,7 @@ package com.erakk.lnreader.service;
 import java.util.Calendar;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -17,18 +18,18 @@ public class MyScheduleReceiver extends BroadcastReceiver {
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		reschedule(context);
+		reschedule();
 	}
 
-	public static void reschedule(Context context) {
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+	public static void reschedule() {
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext());
 		String updatesIntervalStr = preferences.getString(Constants.PREF_UPDATE_INTERVAL, "0");
 		int updatesInterval = Integer.parseInt(updatesIntervalStr);	
 		
-		reschedule(context, updatesInterval);
+		reschedule(updatesInterval);
 	}
 	
-	public static void reschedule(Context context, int updatesInterval) {		
+	public static void reschedule(int updatesInterval) {		
 		long repeatTime = 0;
 		switch (updatesInterval) {
 			case 1:
@@ -49,10 +50,10 @@ public class MyScheduleReceiver extends BroadcastReceiver {
 			default:
 				break;
 		}
-		
+		Context context = LNReaderApplication.getInstance().getApplicationContext();
 		AlarmManager service = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		Intent i = new Intent(context, MyStartServiceReceiver.class);
-		PendingIntent pending = PendingIntent.getBroadcast(context, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+		Intent intent = new Intent(context, MyStartServiceReceiver.class);
+		PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 		
 		if(repeatTime > 0) {
 			Log.d(UpdateService.TAG, "Setting up schedule");

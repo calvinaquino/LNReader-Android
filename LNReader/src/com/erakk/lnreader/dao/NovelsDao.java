@@ -148,6 +148,7 @@ public class NovelsDao {
 	
 				// now get the novel list
 				list = new ArrayList<PageModel>();
+				
 				String url = Constants.BASE_URL + "/project";
 				int retry = 0;
 				while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
@@ -161,8 +162,6 @@ public class NovelsDao {
 						// saved to db and get saved value
 						list = dbh.insertAllNovel(db, list);
 						
-						// now get the saved value
-						list = dbh.getAllNovels(db);
 						//db.setTransactionSuccessful();
 						
 						if (notifier != null) {

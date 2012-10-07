@@ -87,7 +87,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
         updatesInterval.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int updatesIntervalInt = Integer.parseInt(newValue.toString());	
-				MyScheduleReceiver.reschedule(getApplicationContext(), updatesIntervalInt);
+				MyScheduleReceiver.reschedule(updatesIntervalInt);
                 return true;
 			}
 		});
