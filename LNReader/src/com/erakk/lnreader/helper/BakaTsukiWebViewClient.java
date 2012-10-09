@@ -17,6 +17,7 @@ import com.erakk.lnreader.model.PageModel;
 
 @TargetApi(11)
 public class BakaTsukiWebViewClient extends WebViewClient {
+	private static final String TAG = BakaTsukiWebViewClient.class.toString();
 	private DisplayLightNovelContentActivity caller;
 	
 	public BakaTsukiWebViewClient(DisplayLightNovelContentActivity caller) {
@@ -27,7 +28,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 	@Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
 		caller.setLastReadState();
-		Log.d("shouldOverrideUrlLoading", url);
+		Log.d(TAG, "Handling: " + url);
 		
 		Context context = view.getContext();
 		
@@ -43,7 +44,6 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 			if(url.contains("/project/index.php?title=")) {
 				String titles[] = url.split("title=", 2);
 				if(titles.length == 2 && !(titles[1].length() == 0)) {
-					Toast.makeText(context, "Loading: " + titles[1], Toast.LENGTH_SHORT).show();
 					// check if have inside db
 					NovelsDao dao = NovelsDao.getInstance(context);
 					try {
@@ -51,29 +51,33 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 						String[] titles2 = titles[1].split("#", 2 ); 
 
 						// check if load different page.
-						String currentPage = caller.getIntent().getStringExtra(Constants.EXTRA_PAGE);
-						if(!currentPage.equalsIgnoreCase(titles2[0])) {
-							PageModel tempPage = new PageModel();
-							tempPage.setPage(titles2[0]);
-							PageModel pageModel =  dao.getPageModel(tempPage, null);
-							Log.d("shouldOverrideUrlLoading", "different : " + pageModel.getPage());
-							caller.getIntent().putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
-							caller.recreate();
-						}
-						// navigate to the anchor if exist.
-						if(titles2.length == 2){
-							view.loadUrl("#" + titles2[1]);
+						synchronized (caller.content) {
+							String currentPage = caller.content.getPage(); //caller.getIntent().getStringExtra(Constants.EXTRA_PAGE);
+							if(!currentPage.equalsIgnoreCase(titles2[0])) {
+								PageModel tempPage = new PageModel();
+								tempPage.setPage(titles2[0]);
+								PageModel pageModel =  dao.getPageModel(tempPage, null);
+								caller.jumpTo(pageModel);
+								Log.d(TAG, "Loading : " + pageModel.getPage());
+								//Toast.makeText(context, "Loading: " + titles[1], Toast.LENGTH_SHORT).show();
+							}
+							else{
+								Log.d(TAG, "Already loaded");
+							}
+							// navigate to the anchor if exist.
+							if(titles2.length == 2){
+								view.loadUrl("#" + titles2[1]);
+							}
 						}
 						
 						useDefault = false;
 					} catch (Exception e) {
-						e.printStackTrace();
+						Log.e(TAG, "Failed to load: " + titles[1], e);
 					}
 				}
 			}
 			
-			if(useDefault){
-				
+			if(useDefault){				
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 				context.startActivity(browserIntent);
 			}

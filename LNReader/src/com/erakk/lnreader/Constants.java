@@ -19,7 +19,6 @@ public class Constants {
 	public static final String EXTRA_SCROLL_X = "com.erakk.lnreader.SCROLL_X";
 	public static final String EXTRA_SCROLL_Y = "com.erakk.lnreader.SCROLL_Y";
 	
-	
 	public static final String IMAGE_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files";
 	
 	public static final int IMAGE_DOWNLOAD_RETRY = 3;
@@ -43,6 +42,5 @@ public class Constants {
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 
 	@SuppressWarnings("deprecation")
-	public static final int NOTIFIER_ID = (int)(new Date().getTime() - new Date(2012, 1, 1).getTime());	
-	
+	public static final int NOTIFIER_ID = (int)(new Date().getTime() - new Date(2012, 1, 1).getTime());
 }

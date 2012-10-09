@@ -51,7 +51,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
 	private final DisplayLightNovelContentActivity activity = this;
 	private NovelsDao dao = NovelsDao.getInstance(this);
-	private NovelContentModel content;
+	public NovelContentModel content;
 	private NovelCollectionModel novelDetails;
 	private LoadNovelContentTask task;
 	private PageModel pageModel;
@@ -124,7 +124,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		try {
 			savedInstanceState.putString(Constants.EXTRA_PAGE, content.getPageModel().getPage());
 			savedInstanceState.putInt(Constants.EXTRA_SCROLL_X, webView.getScrollX());
-			savedInstanceState.putInt(Constants.EXTRA_SCROLL_Y, webView.getScrollY());			
+			savedInstanceState.putInt(Constants.EXTRA_SCROLL_Y, webView.getScrollY());
 		} catch (Exception e) {
 			Log.e(TAG, "Error when saving instance", e);
 		}
@@ -133,7 +133,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		try {
+		try {			
 			// replace the current pageModel with the saved instance
 			PageModel tempPage = new PageModel();
 			tempPage.setPage(savedInstanceState.getString(Constants.EXTRA_PAGE));
@@ -143,8 +143,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 		} catch (Exception e) {
 			Log.e(TAG, "Error when restoring instance", e);
 		}
-		Log.d(TAG, "onRestoreInstanceState Completed");
 		restored = true;
+		Log.d(TAG, "onRestoreInstanceState Completed");
 	}
 	
 	@Override
@@ -264,7 +264,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	}
 	// end of Compatibility search method for older android version
 	
-	private void jumpTo(PageModel page){
+	public void jumpTo(PageModel page){
 		setLastReadState();
 		pageModel = page;
 		executeTask(page);
@@ -451,6 +451,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 				Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 				
 				buildTOCMenu();
+				Log.d(TAG, "Loaded: " + content.getPage());
 			}
 			else {
 				Log.e(TAG, "Error when loading novel content: " + e.getMessage(), e);
