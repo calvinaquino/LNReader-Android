@@ -182,7 +182,9 @@ public class DisplayImageActivity extends Activity {
 				imgWebView = (WebView) findViewById(R.id.webView1);
 				String imageUrl = "file:///" + result.getResult().getPath(); 
 				imgWebView.loadUrl(imageUrl);
-				Log.d("LoadImageTask", "Loading: " + imageUrl);
+				String title = result.getResult().getName();
+				setTitle(title.substring(title.lastIndexOf("/")));
+				Log.d("LoadImageTask", "Loaded: " + imageUrl);
 			}
 			else{
 				e.printStackTrace();

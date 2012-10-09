@@ -625,7 +625,22 @@ public class BakaTsukiParser {
 			// shouldn't happened
 			e.printStackTrace();
 		}
-		
 		return image;
+	}
+	
+	public static ArrayList<String> parseImagesFromContentPage(Document doc) {
+		ArrayList<String> result = new ArrayList<String>();
+		
+		Elements links = doc.select("a");
+		for (Element link : links) {
+			String href = link.attr("href");
+			if(href.contains("/project/index.php?title=File:")) {
+				if(!href.startsWith("http")) href = Constants.BASE_URL + href;
+				result.add(href);
+			}
+		}
+		
+		Log.d(TAG, "Images Found: " + result.size());
+		return result;
 	}
 }

@@ -15,6 +15,7 @@ import org.jsoup.nodes.Document;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
@@ -537,10 +538,11 @@ public class NovelsDao {
 		
 		NovelContentModel content = new NovelContentModel();
 		int retry = 0;
+		Document doc = null;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
 				Response response = Jsoup.connect(Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&page=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
-				Document doc = response.parse();
+				doc = response.parse();
 				content = BakaTsukiParser.ParseNovelContent(doc, page);
 				break;
 			}catch(EOFException eof) {
@@ -560,44 +562,56 @@ public class NovelsDao {
 				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 			}
 		}
-		// download all attached images
-		DownloadFileTask task = new DownloadFileTask(notifier);
-		for (Iterator<ImageModel> i = content.getImages().iterator(); i.hasNext();) {
-			ImageModel image = i.next();
+		if(doc != null) {
+			// download all attached images
+			DownloadFileTask task = new DownloadFileTask(notifier);
+			for (Iterator<ImageModel> i = content.getImages().iterator(); i.hasNext();) {
+				ImageModel image = i.next();
+				
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData("Start downloading: " + image.getUrl()));
+				}
+				image = task.downloadImage(image.getUrl());
+				// TODO: need to save image to db? mostly thumbnail only
+			}
 			
-			if(notifier != null) {
-				notifier.onCallback(new CallbackEventData("Start downloading: " + image.getUrl()));
+			// download linked big images
+			boolean isDownloadBigImage = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance()).getBoolean(Constants.PREF_DOWLOAD_BIG_IMAGE, false);
+			if(isDownloadBigImage) {
+				Document imageDoc = Jsoup.parse(content.getContent());
+				ArrayList<String> images = BakaTsukiParser.parseImagesFromContentPage(imageDoc);
+				for (String image : images) {
+					getImageModelFromInternet(image, notifier);
+				}
 			}
-			image = task.downloadImage(image.getUrl());
-			// TODO: need to save image to db? mostly thumbnail only
-		}
 		
-		// get last updated info
-		
-		PageModel contentPageModelTemp = getPageModelFromInternet(content.getPageModel(), notifier);
-		if(contentPageModelTemp != null) {
-			// overwrite the old title
-			content.getPageModel().setTitle(oldTitle);
-			//syncronize the date
-			content.getPageModel().setLastUpdate(contentPageModelTemp.getLastUpdate());
-			content.getPageModel().setLastCheck(new Date());
-			content.setLastUpdate(contentPageModelTemp.getLastUpdate());
-			content.setLastCheck(new Date());
-		}		
-		// page model will be also saved in insertNovelContent()
-
-		synchronized (dbh) {
-			// save to DB, and get the saved value
-			SQLiteDatabase db = dbh.getWritableDatabase();
-			try{
-				// TODO: somehow using transaction cause problem...
-				db.beginTransaction();
-				content = dbh.insertNovelContent(db, content);
-				db.setTransactionSuccessful();
-			}
-			finally{
-				db.endTransaction();
-				db.close();
+			// get last updated info
+			
+			PageModel contentPageModelTemp = getPageModelFromInternet(content.getPageModel(), notifier);
+			if(contentPageModelTemp != null) {
+				// overwrite the old title
+				content.getPageModel().setTitle(oldTitle);
+				//syncronize the date
+				content.getPageModel().setLastUpdate(contentPageModelTemp.getLastUpdate());
+				content.getPageModel().setLastCheck(new Date());
+				content.setLastUpdate(contentPageModelTemp.getLastUpdate());
+				content.setLastCheck(new Date());
+			}		
+			// page model will be also saved in insertNovelContent()
+	
+			synchronized (dbh) {
+				// save to DB, and get the saved value
+				SQLiteDatabase db = dbh.getWritableDatabase();
+				try{
+					// TODO: somehow using transaction cause problem...
+					db.beginTransaction();
+					content = dbh.insertNovelContent(db, content);
+					db.setTransactionSuccessful();
+				}
+				finally{
+					db.endTransaction();
+					db.close();
+				}
 			}
 		}
 		return content;
@@ -620,9 +634,14 @@ public class NovelsDao {
 	 * ImageModel
 	 */
 
+	/**
+	 * Get image from db, if not exist will try to download from internet
+	 * @param page
+	 * @param notifier
+	 * @return
+	 * @throws Exception
+	 */
 	public ImageModel getImageModel(String page, ICallbackNotifier notifier) throws Exception {
-		
-		
 		ImageModel image = null;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
@@ -645,6 +664,13 @@ public class NovelsDao {
 		return image;
 	}
 
+	/**
+	 * Get image from internet
+	 * @param page
+	 * @param notifier
+	 * @return
+	 * @throws Exception
+	 */
 	public ImageModel getImageModelFromInternet(String page, ICallbackNotifier notifier) throws Exception {
 		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
 		ImageModel image = null;

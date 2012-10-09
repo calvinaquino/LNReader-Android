@@ -563,16 +563,16 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_URL, image.getUrl().toString());
 		cv.put(COLUMN_REFERER, image.getReferer());
 		if(temp == null) {
-			//Log.d(TAG, "Inserting Images: " + image.getName());
 			cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			insertOrThrow(db, TABLE_IMAGE, null, cv);
+			Log.i(TAG, "Complete Insert Images: " + image.getName() + " Ref: " +  image.getReferer());
 		}
-		else {
-			//Log.d(TAG, "Updating Images: " + image.getName());
+		else {			
 			cv.put(COLUMN_LAST_UPDATE, "" + (int) (temp.getLastUpdate().getTime() / 1000));
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 			update(db, TABLE_IMAGE, cv, COLUMN_ID + " = ?", new String[] {"" + temp.getId()});
+			Log.i(TAG, "Complete Update Images: " + image.getName() + " Ref: " +  image.getReferer());
 		}
 		// get updated data
 		image = getImage(db, image.getName());
