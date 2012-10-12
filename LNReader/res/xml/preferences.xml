@@ -39,7 +39,7 @@
             android:title="Show Images"
             android:defaultValue="true"
         />
-        <CheckBoxPreference android:summary="Download linked full resolution image." android:key="download_big_image" android:title="Download Full-Res Image"/> 
+        <CheckBoxPreference android:summary="Download linked full resolution image. Might take a lot of space." android:key="download_big_image" android:title="Download Full-Res Image"/> 
  
     </PreferenceCategory>
      <PreferenceCategory
