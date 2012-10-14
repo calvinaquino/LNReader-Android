@@ -3,7 +3,6 @@ package com.erakk.lnreader.activity;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -16,7 +15,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Picture;
 import android.os.AsyncTask;
-import android.os.AsyncTask.Status;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -154,10 +152,11 @@ public class DisplayLightNovelContentActivity extends Activity {
 	@Override
 	public void onStop() {
 		super.onStop();
-		if(task.getStatus() != Status.FINISHED) {
-			task.cancel(true);
-		}		
-		
+//		don't cancel, so can get the result after closing the activity		
+//		if(task.getStatus() != Status.FINISHED) {
+//			task.cancel(true);
+//		}		
+//		
 		Log.d(TAG, "onStop Completed");
 	}
 	
@@ -351,6 +350,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel) {
 		task = new LoadNovelContentTask();
+		task.owner = this;
 		String key = TAG + ":" + pageModel.getPage();
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if(isAdded) {
@@ -362,20 +362,98 @@ public class DisplayLightNovelContentActivity extends Activity {
 		else {
 			WebView webView = (WebView) findViewById(R.id.webView1);
 			webView.loadData("<p>Background task still loading...</p>", "text/html", "utf-8");
-			Log.w(TAG, "AsyncTask still running...");
+			LoadNovelContentTask tempTask = (LoadNovelContentTask) LNReaderApplication.getInstance().getTask(key);
+			if(tempTask != null) {
+				task = tempTask;
+				task.owner = this;
+			}
 		}
 	}
 	
-	public void setContent(NovelContentModel content) {
-		this.content = content;
+	@SuppressWarnings("deprecation")
+	public void setContent(NovelContentModel loadedContent) {
+		this.content = loadedContent;
+		if(content.getLastUpdate().getTime() != pageModel.getLastUpdate().getTime())
+			Toast.makeText(getApplicationContext(), "Content might be updated: " + content.getLastUpdate().toString() + " != " + pageModel.getLastUpdate().toString(), Toast.LENGTH_LONG).show();
+		
+		// load the contents here
+		final WebView wv = (WebView) findViewById(R.id.webView1);
+		wv.getSettings().setAllowFileAccess(true);
+		wv.getSettings().setSupportZoom(true);
+		wv.getSettings().setBuiltInZoomControls(true);
+		wv.getSettings().setLoadWithOverviewMode(true);
+		//wv.getSettings().setUseWideViewPort(true);
+		wv.getSettings().setLoadsImagesAutomatically(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("show_images", false));
+		//wv.setBackgroundColor(0);
+		wv.setBackgroundColor(Color.TRANSPARENT);
+
+		// custom link handler
+		BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(activity);
+		wv.setWebViewClient(client);
+
+		int styleId = -1;
+		if(getColorPreferences()) {
+			styleId = R.raw.style_dark;
+			//Log.d("CSS", "CSS = dark");					
+		}
+		else {
+			styleId = R.raw.style;
+			//Log.d("CSS", "CSS = normal");
+		}
+		LNReaderApplication app = (LNReaderApplication) getApplication();
+		String html = "<html><head><style type=\"text/css\">" + app.ReadCss(styleId) + "</style></head><body>" + content.getContent() + "</body></html>";
+		wv.loadDataWithBaseURL(Constants.BASE_URL, html, "text/html", "utf-8", "");
+
+		wv.setInitialScale((int) (content.getLastZoom() * 100));
+		
+		wv.setPictureListener(new PictureListener(){
+			boolean needScroll = true;
+			@Deprecated
+			public void onNewPicture(WebView arg0, Picture arg1) {
+				Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
+				if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
+					wv.scrollTo(0, content.getLastYScroll());
+					needScroll = false;
+				}						
+			}					
+		});
+		try{
+			novelDetails = dao.getNovelDetails(pageModel.getParentPageModel(), null);
+			
+			volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
+			
+			setTitle(pageModel.getTitle() + " (" + volume + ")");
+		} catch (Exception ex) {
+			Log.e(TAG, "Error when setting title: " + ex.getMessage(), ex);
+		}
+		Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
+		
+		buildTOCMenu();
+		Log.d(TAG, "Loaded: " + content.getPage());
 	}
 	
+	public void getResult(AsyncTaskResult<NovelContentModel> result) {
+		Exception e = result.getError();
+		if(e == null) {
+			NovelContentModel loadedContent = result.getResult();
+			setContent(loadedContent);
+		}
+		else {
+			Log.e(TAG, "Error when loading novel content: " + e.getMessage(), e);
+			Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
+		}			
+		toggleProgressBar(false);
+		refresh = false;
+	}
+
 	public boolean getColorPreferences(){
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
     	return sharedPrefs.getBoolean(Constants.PREF_INVERT_COLOR, false);
 	}
 	
 	public class LoadNovelContentTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelContentModel>> implements ICallbackNotifier{
+		public volatile DisplayLightNovelContentActivity owner;
+
 		public void onCallback(ICallbackEventData message) {
     		publishProgress(message.getMessage());
     	}
@@ -406,78 +484,9 @@ public class DisplayLightNovelContentActivity extends Activity {
 			//executed on UI thread.
 			if(dialog.isShowing()) dialog.setMessage(values[0]);
 		}
-		
-		@SuppressWarnings("deprecation")
+				
 		protected void onPostExecute(AsyncTaskResult<NovelContentModel> result) {
-			Exception e = result.getError();
-			
-			if(e == null) {
-				content = result.getResult();
-				
-				if(content.getLastUpdate().getTime() != pageModel.getLastUpdate().getTime())
-					Toast.makeText(getApplicationContext(), "Content might be updated: " + content.getLastUpdate().toString() + " != " + pageModel.getLastUpdate().toString(), Toast.LENGTH_LONG).show();
-				
-				// load the contents here
-				final WebView wv = (WebView) findViewById(R.id.webView1);
-				wv.getSettings().setAllowFileAccess(true);
-				wv.getSettings().setSupportZoom(true);
-				wv.getSettings().setBuiltInZoomControls(true);
-				wv.getSettings().setLoadWithOverviewMode(true);
-				//wv.getSettings().setUseWideViewPort(true);
-				wv.getSettings().setLoadsImagesAutomatically(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("show_images", false));
-				//wv.setBackgroundColor(0);
-				wv.setBackgroundColor(Color.TRANSPARENT);
-
-				// custom link handler
-				BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(activity);
-				wv.setWebViewClient(client);
-
-				int styleId = -1;
-				if(getColorPreferences()) {
-					styleId = R.raw.style_dark;
-					//Log.d("CSS", "CSS = dark");					
-				}
-				else {
-					styleId = R.raw.style;
-					//Log.d("CSS", "CSS = normal");
-				}
-				LNReaderApplication app = (LNReaderApplication) getApplication();
-				String html = "<html><head><style type=\"text/css\">" + app.ReadCss(styleId) + "</style></head><body>" + content.getContent() + "</body></html>";
-				wv.loadDataWithBaseURL(Constants.BASE_URL, html, "text/html", "utf-8", "");
-
-				wv.setInitialScale((int) (content.getLastZoom() * 100));
-				
-				wv.setPictureListener(new PictureListener(){
-					boolean needScroll = true;
-					@Deprecated
-					public void onNewPicture(WebView arg0, Picture arg1) {
-						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
-						if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
-							wv.scrollTo(0, content.getLastYScroll());
-							needScroll = false;
-						}						
-					}					
-				});
-				try{
-					novelDetails = dao.getNovelDetails(pageModel.getParentPageModel(), null);
-					
-					volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
-					
-					setTitle(pageModel.getTitle() + " (" + volume + ")");
-				} catch (Exception ex) {
-					Log.e(TAG, "Error when setting title: " + ex.getMessage(), ex);
-				}
-				Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
-				
-				buildTOCMenu();
-				Log.d(TAG, "Loaded: " + content.getPage());
-			}
-			else {
-				Log.e(TAG, "Error when loading novel content: " + e.getMessage(), e);
-				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
-			}			
-			toggleProgressBar(false);
-			refresh = false;
+			owner.getResult(result);			
 		}
 	}
 }
