@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -122,7 +123,10 @@ public class DisplayLightNovelContentActivity extends Activity {
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
 		try {
-			savedInstanceState.putString(Constants.EXTRA_PAGE, content.getPageModel().getPage());
+			if(content == null)
+				savedInstanceState.putString(Constants.EXTRA_PAGE, getIntent().getStringExtra(Constants.EXTRA_PAGE));
+			else
+				savedInstanceState.putString(Constants.EXTRA_PAGE, content.getPageModel().getPage());
 			savedInstanceState.putInt(Constants.EXTRA_SCROLL_X, webView.getScrollX());
 			savedInstanceState.putInt(Constants.EXTRA_SCROLL_Y, webView.getScrollY());
 		} catch (Exception e) {
@@ -270,12 +274,20 @@ public class DisplayLightNovelContentActivity extends Activity {
 		executeTask(page);
 	}	
 	
-	private void ToggleProgressBar(boolean show) {
+	private void toggleProgressBar(boolean show) {
 		synchronized (this) {
 			if(show) {
 				dialog = ProgressDialog.show(this, "Novel Content", "Loading. Please wait...", true);
 				dialog.getWindow().setGravity(Gravity.CENTER);
 				dialog.setCanceledOnTouchOutside(true);
+				dialog.setOnCancelListener(new OnCancelListener() {
+					
+					@Override
+					public void onCancel(DialogInterface dialog) {
+						WebView webView = (WebView) findViewById(R.id.webView1);
+						webView.loadData("<p>Task still loading...</p>", "text/html", "utf-8");
+					}
+				});
 			} 
 			else {
 				dialog.dismiss();
@@ -339,10 +351,19 @@ public class DisplayLightNovelContentActivity extends Activity {
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel) {
 		task = new LoadNovelContentTask();
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {pageModel});
-		else
-			task.execute(new PageModel[] {pageModel});
+		String key = TAG + ":" + pageModel.getPage();
+		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
+		if(isAdded) {
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {pageModel});
+			else
+				task.execute(new PageModel[] {pageModel});
+		}
+		else {
+			WebView webView = (WebView) findViewById(R.id.webView1);
+			webView.loadData("<p>Background task still loading...</p>", "text/html", "utf-8");
+			Log.w(TAG, "AsyncTask still running...");
+		}
 	}
 	
 	public void setContent(NovelContentModel content) {
@@ -362,7 +383,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		@Override
 		protected void onPreExecute (){
 			// executed on UI thread.
-			ToggleProgressBar(true);
+			toggleProgressBar(true);
 		}
 		
 		@Override
@@ -383,8 +404,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		@Override
 		protected void onProgressUpdate (String... values){
 			//executed on UI thread.
-			if(dialog.isShowing())
-				dialog.setMessage(values[0]);
+			if(dialog.isShowing()) dialog.setMessage(values[0]);
 		}
 		
 		@SuppressWarnings("deprecation")
@@ -408,7 +428,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 				//wv.setBackgroundColor(0);
 				wv.setBackgroundColor(Color.TRANSPARENT);
 
-
 				// custom link handler
 				BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(activity);
 				wv.setWebViewClient(client);
@@ -416,11 +435,11 @@ public class DisplayLightNovelContentActivity extends Activity {
 				int styleId = -1;
 				if(getColorPreferences()) {
 					styleId = R.raw.style_dark;
-					Log.d("CSS", "CSS = dark");					
+					//Log.d("CSS", "CSS = dark");					
 				}
 				else {
 					styleId = R.raw.style;
-					Log.d("CSS", "CSS = normal");
+					//Log.d("CSS", "CSS = normal");
 				}
 				LNReaderApplication app = (LNReaderApplication) getApplication();
 				String html = "<html><head><style type=\"text/css\">" + app.ReadCss(styleId) + "</style></head><body>" + content.getContent() + "</body></html>";
@@ -457,7 +476,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 				Log.e(TAG, "Error when loading novel content: " + e.getMessage(), e);
 				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 			}			
-			ToggleProgressBar(false);
+			toggleProgressBar(false);
 			refresh = false;
 		}
 	}

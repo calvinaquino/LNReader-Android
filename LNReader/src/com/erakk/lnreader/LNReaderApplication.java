@@ -14,6 +14,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -29,6 +31,8 @@ public class LNReaderApplication extends Application {
 	private NovelsDao novelsDao = null;
 	private UpdateService service = null;
 	private static LNReaderApplication instance;
+	
+	private static Hashtable<String, AsyncTask> runningTasks;
 	
 	@Override
 	public void onCreate()
@@ -46,6 +50,26 @@ public class LNReaderApplication extends Application {
 	protected void initSingletons()
 	{
 		novelsDao = NovelsDao.getInstance(getApplicationContext());
+		runningTasks = new Hashtable<String, AsyncTask>();
+	}
+	
+	public AsyncTask getTask(String key) {
+		return runningTasks.get(key);
+	}
+	
+	public boolean addTask(String key, AsyncTask task) {
+		if(runningTasks.containsKey(key)) {
+			AsyncTask tempTask = runningTasks.get(key);
+			if(tempTask != null && tempTask.getStatus() != Status.FINISHED) return false;
+		}
+		runningTasks.put(key, task);
+		return true;
+	}
+	
+	public boolean removeTask(String key) {
+		if(!runningTasks.containsKey(key)) return false;
+		runningTasks.remove(key);
+		return true;
 	}
 	
 	public boolean isOnline() {
