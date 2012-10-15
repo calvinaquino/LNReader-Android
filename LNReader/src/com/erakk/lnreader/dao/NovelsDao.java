@@ -316,7 +316,7 @@ public class NovelsDao {
 		int retry = 0;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
-				Response response = Jsoup.connect(Constants.BASE_URL + "/project/index.php?title=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
+				Response response = Jsoup.connect(Constants.BASE_URL + "/project/index.php?action=render&title=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
 				novel = BakaTsukiParser.ParseNovelDetails(doc, page);
 			}catch(EOFException eof) {
@@ -412,6 +412,7 @@ public class NovelsDao {
 		int retry = 0;
 		while(i < pageModels.size()) {
 			String titles = pageModels.get(i).getPage();
+			Log.d("parser", "pageModels.get(i).getPage(): " + pageModels.get(i).getPage());
 			++i;
 			ArrayList<PageModel> checkedPageModel = new ArrayList<PageModel>();
 			while(i < pageModels.size()) {

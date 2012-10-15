@@ -370,6 +370,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		}
 	}
 	
+	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
 	public void setContent(NovelContentModel loadedContent) {
 		this.content = loadedContent;
@@ -384,8 +385,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 		wv.getSettings().setLoadWithOverviewMode(true);
 		//wv.getSettings().setUseWideViewPort(true);
 		wv.getSettings().setLoadsImagesAutomatically(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("show_images", false));
-		//wv.setBackgroundColor(0);
-		wv.setBackgroundColor(Color.TRANSPARENT);
+		wv.setBackgroundColor(0);
+		//wv.setBackgroundColor(Color.TRANSPARENT);
 
 		// custom link handler
 		BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(activity);

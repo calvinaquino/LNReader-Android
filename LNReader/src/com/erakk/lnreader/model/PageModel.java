@@ -27,6 +27,8 @@ public class PageModel{
 	private BookModel book;
 	private int order;
 	
+	private String redirectedTo;
+	
 	// not saved to db
 	private boolean isUpdated = false;
 
@@ -159,5 +161,11 @@ public class PageModel{
 	}
 	public void setUpdated(boolean isUpdated) {
 		this.isUpdated = isUpdated;
+	}
+	public String getRedirectedTo() {
+		return redirectedTo;
+	}
+	public void setRedirectedTo(String redirectedTo) {
+		this.redirectedTo = redirectedTo;
 	}
 }
