@@ -284,7 +284,9 @@ public class BakaTsukiParser {
 					}
 				}
 			}			
-		} catch(Exception e) {e.printStackTrace();}
+		} catch(Exception e) {
+			Log.e(TAG, "Unknown Exception : " + e.getMessage(), e);
+		}
 		//Log.d(TAG, "Complete parsing book collections: " + books.size());
 		
 		novel.setBookCollections(validateNovelBooks(books));
@@ -340,9 +342,11 @@ public class BakaTsukiParser {
 			   chapterElement.tagName() == "h3") {
 				walkChapter = false;
 			}
-			else if(chapterElement.tagName() == "dl" ||
-					chapterElement.tagName() == "ul" ||
-					chapterElement.tagName() == "div") {
+			else 
+//				if(chapterElement.tagName() == "dl" ||
+//					chapterElement.tagName() == "ul" ||
+//					chapterElement.tagName() == "div") 
+				{
 				Elements chapters = chapterElement.select("li");
 				for(Iterator<Element> i2 = chapters.iterator(); i2.hasNext();) {
 					Element chapter = i2.next();
@@ -563,12 +567,13 @@ public class BakaTsukiParser {
 			}
 		}
 		novel.setCover(imageUrl);
-		try {
-			URL url = new URL(imageUrl);
-			novel.setCoverUrl(url);
-		} catch (MalformedURLException e) {
-			// should happened
-			e.printStackTrace();
+		if(imageUrl != null && imageUrl.length() > 0) {
+			try {
+				URL url = new URL(imageUrl);
+				novel.setCoverUrl(url);
+			} catch (MalformedURLException e) {
+				Log.e(TAG, "Invalid URL: " + imageUrl, e);
+			}
 		}
 		//Log.d(TAG, "Complete parsing cover image");
 		return imageUrl;
@@ -585,7 +590,7 @@ public class BakaTsukiParser {
 		if(stage == null || stage.size() <= 0) {
 			source = "#mw-content-text,p";
 			stage = doc.select(source);
-			//Log.d(TAG, "From: " + source);
+			Log.i(TAG, "Synopsis From: " + source);
 		}
 		
 		if(stage.size() > 0) {
@@ -593,6 +598,13 @@ public class BakaTsukiParser {
 			if(source == "#Story_Synopsis") synopsisE = stage.first().parent().nextElementSibling();
 			else synopsisE = stage.first().children().first();
 		
+			boolean processOne = false;
+			if(synopsisE == null || synopsisE.select("p").size() == 0) {
+				// cannot found any synopsis, take the first available p
+				synopsisE = stage.first();
+				processOne = true;
+			}
+			
 			int i = 0;
 			do{
 				if(synopsisE == null) break;
@@ -607,6 +619,7 @@ public class BakaTsukiParser {
 				if(synopsisE != null && synopsisE.tagName() != "p" && i > 0) break;
 				
 				if (i > 10) break;	// limit only first 10 paragraph.
+				if(processOne) break;
 			}while(true);
 		}
 
@@ -639,7 +652,7 @@ public class BakaTsukiParser {
 				image.setUrl(new URL(urlStr));
 			} catch (MalformedURLException e) {
 				// shouldn't happened
-				e.printStackTrace();
+				Log.e(TAG, "Invalid URL: " + urlStr, e);
 			}
 			images.add(image);
 			//Log.d("ParseNovelContent", image.getName() + "==>" + image.getUrl().toString());
@@ -668,7 +681,7 @@ public class BakaTsukiParser {
 			image.setUrl(new URL(Constants.BASE_URL + imageUrl));
 		} catch (MalformedURLException e) {
 			// shouldn't happened
-			e.printStackTrace();
+			Log.e(TAG, "Invalid URL: " + Constants.BASE_URL + imageUrl, e);
 		}
 		return image;
 	}

@@ -17,6 +17,7 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.dao.NovelsDao;
 
 public class NovelCollectionModel {
+	private static final String TAG = NovelCollectionModel.class.toString();
 	private int id;
 	private PageModel pageModel;	
 	private String page;
@@ -69,12 +70,11 @@ public class NovelCollectionModel {
 	}
 	
 	public URL getCoverUrl() {
-		if(this.coverUrl == null) {
+		if(this.coverUrl == null && this.cover != null && this.cover.length() > 0) {
 			try {
 				this.coverUrl = new URL(this.cover);
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Log.e(TAG, "Invalid url: "+ this.cover, e);
 			}
 		}
 		return coverUrl;
@@ -88,13 +88,14 @@ public class NovelCollectionModel {
 		if(coverBitmap == null) {
 			try{
 				// TODO: maybe it is better to use ImageModel
-				@SuppressWarnings("deprecation")
-				String filepath = Constants.IMAGE_ROOT + URLDecoder.decode(getCoverUrl().getFile());
-				Log.d("GetCover", filepath);
-				this.coverBitmap = BitmapFactory.decodeFile(filepath);
+				if(getCoverUrl() != null) {
+					@SuppressWarnings("deprecation")
+					String filepath = Constants.IMAGE_ROOT + URLDecoder.decode(getCoverUrl().getFile());
+					Log.d("GetCover", filepath);
+					this.coverBitmap = BitmapFactory.decodeFile(filepath);
+				}				
 			}catch(Exception e){
-				e.printStackTrace();
-				Log.e("GetCover", e.getClass().toString() + ": " + e.getMessage());
+				Log.e("GetCover", e.getClass().toString() + ": " + e.getMessage(), e);
 			}
 		}
 		// Redimension image so they all have a constant size
