@@ -2,6 +2,7 @@ package com.erakk.lnreader.task;
 
 import android.os.AsyncTask;
 
+import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
@@ -9,7 +10,7 @@ import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
-public class LoadNovelContentTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelContentModel>> implements ICallbackNotifier{
+public class LoadNovelContentTask extends AsyncTask<PageModel, ICallbackEventData, AsyncTaskResult<NovelContentModel>> implements ICallbackNotifier{
 	public volatile IAsyncTaskOwner owner;
 	private boolean refresh;
 	
@@ -19,13 +20,19 @@ public class LoadNovelContentTask extends AsyncTask<PageModel, String, AsyncTask
 	}
 	
 	public void onCallback(ICallbackEventData message) {
-		publishProgress(message.getMessage());
+		publishProgress(message);
 	}
 	
 	@Override
 	protected void onPreExecute (){
 		// executed on UI thread.
 		owner.toggleProgressBar(true);
+		if(this.refresh) {
+			owner.setMessageDialog(new CallbackEventData("Refreshing..."));
+		}
+		else {
+			owner.setMessageDialog(new CallbackEventData("Loading..."));
+		}		
 	}
 	
 	@Override
@@ -44,7 +51,7 @@ public class LoadNovelContentTask extends AsyncTask<PageModel, String, AsyncTask
 	}
 	
 	@Override
-	protected void onProgressUpdate (String... values){
+	protected void onProgressUpdate (ICallbackEventData... values){
 		//executed on UI thread.
 		owner.setMessageDialog(values[0]);
 	}

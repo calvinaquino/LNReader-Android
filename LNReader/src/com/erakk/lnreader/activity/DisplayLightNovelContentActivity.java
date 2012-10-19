@@ -35,6 +35,7 @@ import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.PageModelAdapter;
+import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
@@ -47,14 +48,9 @@ import com.erakk.lnreader.task.LoadNovelContentTask;
 
 public class DisplayLightNovelContentActivity extends Activity implements IAsyncTaskOwner{
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
-	//private final DisplayLightNovelContentActivity activity = this;
-	//private NovelsDao dao = NovelsDao.getInstance(this);
 	public NovelContentModel content;
 	private NovelCollectionModel novelDetails;
 	private LoadNovelContentTask task;
-	//private PageModel pageModel;
-	//private String volume;
-	//private boolean refresh = false;
 	private AlertDialog tocMenu = null;
 	private PageModelAdapter jumpAdapter = null;
 	private ProgressDialog dialog;
@@ -89,6 +85,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 
 	protected void onRestart() {
 		super.onRestart();
+		restored = true;
 		Log.d(TAG, "onRestart Completed");
 	}
 	
@@ -96,7 +93,8 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	public void onResume() {
 		super.onResume();
 		// moved page loading here rather than onCreate
-		// to avoid only the first page loaded when resume from sleep
+		// to avoid only the first page loaded when resume from sleep 
+		// (activity destroyed, onCreate called again)
 		// when the user navigate using next/prev/jumpTo
 		if(!restored) {
 			PageModel pageModel = new PageModel();
@@ -126,8 +124,6 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 				savedInstanceState.putString(Constants.EXTRA_PAGE, getIntent().getStringExtra(Constants.EXTRA_PAGE));
 			else
 				savedInstanceState.putString(Constants.EXTRA_PAGE, content.getPageModel().getPage());
-			//savedInstanceState.putInt(Constants.EXTRA_SCROLL_X, webView.getScrollX());
-			//savedInstanceState.putInt(Constants.EXTRA_SCROLL_Y, webView.getScrollY());
 		} catch (Exception e) {
 			Log.e(TAG, "Error when saving instance", e);
 		}
@@ -137,18 +133,15 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 		String restoredPage = savedInstanceState.getString(Constants.EXTRA_PAGE);
-		//if(!restoredPage.equalsIgnoreCase(getIntent().getStringExtra(Constants.EXTRA_PAGE))) {
-			try {			
-				// replace the current pageModel with the saved instance if have different page
-				PageModel pageModel = new PageModel();
-				pageModel.setPage(restoredPage);
-				pageModel = NovelsDao.getInstance(this).getPageModel(pageModel, null);
-				executeTask(pageModel, false);
-				//webView.scrollTo(savedInstanceState.getInt(Constants.EXTRA_SCROLL_X), savedInstanceState.getInt(Constants.EXTRA_SCROLL_Y));
-			} catch (Exception e) {
-				Log.e(TAG, "Error when restoring instance", e);
-			}
-		//}
+		try {			
+			// replace the current pageModel with the saved instance if have different page
+			PageModel pageModel = new PageModel();
+			pageModel.setPage(restoredPage);
+			pageModel = NovelsDao.getInstance(this).getPageModel(pageModel, null);
+			executeTask(pageModel, false);
+		} catch (Exception e) {
+			Log.e(TAG, "Error when restoring instance", e);
+		}
 		
 		// flag that this activity is restored from pause
 		restored = true;
@@ -306,31 +299,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		//pageModel = page;
 		executeTask(page, false);
 	}	
-	
-	public void setMessageDialog(String message) {
-		if(dialog.isShowing()) 
-			dialog.setMessage(message);
-	}
-	
-	public void toggleProgressBar(boolean show) {
-		synchronized (this) {
-			if(show) {
-				dialog = ProgressDialog.show(this, "Novel Content", "Loading. Please wait...", true);
-				dialog.getWindow().setGravity(Gravity.CENTER);
-				dialog.setCanceledOnTouchOutside(true);
-				dialog.setOnCancelListener(new OnCancelListener() {
-					
-					public void onCancel(DialogInterface dialog) {
-						WebView webView = (WebView) findViewById(R.id.webView1);
-						webView.loadData("<p>Task still loading...</p>", "text/html", "utf-8");
-					}
-				});
-			} 
-			else {
-				dialog.dismiss();
-			}
-		}
-	}
+
 	
 	private void buildTOCMenu() {
 		if(novelDetails != null && content != null) {
@@ -413,7 +382,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 	}
 	
-	@SuppressLint("NewApi")
+	//@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
 	public void setContent(NovelContentModel loadedContent) {
 		this.content = loadedContent;
@@ -489,6 +458,32 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		//wv.setBackgroundColor(Color.TRANSPARENT);
 	}
 	
+	
+	public void setMessageDialog(ICallbackEventData message) {
+		if(dialog.isShowing()) 
+			dialog.setMessage(message.getMessage());
+	}
+	
+	public void toggleProgressBar(boolean show) {
+		synchronized (this) {
+			if(show) {
+				dialog = ProgressDialog.show(this, "Novel Content", "Loading. Please wait...", true);
+				dialog.getWindow().setGravity(Gravity.CENTER);
+				dialog.setCanceledOnTouchOutside(true);
+				dialog.setOnCancelListener(new OnCancelListener() {
+					
+					public void onCancel(DialogInterface dialog) {
+						WebView webView = (WebView) findViewById(R.id.webView1);
+						webView.loadData("<p>Task still loading...</p>", "text/html", "utf-8");
+					}
+				});
+			} 
+			else {
+				dialog.dismiss();
+			}
+		}
+	}
+	
 	public void getResult(AsyncTaskResult<?> result) {
 		Exception e = result.getError();
 		if(e == null) {
@@ -500,7 +495,6 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 		}			
 		toggleProgressBar(false);
-		//refresh = false;
 	}
 
 	private boolean getShowImagesPreferences() {

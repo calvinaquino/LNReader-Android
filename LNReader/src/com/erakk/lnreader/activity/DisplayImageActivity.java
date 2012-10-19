@@ -5,8 +5,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.AsyncTask.Status;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -20,16 +20,16 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.DownloadCallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
-import com.erakk.lnreader.callback.ICallbackNotifier;
-import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.ImageModel;
+import com.erakk.lnreader.task.IAsyncTaskOwner;
+import com.erakk.lnreader.task.LoadImageTask;
 
-public class DisplayImageActivity extends Activity {
-	private NovelsDao dao = NovelsDao.getInstance(this);
+public class DisplayImageActivity extends Activity implements IAsyncTaskOwner{
+	//private NovelsDao dao = NovelsDao.getInstance(this);
 	private WebView imgWebView;
 	private LoadImageTask task;
-	private boolean refresh = false;
+	//private boolean refresh = false;
 	private String url;
 	private ProgressDialog dialog;
 	
@@ -44,15 +44,16 @@ public class DisplayImageActivity extends Activity {
         imgWebView.getSettings().setBuiltInZoomControls(true);
         imgWebView.getSettings().setLoadWithOverviewMode(true);
         imgWebView.getSettings().setUseWideViewPort(true);
+        imgWebView.setBackgroundColor(0);
         
         Intent intent = getIntent();
         url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
-        executeTask(url);
+        executeTask(url, false);
     }
 	
 	@SuppressLint("NewApi")
-	private void executeTask(String url) {        
-		task = new LoadImageTask();        
+	private void executeTask(String url, boolean refresh) {        
+		task = new LoadImageTask(refresh, this);        
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new String[] {url});
 		else
@@ -88,8 +89,8 @@ public class DisplayImageActivity extends Activity {
 			/*
 			 * Implement code to refresh image content
 			 */
-			refresh = true;
-			executeTask(url);			
+			//refresh = true;
+			executeTask(url, true);			
 			return true;
 		case android.R.id.home:
 			super.onBackPressed();
@@ -98,99 +99,60 @@ public class DisplayImageActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
     
-	private void ToggleProgressBar(boolean show) {
+    @Override
+	public void toggleProgressBar(boolean show) {
 		if(show) {
-			dialog = ProgressDialog.show(this, "Display Image", "Loading. Please wait...", false);
+			dialog = ProgressDialog.show(this, "Display Image", "Loading Image...", false);
 			dialog.getWindow().setGravity(Gravity.CENTER);
 			dialog.setCanceledOnTouchOutside(true);
-		
-			if(refresh) {
-				dialog.setMessage("Refreshing...");
-			}
-			else {
-				dialog.setMessage("Loading...");
-			}
 		}
 		else {
 			dialog.dismiss();
 		}
 	}
-    	
-	public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTaskResult<ImageModel>> implements ICallbackNotifier {
-    	String url = "";
-    	public String toString() {
-    		return "LoadImageTask: " + url;
-    	}
-    	
-    	public void onCallback(ICallbackEventData message) {
-    		publishProgress(message);
-    	}
-    	
-    	@Override
-		protected void onPreExecute (){
-			// executed on UI thread.
-			ToggleProgressBar(true);
-		}
-    	
-		@Override
-		protected AsyncTaskResult<ImageModel> doInBackground(String... params) {
-			this.url = params[0];			
-			try{
-				if(refresh) {
-					return new AsyncTaskResult<ImageModel>(dao.getImageModelFromInternet(url, this));
-				}
-				else {
-					return new AsyncTaskResult<ImageModel>(dao.getImageModel(url, this));
-				}
-			} catch (Exception e) {
-				return new AsyncTaskResult<ImageModel>(e);
-			}			
-		}
-		
-		@Override
-		protected void onProgressUpdate (ICallbackEventData... values){
-			//executed on UI thread.
-			if(dialog.isShowing()){
-				ICallbackEventData data = values[0];
-				dialog.setMessage(data.getMessage());
-	
-				if(data.getClass() == DownloadCallbackEventData.class) {
-					DownloadCallbackEventData downloadData = (DownloadCallbackEventData) data;
-					int percent = downloadData.getPercentage();
-					synchronized (dialog) {
-						if(percent > -1) {
-							// somehow doesn't works....
-							dialog.setIndeterminate(false);
-							dialog.setSecondaryProgress(percent);
-							dialog.setMax(100);
-							dialog.setProgress(percent);
-							dialog.setMessage(data.getMessage());
-						}
-						else {
-							dialog.setIndeterminate(true);
-							dialog.setMessage(data.getMessage());
-						}
+
+	@Override
+	public void setMessageDialog(ICallbackEventData message) {
+		if(dialog != null && dialog.isShowing()){
+			ICallbackEventData data = message;
+			dialog.setMessage(data.getMessage());
+
+			if(data.getClass() == DownloadCallbackEventData.class) {
+				DownloadCallbackEventData downloadData = (DownloadCallbackEventData) data;
+				int percent = downloadData.getPercentage();
+				synchronized (dialog) {
+					if(percent > -1) {
+						// somehow doesn't works....
+						dialog.setIndeterminate(false);
+						dialog.setSecondaryProgress(percent);
+						dialog.setMax(100);
+						dialog.setProgress(percent);
+						dialog.setMessage(data.getMessage());
+					}
+					else {
+						dialog.setIndeterminate(true);
+						dialog.setMessage(data.getMessage());
 					}
 				}
 			}
 		}
-		
-		@Override
-		protected void onPostExecute(AsyncTaskResult<ImageModel> result) {
-			Exception e = result.getError();
-			if(e == null) {
-				imgWebView = (WebView) findViewById(R.id.webView1);
-				String imageUrl = "file:///" + result.getResult().getPath(); 
-				imgWebView.loadUrl(imageUrl);
-				String title = result.getResult().getName();
-				setTitle(title.substring(title.lastIndexOf("/")));
-				Log.d("LoadImageTask", "Loaded: " + imageUrl);
-			}
-			else{
-				e.printStackTrace();
-				Toast.makeText(getApplicationContext(), e.getClass() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
-			}
-			ToggleProgressBar(false);
+	}
+
+	@Override
+	public void getResult(AsyncTaskResult<?> result) {
+		Exception e = result.getError();
+		if(e == null) {
+			ImageModel imageModel = (ImageModel) result.getResult();
+			imgWebView = (WebView) findViewById(R.id.webView1);
+			String imageUrl = "file:///" + imageModel.getPath(); 
+			imgWebView.loadUrl(imageUrl);
+			String title = imageModel.getName();
+			setTitle(title.substring(title.lastIndexOf("/")));
+			Log.d("LoadImageTask", "Loaded: " + imageUrl);
 		}
-    }
+		else{
+			e.printStackTrace();
+			Toast.makeText(getApplicationContext(), e.getClass() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
+		}
+	}
 }
