@@ -12,7 +12,6 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Picture;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -36,8 +35,6 @@ import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.PageModelAdapter;
-import com.erakk.lnreader.callback.ICallbackEventData;
-import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
@@ -50,13 +47,13 @@ import com.erakk.lnreader.task.LoadNovelContentTask;
 
 public class DisplayLightNovelContentActivity extends Activity implements IAsyncTaskOwner{
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
-	private final DisplayLightNovelContentActivity activity = this;
-	private NovelsDao dao = NovelsDao.getInstance(this);
+	//private final DisplayLightNovelContentActivity activity = this;
+	//private NovelsDao dao = NovelsDao.getInstance(this);
 	public NovelContentModel content;
 	private NovelCollectionModel novelDetails;
 	private LoadNovelContentTask task;
-	private PageModel pageModel;
-	private String volume;
+	//private PageModel pageModel;
+	//private String volume;
 	//private boolean refresh = false;
 	private AlertDialog tocMenu = null;
 	private PageModelAdapter jumpAdapter = null;
@@ -70,14 +67,6 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
         UIHelper.SetTheme(this, R.layout.activity_display_light_novel_content);		
         UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
-		try {
-			PageModel tempPage = new PageModel();
-			tempPage.setPage(getIntent().getStringExtra(Constants.EXTRA_PAGE));
-			pageModel = dao.getPageModel(tempPage, null);
-		} catch (Exception e) {
-			Log.e(TAG, "Failed to get the PageModel for content: " + getIntent().getStringExtra(Constants.EXTRA_PAGE), e);
-		}
-				
 		// compatibility search box
 		final EditText searchText = (EditText) findViewById(R.id.searchText);
 		searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -88,9 +77,9 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		});
 		
 		webView = (WebView) findViewById(R.id.webView1);
-		Log.d(TAG, "OnCreate Completed: " + pageModel.getPage());
-		
 		restored = false;
+		
+		Log.d(TAG, "OnCreate Completed.");
 	}
 	
 	protected void onStart() {
@@ -109,7 +98,17 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		// moved page loading here rather than onCreate
 		// to avoid only the first page loaded when resume from sleep
 		// when the user navigate using next/prev/jumpTo
-		if(!restored) executeTask(pageModel, false);
+		if(!restored) {
+			PageModel pageModel = new PageModel();
+	        pageModel.setPage(getIntent().getStringExtra(Constants.EXTRA_PAGE));
+			try {
+				pageModel = NovelsDao.getInstance(this).getPageModel(pageModel, null);
+				executeTask(pageModel, false);
+			} catch (Exception e) {
+				Log.e(TAG, "Failed to get the PageModel for content: " + getIntent().getStringExtra(Constants.EXTRA_PAGE), e);
+			}
+		}
+		setWebViewSettings();
 		Log.d(TAG, "onResume Completed");
 	}
 
@@ -127,8 +126,8 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 				savedInstanceState.putString(Constants.EXTRA_PAGE, getIntent().getStringExtra(Constants.EXTRA_PAGE));
 			else
 				savedInstanceState.putString(Constants.EXTRA_PAGE, content.getPageModel().getPage());
-			savedInstanceState.putInt(Constants.EXTRA_SCROLL_X, webView.getScrollX());
-			savedInstanceState.putInt(Constants.EXTRA_SCROLL_Y, webView.getScrollY());
+			//savedInstanceState.putInt(Constants.EXTRA_SCROLL_X, webView.getScrollX());
+			//savedInstanceState.putInt(Constants.EXTRA_SCROLL_Y, webView.getScrollY());
 		} catch (Exception e) {
 			Log.e(TAG, "Error when saving instance", e);
 		}
@@ -138,19 +137,20 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 		String restoredPage = savedInstanceState.getString(Constants.EXTRA_PAGE);
-		if(!restoredPage.equalsIgnoreCase(getIntent().getStringExtra(Constants.EXTRA_PAGE))) {
+		//if(!restoredPage.equalsIgnoreCase(getIntent().getStringExtra(Constants.EXTRA_PAGE))) {
 			try {			
 				// replace the current pageModel with the saved instance if have different page
-				PageModel tempPage = new PageModel();
-				tempPage.setPage(restoredPage);
-				pageModel = dao.getPageModel(tempPage, null);
+				PageModel pageModel = new PageModel();
+				pageModel.setPage(restoredPage);
+				pageModel = NovelsDao.getInstance(this).getPageModel(pageModel, null);
 				executeTask(pageModel, false);
-				webView.scrollTo(savedInstanceState.getInt(Constants.EXTRA_SCROLL_X), savedInstanceState.getInt(Constants.EXTRA_SCROLL_Y));
+				//webView.scrollTo(savedInstanceState.getInt(Constants.EXTRA_SCROLL_X), savedInstanceState.getInt(Constants.EXTRA_SCROLL_Y));
 			} catch (Exception e) {
 				Log.e(TAG, "Error when restoring instance", e);
 			}
-		}
-		setWebViewSettings();
+		//}
+		
+		// flag that this activity is restored from pause
 		restored = true;
 		Log.d(TAG, "onRestoreInstanceState Completed");
 	}
@@ -185,8 +185,14 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			 * Implement code to refresh chapter content
 			 */
 			//refresh = true;
-			executeTask(pageModel, true);
-			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
+			if(content != null) {
+				try {
+					executeTask(content.getPageModel(), true);
+					//Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
+				} catch (Exception e) {
+					Log.e(TAG, "Cannot get current chapter.", e);
+				}
+			}
 			return true;
 		case R.id.invert_colors:
 			
@@ -201,12 +207,18 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			/*
 			 * Implement code to move to previous chapter
 			 */
-			PageModel prev = novelDetails.getPrev(pageModel.getPage());
-			if(prev!= null) {
-				jumpTo(prev);
-			}
-			else {
-				Toast.makeText(getApplicationContext(), "First available chapter.", Toast.LENGTH_SHORT).show();
+			if(content != null) {
+				try {
+					PageModel prev = novelDetails.getPrev(content.getPageModel().getPage());
+					if(prev!= null) {
+						jumpTo(prev);
+					}
+					else {
+						Toast.makeText(getApplicationContext(), "First available chapter.", Toast.LENGTH_SHORT).show();
+					}
+				} catch (Exception e) {
+					Log.e(TAG, "Cannot get previous chapter.", e);
+				}
 			}
 			return true;
 		case R.id.menu_chapter_next:
@@ -214,14 +226,19 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			/*
 			 * Implement code to move to next chapter
 			 */
-			PageModel next = novelDetails.getNext(pageModel.getPage());
-			if(next!= null) {
-				jumpTo(next);
+			if(content != null) {
+				try {
+					PageModel next = novelDetails.getNext(content.getPageModel().getPage());
+					if(next!= null) {
+						jumpTo(next);
+					}
+					else {
+						Toast.makeText(getApplicationContext(), "Last available chapter.", Toast.LENGTH_SHORT).show();
+					}
+				} catch (Exception e) {
+					Log.e(TAG, "Cannot get next chapter.", e);
+				}
 			}
-			else {
-				Toast.makeText(getApplicationContext(), "Last available chapter.", Toast.LENGTH_SHORT).show();
-			}
-			
 			return true;
 		case R.id.menu_chapter_toc:
 			tocMenu.show();
@@ -234,6 +251,17 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	public void onBackPressed() {
+		if(isTaskRoot()) {
+			startActivity(new Intent(this, MainActivity.class));
+			finish();
+		}
+		else {
+			super.onBackPressed();
+		}
 	}
 	
 	@SuppressLint("NewApi")
@@ -275,7 +303,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	
 	public void jumpTo(PageModel page){
 		setLastReadState();
-		pageModel = page;
+		//pageModel = page;
 		executeTask(page, false);
 	}	
 	
@@ -305,24 +333,29 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	}
 	
 	private void buildTOCMenu() {
-		if(novelDetails != null) {
-			BookModel book = pageModel.getBook();
-			if(book != null) {
-				ArrayList<PageModel> chapters = book.getChapterCollection();
-				int resourceId = R.layout.novel_list_item;
-				if(UIHelper.IsSmallScreen(this)) {
-					resourceId = R.layout.novel_list_item_small; 
+		if(novelDetails != null && content != null) {
+			try {
+				PageModel pageModel = content.getPageModel();
+				BookModel book = pageModel.getBook();
+				if(book != null) {
+					ArrayList<PageModel> chapters = book.getChapterCollection();
+					int resourceId = R.layout.novel_list_item;
+					if(UIHelper.IsSmallScreen(this)) {
+						resourceId = R.layout.novel_list_item_small; 
+					}
+					jumpAdapter = new PageModelAdapter(this, resourceId, chapters);
+					AlertDialog.Builder builder = new AlertDialog.Builder(this);
+					builder.setTitle("Jump To");
+					builder.setAdapter(jumpAdapter, new OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							PageModel page = jumpAdapter.getItem(which);
+							jumpTo(page);
+						}				
+					});
+					tocMenu = builder.create();
 				}
-				jumpAdapter = new PageModelAdapter(this, resourceId, chapters);
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle("Jump To");
-				builder.setAdapter(jumpAdapter, new OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						PageModel page = jumpAdapter.getItem(which);
-						jumpTo(page);
-					}				
-				});
-				tocMenu = builder.create();
+			} catch (Exception e) {
+				Log.e(TAG, "Cannot get current page for menu.", e);
 			}
 		}
 	}
@@ -335,7 +368,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			content.setLastYScroll(wv.getScrollY());
 			content.setLastZoom(wv.getScale());
 			try{
-				content = dao.updateNovelContent(content);
+				content = NovelsDao.getInstance(this).updateNovelContent(content);
 			}catch(Exception ex) {
 				ex.printStackTrace();
 			}
@@ -343,7 +376,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 				try{
 					PageModel page = content.getPageModel();
 					page.setFinishedRead(true);
-					page = dao.updatePageModel(page);
+					page = NovelsDao.getInstance(this).updatePageModel(page);
 					Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 				}catch(Exception ex) {
 					ex.printStackTrace();
@@ -384,56 +417,62 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	@SuppressWarnings("deprecation")
 	public void setContent(NovelContentModel loadedContent) {
 		this.content = loadedContent;
-		if(content.getLastUpdate().getTime() != pageModel.getLastUpdate().getTime())
-			Toast.makeText(getApplicationContext(), "Content might be updated: " + content.getLastUpdate().toString() + " != " + pageModel.getLastUpdate().toString(), Toast.LENGTH_LONG).show();
-		
-		// load the contents here
-		final WebView wv = (WebView) findViewById(R.id.webView1);
-		setWebViewSettings();
+		try {
+			PageModel pageModel = content.getPageModel();
 
-		// custom link handler
-		BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(activity);
-		wv.setWebViewClient(client);
-		
-		int styleId = -1;
-		if(getColorPreferences()) {
-			styleId = R.raw.style_dark;
-			//Log.d("CSS", "CSS = dark");					
-		}
-		else {
-			styleId = R.raw.style;
-			//Log.d("CSS", "CSS = normal");
-		}
-		LNReaderApplication app = (LNReaderApplication) getApplication();
-		String html = "<html><head><style type=\"text/css\">" + app.ReadCss(styleId) + "</style></head><body>" + content.getContent() + "</body></html>";
-		wv.loadDataWithBaseURL(Constants.BASE_URL, html, "text/html", "utf-8", "");
-
-		wv.setInitialScale((int) (content.getLastZoom() * 100));
-		
-		wv.setPictureListener(new PictureListener(){
-			boolean needScroll = true;
-			@Deprecated
-			public void onNewPicture(WebView arg0, Picture arg1) {
-				Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
-				if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
-					wv.scrollTo(0, content.getLastYScroll());
-					needScroll = false;
-				}						
-			}					
-		});
-		try{
-			novelDetails = dao.getNovelDetails(pageModel.getParentPageModel(), null);
+			if(content.getLastUpdate().getTime() != pageModel.getLastUpdate().getTime())
+				Toast.makeText(getApplicationContext(), "Content might be updated: " + content.getLastUpdate().toString() + " != " + pageModel.getLastUpdate().toString(), Toast.LENGTH_LONG).show();
 			
-			volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
+			// load the contents here
+			final WebView wv = (WebView) findViewById(R.id.webView1);
+			setWebViewSettings();
+	
+			// custom link handler
+			BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(this);
+			wv.setWebViewClient(client);
 			
-			setTitle(pageModel.getTitle() + " (" + volume + ")");
-		} catch (Exception ex) {
-			Log.e(TAG, "Error when setting title: " + ex.getMessage(), ex);
+			int styleId = -1;
+			if(getColorPreferences()) {
+				styleId = R.raw.style_dark;
+				//Log.d("CSS", "CSS = dark");					
+			}
+			else {
+				styleId = R.raw.style;
+				//Log.d("CSS", "CSS = normal");
+			}
+			LNReaderApplication app = (LNReaderApplication) getApplication();
+			String html = "<html><head><style type=\"text/css\">" + app.ReadCss(styleId) + "</style></head><body>" + content.getContent() + "</body></html>";
+			wv.loadDataWithBaseURL(Constants.BASE_URL, html, "text/html", "utf-8", "");
+	
+			wv.setInitialScale((int) (content.getLastZoom() * 100));
+			
+			wv.setPictureListener(new PictureListener(){
+				boolean needScroll = true;
+				@Deprecated
+				public void onNewPicture(WebView arg0, Picture arg1) {
+					Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
+					if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
+						wv.scrollTo(0, content.getLastYScroll());
+						needScroll = false;
+					}						
+				}					
+			});
+			try{
+				novelDetails = NovelsDao.getInstance(this).getNovelDetails(pageModel.getParentPageModel(), null);
+				
+				String volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
+				
+				setTitle(pageModel.getTitle() + " (" + volume + ")");
+			} catch (Exception ex) {
+				Log.e(TAG, "Error when setting title: " + ex.getMessage(), ex);
+			}
+			Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
+			
+			buildTOCMenu();
+			Log.d(TAG, "Loaded: " + content.getPage());
+		} catch (Exception e) {
+			Log.e(TAG, "Cannot load content.", e);
 		}
-		Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
-		
-		buildTOCMenu();
-		Log.d(TAG, "Loaded: " + content.getPage());
 	}
 
 	private void setWebViewSettings() {

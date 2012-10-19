@@ -25,7 +25,7 @@
             android:key="invert_colors"
             android:summary="Changes the font color with the background color"
             android:title="Invert Colors"
-            android:defaultValue="false"
+            android:defaultValue="true"
         />
         <CheckBoxPreference
             android:key="lock_horizontal"
@@ -39,8 +39,15 @@
             android:title="Show Images"
             android:defaultValue="true"
         />
-        <CheckBoxPreference android:summary="Download linked full resolution image. Might take a lot of space." android:key="download_big_image" android:title="Download Full-Res Image"/>
-        <CheckBoxPreference android:key="enable_zoom" android:title="Enable Zoom Controls" android:summary="Enable zoom in novel contents."/> 
+        <CheckBoxPreference 
+            android:summary="Download linked full resolution image. Might take a lot of space." 
+            android:key="download_big_image" 
+            android:title="Download Full-Res Image"/>
+        <CheckBoxPreference 
+            android:key="enable_zoom" 
+            android:title="Enable Zoom Controls" 
+            android:summary="Enable zoom in novel contents." 
+            android:defaultValue="true"/> 
  
     </PreferenceCategory>
      <PreferenceCategory
@@ -59,8 +66,12 @@
         />
         <Preference android:title="Default Save Location" android:key="save_location"/>
     </PreferenceCategory>
-     <PreferenceCategory android:title="Application Info" android:key="application_info">
-         <Preference android:key="app_version" android:title="Version"/>
+     <PreferenceCategory 
+         android:title="Application Info" 
+         android:key="application_info">
+         <Preference 
+             android:key="app_version" 
+             android:title="Version"/>
      </PreferenceCategory>
      
 </PreferenceScreen>
