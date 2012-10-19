@@ -236,7 +236,6 @@ public class UpdateService extends Service {
 			return updates;
 		}
 
-		@Override
 		public void onCallback(ICallbackEventData message) {
 			publishProgress(message.getMessage());
 		}

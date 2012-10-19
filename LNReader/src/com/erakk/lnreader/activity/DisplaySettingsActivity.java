@@ -109,6 +109,9 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 			appVersion.setSummary("N/A");
 		}
         
+        Preference defaultSaveLocation = (Preference) findPreference("save_location");
+        defaultSaveLocation.setSummary("Downloaded images saved to: " + Constants.IMAGE_ROOT);
+        
         LNReaderApplication.getInstance().setUpdateServiceListener(this);
         isInverted = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
     }
@@ -141,7 +144,6 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 	    fileOrDirectory.delete();
 	}
 
-	@Override
 	@SuppressWarnings("deprecation")
 	public void onCallback(ICallbackEventData message) {
 		Preference runUpdates = (Preference) findPreference(Constants.PREF_RUN_UPDATES);

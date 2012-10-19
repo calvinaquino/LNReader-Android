@@ -45,8 +45,10 @@ import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
+import com.erakk.lnreader.task.IAsyncTaskOwner;
+import com.erakk.lnreader.task.LoadNovelContentTask;
 
-public class DisplayLightNovelContentActivity extends Activity {
+public class DisplayLightNovelContentActivity extends Activity implements IAsyncTaskOwner{
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
 	private final DisplayLightNovelContentActivity activity = this;
 	private NovelsDao dao = NovelsDao.getInstance(this);
@@ -55,7 +57,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 	private LoadNovelContentTask task;
 	private PageModel pageModel;
 	private String volume;
-	private boolean refresh = false;
+	//private boolean refresh = false;
 	private AlertDialog tocMenu = null;
 	private PageModelAdapter jumpAdapter = null;
 	private ProgressDialog dialog;
@@ -107,7 +109,7 @@ public class DisplayLightNovelContentActivity extends Activity {
 		// moved page loading here rather than onCreate
 		// to avoid only the first page loaded when resume from sleep
 		// when the user navigate using next/prev/jumpTo
-		if(!restored) executeTask(pageModel);
+		if(!restored) executeTask(pageModel, false);
 		Log.d(TAG, "onResume Completed");
 	}
 
@@ -135,16 +137,20 @@ public class DisplayLightNovelContentActivity extends Activity {
 
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		try {			
-			// replace the current pageModel with the saved instance
-			PageModel tempPage = new PageModel();
-			tempPage.setPage(savedInstanceState.getString(Constants.EXTRA_PAGE));
-			pageModel = dao.getPageModel(tempPage, null);
-			executeTask(pageModel);
-			webView.scrollTo(savedInstanceState.getInt(Constants.EXTRA_SCROLL_X), savedInstanceState.getInt(Constants.EXTRA_SCROLL_Y));
-		} catch (Exception e) {
-			Log.e(TAG, "Error when restoring instance", e);
+		String restoredPage = savedInstanceState.getString(Constants.EXTRA_PAGE);
+		if(!restoredPage.equalsIgnoreCase(getIntent().getStringExtra(Constants.EXTRA_PAGE))) {
+			try {			
+				// replace the current pageModel with the saved instance if have different page
+				PageModel tempPage = new PageModel();
+				tempPage.setPage(restoredPage);
+				pageModel = dao.getPageModel(tempPage, null);
+				executeTask(pageModel, false);
+				webView.scrollTo(savedInstanceState.getInt(Constants.EXTRA_SCROLL_X), savedInstanceState.getInt(Constants.EXTRA_SCROLL_Y));
+			} catch (Exception e) {
+				Log.e(TAG, "Error when restoring instance", e);
+			}
 		}
+		setWebViewSettings();
 		restored = true;
 		Log.d(TAG, "onRestoreInstanceState Completed");
 	}
@@ -178,8 +184,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 			/*
 			 * Implement code to refresh chapter content
 			 */
-			refresh = true;
-			executeTask(pageModel);
+			//refresh = true;
+			executeTask(pageModel, true);
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.invert_colors:
@@ -270,10 +276,15 @@ public class DisplayLightNovelContentActivity extends Activity {
 	public void jumpTo(PageModel page){
 		setLastReadState();
 		pageModel = page;
-		executeTask(page);
+		executeTask(page, false);
 	}	
 	
-	private void toggleProgressBar(boolean show) {
+	public void setMessageDialog(String message) {
+		if(dialog.isShowing()) 
+			dialog.setMessage(message);
+	}
+	
+	public void toggleProgressBar(boolean show) {
 		synchronized (this) {
 			if(show) {
 				dialog = ProgressDialog.show(this, "Novel Content", "Loading. Please wait...", true);
@@ -281,7 +292,6 @@ public class DisplayLightNovelContentActivity extends Activity {
 				dialog.setCanceledOnTouchOutside(true);
 				dialog.setOnCancelListener(new OnCancelListener() {
 					
-					@Override
 					public void onCancel(DialogInterface dialog) {
 						WebView webView = (WebView) findViewById(R.id.webView1);
 						webView.loadData("<p>Task still loading...</p>", "text/html", "utf-8");
@@ -348,8 +358,8 @@ public class DisplayLightNovelContentActivity extends Activity {
 	}
 	
 	@SuppressLint("NewApi")
-	private void executeTask(PageModel pageModel) {
-		task = new LoadNovelContentTask();
+	private void executeTask(PageModel pageModel, boolean refresh) {
+		task = new LoadNovelContentTask(refresh);
 		task.owner = this;
 		String key = TAG + ":" + pageModel.getPage();
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
@@ -379,19 +389,12 @@ public class DisplayLightNovelContentActivity extends Activity {
 		
 		// load the contents here
 		final WebView wv = (WebView) findViewById(R.id.webView1);
-		wv.getSettings().setAllowFileAccess(true);
-		wv.getSettings().setSupportZoom(true);
-		wv.getSettings().setBuiltInZoomControls(true);
-		wv.getSettings().setLoadWithOverviewMode(true);
-		//wv.getSettings().setUseWideViewPort(true);
-		wv.getSettings().setLoadsImagesAutomatically(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("show_images", false));
-		wv.setBackgroundColor(0);
-		//wv.setBackgroundColor(Color.TRANSPARENT);
+		setWebViewSettings();
 
 		// custom link handler
 		BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(activity);
 		wv.setWebViewClient(client);
-
+		
 		int styleId = -1;
 		if(getColorPreferences()) {
 			styleId = R.raw.style_dark;
@@ -432,11 +435,25 @@ public class DisplayLightNovelContentActivity extends Activity {
 		buildTOCMenu();
 		Log.d(TAG, "Loaded: " + content.getPage());
 	}
+
+	private void setWebViewSettings() {
+		WebView wv = (WebView) findViewById(R.id.webView1);
+		wv.getSettings().setAllowFileAccess(true);
+		
+		wv.getSettings().setSupportZoom(getZoomPreferences());
+		wv.getSettings().setBuiltInZoomControls(getZoomPreferences());
+
+		wv.getSettings().setLoadWithOverviewMode(true);
+		//wv.getSettings().setUseWideViewPort(true);
+		wv.getSettings().setLoadsImagesAutomatically(getShowImagesPreferences());
+		wv.setBackgroundColor(0);
+		//wv.setBackgroundColor(Color.TRANSPARENT);
+	}
 	
-	public void getResult(AsyncTaskResult<NovelContentModel> result) {
+	public void getResult(AsyncTaskResult<?> result) {
 		Exception e = result.getError();
 		if(e == null) {
-			NovelContentModel loadedContent = result.getResult();
+			NovelContentModel loadedContent = (NovelContentModel) result.getResult();
 			setContent(loadedContent);
 		}
 		else {
@@ -444,50 +461,18 @@ public class DisplayLightNovelContentActivity extends Activity {
 			Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 		}			
 		toggleProgressBar(false);
-		refresh = false;
+		//refresh = false;
 	}
 
-	public boolean getColorPreferences(){
-		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	return sharedPrefs.getBoolean(Constants.PREF_INVERT_COLOR, false);
+	private boolean getShowImagesPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(Constants.PREF_SHOW_IMAGE, false);
 	}
 	
-	public class LoadNovelContentTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelContentModel>> implements ICallbackNotifier{
-		public volatile DisplayLightNovelContentActivity owner;
-
-		public void onCallback(ICallbackEventData message) {
-    		publishProgress(message.getMessage());
-    	}
-    	
-		@Override
-		protected void onPreExecute (){
-			// executed on UI thread.
-			toggleProgressBar(true);
-		}
-		
-		@Override
-		protected AsyncTaskResult<NovelContentModel> doInBackground(PageModel... params) {
-			try{
-				PageModel p = params[0];
-				if(refresh) {
-					return new AsyncTaskResult<NovelContentModel>(dao.getNovelContentFromInternet(p, this));
-				}
-				else {
-					return new AsyncTaskResult<NovelContentModel>(dao.getNovelContent(p, true, this));
-				}
-			}catch(Exception e) {
-				return new AsyncTaskResult<NovelContentModel>(e);
-			}
-		}
-		
-		@Override
-		protected void onProgressUpdate (String... values){
-			//executed on UI thread.
-			if(dialog.isShowing()) dialog.setMessage(values[0]);
-		}
-				
-		protected void onPostExecute(AsyncTaskResult<NovelContentModel> result) {
-			owner.getResult(result);			
-		}
+	private boolean getColorPreferences(){
+    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
+	}
+	
+	private boolean getZoomPreferences(){
+    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ZOOM_ENABLED, false);
 	}
 }

@@ -39,6 +39,8 @@ public class Constants {
 	public static final String PREF_RUN_UPDATES = "run_update";
 	public static final String PREF_RUN_UPDATES_STATUS = "run_update_status";
 	public static final String PREF_DOWLOAD_BIG_IMAGE = "download_big_image";
+	public static final String PREF_ZOOM_ENABLED = "enable_zoom";
+	public static final String PREF_SHOW_IMAGE = "show_images";
 	
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 

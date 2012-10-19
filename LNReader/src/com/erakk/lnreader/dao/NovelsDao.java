@@ -134,6 +134,7 @@ public class NovelsDao {
 		
 		PageModel mainPage = new PageModel();
 		mainPage.setPage("Main_Page");
+		mainPage.setTitle("Main Page");
 		mainPage = getPageModel(mainPage, notifier);
 		mainPage.setType(PageModel.TYPE_OTHER);
 		mainPage.setParent("");
