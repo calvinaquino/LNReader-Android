@@ -361,8 +361,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel, boolean refresh) {
-		task = new LoadNovelContentTask(refresh);
-		task.owner = this;
+		task = new LoadNovelContentTask(refresh, this);
 		String key = TAG + ":" + pageModel.getPage();
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if(isAdded) {

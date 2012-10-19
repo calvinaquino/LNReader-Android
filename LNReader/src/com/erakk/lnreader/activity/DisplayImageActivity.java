@@ -16,6 +16,7 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.DownloadCallbackEventData;
@@ -26,10 +27,9 @@ import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadImageTask;
 
 public class DisplayImageActivity extends Activity implements IAsyncTaskOwner{
-	//private NovelsDao dao = NovelsDao.getInstance(this);
+	private static final String TAG = DisplayImageActivity.class.toString();
 	private WebView imgWebView;
 	private LoadImageTask task;
-	//private boolean refresh = false;
 	private String url;
 	private ProgressDialog dialog;
 	
@@ -53,11 +53,14 @@ public class DisplayImageActivity extends Activity implements IAsyncTaskOwner{
 	
 	@SuppressLint("NewApi")
 	private void executeTask(String url, boolean refresh) {        
-		task = new LoadImageTask(refresh, this);        
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new String[] {url});
-		else
-			task.execute(new String[] {url});
+		task = new LoadImageTask(refresh, this);
+		String key = TAG + ":" + url;
+		if(LNReaderApplication.getInstance().addTask(key, task)) {
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new String[] {url});
+			else
+				task.execute(new String[] {url});
+		}
 	}
 	
     @Override
@@ -151,8 +154,9 @@ public class DisplayImageActivity extends Activity implements IAsyncTaskOwner{
 			Log.d("LoadImageTask", "Loaded: " + imageUrl);
 		}
 		else{
-			e.printStackTrace();
+			Log.e(TAG, "Cannot load image.",e);
 			Toast.makeText(getApplicationContext(), e.getClass() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
+		//LNReaderApplication.getInstance().removeTask(TAG + ":" + url);
 	}
 }

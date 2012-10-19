@@ -35,15 +35,17 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.BookModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
-import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
+import com.erakk.lnreader.task.DownloadNovelContentTask;
+import com.erakk.lnreader.task.IAsyncTaskOwner;
+import com.erakk.lnreader.task.LoadNovelDetailsTask;
 
-public class DisplayLightNovelDetailsActivity extends Activity {
+public class DisplayLightNovelDetailsActivity extends Activity implements IAsyncTaskOwner {
 	private static final String TAG = DisplayLightNovelDetailsActivity.class.toString();
 	private PageModel page;
 	private NovelCollectionModel novelCol;
@@ -246,7 +248,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			 * Implement code to download this chapter
 			 */
 			chapter = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
-			downloadTask = new DownloadNovelContentTask(new PageModel[] { chapter});
+			downloadTask = new DownloadNovelContentTask(new PageModel[] { chapter}, this);
 			downloadTask.execute();
 			return true;
 		case R.id.clear_chapter:
@@ -279,8 +281,7 @@ public class DisplayLightNovelDetailsActivity extends Activity {
     
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel, boolean willRefresh) {
-		task = new LoadNovelDetailsTask();
-		task.refresh = willRefresh;
+		task = new LoadNovelDetailsTask(willRefresh, this);
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {pageModel});
 		else
@@ -289,14 +290,15 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 	
 	@SuppressLint("NewApi")
 	private void executeDownloadTask(ArrayList<PageModel> chapters) {
-		downloadTask = new DownloadNovelContentTask((PageModel[]) chapters.toArray(new PageModel[chapters.size()]));
+		downloadTask = new DownloadNovelContentTask((PageModel[]) chapters.toArray(new PageModel[chapters.size()]), this);
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		else
 			downloadTask.execute();
 	}
-	
-	private void ToggleProgressBar(boolean show) {
+    
+	@Override
+	public void toggleProgressBar(boolean show) {
 		if(show) {
 			dialog = ProgressDialog.show(this, "Novel Details", "Loading. Please wait...", true);
 			dialog.getWindow().setGravity(Gravity.CENTER);
@@ -306,51 +308,40 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 			dialog.dismiss();
 		}
 	}
-    
-    public class LoadNovelDetailsTask extends AsyncTask<PageModel, String, AsyncTaskResult<NovelCollectionModel>> implements ICallbackNotifier {
-		public boolean refresh = false;
 
-    	public void onCallback(ICallbackEventData message) {
-    		publishProgress(message.getMessage());
-    	}
-    	
-		@Override
-		protected void onPreExecute (){
-			// executed on UI thread.
-			ToggleProgressBar(true);
-		}
+	@Override
+	public void setMessageDialog(ICallbackEventData message) {
+		if(dialog.isShowing())
+			dialog.setMessage(message.getMessage());
+	}
+
+	@Override
+	public void getResult(AsyncTaskResult<?> result) {
+		Exception e = result.getError();
 		
-		@Override
-		protected AsyncTaskResult<NovelCollectionModel> doInBackground(PageModel... arg0) {
-			PageModel page = arg0[0];
-			try {
-				if(refresh) {
-					publishProgress("Refreshing chapter list...");
-					NovelCollectionModel novelCol = dao.getNovelDetailsFromInternet(page, this);
-					return new AsyncTaskResult<NovelCollectionModel>(novelCol);
+		if(e == null) {
+			// from DownloadNovelContentTask
+			if(result.getResult() instanceof NovelContentModel[]) {
+				NovelContentModel[] content = (NovelContentModel[]) result.getResult();
+				if(content != null) {
+					for(Iterator<BookModel> iBook = novelCol.getBookCollections().iterator(); iBook.hasNext();) {
+						BookModel book = iBook.next();
+						for(Iterator<PageModel> iPage = book.getChapterCollection().iterator(); iPage.hasNext();) {
+							PageModel temp = iPage.next();
+							for(int i = 0; i < content.length; ++i) {
+								if(temp.getPage() == content[i].getPage()) {
+									temp.setDownloaded(true);
+									//content[i].setDownloaded(true);
+								}
+							}
+						}
+					}
+					bookModelAdapter.notifyDataSetChanged();
 				}
-				else {
-					publishProgress("Loading chapter list...");
-					NovelCollectionModel novelCol = dao.getNovelDetails(page, this);
-					return new AsyncTaskResult<NovelCollectionModel>(novelCol);
-				}
-			} catch (Exception e) {
-				Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
-				return new AsyncTaskResult<NovelCollectionModel>(e);
 			}
-		}
-		
-		@Override
-		protected void onProgressUpdate (String... values){
-			if(dialog.isShowing())
-				dialog.setMessage(values[0]);
-		}
-		
-		@Override
-		protected void onPostExecute(AsyncTaskResult<NovelCollectionModel> result) {
-			Exception e = result.getError();
-			if(e == null) {
-				novelCol = result.getResult();
+			// from LoadNovelDetailsTask
+			else if(result.getResult() instanceof NovelCollectionModel) {
+				novelCol = (NovelCollectionModel) result.getResult();
 				expandList = (ExpandableListView) findViewById(R.id.chapter_list);
 				// now add the volume and chapter list.
 				try {
@@ -400,88 +391,13 @@ public class DisplayLightNovelDetailsActivity extends Activity {
 				} catch (Exception e2) {
 					Log.e(TAG, "Error when setting up chapter list: " + e2.getMessage(), e2);
 					Toast.makeText(DisplayLightNovelDetailsActivity.this, e2.getClass().toString() +": " + e2.getMessage(), Toast.LENGTH_SHORT).show();
-				}				
-			}
-			else {
-				Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
-				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
-			}
-			ToggleProgressBar(false);
-			Log.d(TAG, "Loaded: " + novelCol.getPage());
-		}		
-    }
-
-	public class DownloadNovelContentTask extends AsyncTask<Void, String, AsyncTaskResult<NovelContentModel[]>> implements ICallbackNotifier{
-		private PageModel[] chapters;
-		
-		public DownloadNovelContentTask(PageModel[] chapters) {
-			super();
-			this.chapters = chapters;
-		}
-		
-		@Override
-		protected void onPreExecute (){
-			// executed on UI thread.
-			ToggleProgressBar(true);
-		}
-		
-		public void onCallback(ICallbackEventData message) {
-    		publishProgress(message.getMessage());
-    	}
-
-		@Override
-		protected AsyncTaskResult<NovelContentModel[]> doInBackground(Void... params) {
-			try{
-				NovelContentModel[] contents = new NovelContentModel[chapters.length];
-				for(int i = 0; i < chapters.length; ++i) {
-					NovelContentModel oldContent = dao.getNovelContent(chapters[i], false, null);
-					if(oldContent == null) publishProgress("Downloading: " + chapters[i].getTitle());
-					else publishProgress("Updating: " + chapters[i].getTitle());
-					
-					NovelContentModel temp = dao.getNovelContentFromInternet(chapters[i], this);
-					contents[i] = temp;
 				}
-				return new AsyncTaskResult<NovelContentModel[]>(contents);
-			}catch(Exception e) {
-				return new AsyncTaskResult<NovelContentModel[]>(e);
+				Log.d(TAG, "Loaded: " + novelCol.getPage());
 			}
 		}
-		
-		@Override
-		protected void onProgressUpdate (String... values){
-			//executed on UI thread.
-			synchronized (dialog) {
-				if(dialog.isShowing())
-					dialog.setMessage(values[0]);
-			}			
-		}
-		
-		@Override
-		protected void onPostExecute(AsyncTaskResult<NovelContentModel[]> result) {
-			Exception e = result.getError();
-			if(e == null) {
-				NovelContentModel[] content = result.getResult();
-				if(content != null) {
-					for(Iterator<BookModel> iBook = novelCol.getBookCollections().iterator(); iBook.hasNext();) {
-						BookModel book = iBook.next();
-						for(Iterator<PageModel> iPage = book.getChapterCollection().iterator(); iPage.hasNext();) {
-							PageModel temp = iPage.next();
-							for(int i = 0; i < chapters.length; ++i) {
-								if(temp.getPage() == chapters[i].getPage()) {
-									temp.setDownloaded(true);
-									chapters[i].setDownloaded(true);
-								}
-							}
-						}
-					}
-					bookModelAdapter.notifyDataSetChanged();
-				}
-			}
-			else {
-				Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
-				Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
-			}
-			ToggleProgressBar(false);
+		else {
+			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
+			Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
 	}
 }

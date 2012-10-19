@@ -14,9 +14,10 @@ public class LoadNovelContentTask extends AsyncTask<PageModel, ICallbackEventDat
 	public volatile IAsyncTaskOwner owner;
 	private boolean refresh;
 	
-	public LoadNovelContentTask(boolean isRefresh) {
+	public LoadNovelContentTask(boolean isRefresh, IAsyncTaskOwner owner) {
 		super();
 		this.refresh = isRefresh;
+		this.owner = owner;
 	}
 	
 	public void onCallback(ICallbackEventData message) {
