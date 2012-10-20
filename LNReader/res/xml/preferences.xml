@@ -70,8 +70,13 @@
          android:title="Application Info" 
          android:key="application_info">
          <Preference 
+             android:title="Baka-Tsuki:Copyrights" 
+             android:key="tos"/>
+         <Preference 
              android:key="app_version" 
              android:title="Version"/>
+         <Preference android:title="AsyncTask Count" android:key="task_count"/>
+         
      </PreferenceCategory>
      
 </PreferenceScreen>

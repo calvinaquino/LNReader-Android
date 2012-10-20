@@ -178,6 +178,13 @@ public class UpdateService extends Service {
 			ArrayList<PageModel> updates = new ArrayList<PageModel>();
 			NovelsDao dao = NovelsDao.getInstance();
 			
+			// checking copyrights
+			PageModel p = new PageModel();
+			p.setPage("Baka-Tsuki:Copyrights");
+			p.setTitle("Baka-Tsuki:Copyrights");
+			p.setType("Copyrights");
+			p = NovelsDao.getInstance().getPageModelFromInternet(p, callback);			
+			
 			// check only watched novel
 			if(callback != null) callback.onCallback(new CallbackEventData("Getting watched novel."));
 			ArrayList<PageModel> watchedNovels = dao.getWatchedNovel();

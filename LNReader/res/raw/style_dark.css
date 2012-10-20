@@ -85,6 +85,11 @@ a {
 	display:none !important;
 }
 
+/* hide {{Template:PREVIEW}} which have bad class name: {{{id}}} */
+table.\{\{\{id\}\}\} {
+    display:none !important;
+}
+
 /* Modified for larger touch area */
 .reference {
 	letter-spacing: 10px;

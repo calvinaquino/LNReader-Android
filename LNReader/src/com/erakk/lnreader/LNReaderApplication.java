@@ -53,6 +53,10 @@ public class LNReaderApplication extends Application {
 		runningTasks = new Hashtable<String, AsyncTask<?, ?, ?>>();
 	}
 	
+	public static Hashtable<String, AsyncTask<?, ?, ?>> getTaskList() {
+		return runningTasks;
+	}
+	
 	public AsyncTask<?, ?, ?> getTask(String key) {
 		return runningTasks.get(key);
 	}

@@ -234,13 +234,14 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			}
 			return true;
 		case R.id.menu_chapter_toc:
-			tocMenu.show();
+			if(tocMenu != null) tocMenu.show();
 			return true;
 		case R.id.menu_search:
 			showSearchBox();
 			return true;
 		case android.R.id.home:
-			tocMenu.show();
+			if(tocMenu != null) tocMenu.show();
+			else finish();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -409,7 +410,11 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 				//Log.d("CSS", "CSS = normal");
 			}
 			LNReaderApplication app = (LNReaderApplication) getApplication();
-			String html = "<html><head><style type=\"text/css\">" + app.ReadCss(styleId) + "</style></head><body>" + content.getContent() + "</body></html>";
+			String html = "<html><head><style type=\"text/css\">"
+						+ app.ReadCss(styleId) 
+						+ "</style></head><body>" 
+						+ content.getContent() 
+						+ "</body></html>";
 			wv.loadDataWithBaseURL(Constants.BASE_URL, html, "text/html", "utf-8", "");
 	
 			wv.setInitialScale((int) (content.getLastZoom() * 100));
@@ -418,8 +423,8 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 				boolean needScroll = true;
 				@Deprecated
 				public void onNewPicture(WebView arg0, Picture arg1) {
-					Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
 					if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
+						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
 						wv.scrollTo(0, content.getLastYScroll());
 						needScroll = false;
 					}						

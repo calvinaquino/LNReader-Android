@@ -1,14 +1,20 @@
 package com.erakk.lnreader.activity;
 
 import java.io.File;
+import java.util.Collection;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
@@ -18,10 +24,11 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.service.MyScheduleReceiver;
 
 public class DisplaySettingsActivity extends PreferenceActivity implements ICallbackNotifier{
-	//private static final String TAG = DisplayLightNovelsActivity.class.toString();
+	private static final String TAG = DisplaySettingsActivity.class.toString();
 	private boolean isInverted;
 	
 	@SuppressWarnings("deprecation")
@@ -111,6 +118,37 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
         
         Preference defaultSaveLocation = (Preference) findPreference("save_location");
         defaultSaveLocation.setSummary("Downloaded images saved to: " + Constants.IMAGE_ROOT);
+        
+        Preference asyncTaskCount = (Preference) findPreference("task_count");
+        int running = 0;
+        int finished = 0;
+        Collection<AsyncTask<?, ?, ?>> list = LNReaderApplication.getTaskList().values(); 
+        for (AsyncTask<?, ?, ?> asyncTask : list) {
+			if(asyncTask.getStatus() == Status.RUNNING){
+				++running;
+			}
+			else if(asyncTask.getStatus() == Status.FINISHED) {
+				++finished;
+			}
+        }        
+        asyncTaskCount.setSummary("AsyncTask Count: " + running + " running, "+ finished + " stopped.");
+        
+        Preference tos = (Preference) findPreference("tos");
+        tos.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				try {
+
+					Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
+			        intent.putExtra(Constants.EXTRA_PAGE, "Baka-Tsuki:Copyrights");
+			        startActivity(intent);
+				} catch (Exception e) {
+					Log.e(TAG, "Cannot get copyright page.", e);
+				}				
+				return false;
+			}
+		});
+        
         
         LNReaderApplication.getInstance().setUpdateServiceListener(this);
         isInverted = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
