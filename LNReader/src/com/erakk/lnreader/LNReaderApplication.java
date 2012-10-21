@@ -28,10 +28,9 @@ import com.erakk.lnreader.service.UpdateService;
  * http://www.devahead.com/blog/2011/06/extending-the-android-application-class-and-dealing-with-singleton/
  */
 public class LNReaderApplication extends Application {
-	private NovelsDao novelsDao = null;
-	private UpdateService service = null;
+	private static NovelsDao novelsDao = null;
+	private static UpdateService service = null;
 	private static LNReaderApplication instance;
-	
 	private static Hashtable<String, AsyncTask<?, ?, ?>> runningTasks;
 	
 	@Override
@@ -39,20 +38,27 @@ public class LNReaderApplication extends Application {
 	{
 		super.onCreate();
 
-		// Initialize the singletons so their instances
+		// Initialise the singletons so their instances
 		// are bound to the application process.
 		initSingletons();
 		instance = this;
 		
 		doBindService();
 	}
-		
-	protected void initSingletons()
-	{
-		novelsDao = NovelsDao.getInstance(getApplicationContext());
-		runningTasks = new Hashtable<String, AsyncTask<?, ?, ?>>();
+	
+	public static LNReaderApplication getInstance() {
+		return instance;
 	}
 	
+	protected void initSingletons()
+	{
+		if(novelsDao == null) novelsDao = NovelsDao.getInstance(getApplicationContext());
+		if(runningTasks == null) runningTasks = new Hashtable<String, AsyncTask<?, ?, ?>>();
+	}
+	
+	/*
+	 * AsyncTask listing method
+	 */
 	public static Hashtable<String, AsyncTask<?, ?, ?>> getTaskList() {
 		return runningTasks;
 	}
@@ -85,11 +91,10 @@ public class LNReaderApplication extends Application {
 	    }
 	    return false;
 	}
-	
-	public static LNReaderApplication getInstance() {
-		return instance;
-	}
-	
+
+	/*
+	 * UpdateService method
+	 */
 	private ServiceConnection mConnection = new ServiceConnection() {
 
 	    public void onServiceConnected(ComponentName className, IBinder binder) {
@@ -108,7 +113,34 @@ public class LNReaderApplication extends Application {
 	    bindService(new Intent(this, UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
 		Log.d(UpdateService.TAG, "doBindService");
 	}
-		
+	
+	public void setUpdateServiceListener(ICallbackNotifier notifier){
+		if(service != null){
+			service.notifier = notifier;
+		}
+	}
+	
+	public void runUpdateService(boolean force, ICallbackNotifier notifier) {
+		if(service == null){
+			doBindService();
+			service.force = force;
+			service.notifier = notifier;
+		}
+		else
+			service.force = force;
+			service.notifier = notifier;
+			service.onStartCommand(null, BIND_AUTO_CREATE, (int)(new Date().getTime()/1000));
+	}
+	
+	@Override
+	public void onLowMemory () {
+		unbindService(mConnection);
+		super.onLowMemory();		
+	}
+	
+	/*
+	 * CSS caching method
+	 */
 	private Hashtable<Integer, String> cssCache = null;
 	public String ReadCss(int styleId) {
 		if(cssCache == null)
@@ -133,28 +165,4 @@ public class LNReaderApplication extends Application {
 		}
 		return cssCache.get(styleId);
 	}
-	
-	@Override
-	public void onLowMemory () {
-		unbindService(mConnection);
-		super.onLowMemory();		
-	}
-	
-	public void setUpdateServiceListener(ICallbackNotifier notifier){
-		if(service != null){
-			service.notifier = notifier;
-		}
-	}
-	
-	public void runUpdateService(boolean force, ICallbackNotifier notifier) {
-		if(service == null){
-			doBindService();
-			service.force = force;
-			service.notifier = notifier;
-		}
-		else
-			service.force = force;
-			service.notifier = notifier;
-			service.onStartCommand(null, BIND_AUTO_CREATE, (int)(new Date().getTime()/1000));
-	}	
 }

@@ -63,11 +63,12 @@ public class MyScheduleReceiver extends BroadcastReceiver {
 			cal.add(Calendar.SECOND, 60);
 	
 			// InexactRepeating allows Android to optimize the energy consumption
-			Log.d(UpdateService.TAG, "Repeating in: " + repeatTime);
-			service.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), repeatTime, pending);
+			Log.i(UpdateService.TAG, "Repeating in: " + repeatTime);
+			//service.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), repeatTime, pending);
+			service.set(AlarmManager.RTC, cal.getTimeInMillis() + repeatTime, pending);
 		}
 		else {
-			Log.d(UpdateService.TAG, "Canceling Schedule");
+			Log.i(UpdateService.TAG, "Canceling Schedule");
 			service.cancel(pending);
 		}
 	}
