@@ -449,12 +449,17 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 	}
 
+	@SuppressLint("NewApi")
 	private void setWebViewSettings() {
 		WebView wv = (WebView) findViewById(R.id.webView1);
 		wv.getSettings().setAllowFileAccess(true);
 		
 		wv.getSettings().setSupportZoom(getZoomPreferences());
 		wv.getSettings().setBuiltInZoomControls(getZoomPreferences());
+		
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+			wv.getSettings().setDisplayZoomControls(getZoomControlPreferences());
+		}
 
 		wv.getSettings().setLoadWithOverviewMode(true);
 		//wv.getSettings().setUseWideViewPort(true);
@@ -462,7 +467,6 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		wv.setBackgroundColor(0);
 		//wv.setBackgroundColor(Color.TRANSPARENT);
 	}
-	
 	
 	public void setMessageDialog(ICallbackEventData message) {
 		if(dialog.isShowing()) 
@@ -513,4 +517,9 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	private boolean getZoomPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ZOOM_ENABLED, false);
 	}
+		
+	private boolean getZoomControlPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_SHOW_ZOOM_CONTROL, false);
+	}
+
 }

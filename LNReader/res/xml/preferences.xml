@@ -40,14 +40,15 @@
             android:defaultValue="true"
         />
         <CheckBoxPreference 
-            android:summary="Download linked full resolution image. Might take a lot of space." 
-            android:key="download_big_image" 
-            android:title="Download Full-Res Image"/>
-        <CheckBoxPreference 
             android:key="enable_zoom" 
             android:title="Enable Zoom Controls" 
             android:summary="Enable zoom in novel contents." 
-            android:defaultValue="true"/> 
+            android:defaultValue="true"/>
+        <CheckBoxPreference 
+            android:key="show_zoom_control" 
+            android:title="Show Zoom Button" 
+            android:defaultValue="true" 
+            android:summary="Show zoom button in the novel contents, doesn't affect the zooming."/> 
  
     </PreferenceCategory>
      <PreferenceCategory
@@ -64,7 +65,13 @@
             android:summary="Clears cached images"
             android:title="Clear Image Cache"
         />
-        <Preference android:title="Default Save Location" android:key="save_location"/>
+        <Preference 
+            android:title="Default Save Location" 
+            android:key="save_location"/>        
+        <CheckBoxPreference 
+            android:summary="Download linked full resolution image. Might take a lot of space." 
+            android:key="download_big_image" 
+            android:title="Download Full-Res Image"/>
     </PreferenceCategory>
      <PreferenceCategory 
          android:title="Application Info" 
