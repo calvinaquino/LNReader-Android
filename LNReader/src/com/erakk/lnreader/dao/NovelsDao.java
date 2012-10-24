@@ -412,10 +412,12 @@ public class NovelsDao {
 		int i = 0;
 		int retry = 0;
 		while(i < pageModels.size()) {
+			ArrayList<PageModel> checkedPageModel = new ArrayList<PageModel>();
 			String titles = pageModels.get(i).getPage();
+			checkedPageModel.add(pageModels.get(i));
 			//Log.d("parser", "pageModels.get(i).getPage(): " + pageModels.get(i).getPage());
 			++i;
-			ArrayList<PageModel> checkedPageModel = new ArrayList<PageModel>();
+			
 			while(i < pageModels.size()) {
 				if(titles.length() + pageModels.get(i).getPage().length() < 2000) {
 					titles += "|" + pageModels.get(i).getPage();

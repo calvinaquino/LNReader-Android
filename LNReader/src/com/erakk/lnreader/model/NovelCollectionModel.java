@@ -135,7 +135,9 @@ public class NovelCollectionModel {
 			for(Iterator<BookModel> i = this.bookCollections.iterator(); i.hasNext();) {
 				BookModel b = i.next();
 				for(Iterator<PageModel> i2 = b.getChapterCollection().iterator(); i2.hasNext();) {
-					_FlattedChapterList.add(i2.next());
+					PageModel temp = i2.next();
+					_FlattedChapterList.add(temp);
+					//Log.d(TAG, "Added: "+ temp.getPage());
 				}
 			}
 		}

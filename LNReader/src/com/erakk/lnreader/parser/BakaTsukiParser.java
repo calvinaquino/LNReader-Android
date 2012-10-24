@@ -77,11 +77,14 @@ public class BakaTsukiParser {
 		
 		for(int i = 0; i < pageModels.size(); ++i) {
 			PageModel temp = pageModels.get(i);
+			
+			String to = temp.getPage();
+			
 			// get normalized value for this page
 			Elements nElements = normalized.select("n[from="+ temp.getPage() + "]");
 			if(nElements != null && nElements.size() > 0){
 				Element nElement = nElements.first();
-				String to = nElement.attr("to");
+				to = nElement.attr("to");
 				//Log.d(TAG, "parsePageAPI normalized: " + to);
 				
 				// check redirects
@@ -93,18 +96,22 @@ public class BakaTsukiParser {
 						temp.setRedirectedTo(to);
 						Log.w(TAG, "parsePageAPI redirected: " + to);
 					}
-				}
-				Element pElement = pages.select("page[title="+ to + "]").first();
-				if(!pElement.hasAttr("missing")) {
-					// parse date
-					String tempDate = pElement.attr("touched");
-					Date lastUpdate = formatter.parse(tempDate);
-					temp.setLastUpdate(lastUpdate);
-					//Log.d(TAG, "parsePageAPI "+ temp.getPage() + " Last Update: " + temp.getLastUpdate());
-				}
-				else {
-					Log.w(TAG, "parsePageAPI missing page info: " + to);
-				}
+				}				
+			}
+			
+			Element pElement = pages.select("page[title="+ to + "]").first();
+			if(pElement == null) {
+				Log.w(TAG, "parsePageAPI "+ temp.getPage() + ": No Info");
+			}
+			else if(!pElement.hasAttr("missing")) {
+				// parse date
+				String tempDate = pElement.attr("touched");
+				Date lastUpdate = formatter.parse(tempDate);
+				temp.setLastUpdate(lastUpdate);
+				Log.d(TAG, "parsePageAPI "+ temp.getPage() + " Last Update: " + temp.getLastUpdate());
+			}				
+			else {
+				Log.w(TAG, "parsePageAPI missing page info: " + to);
 			}
 		}		
 		return pageModels;				
