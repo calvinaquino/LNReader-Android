@@ -373,7 +373,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 		else {
 			WebView webView = (WebView) findViewById(R.id.webView1);
-			webView.loadData("<p>Background task still loading...</p>", "text/html", "utf-8");
+			webView.loadData("<p style='background: black; color: white;'>Background task still loading...</p>", "text/html", "utf-8");
 			LoadNovelContentTask tempTask = (LoadNovelContentTask) LNReaderApplication.getInstance().getTask(key);
 			if(tempTask != null) {
 				task = tempTask;
@@ -483,7 +483,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 					
 					public void onCancel(DialogInterface dialog) {
 						WebView webView = (WebView) findViewById(R.id.webView1);
-						webView.loadData("<p>Task still loading...</p>", "text/html", "utf-8");
+						webView.loadData("<p style='background: black; color: white;'>Task still loading...</p>", "text/html", "utf-8");
 					}
 				});
 			} 

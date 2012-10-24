@@ -285,7 +285,6 @@ public class NovelsDao {
 	 */
 
 	public NovelCollectionModel getNovelDetails(PageModel page, ICallbackNotifier notifier) throws Exception {
-		boolean refresh = false;
 		NovelCollectionModel novel = null;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
@@ -296,16 +295,9 @@ public class NovelsDao {
 				db.close();
 			}
 		}
-		if (novel != null) {
-			// TODO: add check to refresh
-		} else {
-			refresh = true;
-		}
-
-		if (refresh) {
+		if (novel == null) {
 			novel = getNovelDetailsFromInternet(page, notifier);
 		}
-
 		return novel;
 	}
 
@@ -317,6 +309,9 @@ public class NovelsDao {
 		int retry = 0;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData("Downloading novel details page..."));
+				}
 				Response response = Jsoup.connect(Constants.BASE_URL + "/project/index.php?action=render&title=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
 				novel = BakaTsukiParser.ParseNovelDetails(doc, page);
@@ -341,6 +336,9 @@ public class NovelsDao {
 			if(novel != null){
 				page.setParent("Main_Page"); // insurance
 				// get the last update time from internet
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData("Getting novel information..."));
+				}
 				PageModel novelPageTemp = getPageModelFromInternet(page, notifier);
 				if(novelPageTemp != null) {
 					page.setLastUpdate(novelPageTemp.getLastUpdate());
@@ -380,11 +378,17 @@ public class NovelsDao {
 				}
 				
 				// update info for each chapters
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData("Getting chapters information..."));
+				}
 				getUpdateInfo(novel.getFlattedChapterList(), notifier);
 				
 				
 				// download cover image
 				if (novel.getCoverUrl() != null) {
+					if(notifier != null) {
+						notifier.onCallback(new CallbackEventData("Getting cover image."));
+					}
 					DownloadFileTask task = new DownloadFileTask(notifier);
 					ImageModel image = task.downloadImage(novel.getCoverUrl());
 					// TODO: need to save to db?

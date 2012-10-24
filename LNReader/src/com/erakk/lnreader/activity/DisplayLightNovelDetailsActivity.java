@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.BookModelAdapter;
@@ -43,6 +44,7 @@ import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.task.DownloadNovelContentTask;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
+import com.erakk.lnreader.task.LoadNovelContentTask;
 import com.erakk.lnreader.task.LoadNovelDetailsTask;
 
 public class DisplayLightNovelDetailsActivity extends Activity implements IAsyncTaskOwner {
@@ -114,12 +116,13 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 	
     public void onStop(){
     	// check running task
-    	if(task != null && !(task.getStatus() == Status.FINISHED)) {
-    		task.cancel(true);
-    	}
-    	if(downloadTask != null && !(downloadTask.getStatus() == Status.FINISHED)) {
-    		downloadTask.cancel(true);
-    	}
+    	// disable canceling, so it can continue to show the status
+//    	if(task != null && !(task.getStatus() == Status.FINISHED)) {
+//    		task.cancel(true);
+//    	}
+//    	if(downloadTask != null && !(downloadTask.getStatus() == Status.FINISHED)) {
+//    		downloadTask.cancel(true);
+//    	}
     	super.onStop();
     }
     
@@ -282,19 +285,46 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel, boolean willRefresh) {
 		task = new LoadNovelDetailsTask(willRefresh, this);
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {pageModel});
-		else
-			task.execute(new PageModel[] {pageModel});
+		String key = TAG + ":" + pageModel.getPage();
+		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
+		if(isAdded) {
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {pageModel});
+			else
+				task.execute(new PageModel[] {pageModel});
+		}
+		else {
+			LoadNovelDetailsTask tempTask = (LoadNovelDetailsTask) LNReaderApplication.getInstance().getTask(key);
+			if(tempTask != null) {
+				task = tempTask;
+				task.owner = this;
+			}
+			toggleProgressBar(true);
+		}
 	}
 	
 	@SuppressLint("NewApi")
 	private void executeDownloadTask(ArrayList<PageModel> chapters) {
-		downloadTask = new DownloadNovelContentTask((PageModel[]) chapters.toArray(new PageModel[chapters.size()]), this);
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		else
-			downloadTask.execute();
+		if(page != null) {
+			downloadTask = new DownloadNovelContentTask((PageModel[]) chapters.toArray(new PageModel[chapters.size()]), this);
+		
+			String key = TAG + ":DownloadChapters:" + page.getPage();
+			boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
+			if(isAdded) {
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+					downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+				else
+					downloadTask.execute();
+			}
+			else {
+				DownloadNovelContentTask tempTask = (DownloadNovelContentTask) LNReaderApplication.getInstance().getTask(key);
+				if(tempTask != null) {
+					downloadTask = tempTask;
+					downloadTask.owner = this;
+				}
+				toggleProgressBar(true);
+			}
+		}		
 	}
     
 	@Override
