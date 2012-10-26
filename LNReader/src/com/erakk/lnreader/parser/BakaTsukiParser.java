@@ -499,7 +499,7 @@ public class BakaTsukiParser {
 					PageModel p = new PageModel();
 					p.setTitle(sanitize(link.text()));
 					// get the url, usually the first one...
-					Element as = bookElement.select("a").first();
+					Element as = link.select("a").first();
 					String tempPage = as.attr("href").replace("/project/index.php?title=","")
 							                         .replace(Constants.BASE_URL, "");
 					p.setPage(tempPage);
