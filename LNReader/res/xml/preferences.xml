@@ -13,7 +13,9 @@
             android:entries="@array/updateInterval"
             android:entryValues="@array/updateIntervalValues"
         />
-        <Preference android:title="Run Update" android:key="run_update"/>   
+        <Preference android:title="Run Update" android:key="run_update"/>
+        <CheckBoxPreference android:title="Use ring." android:key="update_use_sound" android:defaultValue="true" android:summary="Ring if there is new chapters update."/>
+        <CheckBoxPreference android:title="Use Vibration" android:summary="Vibrate if there is new chapters update." android:key="update_use_vibration" android:defaultValue="true"/>   
              
     </PreferenceCategory>
  
@@ -48,7 +50,7 @@
             android:key="show_zoom_control" 
             android:title="Show Zoom Button" 
             android:defaultValue="true" 
-            android:summary="Show zoom button in the novel contents, doesn't affect the zooming."/> 
+            android:summary="Show zoom button in the novel contents, doesn't affect the zooming function"/> 
  
     </PreferenceCategory>
      <PreferenceCategory

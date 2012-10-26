@@ -131,7 +131,7 @@ public class PageModel{
 	}
 	
 	public BookModel getBook() {
-		if(this.getType().equals(TYPE_CONTENT)) {
+		if(this.getType() != null && this.getType().equals(TYPE_CONTENT)) {
 			if(this.book == null) {
 				NovelsDao dao = NovelsDao.getInstance();
 				try {

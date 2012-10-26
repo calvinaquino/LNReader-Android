@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.erakk.lnreader"
     android:versionCode="1"
-    android:versionName="20121024" 
+    android:versionName="20121026" 
     android:installLocation="auto" >
 
     <uses-sdk
@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:icon="@drawable/ic_launcher_lnreader"

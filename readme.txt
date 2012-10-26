@@ -60,3 +60,5 @@ ANDROID PERMISSION LIST
   - For saving image cache.
 * android.permission.READ_EXTERNAL_STORAGE
   - For reading image cache.
+* android.permission.VIBRATE
+  - For notification.

@@ -86,51 +86,103 @@ public class UpdateService extends Service {
 	    }
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void sendNotification(ArrayList<PageModel> updatedChapters) {
+		int id = Constants.NOTIFIER_ID;
+		boolean first = true;
+		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		
 		if(updatedChapters != null) {		
 			Log.d(TAG, "sendNotification");
-			String ns = Context.NOTIFICATION_SERVICE;
-			NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
-			
-			int icon = android.R.drawable.arrow_up_float; //Just a placeholder
-			CharSequence tickerText = "New Chapters Update";
-			long when = System.currentTimeMillis();		
-		
-			int id = Constants.NOTIFIER_ID;
 			for(Iterator<PageModel> iChapter = updatedChapters.iterator(); iChapter.hasNext();) {
 				final int notifId = ++id;
 				PageModel chapter = iChapter.next();
 				
-				Notification notification = new Notification(icon, tickerText, when);
-				notification.flags = Notification.FLAG_AUTO_CANCEL;
-				notification.defaults = Notification.DEFAULT_ALL;
-				notification.audioStreamType =  Notification.STREAM_DEFAULT; 
+				Notification notification = getNotificationTemplate(first);
+				first = false;
 				
-				CharSequence contentTitle = "New Chapter";
-				if(chapter.isUpdated()) contentTitle = "Updated Chapter";
-
-				String novelTitle = "";
-				try{
-					novelTitle = chapter.getBook().getParent().getPageModel().getTitle() + " ";
-				}
-				catch(Exception ex){
-					Log.e(TAG, "Error when getting Novel title", ex);
-				}
-								
-				CharSequence contentText = novelTitle + chapter.getTitle() + " (" + chapter.getBook().getTitle() + ")";
-				Intent notificationIntent = new Intent(this, DisplayLightNovelContentActivity.class);
-				notificationIntent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
-				PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, Intent.FLAG_ACTIVITY_MULTIPLE_TASK|PendingIntent.FLAG_CANCEL_CURRENT|PendingIntent.FLAG_ONE_SHOT );
-		
-				notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
+				prepareNotification(notifId, chapter, notification);
 				
 				mNotificationManager.notify(notifId, notification);
 			}		
 		}
+		
+//		try {
+//			//testing only
+//			Notification notification = getNotificationTemplate(true);
+//			int notifId = ++id;
+//			PageModel testPageModel = new PageModel();
+//			testPageModel.setPage("Hyouka:Volume_3_Chapter_2-1");
+//			testPageModel = NovelsDao.getInstance().getPageModel(testPageModel, notifier);
+//			prepareNotification(notifId, testPageModel, notification);
+//			mNotificationManager.notify(notifId, notification);			
+//		} catch (Exception e) {
+//			Log.e(TAG, "" + e.getMessage(), e);
+//		}
+//		try {
+//			//testing only
+//			Notification notification = getNotificationTemplate(false);
+//			int notifId = ++id;
+//			PageModel testPageModel = new PageModel();
+//			testPageModel.setPage("Hyouka:Volume_3_Chapter_2-2");
+//			testPageModel = NovelsDao.getInstance().getPageModel(testPageModel, notifier);
+//			prepareNotification(notifId, testPageModel, notification);
+//			mNotificationManager.notify(notifId, notification);			
+//		} catch (Exception e) {
+//			Log.e(TAG, "???" + e.getMessage(), e);
+//		}
+		
 		updateStatus("OK");
     	Toast.makeText(getApplicationContext(), "Update Service completed", Toast.LENGTH_SHORT).show();
 	}
+	
+	@SuppressWarnings("deprecation")
+	public void prepareNotification(final int notifId, PageModel chapter, Notification notification) {
+		CharSequence contentTitle = "New Chapter";
+		if(chapter.isUpdated()) contentTitle = "Updated Chapter";
+
+		String novelTitle = "";
+		try{
+			novelTitle = chapter.getBook().getParent().getPageModel().getTitle() + " ";
+		}
+		catch(Exception ex){
+			Log.e(TAG, "Error when getting Novel title", ex);
+		}
+						
+		CharSequence contentText = novelTitle + chapter.getTitle() + " (" + chapter.getBook().getTitle() + ")";
+		Intent notificationIntent = new Intent(this, DisplayLightNovelContentActivity.class);
+		notificationIntent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
+		PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, Intent.FLAG_ACTIVITY_MULTIPLE_TASK|
+																								   Intent.FLAG_ACTIVITY_NEW_TASK|
+																								   PendingIntent.FLAG_CANCEL_CURRENT|
+																								   PendingIntent.FLAG_ONE_SHOT );
+
+		notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
+	}
+
+	@SuppressWarnings("deprecation")
+	public Notification getNotificationTemplate(boolean firstNotification) {
+		int icon = android.R.drawable.arrow_up_float; //Just a placeholder
+		CharSequence tickerText = "New Chapters Update";
+		long when = System.currentTimeMillis();	
+		
+		Notification notification = new Notification(icon, tickerText, when);
+		notification.flags = Notification.FLAG_AUTO_CANCEL;
+		
+		//notification.defaults = Notification.DEFAULT_ALL;
+		//notification.audioStreamType =  Notification.STREAM_DEFAULT;
+		notification.defaults = 0;
+		if(firstNotification){
+			if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_UPDATE_RING, false)) {
+				notification.defaults |= Notification.DEFAULT_SOUND;		
+			}
+			if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_UPDATE_VIBRATE, false)) {
+				notification.defaults |= Notification.DEFAULT_VIBRATE;
+			}
+		}
+		return notification;
+	}
+	
+
 
 	private void updateStatus(String status) {
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
