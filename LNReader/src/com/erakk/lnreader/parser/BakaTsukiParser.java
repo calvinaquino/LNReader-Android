@@ -6,6 +6,7 @@ package com.erakk.lnreader.parser;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -78,10 +79,11 @@ public class BakaTsukiParser {
 		for(int i = 0; i < pageModels.size(); ++i) {
 			PageModel temp = pageModels.get(i);
 			
-			String to = temp.getPage();
+			String to = URLDecoder.decode(temp.getPage(), "utf-8");
+			//Log.d(TAG, "parsePageAPI source: " + to);
 			
 			// get normalized value for this page
-			Elements nElements = normalized.select("n[from="+ temp.getPage() + "]");
+			Elements nElements = normalized.select("n[from="+ to + "]");
 			if(nElements != null && nElements.size() > 0){
 				Element nElement = nElements.first();
 				to = nElement.attr("to");
@@ -108,7 +110,7 @@ public class BakaTsukiParser {
 				String tempDate = pElement.attr("touched");
 				Date lastUpdate = formatter.parse(tempDate);
 				temp.setLastUpdate(lastUpdate);
-				Log.d(TAG, "parsePageAPI "+ temp.getPage() + " Last Update: " + temp.getLastUpdate());
+				Log.i(TAG, "parsePageAPI "+ temp.getPage() + " Last Update: " + temp.getLastUpdate());
 			}				
 			else {
 				Log.w(TAG, "parsePageAPI missing page info: " + to);

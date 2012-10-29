@@ -20,6 +20,7 @@ import android.util.Log;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.helper.DBHelper;
@@ -173,13 +174,13 @@ public class NovelsDao {
 					}catch(EOFException eof) {
 						++retry;
 						if(notifier != null) {
-							notifier.onCallback(new CallbackEventData("Retrying: Main_Page (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));
+							notifier.onCallback(new CallbackEventData("Retrying: Main_Page (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
 						}
 						if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 					}
 					catch(IOException eof) {
 						++retry;
-						String message = "Retrying: Main_Page (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")";
+						String message = "Retrying: Main_Page (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
 						if(notifier != null) {
 							notifier.onCallback(new CallbackEventData(message));
 						}
@@ -231,7 +232,10 @@ public class NovelsDao {
 		int retry = 0;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
-				Response response = Jsoup.connect("http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
+				notifier.onCallback(new CallbackEventData("Getting page for "  + page.getPage()));
+				String encodedTitle = UIHelper.UrlEncode(page.getPage());
+				String fullUrl = "http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=" + encodedTitle;
+				Response response = Jsoup.connect(fullUrl).timeout(Constants.TIMEOUT).execute();
 				PageModel pageModel = BakaTsukiParser.parsePageAPI(page, response.parse());
 				pageModel.setFinishedRead(page.isFinishedRead());
 				pageModel.setWatched(page.isWatched());
@@ -249,13 +253,13 @@ public class NovelsDao {
 			}catch(EOFException eof) {
 				++retry;
 				if(notifier != null) {
-					notifier.onCallback(new CallbackEventData("Retrying: " + page + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));
+					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
 				}
 				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 			}
 			catch(IOException eof) {
 				++retry;
-				String message = "Retrying: " + page + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")";
+				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData(message));
 				}
@@ -312,19 +316,21 @@ public class NovelsDao {
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData("Downloading novel details page..."));
 				}
-				Response response = Jsoup.connect(Constants.BASE_URL + "/project/index.php?action=render&title=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
+				String encodedTitle = UIHelper.UrlEncode(page.getPage());
+				String fullUrl = Constants.BASE_URL + "/project/index.php?action=render&title=" + encodedTitle;
+				Response response = Jsoup.connect(fullUrl).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
 				novel = BakaTsukiParser.ParseNovelDetails(doc, page);
 			}catch(EOFException eof) {
 				++retry;
 				if(notifier != null) {
-					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));
+					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
 				}
 				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 			}
 			catch(IOException eof) {
 				++retry;
-				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")";
+				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData(message));
 				}
@@ -424,7 +430,7 @@ public class NovelsDao {
 			
 			while(i < pageModels.size()) {
 				if(titles.length() + pageModels.get(i).getPage().length() < 2000) {
-					titles += "|" + pageModels.get(i).getPage();
+					titles += "|" + UIHelper.UrlEncode(pageModels.get(i).getPage());
 					checkedPageModel.add(pageModels.get(i));
 					++i;
 				}
@@ -444,13 +450,13 @@ public class NovelsDao {
 				}catch(EOFException eof) {
 					++retry;
 					if(notifier != null) {
-						notifier.onCallback(new CallbackEventData("Retrying: Get Pages Info (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));
+						notifier.onCallback(new CallbackEventData("Retrying: Get Pages Info (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
 					}
 					if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 				}
 				catch(IOException eof) {
 					++retry;
-					String message = "Retrying: Get Pages Info (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")";
+					String message = "Retrying: Get Pages Info (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
 					if(notifier != null) {
 						notifier.onCallback(new CallbackEventData(message));
 					}
@@ -549,20 +555,21 @@ public class NovelsDao {
 		Document doc = null;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
-				Response response = Jsoup.connect(Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&page=" + page.getPage()).timeout(Constants.TIMEOUT).execute();
+				String encodedUrl = Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&page=" + UIHelper.UrlEncode(page.getPage());;
+				Response response = Jsoup.connect(encodedUrl).timeout(Constants.TIMEOUT).execute();
 				doc = response.parse();
 				content = BakaTsukiParser.ParseNovelContent(doc, page);
 				break;
 			}catch(EOFException eof) {
 				++retry;
 				if(notifier != null) {
-					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")"));
+					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
 				}
 				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 			}
 			catch(IOException eof) {
 				++retry;
-				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")";
+				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData(message));
 				}
@@ -716,14 +723,14 @@ public class NovelsDao {
 				break;
 			}catch(EOFException eof) {
 				if(notifier != null) {
-					notifier.onCallback(new CallbackEventData("Retrying: " + url + " (" + retry + " of "+ Constants.IMAGE_DOWNLOAD_RETRY + ")"));
+					notifier.onCallback(new CallbackEventData("Retrying: " + url + " (" + retry + " of "+ Constants.IMAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
 				}
 				++retry;
 				if(retry > Constants.IMAGE_DOWNLOAD_RETRY) throw eof;
 			}
 			catch(IOException eof) {
 				++retry;
-				String message = "Retrying: " + url + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")";
+				String message = "Retrying: " + url + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData(message));
 				}

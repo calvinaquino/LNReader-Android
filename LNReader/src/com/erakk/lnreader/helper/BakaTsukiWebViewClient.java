@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.activity.DisplayImageActivity;

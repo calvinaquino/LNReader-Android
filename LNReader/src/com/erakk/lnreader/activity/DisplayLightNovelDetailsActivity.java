@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.AsyncTask.Status;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -44,7 +43,6 @@ import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.task.DownloadNovelContentTask;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
-import com.erakk.lnreader.task.LoadNovelContentTask;
 import com.erakk.lnreader.task.LoadNovelDetailsTask;
 
 public class DisplayLightNovelDetailsActivity extends Activity implements IAsyncTaskOwner {
@@ -327,7 +325,6 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 		}		
 	}
     
-	@Override
 	public void toggleProgressBar(boolean show) {
 		if(show) {
 			dialog = ProgressDialog.show(this, "Novel Details", "Loading. Please wait...", true);
@@ -339,13 +336,11 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 		}
 	}
 
-	@Override
 	public void setMessageDialog(ICallbackEventData message) {
 		if(dialog.isShowing())
 			dialog.setMessage(message.getMessage());
 	}
 
-	@Override
 	public void getResult(AsyncTaskResult<?> result) {
 		Exception e = result.getError();
 		

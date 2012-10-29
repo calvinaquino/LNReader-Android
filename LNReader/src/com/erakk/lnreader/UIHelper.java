@@ -1,5 +1,8 @@
 package com.erakk.lnreader;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -99,4 +102,11 @@ public class UIHelper {
     	}
     	editor.commit();
     }
+	
+	public static String UrlEncode(String param) throws UnsupportedEncodingException {
+		if(!param.contains("%")) {
+			param = URLEncoder.encode(param, "utf-8");
+		}
+		return param;
+	}
 }

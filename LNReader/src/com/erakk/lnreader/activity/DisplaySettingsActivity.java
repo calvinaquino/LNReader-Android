@@ -24,7 +24,6 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
-import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.service.MyScheduleReceiver;
 
 public class DisplaySettingsActivity extends PreferenceActivity implements ICallbackNotifier{
@@ -135,7 +134,6 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
         
         Preference tos = (Preference) findPreference("tos");
         tos.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				try {
 

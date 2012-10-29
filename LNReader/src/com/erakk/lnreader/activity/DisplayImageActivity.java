@@ -102,8 +102,7 @@ public class DisplayImageActivity extends Activity implements IAsyncTaskOwner{
 		return super.onOptionsItemSelected(item);
 	}
     
-    @Override
-	public void toggleProgressBar(boolean show) {
+    public void toggleProgressBar(boolean show) {
 		if(show) {
 			dialog = ProgressDialog.show(this, "Display Image", "Loading Image...", false);
 			dialog.getWindow().setGravity(Gravity.CENTER);
@@ -114,7 +113,6 @@ public class DisplayImageActivity extends Activity implements IAsyncTaskOwner{
 		}
 	}
 
-	@Override
 	public void setMessageDialog(ICallbackEventData message) {
 		if(dialog != null && dialog.isShowing()){
 			ICallbackEventData data = message;
@@ -141,7 +139,6 @@ public class DisplayImageActivity extends Activity implements IAsyncTaskOwner{
 		}
 	}
 
-	@Override
 	public void getResult(AsyncTaskResult<?> result) {
 		Exception e = result.getError();
 		if(e == null) {
