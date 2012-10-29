@@ -7,19 +7,20 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
+import android.util.Log;
+
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
-
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 public class DBHelper extends SQLiteOpenHelper {
 	public static final String TAG = DBHelper.class.toString();
@@ -53,8 +54,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_LAST_Y = "lastYScroll";
 	public static final String COLUMN_ZOOM = "lastZoom";
 
-	private static final String DATABASE_NAME = "pages.db";
-	private static final int DATABASE_VERSION = 18;
+	public static final String DATABASE_NAME = "pages.db";
+	public static final int DATABASE_VERSION = 18;
 
 	// Database creation SQL statement
 	private static final String DATABASE_CREATE_PAGES = "create table "
@@ -106,10 +107,12 @@ public class DBHelper extends SQLiteOpenHelper {
 				  				    + COLUMN_LAST_UPDATE + " integer, "							// 6
 				  				    + COLUMN_LAST_CHECK + " integer);";							// 7
 	
-	public DBHelper(Context context) {
-	    super(context, DATABASE_NAME, null, DATABASE_VERSION);
-	}
+	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/databases";
 	
+	public DBHelper(Context context) {
+		super(context, DB_ROOT_SD + "/" + DATABASE_NAME, null, DATABASE_VERSION);
+	}
+
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		 db.execSQL(DATABASE_CREATE_PAGES);

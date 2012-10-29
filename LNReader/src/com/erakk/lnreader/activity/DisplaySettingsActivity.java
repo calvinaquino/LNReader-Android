@@ -3,6 +3,7 @@ package com.erakk.lnreader.activity;
 import java.io.File;
 import java.util.Collection;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -29,6 +30,7 @@ import com.erakk.lnreader.service.MyScheduleReceiver;
 public class DisplaySettingsActivity extends PreferenceActivity implements ICallbackNotifier{
 	private static final String TAG = DisplaySettingsActivity.class.toString();
 	private boolean isInverted;
+	private ProgressDialog dialog = null;
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -66,12 +68,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
         Preference clearDatabase = (Preference)  findPreference("clear_database");
         clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
-        		/*
-        		 * CODE TO CLEAR DATABASE HERE
-        		 */
-        		NovelsDao dao = NovelsDao.getInstance(getApplicationContext());
-        		dao.deleteDB();
-        		Toast.makeText(getApplicationContext(), "Database cleared!", Toast.LENGTH_LONG).show();	
+            	clearDB();
         		return true;
             }
         });
@@ -79,12 +76,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
         Preference clearImages = (Preference)  findPreference("clear_image_cache");
         clearImages.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
-        		/*
-        		 * CODE TO CLEAR IMAGE CACHE HERE
-        		 */        		
-        		DeleteRecursive(new File(Constants.IMAGE_ROOT));
-        		Toast.makeText(getApplicationContext(), "Image cache cleared!", Toast.LENGTH_LONG).show();	
-        		
+        		clearImages();
                 return true;
             }
         });
@@ -136,7 +128,6 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
         tos.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
 				try {
-
 					Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
 			        intent.putExtra(Constants.EXTRA_PAGE, "Baka-Tsuki:Copyrights");
 			        startActivity(intent);
@@ -147,11 +138,24 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 			}
 		});
         
-        
         LNReaderApplication.getInstance().setUpdateServiceListener(this);
         isInverted = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
     }
-	
+
+	private void clearImages() {
+		dialog = ProgressDialog.show(this, "Clear Images", "Clearing Images...", true, false);
+		DeleteRecursive(new File(Constants.IMAGE_ROOT));
+		Toast.makeText(getApplicationContext(), "Image cache cleared!", Toast.LENGTH_SHORT).show();
+		dialog.dismiss();
+	}
+
+	private void clearDB() {
+		dialog = ProgressDialog.show(this, "Clear Database", "Clearing Database...", true, false); 
+		NovelsDao.getInstance(getApplicationContext()).deleteDB();
+		Toast.makeText(getApplicationContext(), "Database cleared!", Toast.LENGTH_SHORT).show();
+		dialog.dismiss();
+	}
+
 	@SuppressWarnings("deprecation")
 	private void runUpdate() {
 		LNReaderApplication.getInstance().runUpdateService(true, this);

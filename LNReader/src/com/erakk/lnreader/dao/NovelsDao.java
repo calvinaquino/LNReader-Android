@@ -740,5 +740,4 @@ public class NovelsDao {
 		}		
 		return image;
 	}
-
 }
