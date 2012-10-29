@@ -1,6 +1,7 @@
 //package com.nandaka.bakareaderclone.helper;
 package com.erakk.lnreader.helper;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -109,8 +110,14 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/databases";
 	
+	private static String getDbPath(){
+		File path = new File(DB_ROOT_SD);
+		path.mkdirs();		
+		return DB_ROOT_SD + "/" + DATABASE_NAME;
+	}
+	
 	public DBHelper(Context context) {
-		super(context, DB_ROOT_SD + "/" + DATABASE_NAME, null, DATABASE_VERSION);
+		super(context, getDbPath(), null, DATABASE_VERSION);
 	}
 
 	@Override

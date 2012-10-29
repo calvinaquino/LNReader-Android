@@ -46,7 +46,7 @@ import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelDetailsTask;
 
 public class DisplayLightNovelDetailsActivity extends Activity implements IAsyncTaskOwner {
-	private static final String TAG = DisplayLightNovelDetailsActivity.class.toString();
+	public static final String TAG = DisplayLightNovelDetailsActivity.class.toString();
 	private PageModel page;
 	private NovelCollectionModel novelCol;
 	private NovelsDao dao = NovelsDao.getInstance(this);
@@ -292,6 +292,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 				task.execute(new PageModel[] {pageModel});
 		}
 		else {
+			Log.i(TAG, "Continue execute task: " + key);
 			LoadNovelDetailsTask tempTask = (LoadNovelDetailsTask) LNReaderApplication.getInstance().getTask(key);
 			if(tempTask != null) {
 				task = tempTask;
@@ -317,6 +318,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 					downloadTask.execute();
 			}
 			else {
+				Log.i(TAG, "Continue download task: " + key);
 				DownloadNovelContentTask tempTask = (DownloadNovelContentTask) LNReaderApplication.getInstance().getTask(key);
 				if(tempTask != null) {
 					downloadTask = tempTask;

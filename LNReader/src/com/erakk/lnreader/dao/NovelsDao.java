@@ -232,7 +232,9 @@ public class NovelsDao {
 		int retry = 0;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
-				notifier.onCallback(new CallbackEventData("Getting page for "  + page.getPage()));
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData("Getting page for: " + page.getPage()));
+				}
 				String encodedTitle = UIHelper.UrlEncode(page.getPage());
 				String fullUrl = "http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=" + encodedTitle;
 				Response response = Jsoup.connect(fullUrl).timeout(Constants.TIMEOUT).execute();

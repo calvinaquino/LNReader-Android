@@ -211,7 +211,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 	@SuppressLint("NewApi")
 	private void executeTask(boolean isRefresh, boolean onlyWatched) {
 		task = new LoadNovelsTask(this, isRefresh, onlyWatched);
-		String key = TAG;
+		String key = TAG + ":Main+Page";
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if(isAdded) {
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -220,6 +220,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 				task.execute();
 		}
 		else {
+			Log.i(TAG, "Continue execute task: " + key);
 			LoadNovelsTask tempTask = (LoadNovelsTask) LNReaderApplication.getInstance().getTask(key);
 			if(tempTask != null) {
 				task = tempTask;
@@ -232,7 +233,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 	@SuppressLint("NewApi")
 	private void executeDownloadTask(PageModel novel) {
 		downloadTask = new DownloadNovelDetailsTask(this);
-		String key = TAG + ":" + novel.getPage();
+		String key = DisplayLightNovelDetailsActivity.TAG + ":" + novel.getPage();
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if(isAdded) {
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -241,6 +242,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 				downloadTask.execute(new PageModel[] {novel});
 		}
 		else {
+			Log.i(TAG, "Continue download task: " + key);
 			DownloadNovelDetailsTask tempTask = (DownloadNovelDetailsTask) LNReaderApplication.getInstance().getTask(key);
 			if(tempTask != null) {
 				downloadTask = tempTask;

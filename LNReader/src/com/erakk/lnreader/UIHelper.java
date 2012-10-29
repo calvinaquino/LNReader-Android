@@ -60,7 +60,7 @@ public class UIHelper {
 	 * @param layoutId layout to use
 	 */
 	public static void SetTheme(Activity activity, Integer layoutId) {
-    	if(PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, false)) {    		
+    	if(PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, true)) {    		
     		activity.setTheme(R.style.AppTheme2);
     	}
     	else {
