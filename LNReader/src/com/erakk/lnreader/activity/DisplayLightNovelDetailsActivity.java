@@ -305,7 +305,6 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 	private void executeDownloadTask(ArrayList<PageModel> chapters) {
 		if(page != null) {
 			downloadTask = new DownloadNovelContentTask((PageModel[]) chapters.toArray(new PageModel[chapters.size()]), this);
-		
 			String key = TAG + ":DownloadChapters:" + page.getPage();
 			boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 			if(isAdded) {
