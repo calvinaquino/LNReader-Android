@@ -125,7 +125,9 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 						output.flush();
 						output.close();
 					}
-					input.close();
+					if(input != null) {
+						input.close();
+					}
 				}
 			}
 			// Rename file

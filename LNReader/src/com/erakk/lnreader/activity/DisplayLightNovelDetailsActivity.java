@@ -155,7 +155,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 				PageModel temp = i.next();
 				if(!temp.isDownloaded()) notDownloadedChapters.add(temp);
 			}
-			executeDownloadTask(notDownloadedChapters);
+			executeDownloadTask(notDownloadedChapters, true);
 			return true;
         case android.R.id.home:
         	super.onBackPressed();
@@ -215,7 +215,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 					downloadingChapters.add(temp);
 				}
 			}
-			executeDownloadTask(downloadingChapters);
+			executeDownloadTask(downloadingChapters, false);
 			return true;
 		case R.id.clear_volume:
 			
@@ -302,10 +302,13 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 	}
 	
 	@SuppressLint("NewApi")
-	private void executeDownloadTask(ArrayList<PageModel> chapters) {
+	private void executeDownloadTask(ArrayList<PageModel> chapters, boolean isAll) {
 		if(page != null) {
 			downloadTask = new DownloadNovelContentTask((PageModel[]) chapters.toArray(new PageModel[chapters.size()]), this);
 			String key = TAG + ":DownloadChapters:" + page.getPage();
+			if(isAll) {
+				key = TAG + ":DownloadChaptersAll:" + page.getPage();
+			}
 			boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 			if(isAdded) {
 				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)

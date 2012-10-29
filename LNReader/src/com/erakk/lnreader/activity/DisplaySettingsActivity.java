@@ -113,6 +113,8 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
         Preference asyncTaskCount = (Preference) findPreference("task_count");
         int running = 0;
         int finished = 0;
+        int pending = 0;
+        int unknown = 0;
         Collection<AsyncTask<?, ?, ?>> list = LNReaderApplication.getTaskList().values(); 
         for (AsyncTask<?, ?, ?> asyncTask : list) {
 			if(asyncTask.getStatus() == Status.RUNNING){
@@ -121,8 +123,17 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 			else if(asyncTask.getStatus() == Status.FINISHED) {
 				++finished;
 			}
+			else if(asyncTask.getStatus() == Status.PENDING) {
+				++pending;
+			}
+			else {
+				++unknown;
+			}
         }        
-        asyncTaskCount.setSummary("AsyncTask Count: " + running + " running, "+ finished + " stopped.");
+        asyncTaskCount.setSummary("AsyncTask Count: " + running + " running, " 
+                                                      + finished + " stopped, "
+                                                      + pending + " pending, "
+                                                      + unknown + " unknown.");
         
         Preference tos = (Preference) findPreference("tos");
         tos.setOnPreferenceClickListener(new OnPreferenceClickListener() {
