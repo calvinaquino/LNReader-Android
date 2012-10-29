@@ -44,6 +44,7 @@ public class Constants {
 	public static final String PREF_SHOW_ZOOM_CONTROL = "show_zoom_control";
 	public static final String PREF_UPDATE_RING = "update_use_sound";
 	public static final String PREF_UPDATE_VIBRATE = "update_use_vibration";
+	public static final String PREF_PERSIST_NOTIFICATION = "persist_notification";
 	
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 

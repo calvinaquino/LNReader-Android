@@ -15,7 +15,8 @@
         />
         <Preference android:title="Run Update" android:key="run_update"/>
         <CheckBoxPreference android:title="Use ring." android:key="update_use_sound" android:defaultValue="true" android:summary="Ring if there is new chapters update."/>
-        <CheckBoxPreference android:title="Use Vibration" android:summary="Vibrate if there is new chapters update." android:key="update_use_vibration" android:defaultValue="true"/>   
+        <CheckBoxPreference android:title="Use Vibration" android:summary="Vibrate if there is new chapters update." android:key="update_use_vibration" android:defaultValue="true"/>
+        <CheckBoxPreference android:summary="Keep the update notification after click." android:title="Persist Notifications" android:defaultValue="false" android:key="persist_notification"/>   
              
     </PreferenceCategory>
  

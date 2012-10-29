@@ -151,10 +151,16 @@ public class UpdateService extends Service {
 		CharSequence contentText = novelTitle + chapter.getTitle() + " (" + chapter.getBook().getTitle() + ")";
 		Intent notificationIntent = new Intent(this, DisplayLightNovelContentActivity.class);
 		notificationIntent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
-		PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, Intent.FLAG_ACTIVITY_MULTIPLE_TASK|
-																								   Intent.FLAG_ACTIVITY_NEW_TASK|
-																								   PendingIntent.FLAG_CANCEL_CURRENT|
-																								   PendingIntent.FLAG_ONE_SHOT );
+		
+		int intentFlag = Intent.FLAG_ACTIVITY_MULTIPLE_TASK|
+				   		 Intent.FLAG_ACTIVITY_NEW_TASK|
+				   		 PendingIntent.FLAG_CANCEL_CURRENT;
+		
+		if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_PERSIST_NOTIFICATION, false)) {
+			intentFlag |= PendingIntent.FLAG_ONE_SHOT;
+		}
+		
+		PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, intentFlag);
 
 		notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
 	}
