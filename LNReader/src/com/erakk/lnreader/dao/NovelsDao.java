@@ -316,7 +316,7 @@ public class NovelsDao {
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
 				if(notifier != null) {
-					notifier.onCallback(new CallbackEventData("Downloading novel details page..."));
+					notifier.onCallback(new CallbackEventData("Downloading novel details page for: " + page.getPage()));
 				}
 				String encodedTitle = UIHelper.UrlEncode(page.getPage());
 				String fullUrl = Constants.BASE_URL + "/project/index.php?action=render&title=" + encodedTitle;
@@ -345,7 +345,7 @@ public class NovelsDao {
 				page.setParent("Main_Page"); // insurance
 				// get the last update time from internet
 				if(notifier != null) {
-					notifier.onCallback(new CallbackEventData("Getting novel information..."));
+					notifier.onCallback(new CallbackEventData("Getting novel information for: " + page.getPage()));
 				}
 				PageModel novelPageTemp = getPageModelFromInternet(page, notifier);
 				if(novelPageTemp != null) {
@@ -387,7 +387,7 @@ public class NovelsDao {
 				
 				// update info for each chapters
 				if(notifier != null) {
-					notifier.onCallback(new CallbackEventData("Getting chapters information..."));
+					notifier.onCallback(new CallbackEventData("Getting chapters information for: " + page.getPage()));
 				}
 				getUpdateInfo(novel.getFlattedChapterList(), notifier);
 				
@@ -400,7 +400,7 @@ public class NovelsDao {
 					DownloadFileTask task = new DownloadFileTask(notifier);
 					ImageModel image = task.downloadImage(novel.getCoverUrl());
 					// TODO: need to save to db?
-					Log.d("Image", image.toString());
+					Log.d(TAG, "Cover Image: " + image.toString());
 				}
 
 				Log.d(TAG, "Complete getting Novel Details from internet: " + page.getPage());

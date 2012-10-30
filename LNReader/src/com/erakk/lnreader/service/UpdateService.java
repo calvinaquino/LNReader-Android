@@ -154,11 +154,9 @@ public class UpdateService extends Service {
 		
 		int intentFlag = Intent.FLAG_ACTIVITY_MULTIPLE_TASK|
 				   		 Intent.FLAG_ACTIVITY_NEW_TASK|
-				   		 PendingIntent.FLAG_CANCEL_CURRENT;
-		
-		if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_PERSIST_NOTIFICATION, false)) {
-			intentFlag |= PendingIntent.FLAG_ONE_SHOT;
-		}
+				   		 //Intent.FLAG_ACTIVITY_CLEAR_TOP|
+				   		 //Intent.FLAG_RECEIVER_REPLACE_PENDING|
+				   		 PendingIntent.FLAG_CANCEL_CURRENT;		
 		
 		PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, intentFlag);
 
@@ -172,10 +170,10 @@ public class UpdateService extends Service {
 		long when = System.currentTimeMillis();	
 		
 		Notification notification = new Notification(icon, tickerText, when);
-		notification.flags = Notification.FLAG_AUTO_CANCEL;
+		if(!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_PERSIST_NOTIFICATION, false)) {
+			notification.flags = Notification.FLAG_AUTO_CANCEL;	
+		}		
 		
-		//notification.defaults = Notification.DEFAULT_ALL;
-		//notification.audioStreamType =  Notification.STREAM_DEFAULT;
 		notification.defaults = 0;
 		if(firstNotification){
 			if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_UPDATE_RING, false)) {
@@ -187,8 +185,6 @@ public class UpdateService extends Service {
 		}
 		return notification;
 	}
-	
-
 
 	private void updateStatus(String status) {
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
