@@ -91,12 +91,12 @@ public class UpdateService extends Service {
 		boolean first = true;
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		
-		if(updatedChapters != null) {		
+		if(updatedChapters != null && updatedChapters.size() > 0) {		
 			Log.d(TAG, "sendNotification");
 			for(Iterator<PageModel> iChapter = updatedChapters.iterator(); iChapter.hasNext();) {
 				final int notifId = ++id;
 				PageModel chapter = iChapter.next();
-				
+				Log.d(TAG, "set Notification for: " + chapter.getPage());
 				Notification notification = getNotificationTemplate(first);
 				first = false;
 				
@@ -149,16 +149,16 @@ public class UpdateService extends Service {
 		}
 						
 		CharSequence contentText = novelTitle + chapter.getTitle() + " (" + chapter.getBook().getTitle() + ")";
+		
 		Intent notificationIntent = new Intent(this, DisplayLightNovelContentActivity.class);
 		notificationIntent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
+//		int intentFlag = Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+//		   		 	   | Intent.FLAG_ACTIVITY_NEW_TASK;
+//		notificationIntent.setFlags(intentFlag);
 		
-		int intentFlag = Intent.FLAG_ACTIVITY_MULTIPLE_TASK|
-				   		 Intent.FLAG_ACTIVITY_NEW_TASK|
-				   		 //Intent.FLAG_ACTIVITY_CLEAR_TOP|
-				   		 //Intent.FLAG_RECEIVER_REPLACE_PENDING|
-				   		 PendingIntent.FLAG_CANCEL_CURRENT;		
-		
-		PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, intentFlag);
+		int pendingFlag = PendingIntent.FLAG_CANCEL_CURRENT;
+						//| PendingIntent.FLAG_ONE_SHOT;
+		PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, pendingFlag);
 
 		notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
 	}
@@ -263,15 +263,14 @@ public class UpdateService extends Service {
 						if(callback != null) callback.onCallback(new CallbackEventData("Getting updated chapters: " + novel.getTitle()));
 						NovelCollectionModel updatedNovelDetails = dao.getNovelDetailsFromInternet(novel, callback);
 						if(updatedNovelDetails!= null){
-							ArrayList<PageModel> updatedNovelDetailsChapters = updatedNovelDetails.getFlattedChapterList();
-							
-							updates = updatedNovelDetailsChapters;
+							updates = updatedNovelDetails.getFlattedChapterList();
+
 							// compare the chapters!
 							for(int i = 0 ; i < novelDetailsChapters.size() ; ++i) {
 								PageModel oldChapter = novelDetailsChapters.get(i);
 								//if(callback != null) callback.onCallback(new CallbackEventData("Checking: " + oldChapter.getTitle()));
-								for(int j = 0; j < updatedNovelDetailsChapters.size(); j++) {								
-									PageModel newChapter = updatedNovelDetailsChapters.get(j);
+								for(int j = 0; j < updates.size(); j++) {								
+									PageModel newChapter = updates.get(j);
 									if(callback != null) callback.onCallback(new CallbackEventData("Checking: " + oldChapter.getTitle() + " ==> " + newChapter.getTitle()));
 									// check if the same page
 									if(newChapter.getPage().compareTo(oldChapter.getPage()) == 0) {
@@ -283,6 +282,7 @@ public class UpdateService extends Service {
 										}
 										else{
 											updates.remove(newChapter);
+											Log.i(TAG, "No Update for Chapter: " + newChapter.getTitle());
 										}											
 										break;
 									}
@@ -293,6 +293,8 @@ public class UpdateService extends Service {
 				}
 				force = false;
 			}
+			
+			Log.i(TAG, "Found updates: " + updates.size());
 			
 			return updates;
 		}

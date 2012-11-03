@@ -80,14 +80,14 @@ public class BakaTsukiParser {
 			PageModel temp = pageModels.get(i);
 			
 			String to = URLDecoder.decode(temp.getPage(), "utf-8");
-			//Log.d(TAG, "parsePageAPI source: " + to);
+			Log.d(TAG, "parsePageAPI source: " + to);
 			
 			// get normalized value for this page
 			Elements nElements = normalized.select("n[from="+ to + "]");
 			if(nElements != null && nElements.size() > 0){
 				Element nElement = nElements.first();
 				to = nElement.attr("to");
-				//Log.d(TAG, "parsePageAPI normalized: " + to);
+				Log.d(TAG, "parsePageAPI normalized: " + to);
 				
 				// check redirects
 				if(redirects != null && redirects.size() > 0 ) {
@@ -232,6 +232,7 @@ public class BakaTsukiParser {
 		title = title.replaceAll("<.+?>", "")				 //Strip tags
 					 .replaceAll("\\[.+?\\]", "")		 //Strip [___]s
 					 .replaceAll("^(.+?)[(\\[].*$", "$1") //Leaves only the text before brackets (might be a bit too aggressive)
+					 .replaceAll("- PDF", "")
 					 .trim();
 
 		return title;

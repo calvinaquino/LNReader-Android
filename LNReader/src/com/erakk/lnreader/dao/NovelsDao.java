@@ -424,17 +424,19 @@ public class NovelsDao {
 		int i = 0;
 		int retry = 0;
 		while(i < pageModels.size()) {
+			int apiPageCount = 1;
 			ArrayList<PageModel> checkedPageModel = new ArrayList<PageModel>();
 			String titles = pageModels.get(i).getPage();
 			checkedPageModel.add(pageModels.get(i));
 			//Log.d("parser", "pageModels.get(i).getPage(): " + pageModels.get(i).getPage());
 			++i;
 			
-			while(i < pageModels.size()) {
+			while(i < pageModels.size() && apiPageCount < 50) {
 				if(titles.length() + pageModels.get(i).getPage().length() < 2000) {
 					titles += "|" + UIHelper.UrlEncode(pageModels.get(i).getPage());
 					checkedPageModel.add(pageModels.get(i));
 					++i;
+					++apiPageCount;
 				}
 				else {
 					break;
