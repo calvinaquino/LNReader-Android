@@ -44,12 +44,12 @@
         />
         <CheckBoxPreference 
             android:key="enable_zoom" 
-            android:title="Enable Zoom Controls" 
+            android:title="Enable Zoom" 
             android:summary="Enable zoom in novel contents." 
             android:defaultValue="true"/>
         <CheckBoxPreference 
             android:key="show_zoom_control" 
-            android:title="Show Zoom Button" 
+            android:title="Show Zoom Control" 
             android:defaultValue="true" 
             android:summary="Show zoom button in the novel contents, doesn't affect the zooming function"/> 
  

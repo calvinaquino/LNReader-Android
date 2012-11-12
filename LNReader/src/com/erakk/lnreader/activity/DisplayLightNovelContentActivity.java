@@ -309,6 +309,13 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 				BookModel book = pageModel.getBook();
 				if(book != null) {
 					ArrayList<PageModel> chapters = book.getChapterCollection();
+					for (PageModel chapter : chapters) {
+						if(chapter.getPage().contentEquals(pageModel.getPage())) {
+							chapter.setHighlighted(true);
+						}
+						else chapter.setHighlighted(false);
+					}
+					
 					int resourceId = R.layout.novel_list_item;
 					if(UIHelper.IsSmallScreen(this)) {
 						resourceId = R.layout.novel_list_item_small; 

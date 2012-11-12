@@ -6,6 +6,7 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -70,6 +71,10 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		holder.txtNovel = (TextView)row.findViewById(R.id.novel_name);
 		if(holder.txtNovel != null) {
 			holder.txtNovel.setText(page.getTitle());// + " (" + page.getTitle() + ")");
+			if(page.isHighlighted()) {
+				holder.txtNovel.setTypeface(null, Typeface.BOLD);
+				holder.txtNovel.setTextSize(18);
+			}
 		}
 		
 		holder.txtLastUpdate = (TextView)row.findViewById(R.id.novel_last_update);

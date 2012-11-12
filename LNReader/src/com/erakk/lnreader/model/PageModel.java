@@ -26,6 +26,7 @@ public class PageModel{
 	private boolean isDownloaded;
 	private BookModel book;
 	private int order;
+	private boolean isHighlighted;
 	
 	private String redirectedTo;
 	
@@ -167,5 +168,11 @@ public class PageModel{
 	}
 	public void setRedirectedTo(String redirectedTo) {
 		this.redirectedTo = redirectedTo;
+	}
+	public boolean isHighlighted() {
+		return isHighlighted;
+	}
+	public void setHighlighted(boolean isHighlighted) {
+		this.isHighlighted = isHighlighted;
 	}
 }
