@@ -258,6 +258,23 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 	}
 	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		boolean useVolumeRocker = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_VOLUME_FOR_SCROLL, false);
+		if(useVolumeRocker) {
+			int scrollSize = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 500);
+			if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+				webView.flingScroll(0, scrollSize);
+				return true;
+			} else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+				webView.flingScroll(0, -scrollSize);
+				return true;
+			}
+			else return false;
+		}
+		return false;
+	}
+	
 	@SuppressLint("NewApi")
 	private void showSearchBox() {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )

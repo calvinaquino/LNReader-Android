@@ -45,6 +45,8 @@ public class Constants {
 	public static final String PREF_UPDATE_RING = "update_use_sound";
 	public static final String PREF_UPDATE_VIBRATE = "update_use_vibration";
 	public static final String PREF_PERSIST_NOTIFICATION = "persist_notification";
+	public static final String PREF_USE_VOLUME_FOR_SCROLL = "use_volume_to_scroll";
+	public static final String PREF_SCROLL_SIZE = "scroll_size";
 	
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 

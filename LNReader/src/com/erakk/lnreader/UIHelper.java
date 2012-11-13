@@ -109,4 +109,15 @@ public class UIHelper {
 		}
 		return param;
 	}
+	
+	public static int GetIntFromPreferences(String key, int defaultValue) {
+		String value = PreferenceManager.getDefaultSharedPreferences(
+				LNReaderApplication.getInstance().getApplicationContext())
+				.getString(key, "");
+		try {
+			return Integer.parseInt(value);
+		} catch (NumberFormatException ex) {
+			return defaultValue;
+		}
+	}
 }

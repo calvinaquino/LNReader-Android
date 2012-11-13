@@ -1,92 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
- 
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
     <PreferenceCategory
-        android:title="Update"
-        android:key="update_category">
-         
+        android:key="update_category"
+        android:title="Update" >
         <ListPreference
-            android:key="updates_interval"
-            android:title="Updates interval"
-            android:summary="Define how often updates will be verified"
             android:defaultValue="0"
             android:entries="@array/updateInterval"
             android:entryValues="@array/updateIntervalValues"
-        />
-        <Preference android:title="Run Update" android:key="run_update"/>
-        <CheckBoxPreference android:title="Use Ringer" android:key="update_use_sound" android:defaultValue="true" android:summary="Ring if there is new chapters update."/>
-        <CheckBoxPreference android:title="Use Vibration" android:summary="Vibrate if there is new chapters update." android:key="update_use_vibration" android:defaultValue="true"/>
-        <CheckBoxPreference android:summary="Keep the update notification after click." android:title="Persist Notifications" android:defaultValue="false" android:key="persist_notification"/>   
-             
-    </PreferenceCategory>
- 
-    <PreferenceCategory
-        android:title="Layout Preferences"
-        android:key="layout_category">
- 
+            android:key="updates_interval"
+            android:summary="Define how often updates will be verified"
+            android:title="Updates interval" />
+        <Preference
+            android:key="run_update"
+            android:title="Run Update" />
         <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="update_use_sound"
+            android:summary="Ring if there is new chapters update."
+            android:title="Use Ringer" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="update_use_vibration"
+            android:summary="Vibrate if there is new chapters update."
+            android:title="Use Vibration" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="persist_notification"
+            android:summary="Keep the update notification after click."
+            android:title="Persist Notifications" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="layout_category"
+        android:title="Layout Preferences" >
+        <CheckBoxPreference
+            android:defaultValue="true"
             android:key="invert_colors"
             android:summary="Changes the font color with the background color"
-            android:title="Invert Colors"
-            android:defaultValue="true"
-        />
+            android:title="Invert Colors" />
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="lock_horizontal"
             android:summary="Enters horizontal orientation and locks the orientation"
-            android:title="Lock for Horizontal"
-            android:defaultValue="false"
-        />
+            android:title="Lock for Horizontal" />
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="show_images"
             android:summary="Controls if images are displayed or not (performance)"
-            android:title="Show Images"
+            android:title="Show Images" />
+        <CheckBoxPreference
             android:defaultValue="true"
-        />
-        <CheckBoxPreference 
-            android:key="enable_zoom" 
-            android:title="Enable Zoom" 
-            android:summary="Enable zoom in novel contents." 
-            android:defaultValue="true"/>
-        <CheckBoxPreference 
-            android:key="show_zoom_control" 
-            android:title="Show Zoom Control" 
-            android:defaultValue="true" 
-            android:summary="Show zoom button in the novel contents, doesn't affect the zooming function"/> 
- 
+            android:key="enable_zoom"
+            android:summary="Enable zoom in novel contents."
+            android:title="Enable Zoom" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="show_zoom_control"
+            android:summary="Show zoom button in the novel contents, doesn&apos;t affect the zooming function"
+            android:title="Show Zoom Control" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="use_volume_to_scroll"
+            android:summary="Use volumer rocker for scrolling when for novel contents."
+            android:title="Use Volume Rocker for Scrolling" />
+        <EditTextPreference
+            android:defaultValue="500"
+            android:dependency="use_volume_to_scroll"
+            android:key="scroll_size"
+            android:summary="Scrolling size for volumer rocker."
+            android:title="Scrolling Size" />
     </PreferenceCategory>
-     <PreferenceCategory
-        android:title="Storage"
-        android:key="storage_category">
- 
+    <PreferenceCategory
+        android:key="storage_category"
+        android:title="Storage" >
         <Preference
             android:key="clear_database"
             android:summary="Erases light novel database"
-            android:title="Clear Novel Database"
-        />
+            android:title="Clear Novel Database" />
         <Preference
             android:key="clear_image_cache"
             android:summary="Clears cached images"
-            android:title="Clear Image Cache"
-        />
-        <Preference 
-            android:title="Default Save Location" 
-            android:key="save_location"/>        
-        <CheckBoxPreference 
-            android:summary="Download linked full resolution image. Might take a lot of space." 
-            android:key="download_big_image" 
-            android:title="Download Full-Res Image"/>
+            android:title="Clear Image Cache" />
+        <Preference
+            android:key="save_location"
+            android:title="Default Save Location" />
+        <CheckBoxPreference
+            android:key="download_big_image"
+            android:summary="Download linked full resolution image. Might take a lot of space."
+            android:title="Download Full-Res Image" />
     </PreferenceCategory>
-     <PreferenceCategory 
-         android:title="Application Info" 
-         android:key="application_info">
-         <Preference 
-             android:title="Baka-Tsuki:Copyrights" 
-             android:key="tos"/>
-         <Preference 
-             android:key="app_version" 
-             android:title="Version"/>
-         <Preference android:title="AsyncTask Count" android:key="task_count"/>
-         
-     </PreferenceCategory>
-     
+    <PreferenceCategory
+        android:key="application_info"
+        android:title="Application Info" >
+        <Preference
+            android:key="tos"
+            android:title="Baka-Tsuki:Copyrights" />
+        <Preference
+            android:key="app_version"
+            android:title="Version" />
+        <Preference
+            android:key="task_count"
+            android:title="AsyncTask Count" />
+    </PreferenceCategory>
+
 </PreferenceScreen>
