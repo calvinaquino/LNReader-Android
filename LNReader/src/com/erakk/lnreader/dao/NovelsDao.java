@@ -389,7 +389,12 @@ public class NovelsDao {
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData("Getting chapters information for: " + page.getPage()));
 				}
-				getUpdateInfo(novel.getFlattedChapterList(), notifier);
+				
+				ArrayList<PageModel> chapters = getUpdateInfo(novel.getFlattedChapterList(), notifier);
+				for (PageModel pageModel : chapters) {
+					if(!pageModel.isMissing())
+						updatePageModel(pageModel);
+				}
 				
 				
 				// download cover image
@@ -411,6 +416,13 @@ public class NovelsDao {
 	}
 
 
+	public PageModel getUpdateInfo(PageModel pageModel, ICallbackNotifier notifier) throws Exception {
+		ArrayList<PageModel> pageModels = new ArrayList<PageModel>();
+		pageModels.add(pageModel);
+		pageModels = getUpdateInfo(pageModels, notifier);
+		return pageModels.get(0);
+	}
+	
 	/***
 	 * Bulk update page info through wiki API
 	 * @param pageModels
@@ -418,7 +430,7 @@ public class NovelsDao {
 	 * @return
 	 * @throws Exception
 	 */
-	private ArrayList<PageModel> getUpdateInfo(ArrayList<PageModel> pageModels, ICallbackNotifier notifier) throws Exception {
+	public ArrayList<PageModel> getUpdateInfo(ArrayList<PageModel> pageModels, ICallbackNotifier notifier) throws Exception {
 		ArrayList<PageModel> resultPageModel = new ArrayList<PageModel>();
 		String baseUrl = Constants.BASE_URL + "/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=";
 		int i = 0;
@@ -468,10 +480,6 @@ public class NovelsDao {
 					if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 				}
 			}
-		}
-		
-		for (PageModel pageModel : resultPageModel) {
-			updatePageModel(pageModel);
 		}
 		
 		return resultPageModel;
@@ -559,7 +567,7 @@ public class NovelsDao {
 		Document doc = null;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
-				String encodedUrl = Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&page=" + UIHelper.UrlEncode(page.getPage());;
+				String encodedUrl = Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&redirects=yes&page=" + UIHelper.UrlEncode(page.getPage());;
 				Response response = Jsoup.connect(encodedUrl).timeout(Constants.TIMEOUT).execute();
 				doc = response.parse();
 				content = BakaTsukiParser.ParseNovelContent(doc, page);

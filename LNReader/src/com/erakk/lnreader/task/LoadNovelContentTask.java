@@ -1,6 +1,7 @@
 package com.erakk.lnreader.task;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
@@ -11,6 +12,7 @@ import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
 public class LoadNovelContentTask extends AsyncTask<PageModel, ICallbackEventData, AsyncTaskResult<NovelContentModel>> implements ICallbackNotifier{
+	private static final String TAG = LoadNovelContentTask.class.toString();
 	public volatile IAsyncTaskOwner owner;
 	private boolean refresh;
 	
@@ -47,6 +49,7 @@ public class LoadNovelContentTask extends AsyncTask<PageModel, ICallbackEventDat
 				return new AsyncTaskResult<NovelContentModel>(NovelsDao.getInstance().getNovelContent(p, true, this));
 			}
 		}catch(Exception e) {
+			Log.e(TAG, "Error when getting novel content: " + e.getMessage(), e);
 			return new AsyncTaskResult<NovelContentModel>(e);
 		}
 	}

@@ -27,7 +27,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 	private static final String TAG = PageModelAdapter.class.toString();
 	private Context context;
 	private int layoutResourceId;
-	private List<PageModel> data;
+	public List<PageModel> data;
 	private boolean isAdding = false;
 
 	public PageModelAdapter(Context context, int resourceId, List<PageModel> objects) {
@@ -116,7 +116,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 	public void notifyDataSetChanged() {
 		if(!isAdding) {
 			// refresh the data
-			//Log.d(TAG, "Refreshing data");
+			Log.d(TAG, "Refreshing data");
 			for(int i = 0; i< data.size();++i) {
 				try {
 					PageModel temp = NovelsDao.getInstance(context).getPageModel(data.get(i), null);

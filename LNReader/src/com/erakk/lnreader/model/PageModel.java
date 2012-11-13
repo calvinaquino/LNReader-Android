@@ -26,7 +26,8 @@ public class PageModel{
 	private boolean isDownloaded;
 	private BookModel book;
 	private int order;
-	private boolean isHighlighted;
+	private boolean isHighlighted = false;
+	private boolean isMissing = false;
 	
 	private String redirectedTo;
 	
@@ -174,5 +175,11 @@ public class PageModel{
 	}
 	public void setHighlighted(boolean isHighlighted) {
 		this.isHighlighted = isHighlighted;
+	}
+	public boolean isMissing() {
+		return isMissing;
+	}
+	public void setMissing(boolean isMissing) {
+		this.isMissing = isMissing;
 	}
 }

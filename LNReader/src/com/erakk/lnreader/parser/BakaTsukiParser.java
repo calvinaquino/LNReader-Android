@@ -113,6 +113,7 @@ public class BakaTsukiParser {
 				Log.i(TAG, "parsePageAPI "+ temp.getPage() + " Last Update: " + temp.getLastUpdate());
 			}				
 			else {
+				temp.setMissing(true);
 				Log.w(TAG, "parsePageAPI missing page info: " + to);
 			}
 		}		

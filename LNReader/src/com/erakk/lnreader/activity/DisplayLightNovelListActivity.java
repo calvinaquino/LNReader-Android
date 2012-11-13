@@ -3,8 +3,10 @@ package com.erakk.lnreader.activity;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -14,12 +16,14 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +38,7 @@ import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
+import com.erakk.lnreader.task.AddNovelTask;
 import com.erakk.lnreader.task.DownloadNovelDetailsTask;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelsTask;
@@ -49,6 +54,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 	private PageModelAdapter adapter;
 	private LoadNovelsTask task = null;
 	private DownloadNovelDetailsTask downloadTask = null;
+	private AddNovelTask addTask = null;
 	private ProgressDialog dialog;
 	private boolean isInverted;
 	private boolean onlyWatched = false;
@@ -144,12 +150,51 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);
 			return true;
+		case R.id.menu_manual_add:			
+			ManualAdd();
+			return true;
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
+	private void ManualAdd() {
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		alert.setTitle("Add Novel");
+		//alert.setMessage("Message");
+		LayoutInflater factory = LayoutInflater.from(this);
+		View inputView = factory.inflate(R.layout.layout_add_new_novel, null);
+		final EditText inputName = (EditText) inputView.findViewById(R.id.page);
+		final EditText inputTitle = (EditText) inputView.findViewById(R.id.title);
+		alert.setView(inputView);
+		alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				if(whichButton == DialogInterface.BUTTON_POSITIVE) {
+					HandleOK(inputName, inputTitle);
+				}
+			}
+		});
+		alert.setNegativeButton("Cancel", null);
+		alert.show();
+	}
+	
+	private void HandleOK(EditText input, EditText inputTitle) {
+		String novel = input.getText().toString();
+		String title = inputTitle.getText().toString();
+		if(novel != null && novel.length() > 0 && inputTitle != null && inputTitle.length() > 0) {
+			PageModel temp = new PageModel();
+			temp.setPage(novel);
+			temp.setTitle(title);
+			temp.setType(PageModel.TYPE_NOVEL);
+			temp.setParent("Main_Page");
+			executeAddTask(temp);
+		}
+		else {
+			Toast.makeText(this, "Empty Input", Toast.LENGTH_LONG).show();
+		}
+	}  
 
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
@@ -252,6 +297,28 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 		}
 	}
 	
+	@SuppressLint("NewApi")
+	private void executeAddTask(PageModel novel) {
+		addTask = new AddNovelTask(this);
+		String key = DisplayLightNovelDetailsActivity.TAG + ":Add:" + novel.getPage();
+		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
+		if(isAdded) {
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				addTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {novel});
+			else
+				addTask.execute(new PageModel[] {novel});
+		}
+		else {
+			Log.i(TAG, "Continue Add task: " + key);
+			AddNovelTask tempTask = (AddNovelTask) LNReaderApplication.getInstance().getTask(key);
+			if(tempTask != null) {
+				addTask = tempTask;
+				addTask.owner = this;
+			}
+			toggleProgressBar(true);
+		}
+	}
+	
 	public void toggleProgressBar(boolean show) {
 		if(show) {
 			dialog = ProgressDialog.show(this, "Novel List", "Loading. Please wait...", true);
@@ -295,6 +362,23 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 			// from DownloadNovelDetailsTask
 			else if(result.getResult() instanceof NovelCollectionModel) {
 				setMessageDialog(new CallbackEventData("Download complete."));
+				NovelCollectionModel novelCol = (NovelCollectionModel) result.getResult();
+				try {
+					PageModel page = novelCol.getPageModel();
+					boolean found = false;
+					for (PageModel temp : adapter.data) {
+						if(temp.getPage().equalsIgnoreCase(page.getPage())) {
+							found = true;
+							break;
+						}
+					}
+					if(!found) {
+						adapter.data.add(page);
+					}
+				} catch (Exception e1) {
+					Log.e(TAG, e1.getClass().toString() + ": " + e1.getMessage(), e1);
+				}
+				
 				adapter.notifyDataSetChanged();
 				toggleProgressBar(false);
 			}
