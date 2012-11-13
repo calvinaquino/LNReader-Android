@@ -234,6 +234,33 @@ public class DBHelper extends SQLiteOpenHelper {
 		Log.w(TAG, "PageModel Deleted: " + result);
 	}
 	
+	public boolean deleteNovel(SQLiteDatabase db, PageModel novel) {
+		try{
+			// TODO: delete images
+			
+			// delete chapter and books
+			NovelCollectionModel details = getNovelDetails(db, novel.getPage());
+			if(details != null) {
+				ArrayList<BookModel> books = details.getBookCollections();
+				for (BookModel bookModel : books) {
+					deleteBookModel(db, bookModel);
+				}
+				deleteNovelDetails(db, details);
+			}
+			// delete page model;
+			deletePageModel(db, novel);
+			return true;
+		} catch(Exception ex) {
+			Log.e(TAG, "Error when deleting: " + novel.getPage(), ex);
+			return false;
+		}
+	}
+	
+	public void deleteNovelDetails(SQLiteDatabase db, NovelCollectionModel details) {
+		int result = delete(db, TABLE_NOVEL_DETAILS, COLUMN_ID + " = ?", new String[]{"" + details.getId()});
+		Log.w(TAG, "NovelDetails Deleted: " + result);
+	}
+	
 	public PageModel getPageModel(SQLiteDatabase db, int id) {
 		PageModel pageModel = null;		
 		Cursor cursor = rawQuery(db, "select * from " + TABLE_PAGE + " where " + COLUMN_ID + " = ? ", new String[] {"" + id});
@@ -792,4 +819,6 @@ public class DBHelper extends SQLiteOpenHelper {
 			db = getWritableDatabase();
 		return db.delete(table, whereClause, whereParams);
 	}
+
+
 }

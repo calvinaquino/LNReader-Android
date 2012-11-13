@@ -35,6 +35,7 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
@@ -204,6 +205,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		switch(item.getItemId()) {
 		case R.id.add_to_watch:			
 			/*
@@ -221,11 +223,22 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 			/*
 			 * Implement code to download novel synopsis
 			 */
-			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 			if(info.position > -1) {
 				toggleProgressBar(true);
 				PageModel novel = listItems.get(info.position);
 				executeDownloadTask(novel);
+			}
+			return true;
+		case R.id.delete_novel:
+			if(info.position > -1) {
+				toggleProgressBar(true);
+				PageModel novel = listItems.get(info.position);
+				boolean result = NovelsDao.getInstance(this).deleteNovel(novel);
+				if(result) {
+					listItems.remove(novel);
+					adapter.notifyDataSetChanged();
+				}				
+				toggleProgressBar(false);
 			}
 			return true;
 		default:

@@ -80,7 +80,7 @@ public class DisplaySynopsisActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_display_synopsys, menu);
+        getMenuInflater().inflate(R.menu.activity_display_synopsis, menu);
         return true;
     }
 

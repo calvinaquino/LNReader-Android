@@ -861,4 +861,13 @@ public class NovelsDao {
 		}
 		return result;
 	}
+
+	public boolean deleteNovel(PageModel novel) {
+		boolean result = false;
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			result = dbh.deleteNovel(db, novel);
+		}
+		return result;
+	}
 }
