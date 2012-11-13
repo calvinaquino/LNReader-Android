@@ -270,9 +270,9 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 				webView.flingScroll(0, -scrollSize);
 				return true;
 			}
-			else return false;
+			else return super.onKeyDown(keyCode, event);
 		}
-		return false;
+		return super.onKeyDown(keyCode, event);
 	}
 	
 	@SuppressLint("NewApi")
