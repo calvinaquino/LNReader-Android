@@ -24,5 +24,6 @@
     <string name="service_name">LNReader Update</string>
     <string name="hint_search">Search</string>
     <string name="teasers">Teaser List</string>
+    <string name="search">Search</string>
 
 </resources>

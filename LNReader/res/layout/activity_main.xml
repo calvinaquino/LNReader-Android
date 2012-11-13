@@ -42,8 +42,7 @@
 	        android:minWidth="192dp"
 	        android:onClick="openSettings"
 	        android:text="@string/settings" />
-	    
-	
+	    	
 	    <Button
 	        android:id="@+id/button4"
 	        android:layout_width="wrap_content"
@@ -55,6 +54,19 @@
 	        android:minWidth="192dp"
 	        android:onClick="openTeaserList"
 	        android:text="@string/teasers" />
+	    
+	    <Button
+	        android:id="@+id/button5"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/button4"
+	        android:layout_below="@+id/button4"
+	        android:layout_marginTop="35dp"
+	        android:minHeight="66dp"
+	        android:minWidth="192dp"
+	        android:onClick="openSearch"
+	        android:text="@string/search" />
+
     </RelativeLayout>
 
 </RelativeLayout>

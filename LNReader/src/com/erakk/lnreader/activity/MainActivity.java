@@ -88,5 +88,10 @@ public class MainActivity extends Activity {
     public void openSettings(View view) {
     	Intent intent = new Intent(this, DisplaySettingsActivity.class);
     	startActivity(intent);
-    }    
+    }
+
+    public void openSearch(View view) {
+    	Intent intent = new Intent(this, DisplaySearchActivity.class);
+    	startActivity(intent);
+    } 
 }

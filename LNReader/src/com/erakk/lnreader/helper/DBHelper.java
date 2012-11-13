@@ -210,7 +210,24 @@ public class DBHelper extends SQLiteOpenHelper {
 		    cursor.close();
 	    }
 		return pageModel;
-	}	
+	}
+	
+	public ArrayList<PageModel> doSearch(SQLiteDatabase db, String searchStr) {
+		ArrayList<PageModel> result = new ArrayList<PageModel>();
+		Cursor cursor = rawQuery(db, "select * from " + TABLE_PAGE + " where "
+				+ COLUMN_PAGE + " LIKE ? OR " + COLUMN_TITLE + " LIKE ? " 
+				+ " ORDER BY " + COLUMN_TITLE
+				+ " LIMIT 100 "
+				, new String[] { "%" + searchStr + "%", "%" + searchStr + "%" });
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			PageModel page = cursorTopage(cursor);
+			result.add(page);
+			cursor.moveToNext();
+		}
+		cursor.close();
+		return result;
+	}
 
 	public void deletePageModel(SQLiteDatabase db, PageModel tempPage) {
 		int result = delete(db, TABLE_PAGE, COLUMN_ID + " = ?", new String[]{"" + tempPage.getId()});

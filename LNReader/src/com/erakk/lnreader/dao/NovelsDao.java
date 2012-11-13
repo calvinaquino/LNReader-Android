@@ -850,4 +850,15 @@ public class NovelsDao {
 		}		
 		return image;
 	}
+
+	public ArrayList<PageModel> doSearch(String searchStr) {
+		if(searchStr == null || searchStr.length() < 3 ) return null;
+		
+		ArrayList<PageModel> result;
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			result = dbh.doSearch(db, searchStr);
+		}
+		return result;
+	}
 }
