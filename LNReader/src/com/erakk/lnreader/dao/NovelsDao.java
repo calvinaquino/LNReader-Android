@@ -196,6 +196,104 @@ public class NovelsDao {
 		return list;
 	}
 
+	public ArrayList<PageModel> getTeaser(ICallbackNotifier notifier) throws Exception {
+		SQLiteDatabase db = null;
+		PageModel page = null;
+		ArrayList<PageModel> list = null;
+		// check if main page exist
+		synchronized (dbh) {
+			try{
+				db = dbh.getReadableDatabase();
+				page = dbh.getTeaserPage(db);
+			}finally{
+				db.close();
+			}
+		}
+		
+		if(page == null) {
+			return getTeaserFromInternet(notifier);
+		} else {
+			// get from db
+			synchronized (dbh) {
+				try{
+					db = dbh.getReadableDatabase();
+					list = dbh.getAllTeaser(db);
+				}finally{
+					db.close();
+				}
+			}
+			Log.d(TAG, "Found: " + list.size());
+		}
+		
+		return list;
+	}
+	
+	public ArrayList<PageModel> getTeaserFromInternet(ICallbackNotifier notifier) throws Exception {
+		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
+		if (notifier != null) {
+			notifier.onCallback(new CallbackEventData("Downloading teaser list..."));
+		}
+		
+		// parse Category:Teasers information
+		PageModel teaserPage = new PageModel();
+		teaserPage.setPage("Category:Teasers");
+		teaserPage.setTitle("Teasers");
+		teaserPage = getPageModel(teaserPage, notifier);
+		teaserPage.setType(PageModel.TYPE_OTHER);
+		
+		// update page model
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			teaserPage = dbh.insertOrUpdatePageModel(db, teaserPage);
+			Log.d(TAG, "Updated Category:Teasers");
+		}
+		
+		// get teaser list
+		ArrayList<PageModel> list = null;
+		String url = Constants.BASE_URL + "/project/index.php?title=Category:Teasers";
+		int retry = 0;
+		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
+			try{
+				Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
+				Document doc = response.parse();
+				
+				list = BakaTsukiParser.ParseTeaserList(doc);
+				Log.d(TAG, "Found from internet: " + list.size() + " Teaser");
+				
+				if (notifier != null) {
+					notifier.onCallback(new CallbackEventData("Found: " + list.size() + " teaser."));
+				}
+				break;
+			}catch(EOFException eof) {
+				++retry;
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData("Retrying: Category:Teasers (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
+				}
+				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
+			}
+			catch(IOException eof) {
+				++retry;
+				String message = "Retrying: Category:Teasers (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData(message));
+				}
+				Log.d(TAG, message, eof);
+				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
+			}
+		}
+		
+		// save teaser list
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			for (PageModel pageModel : list) {
+				pageModel = dbh.insertOrUpdatePageModel(db, pageModel);
+				Log.d(TAG, "Updated teaser: " + pageModel.getPage());
+			}			
+		}
+		
+		return list;
+	}
+	
 	public ArrayList<PageModel> getWatchedNovel() {
 		ArrayList<PageModel> watchedNovel = null;
 		synchronized (dbh) {

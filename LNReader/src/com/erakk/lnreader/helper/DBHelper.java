@@ -37,6 +37,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_IS_FINISHED_READ = "is_finished_read";
 	public static final String COLUMN_IS_DOWNLOADED = "is_downloaded";
 	public static final String COLUMN_ORDER = "_index";
+	public static final String COLUMN_STATUS = "status";
 	
 	public static final String TABLE_IMAGE = "images";
 	public static final String COLUMN_IMAGE = "name";
@@ -56,7 +57,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_ZOOM = "lastZoom";
 
 	public static final String DATABASE_NAME = "pages.db";
-	public static final int DATABASE_VERSION = 18;
+	public static final int DATABASE_VERSION = 19;
 
 	// Database creation SQL statement
 	private static final String DATABASE_CREATE_PAGES = "create table "
@@ -70,7 +71,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			  				 + COLUMN_IS_WATCHED + " boolean, "						// 7
 			  				 + COLUMN_IS_FINISHED_READ + " boolean, "				// 8
 			  				 + COLUMN_IS_DOWNLOADED + " boolean, "					// 9
-			  				 + COLUMN_ORDER + " integer );";						// 10
+			  				 + COLUMN_ORDER + " integer, "							// 10
+			  				 + COLUMN_STATUS + " text );";							// 11
 	
 	private static final String DATABASE_CREATE_IMAGES = "create table "
 		      + TABLE_IMAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -139,12 +141,16 @@ public class DBHelper extends SQLiteOpenHelper {
 		Log.w(DBHelper.class.getName(),
 		        "Upgrading db from version " + oldVersion + " to "
 		            + newVersion + ", which will destroy all old data");
-	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_PAGE);
-	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_IMAGE);
-	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_DETAILS);
-	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_BOOK);
-	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_CONTENT);
-	    onCreate(db);
+//	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_PAGE);
+//	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_IMAGE);
+//	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_DETAILS);
+//	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_BOOK);
+//	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_CONTENT);
+//		onCreate(db);
+		if(oldVersion == 18) {
+			db.execSQL("ALTER TABLE " + TABLE_PAGE + " ADD COLUMN " + COLUMN_STATUS + " text" );
+			oldVersion = 19;
+		}	    
 	}
 	
 	public void deletePagesDB(SQLiteDatabase db) {
@@ -161,6 +167,11 @@ public class DBHelper extends SQLiteOpenHelper {
 	public PageModel getMainPage(SQLiteDatabase db) {
 		//Log.d(TAG, "Select Main_Page");
 		PageModel page = getPageModel(db, "Main_Page");
+		return page;
+	}
+	
+	public PageModel getTeaserPage(SQLiteDatabase db) {
+		PageModel page = getPageModel(db, "Category:Teasers");
 		return page;
 	}
 
@@ -234,6 +245,21 @@ public class DBHelper extends SQLiteOpenHelper {
 		return pages;
 	}
 	
+	public ArrayList<PageModel> getAllTeaser(SQLiteDatabase db) {
+		ArrayList<PageModel> pages = new ArrayList<PageModel>();
+		
+		Cursor cursor = rawQuery(db, "select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ? " + " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE, 
+									 new String[] {"Category:Teasers"});
+		cursor.moveToFirst();
+	    while (!cursor.isAfterLast()) {
+	    	PageModel page = cursorTopage(cursor);
+	    	pages.add(page);
+	    	cursor.moveToNext();
+	    }
+	    cursor.close();
+		return pages;
+	}
+	
 	public ArrayList<PageModel> selectAllByColumn(SQLiteDatabase db, String whereQuery, String[] values) {
 		return selectAllByColumn(db, whereQuery, values, null);
 	}
@@ -286,6 +312,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_IS_WATCHED, page.isWatched());
 		cv.put(COLUMN_IS_FINISHED_READ, page.isFinishedRead());
 		cv.put(COLUMN_IS_DOWNLOADED, page.isDownloaded());
+		cv.put(COLUMN_STATUS, page.getStatus());
 		
 		if(temp == null) {
 			//Log.d(TAG, "Inserting: " + page.toString());
@@ -334,6 +361,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		page.setFinishedRead(cursor.getInt(8) == 1 ? true : false);
 		page.setDownloaded(cursor.getInt(9) == 1 ? true : false);
 		page.setOrder(cursor.getInt(10));
+		page.setStatus(cursor.getString(11));
 	    return page;
 	}
 	

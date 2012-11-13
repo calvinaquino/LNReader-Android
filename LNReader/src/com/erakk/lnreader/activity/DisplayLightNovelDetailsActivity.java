@@ -383,7 +383,11 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 						TextView textViewSynopsis = (TextView) synopsis.findViewById(R.id.synopsys);
 						textViewTitle.setTextSize(20);
 						textViewSynopsis.setTextSize(16); 
-						textViewTitle.setText(page.getTitle());
+						String title = page.getTitle();
+						if(page.isTeaser()) {
+							title += " (Teaser Project)";
+						}
+						textViewTitle.setText(title);
 						textViewSynopsis.setText(novelCol.getSynopsis());
 						
 						CheckBox isWatched = (CheckBox) synopsis.findViewById(R.id.isWatched);

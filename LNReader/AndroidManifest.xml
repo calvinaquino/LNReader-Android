@@ -43,6 +43,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.erakk.lnreader.activity.MainActivity" />
         </activity>
+        <activity
+            android:name=".activity.DisplayTeaserListActivity"
+            android:label="@string/title_activity_display_light_novels" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.erakk.lnreader.activity.MainActivity" />
+        </activity>
         <activity 
             android:name=".activity.DisplayLightNovelDetailsActivity"
             android:label="@string/title_activity_light_novel_chapters" >

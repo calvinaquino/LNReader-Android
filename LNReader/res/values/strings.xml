@@ -23,5 +23,6 @@
     <string name="list_empty">List is Empty</string>
     <string name="service_name">LNReader Update</string>
     <string name="hint_search">Search</string>
+    <string name="teasers">Teaser List</string>
 
 </resources>

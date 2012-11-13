@@ -26,6 +26,7 @@ public class PageModel{
 	private boolean isDownloaded;
 	private BookModel book;
 	private int order;
+	private String status;
 	private boolean isHighlighted = false;
 	private boolean isMissing = false;
 	
@@ -182,4 +183,16 @@ public class PageModel{
 	public void setMissing(boolean isMissing) {
 		this.isMissing = isMissing;
 	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public boolean isTeaser() {
+		if(status != null && status.length() > 0) {
+			return status.contains(Constants.STATUS_TEASER);
+		}
+		return false;
+	}	
 }

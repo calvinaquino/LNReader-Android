@@ -74,6 +74,11 @@ public class MainActivity extends Activity {
     	startActivity(intent);
     }
     
+    public void openTeaserList(View view) {
+    	Intent intent = new Intent(this, DisplayTeaserListActivity.class);
+    	startActivity(intent);
+    }
+    
     public void openWatchList(View view) {
     	Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
     	intent.putExtra(Constants.EXTRA_ONLY_WATCHED, true);
