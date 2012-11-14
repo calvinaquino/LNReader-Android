@@ -220,6 +220,8 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ "   WHEN '" + PageModel.TYPE_NOVEL   + "' THEN 1 "
 				+ "   WHEN '" + PageModel.TYPE_CONTENT + "' THEN 2 "
 				+ "   ELSE 3 END, "
+				+ COLUMN_PARENT + ", "
+				+ COLUMN_ORDER + ", "
 				+ COLUMN_TITLE 
 				+ " LIMIT 100 "
 				, new String[] { "%" + searchStr + "%", "%" + searchStr + "%" });

@@ -21,7 +21,7 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.adapter.PageModelAdapter;
+import com.erakk.lnreader.adapter.SearchPageModelAdapter;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
 
@@ -31,7 +31,7 @@ public class DisplaySearchActivity extends Activity{
 	private Handler mHandler = new Handler();
 	private long mStartTime;
 	private ProgressBar progress = null;
-	PageModelAdapter adapter = null;
+	SearchPageModelAdapter adapter = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ public class DisplaySearchActivity extends Activity{
 		if(UIHelper.IsSmallScreen(this)) {
 			resourceId = R.layout.novel_list_item_small; 
 		}
-		adapter = new PageModelAdapter(this, resourceId, new ArrayList<PageModel>());
+		adapter = new SearchPageModelAdapter(this, resourceId, new ArrayList<PageModel>());
 		searchResult.setAdapter(adapter);
 		searchResult.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
