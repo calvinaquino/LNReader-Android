@@ -1,72 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/main_screen" >
-    <RelativeLayout
-        android:id="@+id/center_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" 
-        android:layout_centerVertical="true">
-        
-		<Button
-	        android:id="@+id/button1"
-	        android:layout_width="wrap_content"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    
+	<ScrollView
+	    android:id="@+id/main_screen"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_centerVertical="true"
+	    android:layout_centerHorizontal="true" >
+    
+	    <LinearLayout
+	        android:id="@+id/center_layout2"
+	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:layout_centerHorizontal="true"
-	        android:layout_marginBottom="35dp"
-	        android:minHeight="66dp"
-	        android:minWidth="192dp"
-	        android:onClick="openNovelList"
-	        android:text="@string/light_novels" />
+	        android:gravity="center_vertical|center_horizontal"
+	        android:orientation="vertical" >
+
+	        <Button
+	            android:id="@+id/button1"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:minHeight="66dp"
+	            android:minWidth="192dp"
+	            android:onClick="openNovelList"
+	            android:text="@string/light_novels" />
 	
-	    <Button
-	        android:id="@+id/button2"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:minWidth="192dp"
-	        android:minHeight="66dp"
-	        android:layout_alignLeft="@+id/button1"
-	        android:layout_below="@+id/button1"
-	        android:onClick="openWatchList"
-	        android:text="@string/watch_list" />
+	        <Button
+	            android:id="@+id/button2"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="35dp"
+	            android:minHeight="66dp"
+	            android:minWidth="192dp"
+	            android:onClick="openWatchList"
+	            android:text="@string/watch_list" />
+	
+	        <Button
+	            android:id="@+id/button3"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="35dp"
+	            android:minHeight="66dp"
+	            android:minWidth="192dp"
+	            android:onClick="openSettings"
+	            android:text="@string/settings" />
+	
+	        <Button
+	            android:id="@+id/button4"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="35dp"
+	            android:minHeight="66dp"
+	            android:minWidth="192dp"
+	            android:onClick="openTeaserList"
+	            android:text="@string/teasers" />
+	
+	        <Button
+	            android:id="@+id/button5"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="35dp"
+	            android:minHeight="66dp"
+	            android:minWidth="192dp"
+	            android:onClick="openSearch"
+	            android:text="@string/search" />
+            
+	    </LinearLayout>
 	    
-	    <Button
-	        android:id="@+id/button3"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignLeft="@+id/button2"
-	        android:layout_below="@+id/button2"
-	        android:layout_marginTop="35dp"
-	        android:minHeight="66dp"
-	        android:minWidth="192dp"
-	        android:onClick="openSettings"
-	        android:text="@string/settings" />
-	    	
-	    <Button
-	        android:id="@+id/button4"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignLeft="@+id/button3"
-	        android:layout_below="@+id/button3"
-	        android:layout_marginTop="35dp"
-	        android:minHeight="66dp"
-	        android:minWidth="192dp"
-	        android:onClick="openTeaserList"
-	        android:text="@string/teasers" />
-	    
-	    <Button
-	        android:id="@+id/button5"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignLeft="@+id/button4"
-	        android:layout_below="@+id/button4"
-	        android:layout_marginTop="35dp"
-	        android:minHeight="66dp"
-	        android:minWidth="192dp"
-	        android:onClick="openSearch"
-	        android:text="@string/search" />
-
-    </RelativeLayout>
-
+	</ScrollView>
+	
 </RelativeLayout>
