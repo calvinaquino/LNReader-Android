@@ -25,5 +25,6 @@
     <string name="hint_search">Search</string>
     <string name="teasers">Teaser List</string>
     <string name="search">Search</string>
+    <string name="novel_only">Novel Only</string>
 
 </resources>

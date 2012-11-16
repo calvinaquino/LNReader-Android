@@ -47,6 +47,7 @@ public class Constants {
 	public static final String PREF_PERSIST_NOTIFICATION = "persist_notification";
 	public static final String PREF_USE_VOLUME_FOR_SCROLL = "use_volume_to_scroll";
 	public static final String PREF_SCROLL_SIZE = "scroll_size";
+	public static final String PREF_IS_NOVEL_ONLY = "novel_only";
 	
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 

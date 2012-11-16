@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -13,6 +14,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -32,6 +36,7 @@ public class DisplaySearchActivity extends Activity{
 	private long mStartTime;
 	private ProgressBar progress = null;
 	SearchPageModelAdapter adapter = null;
+	private CheckBox chkNovelOnly = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -42,7 +47,7 @@ public class DisplaySearchActivity extends Activity{
 		setTitle("Search");
 		isInverted = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
 		
-		EditText search = (EditText) findViewById(R.id.searchText);
+		final EditText search = (EditText) findViewById(R.id.searchText);
 		search.addTextChangedListener( new TextWatcher() {			
 			public void onTextChanged(CharSequence s, int start, int before, int count) { }
 			
@@ -69,8 +74,26 @@ public class DisplaySearchActivity extends Activity{
 		
 		progress = (ProgressBar) findViewById(R.id.progressBar1);
 		
+		chkNovelOnly =  (CheckBox) findViewById(R.id.chkNovelOnly);
+		chkNovelOnly.setChecked(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_IS_NOVEL_ONLY, false));
+		chkNovelOnly.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				SetNovelOnly(isChecked);
+				doSearch(search.getEditableText());
+				progress.setVisibility(View.VISIBLE);
+			}
+		});
+		
 	}
 	
+	protected void SetNovelOnly(boolean isChecked) {
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    	SharedPreferences.Editor editor = sharedPrefs.edit();
+    	editor.putBoolean(Constants.PREF_IS_NOVEL_ONLY, isChecked);
+    	editor.commit();
+	}
+
 	protected void LoadItem(int position) {
 		PageModel page = adapter.getItem(position);
 		
@@ -94,26 +117,31 @@ public class DisplaySearchActivity extends Activity{
 	private SearchHelper callback;
 	protected void doSearch(Editable s) {
 		searchString = s.toString();
+		boolean isNovelOnly = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_IS_NOVEL_ONLY, false);
 		synchronized (s) {
 			mStartTime = System.currentTimeMillis();
 			if(callback != null) {
 				mHandler.removeCallbacks(callback);
 			}
-			callback = new SearchHelper(mStartTime);
+			callback = new SearchHelper(mStartTime, isNovelOnly);
 	        mHandler.postDelayed(callback, 1000);
 		}
 	}
 	
 	private class SearchHelper implements Runnable {
 		private final long time;
-		public SearchHelper(long time) {
+		private final boolean isNovelOnly;
+		
+		public SearchHelper(long time, boolean isNovelOnly) {
 			this.time = time;
+			this.isNovelOnly = isNovelOnly;
 		}
+		
 		public void run() {
 			Log.d(TAG, "Time: " + time + " Start Time: " + mStartTime);
 			if(time == mStartTime) {
 				adapter.clear();
-				ArrayList<PageModel> result = NovelsDao.getInstance().doSearch(searchString);
+				ArrayList<PageModel> result = NovelsDao.getInstance().doSearch(searchString, isNovelOnly);
 				if (result != null)
 					adapter.addAll(result);
 				progress.setVisibility(View.GONE);

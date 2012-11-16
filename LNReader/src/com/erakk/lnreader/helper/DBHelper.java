@@ -212,19 +212,35 @@ public class DBHelper extends SQLiteOpenHelper {
 		return pageModel;
 	}
 	
-	public ArrayList<PageModel> doSearch(SQLiteDatabase db, String searchStr) {
+	public ArrayList<PageModel> doSearch(SQLiteDatabase db, String searchStr, boolean isNovelOnly) {
 		ArrayList<PageModel> result = new ArrayList<PageModel>();
-		Cursor cursor = rawQuery(db, "select * from " + TABLE_PAGE + " where "
-				+ COLUMN_PAGE + " LIKE ? OR " + COLUMN_TITLE + " LIKE ? " 
-				+ " ORDER BY CASE " + COLUMN_TYPE
-				+ "   WHEN '" + PageModel.TYPE_NOVEL   + "' THEN 1 "
-				+ "   WHEN '" + PageModel.TYPE_CONTENT + "' THEN 2 "
-				+ "   ELSE 3 END, "
-				+ COLUMN_PARENT + ", "
-				+ COLUMN_ORDER + ", "
-				+ COLUMN_TITLE 
-				+ " LIMIT 100 "
-				, new String[] { "%" + searchStr + "%", "%" + searchStr + "%" });
+		
+		String sql = null;
+		if(isNovelOnly) {
+			sql = "select * from " + TABLE_PAGE 
+					+ " WHERE " + COLUMN_TYPE + " = '" + PageModel.TYPE_NOVEL + "' and "
+					+ COLUMN_PAGE + " LIKE ? OR " + COLUMN_TITLE + " LIKE ? "
+					+ " ORDER BY "
+					+ COLUMN_PARENT + ", "
+					+ COLUMN_ORDER + ", "
+					+ COLUMN_TITLE 
+					+ " LIMIT 100 ";
+			Log.d(TAG, "Novel Only");
+		}
+		else {
+			sql = "select * from " + TABLE_PAGE + " where "
+					+ COLUMN_PAGE + " LIKE ? OR " + COLUMN_TITLE + " LIKE ? " 
+					+ " ORDER BY CASE " + COLUMN_TYPE
+					+ "   WHEN '" + PageModel.TYPE_NOVEL   + "' THEN 1 "
+					+ "   WHEN '" + PageModel.TYPE_CONTENT + "' THEN 2 "
+					+ "   ELSE 3 END, "
+					+ COLUMN_PARENT + ", "
+					+ COLUMN_ORDER + ", "
+					+ COLUMN_TITLE 
+					+ " LIMIT 100 ";
+			Log.d(TAG, "All Items");
+		}
+		Cursor cursor = rawQuery(db, sql , new String[] { "%" + searchStr + "%", "%" + searchStr + "%" });
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			PageModel page = cursorTopage(cursor);
