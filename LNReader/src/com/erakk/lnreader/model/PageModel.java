@@ -189,9 +189,28 @@ public class PageModel{
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	
 	public boolean isTeaser() {
 		if(status != null && status.length() > 0) {
 			return status.contains(Constants.STATUS_TEASER);
+		}
+		return false;
+	}
+	public boolean isStalled() {
+		if(status != null && status.length() > 0) {
+			return status.contains(Constants.STATUS_STALLED);
+		}
+		return false;
+	}	
+	public boolean isAbandoned() {
+		if(status != null && status.length() > 0) {
+			return status.contains(Constants.STATUS_ABANDONED);
+		}
+		return false;
+	}	
+	public boolean isPending() {
+		if(status != null && status.length() > 0) {
+			return status.contains(Constants.STATUS_PENDING);
 		}
 		return false;
 	}	

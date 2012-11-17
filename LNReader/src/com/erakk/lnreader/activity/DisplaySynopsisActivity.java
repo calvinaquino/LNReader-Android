@@ -55,7 +55,7 @@ public class DisplaySynopsisActivity extends Activity {
         textViewTitle.setText(novel);
         
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean invertColors = sharedPrefs.getBoolean("invert_colors", false);
+        boolean invertColors = sharedPrefs.getBoolean("invert_colors", true);
         
         if (invertColors == true) {
         	textViewSynopsis.setBackgroundColor(Color.TRANSPARENT);

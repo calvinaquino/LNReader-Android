@@ -67,7 +67,7 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
 		updateContent(false);
 		
 		setTitle("Light Novels: Teasers");
-		isInverted = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
+		isInverted = getColorPreferences();
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
 	@Override
     protected void onRestart() {
         super.onRestart();
-        if(isInverted != PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false)) {
+        if(isInverted != getColorPreferences()) {
         	UIHelper.Recreate(this);
         }
         adapter.notifyDataSetChanged();
@@ -351,6 +351,10 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
 			Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}		
+	}
+	
+	private boolean getColorPreferences(){
+    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 }
 

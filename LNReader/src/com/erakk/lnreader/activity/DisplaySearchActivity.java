@@ -45,7 +45,7 @@ public class DisplaySearchActivity extends Activity{
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 		
 		setTitle("Search");
-		isInverted = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
+		isInverted = getColorPreferences();
 		
 		final EditText search = (EditText) findViewById(R.id.searchText);
 		search.addTextChangedListener( new TextWatcher() {			
@@ -157,8 +157,12 @@ public class DisplaySearchActivity extends Activity{
 	@Override
     protected void onRestart() {
         super.onRestart();
-        if(isInverted != PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false)) {
+        if(isInverted != getColorPreferences()) {
         	UIHelper.Recreate(this);
         }
     }
+	
+	private boolean getColorPreferences(){
+    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
+	}
 }

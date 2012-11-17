@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.jsoup.Jsoup;
@@ -23,6 +24,7 @@ import org.jsoup.select.Elements;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.ImageModel;
@@ -37,7 +39,7 @@ import com.erakk.lnreader.model.PageModel;
 public class BakaTsukiParser {
 
 	
-	private static final String TAG = "Parser";
+	private static final String TAG = BakaTsukiParser.class.toString();
 
 	/**
 	 * parse page info from Wiki API
@@ -73,7 +75,7 @@ public class BakaTsukiParser {
 		Elements pages = doc.select("page");
 		//Log.d(TAG, "parsePageAPI pages size: " + pages.size());
 		
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
 		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		
 		for(int i = 0; i < pageModels.size(); ++i) {
@@ -221,9 +223,53 @@ public class BakaTsukiParser {
 		parseNovelCover(doc, novel);				
 		parseNovelChapters(doc, novel);
 		
+		parseNovelStatus(doc, page);
+		
 		return novel;
 	}
 	
+	private static PageModel parseNovelStatus(Document doc, PageModel page) {
+		boolean isTeaser = page.isTeaser();
+		boolean isStalled = page.isStalled();
+		boolean isAbandoned = page.isAbandoned();
+		boolean isPending = page.isPending();
+		
+		// Template:STALLED
+		Elements links = doc.select("a[title=Template:STALLED]");
+		if(links != null && links.size() > 0) {
+			isStalled = true;
+			Log.i(TAG, "Novel is stalled: " + page.getPage());
+		}
+		else isStalled = false;
+		
+		// Template:Abandoned 
+		links = doc.select("a[title=Template:Abandoned]");
+		if(links != null && links.size() > 0) {
+			isAbandoned = true;
+			Log.i(TAG, "Novel is abandoned: " + page.getPage());
+		}
+		else isAbandoned = false;
+		
+		// Template:Warning:ATP
+		links = doc.select("a[title=Template:Warning:ATP]");
+		if(links != null && links.size() > 0) {
+			isPending = true;
+			Log.i(TAG, "Novel is pending authorization: " + page.getPage());
+		}
+		else isPending = false;
+		
+		// update the status
+		ArrayList<String> statuses = new ArrayList<String>();
+		if(isTeaser) statuses.add(Constants.STATUS_TEASER);
+		if(isStalled) statuses.add(Constants.STATUS_STALLED);
+		if(isAbandoned) statuses.add(Constants.STATUS_ABANDONED);
+		if(isPending) statuses.add(Constants.STATUS_PENDING);
+		
+		page.setStatus(LNReaderApplication.join(statuses, "|"));
+		
+		return page;
+		}
+
 	/**
 	 * Check if the page is redirected. Return null if not.
 	 * @param doc

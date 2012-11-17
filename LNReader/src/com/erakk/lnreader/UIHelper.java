@@ -94,7 +94,7 @@ public class UIHelper {
 	public static void ToggleColorPref(Activity activity) { 
     	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(activity);
     	SharedPreferences.Editor editor = sharedPrefs.edit();
-    	if (sharedPrefs.getBoolean(Constants.PREF_INVERT_COLOR, false)) {
+    	if (sharedPrefs.getBoolean(Constants.PREF_INVERT_COLOR, true)) {
     		editor.putBoolean(Constants.PREF_INVERT_COLOR, false);
     	}
     	else {

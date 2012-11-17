@@ -150,7 +150,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 		});
         
         LNReaderApplication.getInstance().setUpdateServiceListener(this);
-        isInverted = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
+        isInverted = getColorPreferences();
     }
 
 	private void clearImages() {
@@ -177,7 +177,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 	@Override
     protected void onRestart() {
         super.onRestart();
-        if(isInverted != PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false)) {
+        if(isInverted != getColorPreferences()) {
         	UIHelper.Recreate(this);
         }
     }
@@ -203,5 +203,9 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 	
 	private void recreateUI() {
 		UIHelper.Recreate(this);
+	}
+	
+	private boolean getColorPreferences(){
+    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 }

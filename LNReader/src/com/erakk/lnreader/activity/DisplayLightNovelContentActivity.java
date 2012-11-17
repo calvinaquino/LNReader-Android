@@ -531,11 +531,11 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	}
 
 	private boolean getShowImagesPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(Constants.PREF_SHOW_IMAGE, false);
+		return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(Constants.PREF_SHOW_IMAGE, true);
 	}
 	
 	private boolean getColorPreferences(){
-    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
+    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 	
 	private boolean getZoomPreferences(){

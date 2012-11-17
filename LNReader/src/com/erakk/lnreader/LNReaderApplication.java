@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import android.app.Application;
 import android.content.ComponentName;
@@ -165,4 +167,18 @@ public class LNReaderApplication extends Application {
 		}
 		return cssCache.get(styleId);
 	}
+	
+	// Helper method
+	public static String join(Collection<?> s, String delimiter) {
+	     StringBuilder builder = new StringBuilder();
+	     Iterator<?> iter = s.iterator();
+	     while (iter.hasNext()) {
+	         builder.append(iter.next());
+	         if (!iter.hasNext()) {
+	           break;                  
+	         }
+	         builder.append(delimiter);
+	     }
+	     return builder.toString();
+	 }
 }

@@ -22,7 +22,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         UIHelper.SetTheme(this, R.layout.activity_main);
         UIHelper.SetActionBarDisplayHomeAsUp(this, false);
-        isInverted = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
+        isInverted = getColorPreferences();
     }
 
     @Override
@@ -34,7 +34,7 @@ public class MainActivity extends Activity {
 	@Override
     protected void onRestart() {
         super.onRestart();
-        if(isInverted != PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false)) {
+        if(isInverted != getColorPreferences()) {
         	UIHelper.Recreate(this);
         }
     }
@@ -93,5 +93,9 @@ public class MainActivity extends Activity {
     public void openSearch(View view) {
     	Intent intent = new Intent(this, DisplaySearchActivity.class);
     	startActivity(intent);
-    } 
+    }
+    
+	private boolean getColorPreferences(){
+    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
+	}
 }

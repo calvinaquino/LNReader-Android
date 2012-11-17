@@ -95,13 +95,13 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 		});
     	
         setTitle(page.getTitle());
-        isInverted = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false);
+        isInverted = getColorPreferences();
     }
     
 	@Override
     protected void onRestart() {
         super.onRestart();
-        if(isInverted != PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, false)) {
+        if(isInverted != getColorPreferences()) {
         	UIHelper.Recreate(this);
         }
         bookModelAdapter.notifyDataSetChanged();
@@ -360,7 +360,6 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 							for(int i = 0; i < content.length; ++i) {
 								if(temp.getPage() == content[i].getPage()) {
 									temp.setDownloaded(true);
-									//content[i].setDownloaded(true);
 								}
 							}
 						}
@@ -387,6 +386,17 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 						if(page.isTeaser()) {
 							title += " (Teaser Project)";
 						}
+						if(page.isStalled()) {
+							title += "\nStatus: Project Stalled";
+						}
+						if(page.isAbandoned()) {
+							title += "\nStatus: Project Abandoned";
+						}
+						if(page.isPending()) {
+							title += "\nStatus: Project Pending Authorization";
+						}
+						
+						
 						textViewTitle.setText(title);
 						textViewSynopsis.setText(novelCol.getSynopsis());
 						
@@ -432,5 +442,9 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
 			Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
+	}
+	
+	private boolean getColorPreferences(){
+    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 }

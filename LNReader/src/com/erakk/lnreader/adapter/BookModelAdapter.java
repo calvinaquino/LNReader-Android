@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
+import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
@@ -69,7 +70,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			tv.setTextColor(read);
 		}
 		else {
-			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean("invert_colors", false)) {
+			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
 				tv.setTextColor(notRead);
 			}
 			else {
@@ -138,7 +139,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			tv.setTextColor(read);
 		}
 		else {
-			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean("invert_colors", false)) {
+			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
 				tv.setTextColor(notRead);
 			}
 			else {
