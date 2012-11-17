@@ -22,7 +22,7 @@ public class PageModel{
 	private PageModel pageModel;
 	private Date lastCheck;
 	private boolean isWatched;
-	private boolean isFinishedRead;
+	private boolean isFinishedRead = false;
 	private boolean isDownloaded;
 	private BookModel book;
 	private int order;

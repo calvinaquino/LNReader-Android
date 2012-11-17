@@ -110,7 +110,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				  				    + COLUMN_LAST_UPDATE + " integer, "							// 6
 				  				    + COLUMN_LAST_CHECK + " integer);";							// 7
 	
-	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/databases";
+	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files/databases";
 	
 	private static String getDbPath(Context context) {
 		String dbPath = null;
@@ -119,8 +119,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			dbPath = path.getAbsolutePath() + "/databases/" + DATABASE_NAME;
 		else {
 			path = new File(DB_ROOT_SD);
-			path.mkdirs();
-			//if(!( path.mkdirs() || path.isDirectory())) throw new Exception("Failed to create db directory: " + DB_ROOT_SD);
+			if(!( path.mkdirs() || path.isDirectory())) Log.e(TAG, "DB Path doesn't exists/failed to create.");
+			// throw new Exception("Failed to create db directory: " + DB_ROOT_SD);
 			dbPath = DB_ROOT_SD + "/" + DATABASE_NAME;
 		}
 		Log.d(TAG, "DB Path : " + dbPath);
@@ -757,13 +757,14 @@ public class DBHelper extends SQLiteOpenHelper {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_CONTENT, content.getContent());
 		cv.put(COLUMN_PAGE, content.getPage());
-		cv.put(COLUMN_LAST_X, "" + content.getLastXScroll());
-		cv.put(COLUMN_LAST_Y, "" + content.getLastYScroll());
 		cv.put(COLUMN_ZOOM, "" + content.getLastZoom());
 		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 		
 		NovelContentModel temp = getNovelContent(db, content.getPage());
 		if(temp == null){
+			cv.put(COLUMN_LAST_X, "" + content.getLastXScroll());
+			cv.put(COLUMN_LAST_Y, "" + content.getLastYScroll());
+			
 			//Log.d(TAG, "Inserting Novel Content: " + content.getPage());
 			if(content.getLastUpdate() == null)
 				cv.put(COLUMN_LAST_UPDATE, 0);
@@ -773,6 +774,15 @@ public class DBHelper extends SQLiteOpenHelper {
 			Log.i(TAG, "Novel Content Inserted, New id: "  + id);
 		}
 		else {
+			if(content.isUpdatingFromInternet()) {
+				cv.put(COLUMN_LAST_X, "" + temp.getLastXScroll());
+				cv.put(COLUMN_LAST_Y, "" + temp.getLastYScroll());
+			}
+			else {
+				cv.put(COLUMN_LAST_X, "" + content.getLastXScroll());
+				cv.put(COLUMN_LAST_Y, "" + content.getLastYScroll());
+			}
+			
 			//Log.d(TAG, "Updating Novel Content: " + content.getPage() + " id: " + temp.getId());
 			if(content.getLastUpdate() == null)
 				cv.put(COLUMN_LAST_UPDATE, "" + (int) (temp.getLastUpdate().getTime() / 1000));

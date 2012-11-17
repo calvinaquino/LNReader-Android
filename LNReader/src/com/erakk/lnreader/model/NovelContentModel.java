@@ -18,6 +18,8 @@ public class NovelContentModel {
 	private Date lastUpdate;
 	private Date lastCheck;
 	
+	private boolean isUpdatingFromInternet;
+	
 	private ArrayList<ImageModel> images;
 	
 	public int getId() {
@@ -85,5 +87,11 @@ public class NovelContentModel {
 	}
 	public void setImages(ArrayList<ImageModel> images) {
 		this.images = images;
+	}
+	public boolean isUpdatingFromInternet() {
+		return isUpdatingFromInternet;
+	}
+	public void setUpdatingFromInternet(boolean isUpdating) {
+		this.isUpdatingFromInternet = isUpdating;
 	}	
 }

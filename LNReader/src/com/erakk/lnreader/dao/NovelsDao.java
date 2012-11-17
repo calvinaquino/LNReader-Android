@@ -669,6 +669,7 @@ public class NovelsDao {
 				Response response = Jsoup.connect(encodedUrl).timeout(Constants.TIMEOUT).execute();
 				doc = response.parse();
 				content = BakaTsukiParser.ParseNovelContent(doc, page);
+				content.setUpdatingFromInternet(true);
 				break;
 			}catch(EOFException eof) {
 				++retry;
