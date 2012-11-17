@@ -112,14 +112,23 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/databases";
 	
-	private static String getDbPath(){
-		File path = new File(DB_ROOT_SD);
-		path.mkdirs();		
-		return DB_ROOT_SD + "/" + DATABASE_NAME;
+	private static String getDbPath(Context context) {
+		String dbPath = null;
+		File path = context.getExternalFilesDir(null);
+		if(path != null) 
+			dbPath = path.getAbsolutePath() + "/databases/" + DATABASE_NAME;
+		else {
+			path = new File(DB_ROOT_SD);
+			path.mkdirs();
+			//if(!( path.mkdirs() || path.isDirectory())) throw new Exception("Failed to create db directory: " + DB_ROOT_SD);
+			dbPath = DB_ROOT_SD + "/" + DATABASE_NAME;
+		}
+		Log.d(TAG, "DB Path : " + dbPath);
+		return dbPath;
 	}
 	
 	public DBHelper(Context context) {
-		super(context, getDbPath(), null, DATABASE_VERSION);
+		super(context, getDbPath(context), null, DATABASE_VERSION);
 	}
 
 	@Override

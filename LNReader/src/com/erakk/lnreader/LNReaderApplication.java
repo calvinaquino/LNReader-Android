@@ -52,7 +52,7 @@ public class LNReaderApplication extends Application {
 	
 	protected void initSingletons()
 	{
-		if(novelsDao == null) novelsDao = NovelsDao.getInstance(getApplicationContext());
+		if(novelsDao == null) novelsDao = NovelsDao.getInstance(this);//getApplicationContext());
 		if(runningTasks == null) runningTasks = new Hashtable<String, AsyncTask<?, ?, ?>>();
 	}
 	

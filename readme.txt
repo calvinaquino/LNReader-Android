@@ -27,22 +27,10 @@ TODO:
 * Basic Auto checking for novel translation updates
 
 TODO Parser:
-- http://www.baka-tsuki.org/project/index.php?title=Tasogare-iro_no_Uta_Tsukai = no chapter because the list is inside a table. 
-  => OK, find all h3 inside element if current element != h3
 - http://www.baka-tsuki.org/project/index.php?title=White_Album_2_Omake = no structure..
-- http://www.baka-tsuki.org/project/index.php?title=To_Aru_Majutsu_no_Index = New Testament Vol.4 , why table...
-  => OK, removed dl/ul/div checking, just get all li elements.
-- http://www.baka-tsuki.org/project/index.php?title=Sayonara_Piano_Sonata = External link? Somehow teaser not parsed.
-  => OK, now parsed as side effect from Index parser update. No external content yet.
-- http://www.baka-tsuki.org/project/index.php?title=Maru-MA = different identifier with the title. 
-  => OK, add _Series/_series as keyword
-- http://www.baka-tsuki.org/project/index.php?title=Ginban_Kaleidoscope = Using h1, instead of h2 
-  => OK, add h1 in selector
-
 - External link, e.g: Drrrr. I thinks there are more.
-- Add extra info for Side story/spin off, e.g.: Index NT, Seitokai Mokushiroku?
 - Template:Abandoned, e.g.: NHK e youkouzo.
-  => Need db change to save the flag
+  => Update the db structure, need to update parser.
 
 UNHANDLED EXCEPTION:
 ====================================================
