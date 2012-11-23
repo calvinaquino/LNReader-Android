@@ -195,8 +195,25 @@ public class NovelsDao {
 		}
 		return list;
 	}
+	
+	public ArrayList<PageModel> getWatchedNovel() {
+		ArrayList<PageModel> watchedNovel = null;
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			try{
+				watchedNovel = dbh.selectAllByColumn(db, DBHelper.COLUMN_IS_WATCHED + " = ? and (" 
+			                                           + DBHelper.COLUMN_PARENT + " = ? or "
+			                                           + DBHelper.COLUMN_PARENT + " = ? )"
+			                                       , new String[] { "1", "Main_Page", "Category:Teasers" }
+												   , DBHelper.COLUMN_TITLE );
+			}finally{
+				db.close();
+			}			
+		}
+		return watchedNovel;
+	}
 
-	public ArrayList<PageModel> getTeaser(ICallbackNotifier notifier) throws Exception {
+	public ArrayList<PageModel> getTeaser(ICallbackNotifier notifier, boolean alphOrder) throws Exception {
 		SQLiteDatabase db = null;
 		PageModel page = null;
 		ArrayList<PageModel> list = null;
@@ -217,7 +234,7 @@ public class NovelsDao {
 			synchronized (dbh) {
 				try{
 					db = dbh.getReadableDatabase();
-					list = dbh.getAllTeaser(db);
+					list = dbh.getAllTeaser(db, alphOrder);
 				}finally{
 					db.close();
 				}
@@ -292,19 +309,6 @@ public class NovelsDao {
 		}
 		
 		return list;
-	}
-	
-	public ArrayList<PageModel> getWatchedNovel() {
-		ArrayList<PageModel> watchedNovel = null;
-		synchronized (dbh) {
-			SQLiteDatabase db = dbh.getReadableDatabase();
-			try{
-				watchedNovel = dbh.selectAllByColumn(db, DBHelper.COLUMN_IS_WATCHED + " = ? and " + DBHelper.COLUMN_PARENT + " = ?", new String[] {"1", "Main_Page"});
-			}finally{
-				db.close();
-			}			
-		}
-		return watchedNovel;
 	}
 
 	public PageModel getPageModel(PageModel page, ICallbackNotifier notifier) throws Exception {

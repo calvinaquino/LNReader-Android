@@ -42,24 +42,13 @@ public class MainActivity extends Activity {
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        	case R.id.last_novel:        		
-        		/*
-        		 * Implement code to load last chapter read
-        		 */
-        		String lastReadPage = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LAST_READ, "");
-        		if(lastReadPage.length() > 0) {
-        			Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
-			        intent.putExtra(Constants.EXTRA_PAGE, lastReadPage);
-			        startActivity(intent);
-        			//Toast.makeText(this, "Loading: " + lastReadPage, Toast.LENGTH_SHORT).show();
-        		}
-        		else{
-        			Toast.makeText(this, "No last read novel.", Toast.LENGTH_SHORT).show();
-        		}
-        		return true;
         	case R.id.invert_colors:    			
         		UIHelper.ToggleColorPref(this);
         		UIHelper.Recreate(this);    			
+    			return true;
+        	case R.id.menu_search:    			
+        		Intent intent = new Intent(this, DisplaySearchActivity.class);
+            	startActivity(intent);  			
     			return true;
             case android.R.id.home:
                 finish();
@@ -89,12 +78,19 @@ public class MainActivity extends Activity {
     	Intent intent = new Intent(this, DisplaySettingsActivity.class);
     	startActivity(intent);
     }
-
-    public void openSearch(View view) {
-    	Intent intent = new Intent(this, DisplaySearchActivity.class);
-    	startActivity(intent);
-    }
     
+    public void jumpLastRead(View view) {
+		String lastReadPage = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LAST_READ, "");
+		if(lastReadPage.length() > 0) {
+			Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
+	        intent.putExtra(Constants.EXTRA_PAGE, lastReadPage);
+	        startActivity(intent);
+		}
+		else{
+			Toast.makeText(this, "No last read novel.", Toast.LENGTH_SHORT).show();
+		}
+    }
+
 	private boolean getColorPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}

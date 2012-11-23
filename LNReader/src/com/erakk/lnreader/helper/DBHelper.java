@@ -323,11 +323,14 @@ public class DBHelper extends SQLiteOpenHelper {
 		return pages;
 	}
 	
-	public ArrayList<PageModel> getAllTeaser(SQLiteDatabase db) {
+	public ArrayList<PageModel> getAllTeaser(SQLiteDatabase db, boolean alphOrder) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
 		
-		Cursor cursor = rawQuery(db, "select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ? " + " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE, 
-									 new String[] {"Category:Teasers"});
+		String sql = "select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ? ";
+		if(alphOrder) sql += " ORDER BY " + COLUMN_TITLE;
+		else 		  sql += " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE;
+		
+		Cursor cursor = rawQuery(db, sql, new String[] {"Category:Teasers"});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	PageModel page = cursorTopage(cursor);

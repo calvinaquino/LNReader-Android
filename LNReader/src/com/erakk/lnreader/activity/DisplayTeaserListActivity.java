@@ -220,7 +220,8 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
 			} else {
 				adapter = new PageModelAdapter(this, resourceId, listItems);
 			}
-			executeTask(isRefresh);
+			boolean alphOrder = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ALPH_ORDER, false);
+			executeTask(isRefresh, alphOrder);
 			setListAdapter(adapter);
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
@@ -229,8 +230,8 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
 	}
 	
 	@SuppressLint("NewApi")
-	private void executeTask(boolean isRefresh) {
-		task = new LoadTeasersTask(this, isRefresh);
+	private void executeTask(boolean isRefresh, boolean alphOrder) {
+		task = new LoadTeasersTask(this, isRefresh, alphOrder);
 		String key = TAG + ":Category:Teasers";
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if(isAdded) {

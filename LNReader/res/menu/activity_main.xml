@@ -1,10 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/last_novel"
-        android:title="@string/last_novel"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
-    <item android:id="@+id/invert_colors"
+    <item android:id="@+id/menu_search" android:title="@string/hint_search" android:showAsAction="ifRoom"></item><item android:id="@+id/invert_colors"
         android:title="@string/invert_colors"
-        android:orderInCategory="99"
         android:showAsAction="never" />
+    
 </menu>

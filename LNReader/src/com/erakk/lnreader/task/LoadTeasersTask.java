@@ -15,10 +15,12 @@ import com.erakk.lnreader.model.PageModel;
 public class LoadTeasersTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskResult<ArrayList<PageModel>>>  implements ICallbackNotifier {
 	private static final String TAG = LoadTeasersTask.class.toString();
 	private boolean refreshOnly = false;
+	private boolean alphOrder = false;
 	public volatile IAsyncTaskOwner owner;
 	
-	public LoadTeasersTask(IAsyncTaskOwner owner, boolean refreshOnly) {
+	public LoadTeasersTask(IAsyncTaskOwner owner, boolean refreshOnly, boolean alphOrder) {
 		this.refreshOnly = refreshOnly;
+		this.alphOrder = alphOrder;
 		this.owner = owner;
 	}
 	
@@ -42,7 +44,7 @@ public class LoadTeasersTask extends AsyncTask<Void, ICallbackEventData, AsyncTa
 			}
 			else {
 				publishProgress(new CallbackEventData("Loading Teaser List"));
-				return new AsyncTaskResult<ArrayList<PageModel>>(NovelsDao.getInstance().getTeaser(this));
+				return new AsyncTaskResult<ArrayList<PageModel>>(NovelsDao.getInstance().getTeaser(this, alphOrder));
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting teaser list: " + e.getMessage(), e);
