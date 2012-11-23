@@ -1,5 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_search" android:title="@string/hint_search" android:showAsAction="ifRoom"></item><item android:id="@+id/invert_colors"
+    <item android:id="@+id/menu_search" 
+        android:title="@string/search" 
+        android:showAsAction="ifRoom|withText" 
+        android:icon="@drawable/ic_action_search"></item>
+    <item android:id="@+id/invert_colors"
         android:title="@string/invert_colors"
         android:showAsAction="never" />
     

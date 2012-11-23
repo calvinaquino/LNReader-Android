@@ -12,7 +12,6 @@
     <string name="novel_title">title</string>
     <string name="novel_cover">cover</string>
     <string name="novel_synopsys"></string>
-    <string name="last_novel">Jump to last read novel</string>
     <string name="title_activity_display_synopsys">DisplaySynopsysActivity</string>
     <string name="title_activity_display_novel_content">DisplayNovelContent</string>
     <string name="invert_colors">Invert Colors</string>
@@ -26,7 +25,7 @@
     <string name="teasers">Teaser List</string>
     <string name="search">Search</string>
     <string name="novel_only">Novel Only</string>
-    <string name="task_loading">Task still loading...</string>
+    <string name="task_loading">Task still loading&#8230;</string>
     <string name="jump_last_read">Jump to Last Read</string>
 
 </resources>

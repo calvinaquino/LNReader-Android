@@ -3,7 +3,7 @@
     android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-
+
     <TextView
         android:id="@+id/novel_chapter"
         android:layout_width="wrap_content"
@@ -16,7 +16,7 @@
         android:paddingRight="65dp"
         android:paddingTop="8dp"
         android:text="@string/novel_chapter" />
-
+
     <TextView
         android:id="@+id/novel_is_downloaded"
         android:layout_width="wrap_content"
@@ -37,7 +37,7 @@
         android:gravity="center_vertical"
         android:text="@string/novel_last_update"
         android:textColor="#888888"
-        android:textSize="10dp" />
+        android:textSize="10sp" />
 
     <TextView
         android:id="@+id/novel_last_check"
@@ -49,6 +49,6 @@
         android:gravity="center_vertical"
         android:text="@string/novel_last_update"
         android:textColor="#888888"
-        android:textSize="10dp" />
+        android:textSize="10sp" />
 
 </RelativeLayout>

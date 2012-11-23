@@ -14,7 +14,7 @@
         android:paddingBottom="12dp"
         android:paddingRight="60dp"
         android:gravity="center_vertical"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:text="@string/novel_title" />
 
     <TextView
@@ -26,7 +26,7 @@
         android:gravity="center_vertical"
         android:text="@string/novel_last_update"
         android:textColor="#888888"
-        android:textSize="10dp" />
+        android:textSize="10sp" />
 
     <TextView
         android:id="@+id/novel_last_check"
@@ -39,7 +39,7 @@
         android:gravity="center_vertical"
         android:text="@string/novel_last_update"
         android:textColor="#888888"
-        android:textSize="10dp" />
+        android:textSize="10sp" />
     
     <CheckBox
         android:id="@+id/novel_is_watched"
