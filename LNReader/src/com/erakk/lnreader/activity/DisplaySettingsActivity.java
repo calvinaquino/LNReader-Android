@@ -82,10 +82,14 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
         });
         
         final Preference updatesInterval = (Preference)  findPreference(Constants.PREF_UPDATE_INTERVAL);
+        final String[] updateIntervalArray = getResources().getStringArray(R.array.updateInterval);
+        int updatesIntervalValue = UIHelper.GetIntFromPreferences(Constants.PREF_UPDATE_INTERVAL, 0);
+        updatesInterval.setSummary("Define how often updates will be verified (" + updateIntervalArray[updatesIntervalValue] + ")");
         updatesInterval.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int updatesIntervalInt = Integer.parseInt(newValue.toString());	
 				MyScheduleReceiver.reschedule(updatesIntervalInt);
+				updatesInterval.setSummary("Define how often updates will be verified (" + updateIntervalArray[updatesIntervalInt] + ")");
                 return true;
 			}
 		});
@@ -146,6 +150,17 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 					Log.e(TAG, "Cannot get copyright page.", e);
 				}				
 				return false;
+			}
+		});
+        
+        final Preference scrollingSize = (Preference)  findPreference(Constants.PREF_SCROLL_SIZE);
+        int scrollingSizeValue = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 500);
+        scrollingSize.setSummary("Scrolling size for volumer rocker (" + scrollingSizeValue + ")");
+        scrollingSize.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				int scrollingSizeValue = Integer.parseInt(newValue.toString());	
+				scrollingSize.setSummary("Scrolling size for volumer rocker (" + scrollingSizeValue + ")");
+                return true;
 			}
 		});
         
