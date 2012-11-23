@@ -55,6 +55,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	private PageModelAdapter jumpAdapter = null;
 	private ProgressDialog dialog;
 	private WebView webView;
+	private BakaTsukiWebViewClient client;
 	private boolean restored;
 	
 	@Override
@@ -73,6 +74,11 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		});
 		
 		webView = (WebView) findViewById(R.id.webView1);
+		
+		// custom link handler
+		client = new BakaTsukiWebViewClient(this);
+		webView.setWebViewClient(client);
+		
 		restored = false;
 		
 		Log.d(TAG, "OnCreate Completed.");
@@ -318,10 +324,8 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	
 	public void jumpTo(PageModel page){
 		setLastReadState();
-		//pageModel = page;
 		executeTask(page, false);
-	}	
-
+	}
 	
 	private void buildTOCMenu() {
 		if(novelDetails != null && content != null) {
@@ -364,30 +368,35 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			WebView wv = (WebView) findViewById(R.id.webView1);
 			content.setLastXScroll(wv.getScrollX());
 			content.setLastYScroll(wv.getScrollY());
+			//content.setLastZoom(client.getScale());
 			content.setLastZoom(wv.getScale());
 			try{
 				content = NovelsDao.getInstance(this).updateNovelContent(content);
 			}catch(Exception ex) {
-				ex.printStackTrace();
+				Log.e(TAG, "Error when saving state: " + ex.getMessage(), ex);
 			}
+			
+			// check if complete read.
 			if(wv.getContentHeight() <=  wv.getScrollY() + wv.getBottom()) {
 				try{
 					PageModel page = content.getPageModel();
 					page.setFinishedRead(true);
 					page = NovelsDao.getInstance(this).updatePageModel(page);
-					Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 				}catch(Exception ex) {
-					ex.printStackTrace();
-					Log.d(TAG, "Error updating PageModel for Content: " + content.getPage());
+					Log.e(TAG, "Error updating PageModel for Content: " + content.getPage(), ex);
 				}
 			}
+			
+			// save for jump to last read.
 			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 	    	SharedPreferences.Editor editor = sharedPrefs.edit();
 	    	editor.putString(Constants.PREF_LAST_READ, content.getPage());
 	    	editor.commit();
+	    	
+			Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 		}
 	}
-	
+
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel, boolean refresh) {
 		task = new LoadNovelContentTask(refresh, this);
@@ -424,10 +433,6 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			// load the contents here
 			final WebView wv = (WebView) findViewById(R.id.webView1);
 			setWebViewSettings();
-	
-			// custom link handler
-			BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(this);
-			wv.setWebViewClient(client);
 			
 			int styleId = -1;
 			if(getColorPreferences()) {
@@ -455,6 +460,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 					if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
 						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
 						wv.scrollTo(0, content.getLastYScroll());
+						setLastReadState();
 						needScroll = false;
 					}						
 				}					
