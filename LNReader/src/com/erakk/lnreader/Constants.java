@@ -49,6 +49,7 @@ public class Constants {
 	public static final String PREF_SCROLL_SIZE = "scroll_size";
 	public static final String PREF_IS_NOVEL_ONLY = "novel_only";
 	public static final String PREF_INVERT_SCROLL = "invert_scroll";
+	public static final String PREF_ALPH_ORDER = "alphabet_order";
 	
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 

@@ -258,7 +258,8 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 			} else {
 				adapter = new PageModelAdapter(this, resourceId, listItems);
 			}
-			executeTask(isRefresh, onlyWatched);
+			boolean alphOrder = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ALPH_ORDER, false);
+			executeTask(isRefresh, onlyWatched, alphOrder);
 			setListAdapter(adapter);
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
@@ -267,8 +268,8 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 	}
 	
 	@SuppressLint("NewApi")
-	private void executeTask(boolean isRefresh, boolean onlyWatched) {
-		task = new LoadNovelsTask(this, isRefresh, onlyWatched);
+	private void executeTask(boolean isRefresh, boolean onlyWatched, boolean alphOrder) {
+		task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder);
 		String key = TAG + ":Main+Page";
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if(isAdded) {

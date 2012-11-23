@@ -16,11 +16,13 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
 	private static final String TAG = LoadNovelsTask.class.toString();
 	private boolean refreshOnly = false;
 	private boolean onlyWatched = false;
+	private boolean alphOrder = false;
 	public volatile IAsyncTaskOwner owner;
 	
-	public LoadNovelsTask(IAsyncTaskOwner owner, boolean refreshOnly, boolean onlyWatched) {
+	public LoadNovelsTask(IAsyncTaskOwner owner, boolean refreshOnly, boolean onlyWatched, boolean alphOrder) {
 		this.refreshOnly = refreshOnly;
 		this.onlyWatched = onlyWatched;
+		this.alphOrder = alphOrder;
 		this.owner = owner;
 	}
 	
@@ -49,7 +51,7 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
 				}
 				else {
 					publishProgress(new CallbackEventData("Loading Novel List"));
-					return new AsyncTaskResult<ArrayList<PageModel>>(NovelsDao.getInstance().getNovels(this));
+					return new AsyncTaskResult<ArrayList<PageModel>>(NovelsDao.getInstance().getNovels(this, alphOrder));
 				}
 			}
 		} catch (Exception e) {

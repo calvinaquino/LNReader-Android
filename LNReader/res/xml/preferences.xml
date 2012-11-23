@@ -70,6 +70,7 @@
             android:summary="Scrolling size for volumer rocker."
             android:title="Scrolling Size" />
         <CheckBoxPreference android:key="invert_scroll" android:title="Invert Scroll Direction" android:defaultValue="false" android:dependency="use_volume_to_scroll" android:summary="Invert scrolling direction for volumer rocker."/>
+        <CheckBoxPreference android:summary="Novel list is always ordered by alphabet." android:key="alphabet_order" android:defaultValue="false" android:title="Alphabetical Order"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="storage_category"

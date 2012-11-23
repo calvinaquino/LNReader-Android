@@ -77,7 +77,7 @@ public class NovelsDao {
 		}
 	}
 
-	public ArrayList<PageModel> getNovels(ICallbackNotifier notifier) throws Exception {
+	public ArrayList<PageModel> getNovels(ICallbackNotifier notifier, boolean alphOrder) throws Exception {
 		ArrayList<PageModel> list = null;
 		boolean refresh = false;
 		PageModel page = null;
@@ -115,7 +115,7 @@ public class NovelsDao {
 			synchronized (dbh) {
 				try{
 					db = dbh.getReadableDatabase();
-					list = dbh.getAllNovels(db);//dbh.selectAllByColumn(db, DBHelper.COLUMN_TYPE, PageModel.TYPE_NOVEL);
+					list = dbh.getAllNovels(db, alphOrder);//dbh.selectAllByColumn(db, DBHelper.COLUMN_TYPE, PageModel.TYPE_NOVEL);
 				}finally{
 					db.close();
 				}
