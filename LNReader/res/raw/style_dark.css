@@ -1,8 +1,8 @@
 body {
  background-color: #000000;
  color: #dddddd;
- margin-left: 2mm;
- margin-right: 2mm;
+ margin-left: 2mm !important;
+ margin-right: 2mm !important;
 }
 
 /*For Illustration Gallery*/
