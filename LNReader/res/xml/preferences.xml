@@ -69,6 +69,7 @@
             android:key="scroll_size"
             android:summary="Scrolling size for volumer rocker."
             android:title="Scrolling Size" />
+        <CheckBoxPreference android:key="invert_scroll" android:title="Invert Scroll Direction" android:defaultValue="false" android:dependency="use_volume_to_scroll" android:summary="Invert scrolling direction for volumer rocker."/>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="storage_category"

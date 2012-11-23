@@ -395,8 +395,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 						if(page.isPending()) {
 							title += "\nStatus: Project Pending Authorization";
 						}
-						
-						
+												
 						textViewTitle.setText(title);
 						textViewSynopsis.setText(novelCol.getSynopsis());
 						

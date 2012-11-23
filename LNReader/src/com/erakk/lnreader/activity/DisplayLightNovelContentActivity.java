@@ -263,6 +263,10 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		boolean useVolumeRocker = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_VOLUME_FOR_SCROLL, false);
 		if(useVolumeRocker) {
 			int scrollSize = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 500);
+			
+			boolean invertScroll = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_SCROLL, false);
+			if(invertScroll) scrollSize = scrollSize * -1;
+			
 			if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
 				webView.flingScroll(0, scrollSize);
 				return true;
