@@ -26,5 +26,6 @@
     <string name="teasers">Teaser List</string>
     <string name="search">Search</string>
     <string name="novel_only">Novel Only</string>
+    <string name="task_loading">Task still loading...</string>
 
 </resources>

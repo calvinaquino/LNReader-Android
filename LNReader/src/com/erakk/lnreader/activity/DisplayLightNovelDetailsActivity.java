@@ -6,7 +6,9 @@ import java.util.Iterator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -334,6 +337,15 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			dialog = ProgressDialog.show(this, "Novel Details", "Loading. Please wait...", true);
 			dialog.getWindow().setGravity(Gravity.CENTER);
 			dialog.setCanceledOnTouchOutside(true);
+			dialog.setOnCancelListener(new OnCancelListener() {
+				
+				public void onCancel(DialogInterface dialog) {
+					if(novelCol == null) {
+						TextView txtLoading = (TextView) findViewById(R.id.txtLoading);
+						txtLoading.setVisibility(View.VISIBLE);
+					}
+				}
+			});
 		}
 		else {
 			dialog.dismiss();
@@ -441,6 +453,9 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
 			Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
+		
+		TextView txtLoading = (TextView) findViewById(R.id.txtLoading);
+		txtLoading.setVisibility(View.GONE);
 	}
 	
 	private boolean getColorPreferences(){
