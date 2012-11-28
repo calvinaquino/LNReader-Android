@@ -123,7 +123,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		if(content != null) {
 			WebView wv = (WebView) findViewById(R.id.webView1);
 			int pos = content.getLastYScroll();
-			if(pos > 0) --pos;
+			if(pos > 0) pos = pos - 1 ;
 			wv.loadUrl("javascript:goToParagraph(" + pos + ")");
 		}
 		Log.d(TAG, "onResume Completed");
@@ -500,7 +500,9 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 					if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
 						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
 						//wv.scrollTo(0, content.getLastYScroll());
-						wv.loadUrl("javascript:goToParagraph(" + content.getLastYScroll() + ")");
+						int pos = content.getLastYScroll();
+						if(pos > 0) pos = pos - 1 ;
+						wv.loadUrl("javascript:goToParagraph(" + pos + ")");
 						setLastReadState();
 						needScroll = false;
 					}						

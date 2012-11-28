@@ -51,7 +51,7 @@ function highlightBookmark() {
 
 /* Scroll to given paragraph index */
 function goToParagraph(index) {
-	if(index != undefined && index > -1) {
+	if(index != undefined && index > 0) {
 		window.scroll(0, findPos(pCollections[index]));
 	}
 }
