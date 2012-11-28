@@ -891,8 +891,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			cv.put(COLUMN_PAGE, bookmark.getPage());
 			cv.put(COLUMN_PARAGRAPH_INDEX, bookmark.getpIndex());
 			String excerpt = bookmark.getExcerpt();
-			if(excerpt.length() > 40) {
-				excerpt = excerpt.substring(0, 37) + "...";
+			if(excerpt.length() > 200) {
+				excerpt = excerpt.substring(0, 197) + "...";
 			}
 			cv.put(COLUMN_EXCERPT, excerpt);
 			cv.put(COLUMN_CREATE_DATE, (int) (new Date().getTime() / 1000));

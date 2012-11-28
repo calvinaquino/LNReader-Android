@@ -35,7 +35,6 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		this.layoutResourceId = resourceId;
 		this.context = context;
 		this.data = objects;
-		//Log.d(TAG, "onConstruct Count = " + objects.size());
 	}
 
 	public void setLayout(int resourceId) {

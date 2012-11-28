@@ -1,5 +1,16 @@
 var pCollections = document.getElementsByTagName("p");
 
+window.onscroll = function scroll () {
+	var element = document.elementFromPoint(window.pageXOffset, window.pageYOffset);
+	var i = 0;
+    for (i = 0; i < pCollections.length; ++i) {
+		if(findPos(pCollections[i]) >= window.pageYOffset) {
+			console.log("SCROLL_EVENT:" + pCollections[i].id);
+			break;
+		}
+	}	
+};
+
 function setup() {
 	/* Assign id to p tag */
 	var i = 0;
@@ -26,7 +37,8 @@ function toogleHighlight(element, ev) {
     }
     
     if(target.id != undefined && target.id != "") {
-		console.log("HIGHLIGHT_EVENT:" + target.id + ":" + mode + ":" + target.innerHTML);
+    	var excerpt = target.innerText || target.textContent || target.innerHTML;
+		console.log("HIGHLIGHT_EVENT:" + target.id + ":" + mode + ":" + excerpt);
 	}
 }
 

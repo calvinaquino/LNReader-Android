@@ -2,7 +2,6 @@ package com.erakk.lnreader.activity;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -121,6 +120,12 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			}
 		}
 		setWebViewSettings();
+		if(content != null) {
+			WebView wv = (WebView) findViewById(R.id.webView1);
+			int pos = content.getLastYScroll();
+			if(pos > 0) --pos;
+			wv.loadUrl("javascript:goToParagraph(" + pos + ")");
+		}
 		Log.d(TAG, "onResume Completed");
 	}
 
@@ -373,19 +378,25 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 	}
 	
-	private void buildBookmarkMenu() {
+	public void buildBookmarkMenu() {
 		if(content != null) {
-			bookmarkAdapter = new BookmarkModelAdapter(this, R.layout.bookmark_list_item, content.getBookmarks());
-			final Context ctx = this;
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("Bookmarks");
-			builder.setAdapter(bookmarkAdapter, new OnClickListener() {
-				public void onClick(DialogInterface dialog, int which) {
-					BookmarkModel bookmark = bookmarkAdapter.getItem(which);
-					Toast.makeText(ctx, "Bookmark: " + bookmark.getpIndex(), Toast.LENGTH_SHORT).show();
-				}				
-			});
-			bookmarkMenu  = builder.create();
+			try {
+				bookmarkAdapter = new BookmarkModelAdapter(this, R.layout.bookmark_list_item, content.getBookmarks(), content.getPageModel());
+				
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setTitle("Bookmarks");
+				builder.setAdapter(bookmarkAdapter, new OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						BookmarkModel bookmark = bookmarkAdapter.getItem(which);
+						//Toast.makeText(ctx, "Bookmark: " + bookmark.getpIndex(), Toast.LENGTH_SHORT).show();
+						WebView wv = (WebView) findViewById(R.id.webView1);
+						wv.loadUrl("javascript:goToParagraph(" + bookmark.getpIndex() + ")");
+					}				
+				});
+				bookmarkMenu  = builder.create();
+			} catch (Exception e) {
+				Log.e(TAG, "Error getting pageModel: " + e.getMessage(), e);
+			}
 		}
 	}
 
@@ -393,8 +404,8 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		if(content!= null) {
 			// save last position and zoom
 			WebView wv = (WebView) findViewById(R.id.webView1);
-			content.setLastXScroll(wv.getScrollX());
-			content.setLastYScroll(wv.getScrollY());
+			//content.setLastXScroll(wv.getScrollX());
+			//content.setLastYScroll(wv.getScrollY());
 			//content.setLastZoom(client.getScale());
 			content.setLastZoom(wv.getScale());
 			try{
@@ -488,7 +499,8 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 				public void onNewPicture(WebView arg0, Picture arg1) {
 					if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
 						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
-						wv.scrollTo(0, content.getLastYScroll());
+						//wv.scrollTo(0, content.getLastYScroll());
+						wv.loadUrl("javascript:goToParagraph(" + content.getLastYScroll() + ")");
 						setLastReadState();
 						needScroll = false;
 					}						
@@ -616,4 +628,11 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_SHOW_ZOOM_CONTROL, false);
 	}
 
+	public void refreshBookmarkData() {
+		if(bookmarkAdapter != null) bookmarkAdapter.refreshData();		
+	}
+
+	public void updateLastLine(int pIndex) {
+		if(content != null) content.setLastYScroll(pIndex);
+	}
 }

@@ -1,5 +1,6 @@
 package com.erakk.lnreader.helper;
 
+import android.content.SyncResult;
 import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsResult;
@@ -15,6 +16,7 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 	private static final String HIGHLIGHT_EVENT = "HIGHLIGHT_EVENT";
 	private static final String ADD = "highlighted";
 	private static final String REMOVE = "clear";
+	private static final String SCROLL_EVENT = "SCROLL_EVENT";
 	private DisplayLightNovelContentActivity caller;
 	
 	public BakaTsukiWebChromeClient(DisplayLightNovelContentActivity caller) {
@@ -36,6 +38,11 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 			else if(data[2].equalsIgnoreCase(REMOVE)) {
 				NovelsDao.getInstance(caller).deleteBookmark(bookmark);
 			}
+			caller.refreshBookmarkData();
+		}
+		else if (consoleMessage.message().startsWith(SCROLL_EVENT)) {
+			String data[] = consoleMessage.message().split(":");
+			caller.updateLastLine(Integer.parseInt(data[1]));						
 		}
 		else {
 			Log.d(TAG, "Console: " + consoleMessage.lineNumber() + ":" + consoleMessage.message());

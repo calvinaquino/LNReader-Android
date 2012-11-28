@@ -6,37 +6,33 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Typeface;
 import android.os.Build;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.adapter.PageModelAdapter.PageModelHolder;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookmarkModel;
 import com.erakk.lnreader.model.PageModel;
 
 
 public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel>{
+	private static final String TAG = BookmarkModelAdapter.class.toString();
 	private int layoutResourceId;
 	private Context context;
 	private List<BookmarkModel> data;
 	private boolean isAdding = false;
+	private PageModel novel = null;
 	
-	public BookmarkModelAdapter(Context context, int resourceId, List<BookmarkModel> objects) {
+	public BookmarkModelAdapter(Context context, int resourceId, List<BookmarkModel> objects, PageModel parent) {
 		super(context, resourceId, objects);
 		this.layoutResourceId = resourceId;
 		this.context = context;
 		this.data = objects;
+		this.novel = parent;
 	}
 	
 	@SuppressLint("NewApi")
@@ -57,7 +53,7 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel>{
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View row = convertView;
 		BookmarkModelHolder holder = new BookmarkModelHolder();
-
+		
 		final BookmarkModel page = data.get(position);
 		
 		LayoutInflater inflater = ((Activity)context).getLayoutInflater();
@@ -82,6 +78,12 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel>{
 		return row;
 	}
 	
+	public void refreshData() {
+		clear();
+		addAll(NovelsDao.getInstance().getBookmarks(novel));
+		notifyDataSetChanged();
+	}
+
 	static class BookmarkModelHolder
 	{
 		TextView txtPIndex;
