@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
@@ -35,6 +36,7 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.adapter.BookmarkModelAdapter;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.dao.NovelsDao;
@@ -42,7 +44,7 @@ import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.BakaTsukiWebChromeClient;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
 import com.erakk.lnreader.model.BookModel;
-import com.erakk.lnreader.model.NovelBookmark;
+import com.erakk.lnreader.model.BookmarkModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
@@ -56,11 +58,12 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	private LoadNovelContentTask task;
 	private AlertDialog tocMenu = null;
 	private PageModelAdapter jumpAdapter = null;
+	private BookmarkModelAdapter bookmarkAdapter = null;
 	private ProgressDialog dialog;
 	private WebView webView;
 	private BakaTsukiWebViewClient client;
 	private boolean restored;
-	private ArrayList<NovelBookmark> bookmarks = null;
+	private AlertDialog bookmarkMenu = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -250,6 +253,9 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		case R.id.menu_search:
 			showSearchBox();
 			return true;
+		case R.id.menu_bookmarks:
+			if(bookmarkMenu != null) bookmarkMenu.show();
+			return true;
 		case android.R.id.home:
 			if(tocMenu != null) tocMenu.show();
 			else finish();
@@ -366,6 +372,22 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			}
 		}
 	}
+	
+	private void buildBookmarkMenu() {
+		if(content != null) {
+			bookmarkAdapter = new BookmarkModelAdapter(this, R.layout.bookmark_list_item, content.getBookmarks());
+			final Context ctx = this;
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Bookmarks");
+			builder.setAdapter(bookmarkAdapter, new OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					BookmarkModel bookmark = bookmarkAdapter.getItem(which);
+					Toast.makeText(ctx, "Bookmark: " + bookmark.getpIndex(), Toast.LENGTH_SHORT).show();
+				}				
+			});
+			bookmarkMenu  = builder.create();
+		}
+	}
 
 	public void setLastReadState() {
 		if(content!= null) {
@@ -431,7 +453,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		this.content = loadedContent;
 		try {
 			PageModel pageModel = content.getPageModel();
-
+			
 			if(content.getLastUpdate().getTime() != pageModel.getLastUpdate().getTime())
 				Toast.makeText(getApplicationContext(), "Content might be updated: " + content.getLastUpdate().toString() + " != " + pageModel.getLastUpdate().toString(), Toast.LENGTH_LONG).show();
 			
@@ -448,13 +470,12 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 				styleId = R.raw.style;
 				//Log.d("CSS", "CSS = normal");
 			}
-			bookmarks = NovelsDao.getInstance(this).getBookmarks(pageModel);
-						
+
 			LNReaderApplication app = (LNReaderApplication) getApplication();
 			String html = "<html><head><style type=\"text/css\">"
 						+ app.ReadCss(styleId) 
 						+ "</style>"
-						+ prepareJavaScript(0, bookmarks)
+						+ prepareJavaScript(0, content.getBookmarks())
 						+ "</head><body onclick='toogleHighlight(this, event);' onload='setup();'>" 
 						+ content.getContent() 
 						+ "</body></html>";
@@ -485,20 +506,22 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 			
 			buildTOCMenu();
+			buildBookmarkMenu();
+			
 			Log.d(TAG, "Loaded: " + content.getPage());
 		} catch (Exception e) {
 			Log.e(TAG, "Cannot load content.", e);
 		}
 	}
 	
-	private String prepareJavaScript(int lastPos, ArrayList<NovelBookmark> bookmarks) {
+	private String prepareJavaScript(int lastPos, ArrayList<BookmarkModel> bookmarks) {
 		String script ="<script type='text/javascript'>";
 		String js = LNReaderApplication.getInstance().ReadCss(R.raw.content_script);
 		js = "var bookmarkCol = [%bookmarks%];" + js;
 		js = "var lastPos = %lastpos%;" + js;
 		if(bookmarks != null && bookmarks.size() > 0) {
 			ArrayList<Integer> list = new ArrayList<Integer>();
-			for (NovelBookmark bookmark : bookmarks) {
+			for (BookmarkModel bookmark : bookmarks) {
 				list.add(bookmark.getpIndex());
 			}
 			js = js.replace("%bookmarks%", LNReaderApplication.join(list, ","));
@@ -514,7 +537,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 		script += js;
 		script += "</script>";
-		Log.d(TAG, script);
+
 		return script;
 	}
 	

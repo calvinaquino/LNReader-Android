@@ -26,7 +26,7 @@ function toogleHighlight(element, ev) {
     }
     
     if(target.id != undefined && target.id != "") {
-		console.log("HIGHLIGHT_EVENT:" + target.id + ":" + mode);
+		console.log("HIGHLIGHT_EVENT:" + target.id + ":" + mode + ":" + target.innerHTML);
 	}
 }
 

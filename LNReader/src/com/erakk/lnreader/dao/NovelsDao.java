@@ -27,7 +27,7 @@ import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.DownloadFileTask;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.ImageModel;
-import com.erakk.lnreader.model.NovelBookmark;
+import com.erakk.lnreader.model.BookmarkModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
@@ -877,8 +877,8 @@ public class NovelsDao {
 		return result;
 	}
 	
-	public ArrayList<NovelBookmark> getBookmarks(PageModel novel) {
-		ArrayList<NovelBookmark> bookmarks = new ArrayList<NovelBookmark>();
+	public ArrayList<BookmarkModel> getBookmarks(PageModel novel) {
+		ArrayList<BookmarkModel> bookmarks = new ArrayList<BookmarkModel>();
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			bookmarks = dbh.getBookmarks(db, novel);
@@ -886,17 +886,25 @@ public class NovelsDao {
 		return bookmarks;
 	}
 	
-	public int addBookmark(NovelBookmark bookmark) {
+	public int addBookmark(BookmarkModel bookmark) {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			return dbh.insertBookmark(db, bookmark);
 		}
 	}
 	
-	public int deleteBookmark(NovelBookmark bookmark) {
+	public int deleteBookmark(BookmarkModel bookmark) {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			return dbh.deleteBookmark(db, bookmark);
 		}
 	}
+	
+//	public void temp() {
+//		synchronized (dbh) {
+//			SQLiteDatabase db = dbh.getWritableDatabase();
+//			db.execSQL("DROP TABLE IF EXISTS " + dbh.TABLE_NOVEL_BOOKMARK);
+//			db.execSQL(dbh.DATABASE_CREATE_NOVEL_BOOKMARK);
+//		}
+//	}
 }

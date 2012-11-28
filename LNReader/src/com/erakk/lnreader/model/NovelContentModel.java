@@ -3,9 +3,12 @@ package com.erakk.lnreader.model;
 import java.util.ArrayList;
 import java.util.Date;
 
+import android.util.Log;
+
 import com.erakk.lnreader.dao.NovelsDao;
 
 public class NovelContentModel {
+	private static final String TAG = NovelContentModel.class.toString();
 	private int id;
 	private String content;
 	private String page;
@@ -21,6 +24,8 @@ public class NovelContentModel {
 	private boolean isUpdatingFromInternet;
 	
 	private ArrayList<ImageModel> images;
+	
+	private ArrayList<BookmarkModel> bookmarks;
 	
 	public int getId() {
 		return id;
@@ -93,5 +98,18 @@ public class NovelContentModel {
 	}
 	public void setUpdatingFromInternet(boolean isUpdating) {
 		this.isUpdatingFromInternet = isUpdating;
+	}
+	public ArrayList<BookmarkModel> getBookmarks() {
+		if(this.bookmarks == null) {
+			try {
+				this.bookmarks = NovelsDao.getInstance().getBookmarks(getPageModel());
+			} catch (Exception e) {
+				Log.e(TAG, "Error when getting bookmarks: " + e.getMessage(), e);
+			}
+		}		
+		return bookmarks;
+	}
+	public void setBookmarks(ArrayList<BookmarkModel> bookmarks) {
+		this.bookmarks = bookmarks;
 	}	
 }

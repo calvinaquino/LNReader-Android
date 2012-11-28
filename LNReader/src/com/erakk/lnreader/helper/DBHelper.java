@@ -19,7 +19,7 @@ import android.util.Log;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.ImageModel;
-import com.erakk.lnreader.model.NovelBookmark;
+import com.erakk.lnreader.model.BookmarkModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
@@ -59,9 +59,11 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	public static final String TABLE_NOVEL_BOOKMARK = "novel_bookmark";
 	public static final String COLUMN_PARAGRAPH_INDEX = "p_index";
+	public static final String COLUMN_EXCERPT = "excerpt";
+	public static final String COLUMN_CREATE_DATE = "create_date";
 
 	public static final String DATABASE_NAME = "pages.db";
-	public static final int DATABASE_VERSION = 20;
+	public static final int DATABASE_VERSION = 21;
 
 	// Database creation SQL statement
 	private static final String DATABASE_CREATE_PAGES = "create table "
@@ -117,7 +119,9 @@ public class DBHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_CREATE_NOVEL_BOOKMARK = "create table "
 		      + TABLE_NOVEL_BOOKMARK + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
 		      						+ COLUMN_PAGE + " text not null, "							// 1
-				  				    + COLUMN_PARAGRAPH_INDEX + " integer);";					// 2
+				  				    + COLUMN_PARAGRAPH_INDEX + " integer, "						// 2
+				  				    + COLUMN_EXCERPT + " text, "								// 3
+				  				    + COLUMN_CREATE_DATE + " integer);";						// 4
 	
 	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files/databases";
 	
@@ -167,6 +171,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_CONTENT);
 		    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_BOOKMARK);
 			onCreate(db);
+			oldVersion = DATABASE_VERSION; // skip all of the changes.
 		}
 		if(oldVersion == 18) {
 			db.execSQL("ALTER TABLE " + TABLE_PAGE + " ADD COLUMN " + COLUMN_STATUS + " text" );
@@ -174,7 +179,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 		if(oldVersion == 19) {
 			db.execSQL(DATABASE_CREATE_NOVEL_BOOKMARK);
-			oldVersion = 20;
+			oldVersion = 21; // skip the alter table
+		}
+		if(oldVersion == 20) {
+			db.execSQL("ALTER TABLE " + TABLE_NOVEL_BOOKMARK + " ADD COLUMN " + COLUMN_EXCERPT + " text" );
+			db.execSQL("ALTER TABLE " + TABLE_NOVEL_BOOKMARK + " ADD COLUMN " + COLUMN_CREATE_DATE + " integer" );
+			oldVersion = 21;
 		}
 	}
 	
@@ -843,13 +853,13 @@ public class DBHelper extends SQLiteOpenHelper {
 		return content;
 	}
 	
-	public ArrayList<NovelBookmark> getBookmarks(SQLiteDatabase db, PageModel page) {
-		ArrayList<NovelBookmark> bookmarks = new ArrayList<NovelBookmark>();
+	public ArrayList<BookmarkModel> getBookmarks(SQLiteDatabase db, PageModel page) {
+		ArrayList<BookmarkModel> bookmarks = new ArrayList<BookmarkModel>();
 		
 		Cursor cursor = rawQuery(db, "select * from " + TABLE_NOVEL_BOOKMARK + " where " + COLUMN_PAGE + " = ? ", new String[] {page.getPage()});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
-	    	NovelBookmark bookmark = cursorToNovelBookmark(cursor);
+	    	BookmarkModel bookmark = cursorToNovelBookmark(cursor);
 	    	bookmarks.add(bookmark);
 	    	cursor.moveToNext();
 	    }
@@ -858,8 +868,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		return bookmarks;
 	}
 	
-	private NovelBookmark getBookmark(SQLiteDatabase db, String page, int pIndex) {
-		NovelBookmark bookmark = null;
+	private BookmarkModel getBookmark(SQLiteDatabase db, String page, int pIndex) {
+		BookmarkModel bookmark = null;
 		
 		Cursor cursor = rawQuery(db, "select * from " + TABLE_NOVEL_BOOKMARK + " where " + COLUMN_PAGE + " = ? and " + COLUMN_PARAGRAPH_INDEX + " = ? "
 				                   , new String[] {page, "" + pIndex});
@@ -873,29 +883,37 @@ public class DBHelper extends SQLiteOpenHelper {
 		return bookmark;
 	}
 	
-	public int insertBookmark(SQLiteDatabase db, NovelBookmark bookmark) {
-		NovelBookmark tempBookmark = getBookmark(db, bookmark.getPage(), bookmark.getpIndex());
+	public int insertBookmark(SQLiteDatabase db, BookmarkModel bookmark) {
+		BookmarkModel tempBookmark = getBookmark(db, bookmark.getPage(), bookmark.getpIndex());
 		
 		if(tempBookmark == null) {
 			ContentValues cv = new ContentValues();
 			cv.put(COLUMN_PAGE, bookmark.getPage());
 			cv.put(COLUMN_PARAGRAPH_INDEX, bookmark.getpIndex());
+			String excerpt = bookmark.getExcerpt();
+			if(excerpt.length() > 40) {
+				excerpt = excerpt.substring(0, 37) + "...";
+			}
+			cv.put(COLUMN_EXCERPT, excerpt);
+			cv.put(COLUMN_CREATE_DATE, (int) (new Date().getTime() / 1000));
 			return (int) insertOrThrow(db, TABLE_NOVEL_BOOKMARK, null, cv);
 		}
 		
 		return 0;
 	}
 	
-	public int deleteBookmark(SQLiteDatabase db,NovelBookmark bookmark) {
+	public int deleteBookmark(SQLiteDatabase db,BookmarkModel bookmark) {
 		return delete(db, TABLE_NOVEL_BOOKMARK, COLUMN_PAGE + " = ? and " + COLUMN_PARAGRAPH_INDEX + " = ? "
 				 , new String[] {bookmark.getPage(), "" + bookmark.getpIndex()});
 	}
 	
-	private NovelBookmark cursorToNovelBookmark(Cursor cursor) {
-		NovelBookmark bookmark = new NovelBookmark();
+	private BookmarkModel cursorToNovelBookmark(Cursor cursor) {
+		BookmarkModel bookmark = new BookmarkModel();
 		bookmark.setId(cursor.getInt(0));
 		bookmark.setPage(cursor.getString(1));
 		bookmark.setpIndex(cursor.getInt(2));
+		bookmark.setExcerpt(cursor.getString(3));
+		bookmark.setCreationDate(new Date(cursor.getLong(4)*1000));
 		return bookmark;
 	}
 
