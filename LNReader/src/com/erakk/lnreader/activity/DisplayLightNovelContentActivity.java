@@ -42,6 +42,7 @@ import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.BakaTsukiWebChromeClient;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
 import com.erakk.lnreader.model.BookModel;
+import com.erakk.lnreader.model.NovelBookmark;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
@@ -59,6 +60,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	private WebView webView;
 	private BakaTsukiWebViewClient client;
 	private boolean restored;
+	private ArrayList<NovelBookmark> bookmarks = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -446,11 +448,8 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 				styleId = R.raw.style;
 				//Log.d("CSS", "CSS = normal");
 			}
-			ArrayList<Integer> bookmarks = new ArrayList<Integer>();
-			bookmarks.add(1);
-			bookmarks.add(3);
-			bookmarks.add(5);
-			
+			bookmarks = NovelsDao.getInstance(this).getBookmarks(pageModel);
+						
 			LNReaderApplication app = (LNReaderApplication) getApplication();
 			String html = "<html><head><style type=\"text/css\">"
 						+ app.ReadCss(styleId) 
@@ -492,13 +491,17 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 	}
 	
-	private String prepareJavaScript(int lastPos, Collection<Integer> bookmarks) {
+	private String prepareJavaScript(int lastPos, ArrayList<NovelBookmark> bookmarks) {
 		String script ="<script type='text/javascript'>";
 		String js = LNReaderApplication.getInstance().ReadCss(R.raw.content_script);
 		js = "var bookmarkCol = [%bookmarks%];" + js;
 		js = "var lastPos = %lastpos%;" + js;
 		if(bookmarks != null && bookmarks.size() > 0) {
-			js = js.replace("%bookmarks%", LNReaderApplication.join(bookmarks, ","));
+			ArrayList<Integer> list = new ArrayList<Integer>();
+			for (NovelBookmark bookmark : bookmarks) {
+				list.add(bookmark.getpIndex());
+			}
+			js = js.replace("%bookmarks%", LNReaderApplication.join(list, ","));
 		}
 		else {
 			js = js.replace("%bookmarks%", "");

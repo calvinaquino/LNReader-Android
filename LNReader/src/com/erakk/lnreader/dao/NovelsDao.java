@@ -27,6 +27,7 @@ import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.DownloadFileTask;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.ImageModel;
+import com.erakk.lnreader.model.NovelBookmark;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
@@ -874,5 +875,28 @@ public class NovelsDao {
 			result = dbh.deleteNovel(db, novel);
 		}
 		return result;
+	}
+	
+	public ArrayList<NovelBookmark> getBookmarks(PageModel novel) {
+		ArrayList<NovelBookmark> bookmarks = new ArrayList<NovelBookmark>();
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			bookmarks = dbh.getBookmarks(db, novel);
+		}
+		return bookmarks;
+	}
+	
+	public int addBookmark(NovelBookmark bookmark) {
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			return dbh.insertBookmark(db, bookmark);
+		}
+	}
+	
+	public int deleteBookmark(NovelBookmark bookmark) {
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			return dbh.deleteBookmark(db, bookmark);
+		}
 	}
 }

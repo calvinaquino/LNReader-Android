@@ -5,13 +5,16 @@ import android.webkit.ConsoleMessage;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.widget.Toast;
 
 import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
+import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.model.NovelBookmark;
 
 public class BakaTsukiWebChromeClient extends WebChromeClient {
 	private static final String TAG = BakaTsukiWebChromeClient.class.toString();
 	private static final String HIGHLIGHT_EVENT = "HIGHLIGHT_EVENT";
+	private static final String ADD = "highlighted";
+	private static final String REMOVE = "clear";
 	private DisplayLightNovelContentActivity caller;
 	
 	public BakaTsukiWebChromeClient(DisplayLightNovelContentActivity caller) {
@@ -23,7 +26,15 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 	public boolean onConsoleMessage (ConsoleMessage consoleMessage) {
 		if(consoleMessage.message().startsWith(HIGHLIGHT_EVENT)) {
 			String data[] = consoleMessage.message().split(":");
-			Toast.makeText(caller, "[Highlight event] para:" + data[1] + " mode:"+ data[2], Toast.LENGTH_SHORT).show();
+			NovelBookmark bookmark = new NovelBookmark();
+			bookmark.setPage(caller.content.getPage());
+			bookmark.setpIndex(Integer.parseInt(data[1]));
+			if(data[2].equalsIgnoreCase(ADD)) {
+				NovelsDao.getInstance(caller).addBookmark(bookmark);
+			}
+			else if(data[2].equalsIgnoreCase(REMOVE)) {
+				NovelsDao.getInstance(caller).deleteBookmark(bookmark);
+			}
 		}
 		else {
 			Log.d(TAG, "Console: " + consoleMessage.lineNumber() + ":" + consoleMessage.message());
