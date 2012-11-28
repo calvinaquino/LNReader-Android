@@ -106,7 +106,9 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
         if(isInverted != getColorPreferences()) {
         	UIHelper.Recreate(this);
         }
-        bookModelAdapter.notifyDataSetChanged();
+        if(bookModelAdapter != null) {
+        	bookModelAdapter.notifyDataSetChanged();
+        }
     }
     
 	protected void onResume(){

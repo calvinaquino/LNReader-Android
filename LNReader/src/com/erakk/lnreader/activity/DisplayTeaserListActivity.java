@@ -103,7 +103,7 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
         if(isInverted != getColorPreferences()) {
         	UIHelper.Recreate(this);
         }
-        adapter.notifyDataSetChanged();
+        if(adapter != null) adapter.notifyDataSetChanged();
     }
 
 	@Override

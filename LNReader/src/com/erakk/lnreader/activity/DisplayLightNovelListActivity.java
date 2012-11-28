@@ -129,7 +129,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
         if(isInverted != getColorPreferences()) {
         	UIHelper.Recreate(this);
         }
-        adapter.notifyDataSetChanged();
+        if(adapter != null) adapter.notifyDataSetChanged();
     }
 
 	@Override
