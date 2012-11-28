@@ -22,7 +22,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -211,13 +210,19 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 			/*
 			 * Implement code to toggle watch of this novel
 			 */
-	        CheckBox checkBox = (CheckBox) findViewById(R.id.novel_is_watched);
-	        if (checkBox.isChecked()) {
-	        	checkBox.setChecked(false);
-	        }
-	        else {
-	        	checkBox.setChecked(true);
-	        }
+			if(info.position > -1) {
+				PageModel novel = listItems.get(info.position);
+		        if (novel.isWatched()) {
+		        	novel.setWatched(false);
+		        	Toast.makeText(this, "Removed from watch list: " + novel.getTitle(),	Toast.LENGTH_SHORT).show();
+		        }
+		        else {
+		        	novel.setWatched(true);
+		        	Toast.makeText(this, "Added to watch list: " + novel.getTitle(),	Toast.LENGTH_SHORT).show();
+		        }
+		        NovelsDao.getInstance(this).updatePageModel(novel);
+		        adapter.notifyDataSetChanged();
+			}
 			return true;
 		case R.id.download_novel:			
 			/*
