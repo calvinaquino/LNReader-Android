@@ -2,6 +2,7 @@ package com.erakk.lnreader.activity;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -38,6 +39,7 @@ import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.helper.BakaTsukiWebChromeClient;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
@@ -78,6 +80,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		// custom link handler
 		client = new BakaTsukiWebViewClient(this);
 		webView.setWebViewClient(client);
+		webView.setWebChromeClient(new BakaTsukiWebChromeClient(this));
 		
 		restored = false;
 		
@@ -443,14 +446,20 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 				styleId = R.raw.style;
 				//Log.d("CSS", "CSS = normal");
 			}
+			ArrayList<Integer> bookmarks = new ArrayList<Integer>();
+			bookmarks.add(1);
+			bookmarks.add(3);
+			bookmarks.add(5);
+			
 			LNReaderApplication app = (LNReaderApplication) getApplication();
 			String html = "<html><head><style type=\"text/css\">"
 						+ app.ReadCss(styleId) 
-						+ "</style></head><body>" 
+						+ "</style>"
+						+ prepareJavaScript(0, bookmarks)
+						+ "</head><body onclick='toogleHighlight(this, event);' onload='setup();'>" 
 						+ content.getContent() 
 						+ "</body></html>";
 			wv.loadDataWithBaseURL(Constants.BASE_URL, html, "text/html", "utf-8", "");
-	
 			wv.setInitialScale((int) (content.getLastZoom() * 100));
 			
 			wv.setPictureListener(new PictureListener(){
@@ -482,10 +491,34 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			Log.e(TAG, "Cannot load content.", e);
 		}
 	}
-
-	@SuppressLint("NewApi")
+	
+	private String prepareJavaScript(int lastPos, Collection<Integer> bookmarks) {
+		String script ="<script type='text/javascript'>";
+		String js = LNReaderApplication.getInstance().ReadCss(R.raw.content_script);
+		js = "var bookmarkCol = [%bookmarks%];" + js;
+		js = "var lastPos = %lastpos%;" + js;
+		if(bookmarks != null && bookmarks.size() > 0) {
+			js = js.replace("%bookmarks%", LNReaderApplication.join(bookmarks, ","));
+		}
+		else {
+			js = js.replace("%bookmarks%", "");
+		}
+		if(lastPos > 0) {
+			js = js.replace("%lastpos%", "" + lastPos);
+		}
+		else {
+			js = js.replace("%lastpos%", "-1");
+		}
+		script += js;
+		script += "</script>";
+		Log.d(TAG, script);
+		return script;
+	}
+	
+	@SuppressLint({ "NewApi", "SetJavaScriptEnabled" })
 	private void setWebViewSettings() {
 		WebView wv = (WebView) findViewById(R.id.webView1);
+		
 		wv.getSettings().setAllowFileAccess(true);
 		
 		wv.getSettings().setSupportZoom(getZoomPreferences());
@@ -499,6 +532,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		//wv.getSettings().setUseWideViewPort(true);
 		wv.getSettings().setLoadsImagesAutomatically(getShowImagesPreferences());
 		wv.setBackgroundColor(0);
+		wv.getSettings().setJavaScriptEnabled(true);
 		//wv.setBackgroundColor(Color.TRANSPARENT);
 	}
 	

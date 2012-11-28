@@ -30,7 +30,6 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 		Log.d(TAG, "Handling: " + url);
 		
 		Context context = view.getContext();
-		
 		// if image file
 		if(url.contains("title=File:")) {
 			Intent intent = new Intent(context, DisplayImageActivity.class);

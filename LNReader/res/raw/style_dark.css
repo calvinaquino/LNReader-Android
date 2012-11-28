@@ -5,6 +5,10 @@ body {
  margin-right: 2mm !important;
 }
 
+.highlighted { 
+	background-color : orange !important;
+}
+
 /*For Illustration Gallery*/
 ul {
     line-height: 1.5em;
