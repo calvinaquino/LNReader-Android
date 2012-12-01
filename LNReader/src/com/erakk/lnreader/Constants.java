@@ -18,6 +18,7 @@ public class Constants {
 	public static final String EXTRA_IMAGE_URL = "com.erakk.lnreader.IMAGE_URL";
 	public static final String EXTRA_SCROLL_X = "com.erakk.lnreader.SCROLL_X";
 	public static final String EXTRA_SCROLL_Y = "com.erakk.lnreader.SCROLL_Y";
+	public static final String EXTRA_P_INDEX = "pIndex";
 	
 	public static final String IMAGE_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files";
 	
@@ -59,5 +60,5 @@ public class Constants {
 	public static final String STATUS_TEASER = "teaser";
 	public static final String STATUS_STALLED = "stalled";
 	public static final String STATUS_ABANDONED = "abandoned";
-	public static final String STATUS_PENDING = "pending";
+	public static final String STATUS_PENDING = "pending";	
 }

@@ -50,6 +50,10 @@ public class MainActivity extends Activity {
         		Intent intent = new Intent(this, DisplaySearchActivity.class);
             	startActivity(intent);  			
     			return true;
+        	case R.id.menu_bookmarks:
+        		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
+            	startActivity(bookmarkIntent);
+    			return true;    		
             case android.R.id.home:
                 finish();
                 return true;

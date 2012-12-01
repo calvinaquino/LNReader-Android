@@ -502,7 +502,14 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
 						//wv.scrollTo(0, content.getLastYScroll());
 						int pos = content.getLastYScroll();
-						if(pos > 0) pos = pos - 1 ;
+						if(pos > 0) pos = pos - 1 ;	
+						
+						// launched from bookmark
+						int pIndex = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, -1);
+						if(pIndex > -1) {
+							pos = pIndex;
+						}
+											
 						wv.loadUrl("javascript:goToParagraph(" + pos + ")");
 						setLastReadState();
 						needScroll = false;

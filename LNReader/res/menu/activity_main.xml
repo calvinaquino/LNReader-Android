@@ -6,5 +6,7 @@
     <item android:id="@+id/invert_colors"
         android:title="@string/invert_colors"
         android:showAsAction="never" />
+    <item android:id="@+id/menu_bookmarks"
+        android:title="Bookmarks" />
     
 </menu>

@@ -853,6 +853,23 @@ public class DBHelper extends SQLiteOpenHelper {
 		return content;
 	}
 	
+	public ArrayList<BookmarkModel> getAllBookmarks(SQLiteDatabase db) {
+		ArrayList<BookmarkModel> bookmarks = new ArrayList<BookmarkModel>();
+		
+		Cursor cursor = rawQuery(db, "select * from " + TABLE_NOVEL_BOOKMARK
+				                   + " order by " + COLUMN_PAGE
+				                   + ", " + COLUMN_PARAGRAPH_INDEX, null);
+		cursor.moveToFirst();
+	    while (!cursor.isAfterLast()) {
+	    	BookmarkModel bookmark = cursorToNovelBookmark(cursor);
+	    	bookmarks.add(bookmark);
+	    	cursor.moveToNext();
+	    }
+	    cursor.close();
+		
+		return bookmarks;
+	}
+	
 	public ArrayList<BookmarkModel> getBookmarks(SQLiteDatabase db, PageModel page) {
 		ArrayList<BookmarkModel> bookmarks = new ArrayList<BookmarkModel>();
 		
@@ -956,6 +973,4 @@ public class DBHelper extends SQLiteOpenHelper {
 			db = getWritableDatabase();
 		return db.delete(table, whereClause, whereParams);
 	}
-
-
 }

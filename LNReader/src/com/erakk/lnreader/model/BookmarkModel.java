@@ -2,12 +2,16 @@ package com.erakk.lnreader.model;
 
 import java.util.Date;
 
+import com.erakk.lnreader.dao.NovelsDao;
+
 public class BookmarkModel {
 	private int id;
 	private String page;
 	private int pIndex;
 	private String excerpt;
 	private Date creationDate;
+	
+	private PageModel pageModel;
 	
 	public int getId() {
 		return id;
@@ -38,6 +42,17 @@ public class BookmarkModel {
 	}
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
+	}
+	public PageModel getPageModel() throws Exception {
+		if(pageModel == null) {
+			PageModel tempPage = new PageModel();
+			tempPage.setPage(this.page);
+			pageModel = NovelsDao.getInstance().getPageModel(tempPage, null);
+		}
+		return pageModel;
+	}
+	public void setPageModel(PageModel pageModel) {
+		this.pageModel = pageModel;
 	}
 	
 }

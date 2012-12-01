@@ -26,8 +26,8 @@ import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.DownloadFileTask;
 import com.erakk.lnreader.model.BookModel;
-import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.BookmarkModel;
+import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
@@ -898,6 +898,15 @@ public class NovelsDao {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			return dbh.deleteBookmark(db, bookmark);
 		}
+	}
+
+	public ArrayList<BookmarkModel> getAllBookmarks() {
+		ArrayList<BookmarkModel> bookmarks = new ArrayList<BookmarkModel>();
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			bookmarks = dbh.getAllBookmarks(db);
+		}
+		return bookmarks;
 	}
 	
 //	public void temp() {

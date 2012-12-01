@@ -80,13 +80,19 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel>{
 		if(holder.txtPageTitle != null) {
 			if(showPage) {
 				holder.txtPageTitle.setVisibility(View.VISIBLE);
-				holder.txtPageTitle.setText(page.getPage());
+				try{
+					PageModel pageModel = page.getPageModel();
+					PageModel parentPage = pageModel.getParentPageModel();
+					holder.txtPageTitle.setText(parentPage.getTitle() + " : " + pageModel.getTitle());
+				} catch (Exception ex) {
+					Log.e(TAG, "Failed to get pageModel: " + ex.getMessage(), ex);
+					holder.txtPageTitle.setText(page.getPage());
+				}
 			}
 			else {
 				holder.txtPageTitle.setVisibility(View.GONE);
 			}
 		}
-		
 		
 		row.setTag(holder);
 		return row;
@@ -94,7 +100,8 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel>{
 	
 	public void refreshData() {
 		clear();
-		addAll(NovelsDao.getInstance().getBookmarks(novel));
+		if(novel != null) addAll(NovelsDao.getInstance().getBookmarks(novel));
+		else addAll(NovelsDao.getInstance().getAllBookmarks());
 		notifyDataSetChanged();
 		Log.d(TAG, "Refreshing data...");
 	}
