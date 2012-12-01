@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +25,9 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel>{
 	private int layoutResourceId;
 	private Context context;
 	private List<BookmarkModel> data;
-	private boolean isAdding = false;
+	//private boolean isAdding = false;
 	private PageModel novel = null;
+	public boolean showPage = false;
 	
 	public BookmarkModelAdapter(Context context, int resourceId, List<BookmarkModel> objects, PageModel parent) {
 		super(context, resourceId, objects);
@@ -41,10 +43,10 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel>{
 			super.addAll(objects);
 		else {
 			for(Iterator<BookmarkModel> iPage = objects.iterator(); iPage.hasNext();) {
-				isAdding = true;
+				//isAdding = true;
 				this.add(iPage.next());
 			}
-			isAdding = false;
+			//isAdding = false;
 			this.notifyDataSetChanged();
 		}
 	}
@@ -74,6 +76,18 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel>{
 			holder.txtExcerpt.setText(page.getExcerpt());
 		}
 		
+		holder.txtPageTitle = (TextView)row.findViewById(R.id.pageTitle);
+		if(holder.txtPageTitle != null) {
+			if(showPage) {
+				holder.txtPageTitle.setVisibility(View.VISIBLE);
+				holder.txtPageTitle.setText(page.getPage());
+			}
+			else {
+				holder.txtPageTitle.setVisibility(View.GONE);
+			}
+		}
+		
+		
 		row.setTag(holder);
 		return row;
 	}
@@ -82,10 +96,12 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel>{
 		clear();
 		addAll(NovelsDao.getInstance().getBookmarks(novel));
 		notifyDataSetChanged();
+		Log.d(TAG, "Refreshing data...");
 	}
 
 	static class BookmarkModelHolder
 	{
+		TextView txtPageTitle;
 		TextView txtPIndex;
 		TextView txtExcerpt;
 		TextView txtCreateDate;

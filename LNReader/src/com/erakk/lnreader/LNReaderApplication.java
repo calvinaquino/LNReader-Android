@@ -30,6 +30,7 @@ import com.erakk.lnreader.service.UpdateService;
  * http://www.devahead.com/blog/2011/06/extending-the-android-application-class-and-dealing-with-singleton/
  */
 public class LNReaderApplication extends Application {
+	private static final String TAG = LNReaderApplication.class.toString();
 	private static NovelsDao novelsDao = null;
 	private static UpdateService service = null;
 	private static LNReaderApplication instance;
@@ -46,6 +47,7 @@ public class LNReaderApplication extends Application {
 		instance = this;
 		
 		doBindService();
+		Log.d(TAG, "Application created.");
 	}
 	
 	public static LNReaderApplication getInstance() {
@@ -85,8 +87,7 @@ public class LNReaderApplication extends Application {
 	}
 	
 	public boolean isOnline() {
-	    ConnectivityManager cm =
-	        (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
 	    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
 	        return true;
@@ -136,12 +137,14 @@ public class LNReaderApplication extends Application {
 	
 	@Override
 	public void onLowMemory () {
+		Log.w(TAG, "Low Memory, unbind service...");
 		unbindService(mConnection);
 		super.onLowMemory();		
 	}
 	
 	/*
-	 * CSS caching method
+	 * CSS caching method.
+	 * Also used for caching javascript.
 	 */
 	private Hashtable<Integer, String> cssCache = null;
 	public String ReadCss(int styleId) {
@@ -161,7 +164,7 @@ public class LNReaderApplication extends Application {
 				isr.close();
 				in.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				Log.e(TAG, "Error reading asset: " + e.getMessage(), e);
 			}
 			cssCache.put(styleId, contents.toString());
 		}

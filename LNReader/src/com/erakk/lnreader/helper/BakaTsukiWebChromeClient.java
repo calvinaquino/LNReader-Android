@@ -1,6 +1,5 @@
 package com.erakk.lnreader.helper;
 
-import android.content.SyncResult;
 import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsResult;

@@ -38,10 +38,7 @@
         android:id="@+id/create_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="15dp"
-        android:layout_toRightOf="@+id/p_index"
-        android:layout_alignBaseline="@+id/p_index"
+        android:layout_below="@+id/p_index"
         android:text="Create Date"
         android:textColor="#888888"
         android:textSize="12sp" />

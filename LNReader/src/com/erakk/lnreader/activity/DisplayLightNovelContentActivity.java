@@ -381,14 +381,16 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	public void buildBookmarkMenu() {
 		if(content != null) {
 			try {
-				bookmarkAdapter = new BookmarkModelAdapter(this, R.layout.bookmark_list_item, content.getBookmarks(), content.getPageModel());
-				
+				int resourceId = R.layout.bookmark_list_item;
+				if(UIHelper.IsSmallScreen(this)) {
+					resourceId = R.layout.bookmark_list_item_small; 
+				}
+				bookmarkAdapter = new BookmarkModelAdapter(this, resourceId, content.getBookmarks(), content.getPageModel());
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setTitle("Bookmarks");
 				builder.setAdapter(bookmarkAdapter, new OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						BookmarkModel bookmark = bookmarkAdapter.getItem(which);
-						//Toast.makeText(ctx, "Bookmark: " + bookmark.getpIndex(), Toast.LENGTH_SHORT).show();
 						WebView wv = (WebView) findViewById(R.id.webView1);
 						wv.loadUrl("javascript:goToParagraph(" + bookmark.getpIndex() + ")");
 					}				
@@ -406,7 +408,6 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			WebView wv = (WebView) findViewById(R.id.webView1);
 			//content.setLastXScroll(wv.getScrollX());
 			//content.setLastYScroll(wv.getScrollY());
-			//content.setLastZoom(client.getScale());
 			content.setLastZoom(wv.getScale());
 			try{
 				content = NovelsDao.getInstance(this).updateNovelContent(content);

@@ -3,6 +3,7 @@ body {
  color: #dddddd;
  margin-left: 2mm !important;
  margin-right: 2mm !important;
+ word-wrap:break-word !important;
 }
 
 .highlighted { 
