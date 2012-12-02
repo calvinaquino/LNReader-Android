@@ -1,5 +1,7 @@
 package com.erakk.lnreader.task;
 
+import java.util.ArrayList;
+
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -11,7 +13,7 @@ import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 
-public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEventData, AsyncTaskResult<NovelCollectionModel>> implements ICallbackNotifier {
+public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEventData, AsyncTaskResult<ArrayList<NovelCollectionModel>>> implements ICallbackNotifier {
 	public volatile IAsyncTaskOwner owner;
 	
 	public DownloadNovelDetailsTask(IAsyncTaskOwner owner) {
@@ -23,18 +25,20 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 	}
 
 	@Override
-	protected AsyncTaskResult<NovelCollectionModel> doInBackground(PageModel... params) {
-		PageModel page = params[0];
-		try {
-			publishProgress(new CallbackEventData("Downloading chapter list..."));
-			NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetailsFromInternet(page, this);
-			Log.d("DownloadNovelDetailsTask", "Downloaded: " + novelCol.getPage());				
-			return new AsyncTaskResult<NovelCollectionModel>(novelCol);
-		} catch (Exception e) {
-			e.printStackTrace();
-			Log.e("DownloadNovelDetailsTask", e.getClass().toString() + ": " + e.getMessage());
-			return new AsyncTaskResult<NovelCollectionModel>(e);
+	protected AsyncTaskResult<ArrayList<NovelCollectionModel>> doInBackground(PageModel... params) {
+		ArrayList<NovelCollectionModel> result = new ArrayList<NovelCollectionModel>();
+		for (PageModel pageModel : params) {
+			try {
+				publishProgress(new CallbackEventData("Downloading chapter list for: " + pageModel.getTitle()));
+				NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetailsFromInternet(pageModel, this);
+				Log.d("DownloadNovelDetailsTask", "Downloaded: " + novelCol.getPage());				
+				result.add(novelCol);
+			} catch (Exception e) {
+				Log.e("DownloadNovelDetailsTask", "Failed to download novel details for " + pageModel.getPage() + ": " + e.getMessage(), e);
+				return new AsyncTaskResult<ArrayList<NovelCollectionModel>>(e);
+			}
 		}
+		return new AsyncTaskResult<ArrayList<NovelCollectionModel>>(result);
 	}
 	
 	@Override
@@ -44,7 +48,7 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 	}
 	
 	@Override
-	protected void onPostExecute(AsyncTaskResult<NovelCollectionModel> result) {
+	protected void onPostExecute(AsyncTaskResult<ArrayList<NovelCollectionModel>> result) {
 		owner.getResult(result);
 	}
 }

@@ -33,7 +33,7 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 				bookmark.setPage(caller.content.getPage());
 				bookmark.setpIndex(pIndex);
 				if(data[2].equalsIgnoreCase(ADD)) {
-					bookmark.setExcerpt(data[3]);
+					bookmark.setExcerpt(data[3].trim());
 					NovelsDao.getInstance(caller).addBookmark(bookmark);
 				}
 				else if(data[2].equalsIgnoreCase(REMOVE)) {

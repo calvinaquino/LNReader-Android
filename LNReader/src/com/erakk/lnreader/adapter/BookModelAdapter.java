@@ -28,6 +28,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 	private int read = Color.parseColor("#888888");
 	private int notRead = Color.parseColor("#dddddd");
 	private int notReadDark = Color.parseColor("#222222");
+	private int missing = Color.parseColor("#ff0000");
 
 	public BookModelAdapter(Context context, ArrayList<BookModel> groups) {
 		this.context = context;
@@ -76,6 +77,9 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			else {
 				tv.setTextColor(notReadDark);
 			}
+		}
+		if(child.isMissing()) {
+			tv.setTextColor(missing);
 		}
 		
 		TextView tvIsDownloaded = (TextView) view.findViewById(R.id.novel_is_downloaded);

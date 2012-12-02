@@ -127,13 +127,20 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
 		case R.id.menu_manual_add:			
 			ManualAdd();
 			return true;
+		case R.id.menu_download_all:			
+			DownloadAllNovelInfo();
+			return true;
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
+	private void DownloadAllNovelInfo() {
+		toggleProgressBar(true);
+		executeDownloadTask(listItems);
+	}
+	
 	private void ManualAdd() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setTitle("Add Novel");
@@ -200,7 +207,9 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
 			if(info.position > -1) {
 				toggleProgressBar(true);
 				PageModel novel = listItems.get(info.position);
-				executeDownloadTask(novel);
+				ArrayList<PageModel> novels = new ArrayList<PageModel>();
+				novels.add(novel);
+				executeDownloadTask(novels);
 			}
 			return true;
 		default:
@@ -252,15 +261,18 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
 	}
 	
 	@SuppressLint("NewApi")
-	private void executeDownloadTask(PageModel novel) {
+	private void executeDownloadTask(ArrayList<PageModel> novels) {
 		downloadTask = new DownloadNovelDetailsTask(this);
-		String key = DisplayLightNovelDetailsActivity.TAG + ":" + novel.getPage();
+		String key = DisplayTeaserListActivity.TAG + ":" + novels.get(0).getPage();
+		if(novels.size() > 1) {
+			key = DisplayTeaserListActivity.TAG + ":All_Teasers";
+		}
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if(isAdded) {
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {novel});
+				downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, novels.toArray(new PageModel[novels.size()]));
 			else
-				downloadTask.execute(new PageModel[] {novel});
+				downloadTask.execute(novels.toArray(new PageModel[novels.size()]));
 		}
 		else {
 			Log.i(TAG, "Continue download task: " + key);
@@ -315,7 +327,7 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
 		Exception e = result.getError();
 		if(e == null) {
 			// from LoadNovelsTask
-			if(result.getResult() instanceof ArrayList<?>) {
+			if(LNReaderApplication.isInstanceOf((ArrayList<?>)result.getResult(), PageModel.class)) {
 				@SuppressWarnings("unchecked")
 				ArrayList<PageModel> list = (ArrayList<PageModel>) result.getResult();
 				if(list != null) {
@@ -325,25 +337,27 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
 				}
 			}
 			// from DownloadNovelDetailsTask
-			else if(result.getResult() instanceof NovelCollectionModel) {
+			else if(LNReaderApplication.isInstanceOf((ArrayList<?>)result.getResult(), NovelCollectionModel.class)) {
 				setMessageDialog(new CallbackEventData("Download complete."));
-				NovelCollectionModel novelCol = (NovelCollectionModel) result.getResult();
-				try {
-					PageModel page = novelCol.getPageModel();
-					boolean found = false;
-					for (PageModel temp : adapter.data) {
-						if(temp.getPage().equalsIgnoreCase(page.getPage())) {
-							found = true;
-							break;
+				@SuppressWarnings("unchecked")
+				ArrayList<NovelCollectionModel> list = (ArrayList<NovelCollectionModel>) result.getResult();
+				for (NovelCollectionModel novelCol : list) {
+					try {
+						PageModel page = novelCol.getPageModel();
+						boolean found = false;
+						for (PageModel temp : adapter.data) {
+							if(temp.getPage().equalsIgnoreCase(page.getPage())) {
+								found = true;
+								break;
+							}
 						}
+						if(!found) {
+							adapter.data.add(page);
+						}
+					} catch (Exception e1) {
+						Log.e(TAG, e1.getClass().toString() + ": " + e1.getMessage(), e1);
 					}
-					if(!found) {
-						adapter.data.add(page);
-					}
-				} catch (Exception e1) {
-					Log.e(TAG, e1.getClass().toString() + ": " + e1.getMessage(), e1);
 				}
-				
 				adapter.notifyDataSetChanged();
 				toggleProgressBar(false);
 			}

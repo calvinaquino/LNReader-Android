@@ -39,6 +39,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_IS_DOWNLOADED = "is_downloaded";
 	public static final String COLUMN_ORDER = "_index";
 	public static final String COLUMN_STATUS = "status";
+	public static final String COLUMN_IS_MISSING = "is_missing";
 	
 	public static final String TABLE_IMAGE = "images";
 	public static final String COLUMN_IMAGE = "name";
@@ -63,10 +64,10 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_CREATE_DATE = "create_date";
 
 	public static final String DATABASE_NAME = "pages.db";
-	public static final int DATABASE_VERSION = 21;
+	public static final int DATABASE_VERSION = 22;
 
 	// Database creation SQL statement
-	private static final String DATABASE_CREATE_PAGES = "create table "
+	private static final String DATABASE_CREATE_PAGES = "create table if not exists "
 	      + TABLE_PAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
 							 + COLUMN_PAGE + " text unique not null, "				// 1
 			  				 + COLUMN_TITLE + " text not null, "					// 2
@@ -78,9 +79,10 @@ public class DBHelper extends SQLiteOpenHelper {
 			  				 + COLUMN_IS_FINISHED_READ + " boolean, "				// 8
 			  				 + COLUMN_IS_DOWNLOADED + " boolean, "					// 9
 			  				 + COLUMN_ORDER + " integer, "							// 10
-			  				 + COLUMN_STATUS + " text );";							// 11
+			  				 + COLUMN_STATUS + " text, "							// 11
+			  				 + COLUMN_IS_MISSING + " boolean );";					// 12
 	
-	private static final String DATABASE_CREATE_IMAGES = "create table "
+	private static final String DATABASE_CREATE_IMAGES = "create table if not exists "
 		      + TABLE_IMAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
 				 				  + COLUMN_IMAGE + " text unique not null, "
 				  				  + COLUMN_FILEPATH + " text not null, "
@@ -89,7 +91,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				  				  + COLUMN_LAST_UPDATE + " integer, "
 				  				  + COLUMN_LAST_CHECK + " integer);";
 	
-	private static final String DATABASE_CREATE_NOVEL_DETAILS = "create table "
+	private static final String DATABASE_CREATE_NOVEL_DETAILS = "create table if not exists "
 		      + TABLE_NOVEL_DETAILS + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
 				 				  + COLUMN_PAGE + " text unique not null, "
 				  				  + COLUMN_SYNOPSIS + " text not null, "
@@ -98,7 +100,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				  				  + COLUMN_LAST_CHECK + " integer);";
 
 	// COLUMN_PAGE is not unique because being used for reference to the novel page. 
-	private static final String DATABASE_CREATE_NOVEL_BOOKS = "create table "
+	private static final String DATABASE_CREATE_NOVEL_BOOKS = "create table if not exists "
 		      + TABLE_NOVEL_BOOK + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
 				 				  + COLUMN_PAGE + " text not null, "						// 1
 				  				  + COLUMN_TITLE + " text not null, "						// 2
@@ -106,7 +108,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				  				  + COLUMN_LAST_CHECK + " integer, "						// 4
 				  				  + COLUMN_ORDER + " integer);";							// 5
 
-	private static final String DATABASE_CREATE_NOVEL_CONTENT = "create table "
+	private static final String DATABASE_CREATE_NOVEL_CONTENT = "create table if not exists "
 		      + TABLE_NOVEL_CONTENT + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
 				 				    + COLUMN_CONTENT + " text not null, "						// 1
 		      						+ COLUMN_PAGE + " text unique not null, "					// 2
@@ -114,9 +116,9 @@ public class DBHelper extends SQLiteOpenHelper {
 				  				    + COLUMN_LAST_Y + " integer, "								// 4
 				  				    + COLUMN_ZOOM + " double, "									// 5
 				  				    + COLUMN_LAST_UPDATE + " integer, "							// 6
-				  				    + COLUMN_LAST_CHECK + " integer);";						// 7
+				  				    + COLUMN_LAST_CHECK + " integer);";							// 7
 	
-	private static final String DATABASE_CREATE_NOVEL_BOOKMARK = "create table "
+	private static final String DATABASE_CREATE_NOVEL_BOOKMARK = "create table if not exists "
 		      + TABLE_NOVEL_BOOKMARK + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
 		      						+ COLUMN_PAGE + " text not null, "							// 1
 				  				    + COLUMN_PARAGRAPH_INDEX + " integer, "						// 2
@@ -171,7 +173,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_CONTENT);
 		    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_BOOKMARK);
 			onCreate(db);
-			oldVersion = DATABASE_VERSION; // skip all of the changes.
+			return;
 		}
 		if(oldVersion == 18) {
 			db.execSQL("ALTER TABLE " + TABLE_PAGE + " ADD COLUMN " + COLUMN_STATUS + " text" );
@@ -185,6 +187,10 @@ public class DBHelper extends SQLiteOpenHelper {
 			db.execSQL("ALTER TABLE " + TABLE_NOVEL_BOOKMARK + " ADD COLUMN " + COLUMN_EXCERPT + " text" );
 			db.execSQL("ALTER TABLE " + TABLE_NOVEL_BOOKMARK + " ADD COLUMN " + COLUMN_CREATE_DATE + " integer" );
 			oldVersion = 21;
+		}
+		if(oldVersion == 21) {
+			db.execSQL("ALTER TABLE " + TABLE_PAGE + " ADD COLUMN " + COLUMN_IS_MISSING + " boolean" );
+			oldVersion = 22;
 		}
 	}
 	
@@ -214,7 +220,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		ArrayList<PageModel> updatedList = new ArrayList<PageModel>();
 		for(Iterator<PageModel> i = list.iterator(); i.hasNext();){
 			PageModel p = i.next();
-			p = insertOrUpdatePageModel(db, p);
+			p = insertOrUpdatePageModel(db, p, false);
 			updatedList.add(p);
 		}
 		return updatedList;
@@ -227,7 +233,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		Cursor cursor = rawQuery(db, "select * from " + TABLE_PAGE + " where " + COLUMN_PAGE + " = ? ", new String[] {page});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
-	    	pageModel = cursorTopage(cursor);
+	    	pageModel = cursorToPageModel(cursor);
 	    	//Log.d(TAG, "Found Page: " + pageModel.toString());
 	    	break;
 	    }
@@ -238,7 +244,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		    cursor = rawQuery(db, "select * from " + TABLE_PAGE + " where lower(" + COLUMN_PAGE + ") = lower(?) ", new String[] {page});
 			cursor.moveToFirst();
 		    while (!cursor.isAfterLast()) {
-		    	pageModel = cursorTopage(cursor);
+		    	pageModel = cursorToPageModel(cursor);
 		    	//Log.d(TAG, "Found Page: " + pageModel.toString());
 		    	break;
 		    }
@@ -253,8 +259,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		String sql = null;
 		if(isNovelOnly) {
 			sql = "select * from " + TABLE_PAGE 
-					+ " WHERE " + COLUMN_TYPE + " = '" + PageModel.TYPE_NOVEL + "' and "
-					+ COLUMN_PAGE + " LIKE ? OR " + COLUMN_TITLE + " LIKE ? "
+					+ " WHERE " + COLUMN_TYPE + " = '" + PageModel.TYPE_NOVEL + "' and ("
+					+ COLUMN_PAGE + " LIKE ? OR " + COLUMN_TITLE + " LIKE ? )"
 					+ " ORDER BY "
 					+ COLUMN_PARENT + ", "
 					+ COLUMN_ORDER + ", "
@@ -278,7 +284,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		Cursor cursor = rawQuery(db, sql , new String[] { "%" + searchStr + "%", "%" + searchStr + "%" });
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			PageModel page = cursorTopage(cursor);
+			PageModel page = cursorToPageModel(cursor);
 			result.add(page);
 			cursor.moveToNext();
 		}
@@ -323,7 +329,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		Cursor cursor = rawQuery(db, "select * from " + TABLE_PAGE + " where " + COLUMN_ID + " = ? ", new String[] {"" + id});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
-	    	pageModel = cursorTopage(cursor);
+	    	pageModel = cursorToPageModel(cursor);
 	    	//Log.d(TAG, "Found Page: " + pageModel.toString());
 	    	break;
 	    }
@@ -341,7 +347,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		Cursor cursor = rawQuery(db, sql, new String[] {"Main_Page"});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
-	    	PageModel page = cursorTopage(cursor);
+	    	PageModel page = cursorToPageModel(cursor);
 	    	pages.add(page);
 	    	cursor.moveToNext();
 	    }
@@ -359,7 +365,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		Cursor cursor = rawQuery(db, sql, new String[] {"Category:Teasers"});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
-	    	PageModel page = cursorTopage(cursor);
+	    	PageModel page = cursorToPageModel(cursor);
 	    	pages.add(page);
 	    	cursor.moveToNext();
 	    }
@@ -382,7 +388,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		Cursor cursor = rawQuery(db, sql, values);
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
-	    	PageModel page = cursorTopage(cursor);
+	    	PageModel page = cursorToPageModel(cursor);
 	    	pages.add(page);
 	    	cursor.moveToNext();
 	    }
@@ -397,7 +403,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		Cursor cursor = rawQuery(db, "select * from " + TABLE_PAGE + " where " + column + " = ? ", new String[] {value});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
-	    	page = cursorTopage(cursor);
+	    	page = cursorToPageModel(cursor);
 	    	//Log.d(TAG, "Found: " + page.toString());
 	    	break;
 	    }
@@ -405,7 +411,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		return page;
 	}
 		
-	public PageModel insertOrUpdatePageModel(SQLiteDatabase db, PageModel page){
+	public PageModel insertOrUpdatePageModel(SQLiteDatabase db, PageModel page, boolean updateStatus){
 		//Log.d(TAG, page.toString());
 			
 		PageModel temp = selectFirstBy(db, COLUMN_PAGE, page.getPage());
@@ -419,7 +425,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_IS_WATCHED, page.isWatched());
 		cv.put(COLUMN_IS_FINISHED_READ, page.isFinishedRead());
 		cv.put(COLUMN_IS_DOWNLOADED, page.isDownloaded());
-		cv.put(COLUMN_STATUS, page.getStatus());
+		if(updateStatus) cv.put(COLUMN_STATUS, page.getStatus());
+		cv.put(COLUMN_IS_MISSING, page.isMissing());
 		
 		if(temp == null) {
 			//Log.d(TAG, "Inserting: " + page.toString());
@@ -455,7 +462,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		return page;
 	}
 	
-	private PageModel cursorTopage(Cursor cursor) {
+	private PageModel cursorToPageModel(Cursor cursor) {
 		PageModel page = new PageModel();
 		page.setId(cursor.getInt(0));
 		page.setPage(cursor.getString(1));
@@ -469,6 +476,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		page.setDownloaded(cursor.getInt(9) == 1 ? true : false);
 		page.setOrder(cursor.getInt(10));
 		page.setStatus(cursor.getString(11));
+		page.setMissing(cursor.getInt(12) == 1 ? true : false);
 	    return page;
 	}
 	
@@ -638,7 +646,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		Cursor cursor = rawQuery(db, "select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ? order by " + COLUMN_ORDER, new String[] {parent});
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
-			PageModel chapter = cursorTopage(cursor);
+			PageModel chapter = cursorToPageModel(cursor);
 			chapter.setBook(book);
 			chapters.add(chapter);
 	    	//Log.d(TAG, "Found: " + chapter.toString());
@@ -828,7 +836,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		PageModel pageModel = content.getPageModel();
 		if(pageModel != null) {
 			pageModel.setDownloaded(true);
-			pageModel = insertOrUpdatePageModel(db, pageModel);
+			pageModel = insertOrUpdatePageModel(db, pageModel, false);
 		}
 				
 		content = getNovelContent(db, content.getPage());

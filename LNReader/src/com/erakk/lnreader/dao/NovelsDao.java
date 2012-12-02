@@ -147,7 +147,7 @@ public class NovelsDao {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			try{
 				//db.beginTransaction();
-				mainPage = dbh.insertOrUpdatePageModel(db, mainPage);
+				mainPage = dbh.insertOrUpdatePageModel(db, mainPage, false);
 				Log.d(TAG, "Updated Main_Page");
 	
 				// now get the novel list
@@ -262,7 +262,7 @@ public class NovelsDao {
 		// update page model
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			teaserPage = dbh.insertOrUpdatePageModel(db, teaserPage);
+			teaserPage = dbh.insertOrUpdatePageModel(db, teaserPage, true);
 			Log.d(TAG, "Updated Category:Teasers");
 		}
 		
@@ -304,7 +304,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			for (PageModel pageModel : list) {
-				pageModel = dbh.insertOrUpdatePageModel(db, pageModel);
+				pageModel = dbh.insertOrUpdatePageModel(db, pageModel, true);
 				Log.d(TAG, "Updated teaser: " + pageModel.getPage());
 			}			
 		}
@@ -349,7 +349,7 @@ public class NovelsDao {
 					// save to db and get saved value
 					SQLiteDatabase db = dbh.getWritableDatabase();
 					try{
-						pageModel = dbh.insertOrUpdatePageModel(db, pageModel);
+						pageModel = dbh.insertOrUpdatePageModel(db, pageModel, false);
 					}finally{
 						db.close();
 					}
@@ -380,7 +380,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			try{
-				pageModel = dbh.insertOrUpdatePageModel(db, page);
+				pageModel = dbh.insertOrUpdatePageModel(db, page, false);
 			}
 			finally{
 				db.close();
@@ -445,7 +445,9 @@ public class NovelsDao {
 			
 			// Novel details' Page Model
 			if(novel != null){
-				page.setParent("Main_Page"); // insurance
+				// comment out because have teaser now...
+				// page.setParent("Main_Page"); // insurance
+				
 				// get the last update time from internet
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData("Getting novel information for: " + page.getPage()));
@@ -467,7 +469,7 @@ public class NovelsDao {
 				synchronized (dbh) {
 					SQLiteDatabase db = dbh.getWritableDatabase();
 					try{
-						page = dbh.insertOrUpdatePageModel(db, page);
+						page = dbh.insertOrUpdatePageModel(db, page, true);
 					}
 					finally{
 						db.close();
@@ -495,8 +497,7 @@ public class NovelsDao {
 				
 				ArrayList<PageModel> chapters = getUpdateInfo(novel.getFlattedChapterList(), notifier);
 				for (PageModel pageModel : chapters) {
-					if(!pageModel.isMissing())
-						updatePageModel(pageModel);
+					updatePageModel(pageModel);
 				}
 				
 				

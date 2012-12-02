@@ -184,4 +184,23 @@ public class LNReaderApplication extends Application {
 	     }
 	     return builder.toString();
 	 }
+	
+	/**
+	 * http://stackoverflow.com/questions/6350158/check-arraylist-for-instance-of-object
+	 * @param arrayList
+	 * @param clazz
+	 * @return
+	 */
+	public static boolean isInstanceOf(Collection<?> arrayList, Class<?> clazz)
+	{
+	    for(Object o : arrayList)
+	    {
+	        if (o != null && o.getClass() == clazz)
+	        {
+	            return true;
+	        }
+	    }
+
+	    return false;
+	}
 }

@@ -98,7 +98,7 @@ public class BakaTsukiParser {
 						Element rElement = rElements.first();
 						to = rElement.attr("to");
 						temp.setRedirectedTo(to);
-						Log.w(TAG, "parsePageAPI redirected: " + to);
+						Log.i(TAG, "parsePageAPI redirected: " + to);
 					}
 				}				
 			}
@@ -112,6 +112,7 @@ public class BakaTsukiParser {
 				String tempDate = pElement.attr("touched");
 				Date lastUpdate = formatter.parse(tempDate);
 				temp.setLastUpdate(lastUpdate);
+				temp.setMissing(false);
 				Log.i(TAG, "parsePageAPI "+ temp.getPage() + " Last Update: " + temp.getLastUpdate());
 			}				
 			else {
@@ -308,14 +309,13 @@ public class BakaTsukiParser {
 	 * @param title
 	 * @return
 	 */
-	private static String sanitize(String title) {
+	private static String sanitize(String title, boolean isAggresive) {
 		title = title.replaceAll("<.+?>", "")				 //Strip tags
 					 .replaceAll("\\[.+?\\]", "")		 //Strip [___]s
-					 .replaceAll("^(.+?)[(\\[].*$", "$1") //Leaves only the text before brackets (might be a bit too aggressive)
-					 .replaceAll("- PDF", "")
-					 .trim();
-
-		return title;
+					 .replaceAll("- PDF", "");
+		if(isAggresive) title = title.replaceAll("^(.+?)[(\\[].*$", "$1"); //Leaves only the text before brackets (might be a bit too aggressive);
+				
+		return title.trim();
 	}
 	
 	private static void parseNovelChapters(Document doc, NovelCollectionModel novel) {
@@ -375,7 +375,7 @@ public class BakaTsukiParser {
 				}
 			}			
 		} catch(Exception e) {
-			Log.e(TAG, "Unknown Exception : " + e.getMessage(), e);
+			Log.e(TAG, "Unknown Exception for " + novel.getPage() + ": " + e.getMessage(), e);
 		}
 		//Log.d(TAG, "Complete parsing book collections: " + books.size());
 		
@@ -417,7 +417,7 @@ public class BakaTsukiParser {
 	public static int processH3(NovelCollectionModel novel, ArrayList<BookModel> books, Element bookElement, int bookOrder) {
 		//Log.d(TAG, "Found: " +bookElement.text());
 		BookModel book = new BookModel();
-		book.setTitle(sanitize(bookElement.text()));
+		book.setTitle(sanitize(bookElement.text(), true));
 		book.setOrder(bookOrder);
 		ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
 		
@@ -445,7 +445,7 @@ public class BakaTsukiParser {
 					if(links.size() > 0) {
 						Element link = links.first();
 						PageModel p = new PageModel();
-						p.setTitle(sanitize(link.text()));	// sanitize title
+						p.setTitle(sanitize(chapter.text(), false));	// sanitize title
 						String tempPage = link.attr("href").replace("/project/index.php?title=", "")
 								                           .replace(Constants.BASE_URL, "");
 						p.setPage(tempPage);
@@ -486,7 +486,7 @@ public class BakaTsukiParser {
 			else if(bookElement.tagName() == "p") {
 				//Log.d(TAG, "Found: " + bookElement.text());
 				BookModel book = new BookModel();
-				book.setTitle(sanitize(bookElement.text()));
+				book.setTitle(sanitize(bookElement.text(), true));
 				book.setOrder(bookOrder);
 				ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
 				
@@ -509,7 +509,8 @@ public class BakaTsukiParser {
 							if(links.size() > 0) {
 								Element link = links.first();
 								PageModel p = new PageModel();
-								p.setTitle(sanitize(link.text()));
+								//p.setTitle(sanitize(link.text()));
+								p.setTitle(sanitize(chapter.text(), false));
 								String tempPage = link.attr("href").replace("/project/index.php?title=","")
 										                           .replace(Constants.BASE_URL, "");
 								p.setPage(tempPage);
@@ -529,7 +530,7 @@ public class BakaTsukiParser {
 						if(links.size() > 0) {
 							Element link = links.first();
 							PageModel p = new PageModel();
-							p.setTitle(sanitize(link.text()));
+							p.setTitle(sanitize(link.text(), false));
 							String tempPage = link.attr("href").replace("/project/index.php?title=","")
 									                           .replace(Constants.BASE_URL, "");
 							p.setPage(tempPage);
@@ -570,7 +571,7 @@ public class BakaTsukiParser {
 					bookElement.tagName() == "dl") {
 				//Log.d(TAG, "Found: " +bookElement.text());
 				BookModel book = new BookModel();
-				book.setTitle(sanitize(h2.text()));
+				book.setTitle(sanitize(h2.text(), true));
 				book.setOrder(bookOrder);
 				ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
 				
@@ -580,9 +581,10 @@ public class BakaTsukiParser {
 				for(Iterator<Element> i = links.iterator(); i.hasNext();) {
 					Element link = i.next();
 					PageModel p = new PageModel();
-					p.setTitle(sanitize(link.text()));
+					p.setTitle(sanitize(link.text(), false));
 					// get the url, usually the first one...
 					Element as = link.select("a").first();
+					if (as == null) break;
 					String tempPage = as.attr("href").replace("/project/index.php?title=","")
 							                         .replace(Constants.BASE_URL, "");
 					p.setPage(tempPage);
@@ -718,13 +720,14 @@ public class BakaTsukiParser {
 		return synopsis;
 	}
 
-	public static NovelContentModel ParseNovelContent(Document doc, PageModel page) {
+	public static NovelContentModel ParseNovelContent(Document doc, PageModel page) throws Exception {
 		NovelContentModel content = new NovelContentModel();
 		page.setDownloaded(true);
 		content.setPage(page.getPage());
 		content.setPageModel(page);
 		
 		Element textElement = doc.select("text").first();
+		if(textElement == null) throw new Exception("Empty content!");
 		String text = textElement.text();
 		
 		// get valid image list
