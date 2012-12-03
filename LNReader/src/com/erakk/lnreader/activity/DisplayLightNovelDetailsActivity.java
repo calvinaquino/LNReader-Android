@@ -157,7 +157,12 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			ArrayList<PageModel> notDownloadedChapters = new ArrayList<PageModel>(); 
 			for(Iterator<PageModel> i = availableChapters.iterator(); i.hasNext();) {
 				PageModel temp = i.next();
-				if(!temp.isDownloaded()) notDownloadedChapters.add(temp);
+				if(!temp.isDownloaded()  												// add to list if not downloaded 
+				   || (temp.isDownloaded() 
+					   && NovelsDao.getInstance(this).isContentUpdated(temp))) // or the update available.
+				{
+					notDownloadedChapters.add(temp);
+				}
 			}
 			executeDownloadTask(notDownloadedChapters, true);
 			return true;
@@ -203,16 +208,9 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			for(Iterator<PageModel> i = book.getChapterCollection().iterator(); i.hasNext();) {
 				PageModel temp = i.next();
 				if(temp.isDownloaded()) {
-					try {
-						NovelContentModel content = dao.getNovelContent(temp, false, null);
-						if(content != null) {
-							// check if content is updated
-							if(content.getLastUpdate().getTime() != temp.getLastUpdate().getTime()) {
-								downloadingChapters.add(temp);
-							}
-						}
-					} catch (Exception e) {
-						Log.e(TAG, "Failed to get novel content", e);
+					// add to list if the update available.
+					if(NovelsDao.getInstance(this).isContentUpdated(temp)) {
+						downloadingChapters.add(temp);
 					}
 				}
 				else {
