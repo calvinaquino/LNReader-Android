@@ -90,6 +90,10 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			}
 			else {
 				tvIsDownloaded.setVisibility(TextView.VISIBLE);
+				
+				if(NovelsDao.getInstance().isContentUpdated(child)) {
+					tvIsDownloaded.setText("! (DL)");
+				}
 			}
 		}
 		

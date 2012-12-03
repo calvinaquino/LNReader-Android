@@ -910,6 +910,13 @@ public class NovelsDao {
 		return bookmarks;
 	}
 	
+	public boolean isContentUpdated(PageModel page) {
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			return dbh.isContentUpdated(db, page);
+		}
+	}
+	
 //	public void temp() {
 //		synchronized (dbh) {
 //			SQLiteDatabase db = dbh.getWritableDatabase();

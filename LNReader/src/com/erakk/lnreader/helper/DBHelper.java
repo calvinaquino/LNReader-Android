@@ -253,6 +253,19 @@ public class DBHelper extends SQLiteOpenHelper {
 		return pageModel;
 	}
 	
+	public boolean isContentUpdated(SQLiteDatabase db, PageModel page) {
+		String sql = "select case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE + " then 1 else 0 end "
+					 + " from " + TABLE_PAGE + " join " + TABLE_NOVEL_CONTENT + " using (" + COLUMN_PAGE + ") " 
+					 + "where " + COLUMN_PAGE + " = ? ";
+		Cursor cursor = rawQuery(db, sql,  new String[] {page.getPage()});
+		cursor.moveToFirst();
+	    while (!cursor.isAfterLast()) {
+	    	return cursor.getInt(0) == 1 ? true : false; 
+	    }
+		
+		return false;
+	}
+	
 	public ArrayList<PageModel> doSearch(SQLiteDatabase db, String searchStr, boolean isNovelOnly) {
 		ArrayList<PageModel> result = new ArrayList<PageModel>();
 		
