@@ -18,6 +18,7 @@ function setup() {
 		pCollections[i].id = "" + i;
 	}
     highlightBookmark();
+    goToParagraph(lastPos);
 }
 
 /* Handle touch event for bookmark highlighting */

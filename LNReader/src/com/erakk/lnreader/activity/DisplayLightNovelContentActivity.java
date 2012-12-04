@@ -7,13 +7,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Picture;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,7 +23,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
-import android.webkit.WebView.PictureListener;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -460,7 +457,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	}
 	
 	//@SuppressLint("NewApi")
-	@SuppressWarnings("deprecation")
+	//@SuppressWarnings("deprecation")
 	public void setContent(NovelContentModel loadedContent) {
 		this.content = loadedContent;
 		try {
@@ -482,40 +479,43 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 				styleId = R.raw.style;
 				//Log.d("CSS", "CSS = normal");
 			}
-
+			int lastPos = content.getLastYScroll();
+			int pIndex = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, -1);
+			if(pIndex > 0) lastPos = pIndex;
+			
 			LNReaderApplication app = (LNReaderApplication) getApplication();
 			String html = "<html><head><style type=\"text/css\">"
 						+ app.ReadCss(styleId) 
 						+ "</style>"
-						+ prepareJavaScript(0, content.getBookmarks())
+						+ prepareJavaScript(lastPos, content.getBookmarks())
 						+ "</head><body onclick='toogleHighlight(this, event);' onload='setup();'>" 
 						+ content.getContent() 
 						+ "</body></html>";
 			wv.loadDataWithBaseURL(Constants.BASE_URL, html, "text/html", "utf-8", "");
 			wv.setInitialScale((int) (content.getLastZoom() * 100));
 			
-			wv.setPictureListener(new PictureListener(){
-				boolean needScroll = true;
-				@Deprecated
-				public void onNewPicture(WebView arg0, Picture arg1) {
-					if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
-						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
-						//wv.scrollTo(0, content.getLastYScroll());
-						int pos = content.getLastYScroll();
-						if(pos > 0) pos = pos - 1 ;	
-						
-						// launched from bookmark
-						int pIndex = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, -1);
-						if(pIndex > -1) {
-							pos = pIndex;
-						}
-											
-						wv.loadUrl("javascript:goToParagraph(" + pos + ")");
-						setLastReadState();
-						needScroll = false;
-					}						
-				}					
-			});
+//			wv.setPictureListener(new PictureListener(){
+//				boolean needScroll = true;
+//				@Deprecated
+//				public void onNewPicture(WebView arg0, Picture arg1) {
+//					if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
+//						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
+//						//wv.scrollTo(0, content.getLastYScroll());
+//						int pos = content.getLastYScroll();
+//						if(pos > 0) pos = pos - 1 ;	
+//						
+//						// launched from bookmark
+//						int pIndex = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, -1);
+//						if(pIndex > -1) {
+//							pos = pIndex;
+//						}
+//											
+//						wv.loadUrl("javascript:goToParagraph(" + pos + ")");
+//						setLastReadState();
+//						needScroll = false;
+//					}						
+//				}					
+//			});
 			try{
 				novelDetails = NovelsDao.getInstance(this).getNovelDetails(pageModel.getParentPageModel(), null);
 				
@@ -553,6 +553,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 		if(lastPos > 0) {
 			js = js.replace("%lastpos%", "" + lastPos);
+			Log.d(TAG, "Last Position: " + lastPos);
 		}
 		else {
 			js = js.replace("%lastpos%", "-1");
@@ -581,7 +582,6 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		wv.getSettings().setLoadsImagesAutomatically(getShowImagesPreferences());
 		wv.setBackgroundColor(0);
 		wv.getSettings().setJavaScriptEnabled(true);
-		//wv.setBackgroundColor(Color.TRANSPARENT);
 	}
 	
 	public void setMessageDialog(ICallbackEventData message) {
