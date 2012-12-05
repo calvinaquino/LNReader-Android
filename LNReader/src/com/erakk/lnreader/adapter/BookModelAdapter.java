@@ -45,24 +45,15 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		ch.add(item);
 		groups.get(index).setChapterCollection(ch);
 	}
-
-	public PageModel getChild(int groupPosition, int childPosition) {
-		ArrayList<PageModel> chList = groups.get(groupPosition).getChapterCollection();
-		return chList.get(childPosition);
-	}
-
-	public long getChildId(int groupPosition, int childPosition) {
-		return childPosition;
-	}
-
+	
 	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View view, ViewGroup parent) {
 		PageModel child = getChild(groupPosition, childPosition);
-		LayoutInflater infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		int resourceId = R.layout.expandchapter_list_item;
 		if(UIHelper.IsSmallScreen(((Activity)context))) {
 			resourceId = R.layout.expandchapter_list_item_small; 
 		}
-		view = infalInflater.inflate(resourceId, null);
+		view = inflater.inflate(resourceId, null);
 		
 		TextView tv = (TextView) view.findViewById(R.id.novel_chapter);
 		tv.setText(child.getTitle());
@@ -119,8 +110,49 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 	}
 
 	public int getChildrenCount(int groupPosition) {
+		boolean showExternal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_EXTERNAL, true);
+		boolean showMissing = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_MISSING, true);
+		
 		ArrayList<PageModel> chList = groups.get(groupPosition).getChapterCollection();
-		return chList.size();
+		int count = 0;
+		for (PageModel pageModel : chList) {
+			if(pageModel.isExternal() && !showExternal) {
+				continue;
+			}
+			else if(!pageModel.isExternal() && pageModel.isMissing() && !showMissing) {
+				continue;
+			}
+			++count;
+		}
+		return count;
+	}
+	
+	public PageModel getChild(int groupPosition, int childPosition) {
+		boolean showExternal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_EXTERNAL, true);
+		boolean showMissing = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_MISSING, true);
+		
+		ArrayList<PageModel> chList = groups.get(groupPosition).getChapterCollection();
+		int count = 0;
+		for (int i = 0; i < chList.size(); ++i) {
+			PageModel temp = chList.get(i);
+			if(temp.isExternal() && !showExternal) {
+				continue;
+			}
+			else if(!temp.isExternal() && temp.isMissing() && !showMissing) {
+				continue;
+			}
+			
+			if(count == childPosition) {
+				return temp;
+			}
+			++count;
+		}
+		
+		return chList.get(childPosition);
+	}
+
+	public long getChildId(int groupPosition, int childPosition) {
+		return childPosition;
 	}
 
 	public BookModel getGroup(int groupPosition) {

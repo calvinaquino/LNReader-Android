@@ -87,7 +87,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
         expandList.setOnChildClickListener(new OnChildClickListener() {			
 			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 				if(novelCol != null) {
-					PageModel chapter = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
+					PageModel chapter = bookModelAdapter.getChild(groupPosition, childPosition);
 					loadChapter(chapter);					
 				}
 				return false;
@@ -171,14 +171,14 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			 * Download all chapters
 			 */
 			ArrayList<PageModel> availableChapters = novelCol.getFlattedChapterList();
-			ArrayList<PageModel> notDownloadedChapters = new ArrayList<PageModel>(); 
-			for(Iterator<PageModel> i = availableChapters.iterator(); i.hasNext();) {
-				PageModel temp = i.next();
-				if(!temp.isDownloaded()  												// add to list if not downloaded 
-				   || (temp.isDownloaded() 
-					   && NovelsDao.getInstance(this).isContentUpdated(temp))) // or the update available.
+			ArrayList<PageModel> notDownloadedChapters = new ArrayList<PageModel>();
+			for (PageModel pageModel : availableChapters) {
+				if(pageModel.isMissing() || pageModel.isExternal()) continue;					
+				else if(!pageModel.isDownloaded()  												// add to list if not downloaded 
+						|| (pageModel.isDownloaded() 
+					        && NovelsDao.getInstance(this).isContentUpdated(pageModel))) // or the update available.
 				{
-					notDownloadedChapters.add(temp);
+					notDownloadedChapters.add(pageModel);
 				}
 			}
 			executeDownloadTask(notDownloadedChapters, true);
@@ -267,7 +267,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			/*
 			 * Implement code to download this chapter
 			 */
-			chapter = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
+			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
 			downloadTask = new DownloadNovelContentTask(new PageModel[] { chapter}, this);
 			downloadTask.execute();
 			return true;
@@ -276,10 +276,10 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			/*
 			 * Implement code to clear this chapter cache
 			 */
-			chapter = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
+			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
 			Toast.makeText(this, "Clear this Chapter: " + chapter.getTitle(), Toast.LENGTH_SHORT).show();
 			dao.deletePage(chapter);
-			novelCol.getBookCollections().get(groupPosition).getChapterCollection().remove(childPosition);
+			novelCol.getBookCollections().get(groupPosition).getChapterCollection().remove(chapter);
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		case R.id.mark_read:
@@ -288,7 +288,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			 * Implement code to mark this chapter read
 			 * >> change to toggle
 			 */
-			chapter = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
+			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
 			chapter.setFinishedRead(!chapter.isFinishedRead());
 			dao.updatePageModel(chapter);
 			bookModelAdapter.notifyDataSetChanged();
@@ -381,10 +381,8 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			if(result.getResult() instanceof NovelContentModel[]) {
 				NovelContentModel[] content = (NovelContentModel[]) result.getResult();
 				if(content != null) {
-					for(Iterator<BookModel> iBook = novelCol.getBookCollections().iterator(); iBook.hasNext();) {
-						BookModel book = iBook.next();
-						for(Iterator<PageModel> iPage = book.getChapterCollection().iterator(); iPage.hasNext();) {
-							PageModel temp = iPage.next();
+					for(BookModel book : novelCol.getBookCollections()) {
+						for(PageModel temp : book.getChapterCollection()) {
 							for(int i = 0; i < content.length; ++i) {
 								if(temp.getPage() == content[i].getPage()) {
 									temp.setDownloaded(true);

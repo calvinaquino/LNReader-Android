@@ -51,6 +51,8 @@ public class Constants {
 	public static final String PREF_IS_NOVEL_ONLY = "novel_only";
 	public static final String PREF_INVERT_SCROLL = "invert_scroll";
 	public static final String PREF_ALPH_ORDER = "alphabet_order";
+	public static final String PREF_SHOW_MISSING = "show_missing";
+	public static final String PREF_SHOW_EXTERNAL = "show_external";
 	
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 
