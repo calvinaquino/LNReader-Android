@@ -397,12 +397,12 @@ public class BakaTsukiParser {
 		book.setTitle(sanitize(bookElement.text(), true));
 		book.setOrder(bookOrder);
 		ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
+		String parent = novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle();
 		
 		// parse the chapters.
 		boolean walkChapter = true;
 		int chapterOrder = 0;
-		Element chapterElement = bookElement;
-		String parent = novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle();
+		Element chapterElement = bookElement;		
 		do {
 			chapterElement = chapterElement.nextElementSibling();
 			if(chapterElement == null || 
@@ -412,15 +412,12 @@ public class BakaTsukiParser {
 			}
 			else {
 				Elements chapters = chapterElement.select("li");
-				for(Iterator<Element> i2 = chapters.iterator(); i2.hasNext();) {
-					Element chapter = i2.next();
-					if(chapter.tagName() != "li") break;
-
+				for(Element chapter : chapters) {
 					PageModel p = processLI(chapter, parent, chapterOrder);
 					if(p != null) {
 						chapterCollection.add(p);
 						++chapterOrder;
-					}											
+					}
 				}
 			}
 			book.setChapterCollection(chapterCollection);
@@ -440,36 +437,42 @@ public class BakaTsukiParser {
 	private static PageModel processLI(Element li, String parent, int chapterOrder) {
 		PageModel p = null;
 		Elements links = li.select("a");
-		if(links.size() > 0) {
+		if(links != null && links.size() > 0) {
+			//TODO: need to handle multiple link in one list item
 			Element link = links.first();
-			
-			//External link
-			if(link.className().contains("external text")) {
-				p = new PageModel();
-				p.setTitle(sanitize(li.text(), false));
-				String tempPage = link.attr("href");
-				p.setPage(tempPage);
-				p.setParent(parent);
-				p.setType(PageModel.TYPE_CONTENT);
-				p.setExternal(true);
-				p.setOrder(chapterOrder);
-				p.setLastUpdate(new Date(0));
-				Log.e(TAG, "Found external link for " + p.getTitle() + ": " + tempPage);
-			}
-			else {
-				p = new PageModel();
-				p.setTitle(sanitize(li.text(), false));	// sanitize title
-				String tempPage = link.attr("href").replace("/project/index.php?title=", "")
-						                           .replace(Constants.BASE_URL, "");
-				p.setPage(tempPage);
-				p.setParent(parent);
-				p.setType(PageModel.TYPE_CONTENT);
-				p.setExternal(false);
-				p.setOrder(chapterOrder);
-				p.setLastUpdate(new Date(0));
-			}
+			p = processA(li.text(), parent, chapterOrder, link);
 		}
+		return p;
+	}
+
+	/***
+	 * Process &lt;a&gt; to chapter
+	 * @param title
+	 * @param parent
+	 * @param chapterOrder
+	 * @param link
+	 * @return
+	 */
+	private static PageModel processA(String title, String parent, int chapterOrder, Element link) {
+		PageModel p = new PageModel();
+		p.setTitle(sanitize(title, false));
+		p.setParent(parent);
+		p.setType(PageModel.TYPE_CONTENT);
+		p.setOrder(chapterOrder);
+		p.setLastUpdate(new Date(0));
 		
+		//External link
+		if(link.className().contains("external text")) {
+			p.setExternal(true);
+			p.setPage(link.attr("href"));
+			//Log.d(TAG, "Found external link for " + p.getTitle() + ": " + link.attr("href"));
+		}
+		else {
+			p.setExternal(false);
+			String tempPage = link.attr("href").replace("/project/index.php?title=", "")
+					                           .replace(Constants.BASE_URL, "");
+			p.setPage(tempPage);
+		}
 		return p;
 	}
 	
@@ -495,6 +498,7 @@ public class BakaTsukiParser {
 				book.setTitle(sanitize(bookElement.text(), true));
 				book.setOrder(bookOrder);
 				ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
+				String parent = novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle();
 				
 				// parse the chapters.
 				boolean walkChapter = true;
@@ -508,26 +512,12 @@ public class BakaTsukiParser {
 							chapterElement.tagName() == "ul" ||
 							chapterElement.tagName() == "div") {
 						Elements chapters = chapterElement.select("li");
-						for(Iterator<Element> i2 = chapters.iterator(); i2.hasNext();) {
-							Element chapter = i2.next();
-							if(chapter.tagName() != "li") break;
-							Elements links = chapter.select("a");
-							if(links.size() > 0) {
-								Element link = links.first();
-								PageModel p = new PageModel();
-								//p.setTitle(sanitize(link.text()));
-								p.setTitle(sanitize(chapter.text(), false));
-								String tempPage = link.attr("href").replace("/project/index.php?title=","")
-										                           .replace(Constants.BASE_URL, "");
-								p.setPage(tempPage);
-								p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
-								p.setType(PageModel.TYPE_CONTENT);
-								p.setOrder(chapterOrder);
-								p.setLastUpdate(new Date(0));
-								//Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
+						for (Element chapter : chapters) {
+							PageModel p = processLI(chapter, parent, chapterOrder);
+							if(p != null) {
 								chapterCollection.add(p);
 								++chapterOrder;
-							}										
+							}
 						}
 					}
 					// no subchapter
@@ -535,15 +525,7 @@ public class BakaTsukiParser {
 						Elements links = bookElement.select("a");
 						if(links.size() > 0) {
 							Element link = links.first();
-							PageModel p = new PageModel();
-							p.setTitle(sanitize(link.text(), false));
-							String tempPage = link.attr("href").replace("/project/index.php?title=","")
-									                           .replace(Constants.BASE_URL, "");
-							p.setPage(tempPage);
-							p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
-							p.setType(PageModel.TYPE_CONTENT);
-							p.setOrder(chapterOrder);
-							p.setLastUpdate(new Date(0));
+							PageModel p = processA(link.text(), parent, chapterOrder, link);
 							//Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 							chapterCollection.add(p);
 							++chapterOrder;
@@ -580,27 +562,17 @@ public class BakaTsukiParser {
 				book.setTitle(sanitize(h2.text(), true));
 				book.setOrder(bookOrder);
 				ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
+				String parent = novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle();
 				
 				// parse the chapters.
 				int chapterOrder = 0;
-				Elements links = bookElement.select("li");
-				for(Iterator<Element> i = links.iterator(); i.hasNext();) {
-					Element link = i.next();
-					PageModel p = new PageModel();
-					p.setTitle(sanitize(link.text(), false));
-					// get the url, usually the first one...
-					Element as = link.select("a").first();
-					if (as == null) break;
-					String tempPage = as.attr("href").replace("/project/index.php?title=","")
-							                         .replace(Constants.BASE_URL, "");
-					p.setPage(tempPage);
-					p.setParent(novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
-					p.setType(PageModel.TYPE_CONTENT);
-					p.setOrder(chapterOrder);
-					p.setLastUpdate(new Date(0));
-					//Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
-					chapterCollection.add(p);
-					++chapterOrder;
+				Elements chapters = bookElement.select("li");
+				for(Element chapter : chapters) {
+					PageModel p = processLI(chapter, parent, chapterOrder);
+					if(p != null) {
+						chapterCollection.add(p);
+						++chapterOrder;
+					}
 				}
 				book.setChapterCollection(chapterCollection);
 				books.add(book);
