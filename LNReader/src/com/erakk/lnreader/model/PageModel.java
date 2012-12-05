@@ -29,6 +29,7 @@ public class PageModel{
 	private String status;
 	private boolean isHighlighted = false;
 	private boolean isMissing = false;
+	private boolean isExternal = false;
 	
 	private String redirectedTo;
 	
@@ -213,5 +214,11 @@ public class PageModel{
 			return status.contains(Constants.STATUS_PENDING);
 		}
 		return false;
+	}
+	public boolean isExternal() {
+		return isExternal;
+	}
+	public void setExternal(boolean isExternal) {
+		this.isExternal = isExternal;
 	}	
 }

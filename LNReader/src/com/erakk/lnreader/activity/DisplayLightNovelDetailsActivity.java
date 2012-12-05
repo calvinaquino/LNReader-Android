@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -86,11 +87,8 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
         expandList.setOnChildClickListener(new OnChildClickListener() {			
 			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 				if(novelCol != null) {
-					PageModel p = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
-					
-					Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
-			        intent.putExtra(Constants.EXTRA_PAGE, p.getPage());
-			        startActivity(intent);
+					PageModel chapter = novelCol.getBookCollections().get(groupPosition).getChapterCollection().get(childPosition);
+					loadChapter(chapter);					
 				}
 				return false;
 			}
@@ -100,6 +98,25 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
         isInverted = getColorPreferences();
     }
     
+	private void loadChapter(PageModel chapter) {
+		if(chapter.isExternal()) {
+			try{
+			Uri url = Uri.parse(chapter.getPage());
+			Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
+			startActivity(browserIntent);
+			}catch(Exception ex) {
+				String message = "Error when parsing url: " + chapter.getPage();
+				Log.e(TAG, message , ex);
+				Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+			}
+		}
+		else {
+			Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
+	        intent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
+	        startActivity(intent);
+		}
+	}
+	
 	@Override
     protected void onRestart() {
         super.onRestart();

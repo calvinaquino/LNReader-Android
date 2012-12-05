@@ -40,6 +40,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_ORDER = "_index";
 	public static final String COLUMN_STATUS = "status";
 	public static final String COLUMN_IS_MISSING = "is_missing";
+	public static final String COLUMN_IS_EXTERNAL = "is_external";
 	
 	public static final String TABLE_IMAGE = "images";
 	public static final String COLUMN_IMAGE = "name";
@@ -64,7 +65,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_CREATE_DATE = "create_date";
 
 	public static final String DATABASE_NAME = "pages.db";
-	public static final int DATABASE_VERSION = 22;
+	public static final int DATABASE_VERSION = 23;
 
 	// Database creation SQL statement
 	private static final String DATABASE_CREATE_PAGES = "create table if not exists "
@@ -80,7 +81,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			  				 + COLUMN_IS_DOWNLOADED + " boolean, "					// 9
 			  				 + COLUMN_ORDER + " integer, "							// 10
 			  				 + COLUMN_STATUS + " text, "							// 11
-			  				 + COLUMN_IS_MISSING + " boolean );";					// 12
+			  				 + COLUMN_IS_MISSING + " boolean, "						// 11
+			  				 + COLUMN_IS_EXTERNAL + " boolean );";					// 13
 	
 	private static final String DATABASE_CREATE_IMAGES = "create table if not exists "
 		      + TABLE_IMAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -191,6 +193,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		if(oldVersion == 21) {
 			db.execSQL("ALTER TABLE " + TABLE_PAGE + " ADD COLUMN " + COLUMN_IS_MISSING + " boolean" );
 			oldVersion = 22;
+		}
+		if(oldVersion == 22) {
+			db.execSQL("ALTER TABLE " + TABLE_PAGE + " ADD COLUMN " + COLUMN_IS_EXTERNAL + " boolean" );
+			oldVersion = 23;
 		}
 	}
 	
@@ -440,6 +446,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		cv.put(COLUMN_IS_DOWNLOADED, page.isDownloaded());
 		if(updateStatus) cv.put(COLUMN_STATUS, page.getStatus());
 		cv.put(COLUMN_IS_MISSING, page.isMissing());
+		cv.put(COLUMN_IS_EXTERNAL, page.isExternal());
 		
 		if(temp == null) {
 			//Log.d(TAG, "Inserting: " + page.toString());
@@ -490,6 +497,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		page.setOrder(cursor.getInt(10));
 		page.setStatus(cursor.getString(11));
 		page.setMissing(cursor.getInt(12) == 1 ? true : false);
+		page.setExternal(cursor.getInt(13) == 1 ? true : false);
 	    return page;
 	}
 	
@@ -522,6 +530,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			update(db, TABLE_NOVEL_DETAILS, cv, COLUMN_ID + " = ?", new String[] {"" + temp.getId()});
 		}
 
+		// insert book
 		for(Iterator<BookModel> iBooks = novelDetails.getBookCollections().iterator(); iBooks.hasNext();){
 			BookModel book = iBooks.next();
 			ContentValues cv2 = new ContentValues();
@@ -547,6 +556,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			}
 		}
 		
+		// insert chapter
 		for(Iterator<BookModel> iBooks = novelDetails.getBookCollections().iterator(); iBooks.hasNext();){
 			BookModel book = iBooks.next();
 			for(Iterator<PageModel> iPage = book.getChapterCollection().iterator(); iPage.hasNext();) {
@@ -557,7 +567,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				cv3.put(COLUMN_TYPE, page.getType());
 				cv3.put(COLUMN_PARENT, page.getParent());
 				cv3.put(COLUMN_ORDER, page.getOrder());
-				
+				cv3.put(COLUMN_IS_EXTERNAL, page.isExternal());
 				cv3.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 				cv3.put(COLUMN_IS_WATCHED, false);
 				

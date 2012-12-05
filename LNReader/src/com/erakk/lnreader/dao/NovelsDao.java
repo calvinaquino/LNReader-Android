@@ -497,7 +497,7 @@ public class NovelsDao {
 				
 				ArrayList<PageModel> chapters = getUpdateInfo(novel.getFlattedChapterList(), notifier);
 				for (PageModel pageModel : chapters) {
-					updatePageModel(pageModel);
+					pageModel = updatePageModel(pageModel);
 				}
 				
 				
@@ -542,12 +542,16 @@ public class NovelsDao {
 		while(i < pageModels.size()) {
 			int apiPageCount = 1;
 			ArrayList<PageModel> checkedPageModel = new ArrayList<PageModel>();
-			String titles = pageModels.get(i).getPage();
-			checkedPageModel.add(pageModels.get(i));
+			String titles = "";//pageModels.get(i).getPage();
+			//checkedPageModel.add(pageModels.get(i));
 			//Log.d("parser", "pageModels.get(i).getPage(): " + pageModels.get(i).getPage());
-			++i;
+			//++i;
 			
 			while(i < pageModels.size() && apiPageCount < 50) {
+				if(pageModels.get(i).isExternal()) {
+					++i;
+					continue;
+				}
 				if(titles.length() + pageModels.get(i).getPage().length() < 2000) {
 					titles += "|" + UIHelper.UrlEncode(pageModels.get(i).getPage());
 					checkedPageModel.add(pageModels.get(i));

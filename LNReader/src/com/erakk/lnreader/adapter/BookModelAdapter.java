@@ -29,6 +29,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 	private int notRead = Color.parseColor("#dddddd");
 	private int notReadDark = Color.parseColor("#222222");
 	private int missing = Color.parseColor("#ff0000");
+	private int external = Color.parseColor("#3333ff");
 
 	public BookModelAdapter(Context context, ArrayList<BookModel> groups) {
 		this.context = context;
@@ -81,19 +82,26 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		if(child.isMissing()) {
 			tv.setTextColor(missing);
 		}
+		if(child.isExternal()) {
+			tv.setTextColor(external);
+		}
 		
 		TextView tvIsDownloaded = (TextView) view.findViewById(R.id.novel_is_downloaded);
 		//Log.d("getChildView", "Downloaded " + child.getTitle() + " id " + child.getId() + " : " + child.isDownloaded() );
 		if(tvIsDownloaded != null) {
-			if(!child.isDownloaded()) {
+			if(child.isExternal()) {
+				tvIsDownloaded.setText("(EX)");
+				tvIsDownloaded.setVisibility(TextView.VISIBLE);
+			}
+			else if(!child.isDownloaded()) {
 				tvIsDownloaded.setVisibility(TextView.GONE);
 			}
 			else {
-				tvIsDownloaded.setVisibility(TextView.VISIBLE);
-				
+				tvIsDownloaded.setText("(DL)");
 				if(NovelsDao.getInstance().isContentUpdated(child)) {
 					tvIsDownloaded.setText("! (DL)");
 				}
+				tvIsDownloaded.setVisibility(TextView.VISIBLE);
 			}
 		}
 		
