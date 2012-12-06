@@ -12,6 +12,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -337,7 +338,18 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	
 	public void jumpTo(PageModel page){
 		setLastReadState();
-		executeTask(page, false);
+		if(page.isExternal()) {
+			try{
+				Uri url = Uri.parse(page.getPage());
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
+				startActivity(browserIntent);
+			}catch(Exception ex) {
+				String message = "Error when parsing url: " + page.getPage();
+				Log.e(TAG, message , ex);
+				Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+			}
+		}
+		else executeTask(page, false);
 	}
 	
 	private void buildTOCMenu() {

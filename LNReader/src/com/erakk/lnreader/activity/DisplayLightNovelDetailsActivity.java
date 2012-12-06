@@ -101,9 +101,9 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 	private void loadChapter(PageModel chapter) {
 		if(chapter.isExternal()) {
 			try{
-			Uri url = Uri.parse(chapter.getPage());
-			Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
-			startActivity(browserIntent);
+				Uri url = Uri.parse(chapter.getPage());
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
+				startActivity(browserIntent);
 			}catch(Exception ex) {
 				String message = "Error when parsing url: " + chapter.getPage();
 				Log.e(TAG, message , ex);

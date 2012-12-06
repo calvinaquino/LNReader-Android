@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
@@ -69,11 +71,20 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		holder = new PageModelHolder();
 		holder.txtNovel = (TextView)row.findViewById(R.id.novel_name);
 		if(holder.txtNovel != null) {
-			holder.txtNovel.setText(page.getTitle());// + " (" + page.getTitle() + ")");
+			holder.txtNovel.setText(page.getTitle());
 			if(page.isHighlighted()) {
 				holder.txtNovel.setTypeface(null, Typeface.BOLD);
-				holder.txtNovel.setTextSize(18);
+				holder.txtNovel.setTextSize(20);
 			}
+			
+			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
+				holder.txtNovel.setTextColor(Constants.COLOR_UNREAD);
+			}
+			else {
+				holder.txtNovel.setTextColor(Constants.COLOR_UNREAD_INVERT);
+			}
+			if(page.isMissing()) holder.txtNovel.setTextColor(Constants.COLOR_MISSING);
+			if(page.isExternal()) holder.txtNovel.setTextColor(Constants.COLOR_EXTERNAL);
 		}
 		
 		holder.txtLastUpdate = (TextView)row.findViewById(R.id.novel_last_update);

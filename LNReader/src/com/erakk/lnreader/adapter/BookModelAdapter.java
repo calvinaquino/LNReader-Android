@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,11 +24,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 	private static final String TAG = BookModelAdapter.class.toString();
 	private Context context;
 	private ArrayList<BookModel> groups;
-	private int read = Color.parseColor("#888888");
-	private int notRead = Color.parseColor("#dddddd");
-	private int notReadDark = Color.parseColor("#222222");
-	private int missing = Color.parseColor("#ff0000");
-	private int external = Color.parseColor("#3333ff");
+	
 
 	public BookModelAdapter(Context context, ArrayList<BookModel> groups) {
 		this.context = context;
@@ -60,21 +55,21 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		tv.setTag(child.getPage());
 		
 		if(child.isFinishedRead()) {
-			tv.setTextColor(read);
+			tv.setTextColor(Constants.COLOR_READ);
 		}
 		else {
 			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
-				tv.setTextColor(notRead);
+				tv.setTextColor(Constants.COLOR_UNREAD);
 			}
 			else {
-				tv.setTextColor(notReadDark);
+				tv.setTextColor(Constants.COLOR_UNREAD_INVERT);
 			}
 		}
 		if(child.isMissing()) {
-			tv.setTextColor(missing);
+			tv.setTextColor(Constants.COLOR_MISSING);
 		}
 		if(child.isExternal()) {
-			tv.setTextColor(external);
+			tv.setTextColor(Constants.COLOR_EXTERNAL);
 		}
 		
 		TextView tvIsDownloaded = (TextView) view.findViewById(R.id.novel_is_downloaded);
@@ -184,14 +179,14 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			}
 		}
 		if(readAll) {
-			tv.setTextColor(read);
+			tv.setTextColor(Constants.COLOR_READ);
 		}
 		else {
 			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
-				tv.setTextColor(notRead);
+				tv.setTextColor(Constants.COLOR_UNREAD);
 			}
 			else {
-				tv.setTextColor(notReadDark);
+				tv.setTextColor(Constants.COLOR_UNREAD_INVERT);
 			}
 		}
 		

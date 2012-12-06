@@ -2,6 +2,7 @@ package com.erakk.lnreader;
 
 import java.util.Date;
 
+import android.graphics.Color;
 import android.os.Environment;
 
 public class Constants {
@@ -62,5 +63,11 @@ public class Constants {
 	public static final String STATUS_TEASER = "teaser";
 	public static final String STATUS_STALLED = "stalled";
 	public static final String STATUS_ABANDONED = "abandoned";
-	public static final String STATUS_PENDING = "pending";	
+	public static final String STATUS_PENDING = "pending";
+
+	public static final int COLOR_READ = Color.parseColor("#888888");
+	public static final int COLOR_UNREAD = Color.parseColor("#dddddd");
+	public static final int COLOR_UNREAD_INVERT = Color.parseColor("#222222");
+	public static final int COLOR_MISSING = Color.parseColor("#ff0000");
+	public static final int COLOR_EXTERNAL = Color.parseColor("#3333ff");	
 }
