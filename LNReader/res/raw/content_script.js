@@ -23,6 +23,7 @@ function setup() {
 
 /* Handle touch event for bookmark highlighting */
 function toogleHighlight(element, ev) {
+	if(!isBookmarkEnabled) return;
     var mode = "";
     var target = event.srcElement || event.target;
 
@@ -66,4 +67,8 @@ function findPos(obj) {
         } while (obj = obj.offsetParent);
         return [curtop];
     }
+}
+
+function toogleEnableBookmark(enable) {
+	isBookmarkEnabled = enable;
 }

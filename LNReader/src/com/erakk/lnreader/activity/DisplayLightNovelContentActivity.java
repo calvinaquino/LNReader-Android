@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -109,13 +110,16 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		if(isFullscreen != getFullscreenPreferences()) {
 			UIHelper.Recreate(this);
 		}
-		//hide btn option
-		Button btnOption = (Button) findViewById(R.id.btnMenu);		
-		if(getFullscreenPreferences()) {
-			btnOption.setVisibility(View.VISIBLE);
-		}
-		else {
-			btnOption.setVisibility(View.GONE);
+		
+		//show/hide option button
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			Button btnOption = (Button) findViewById(R.id.btnMenu);		
+			if(getFullscreenPreferences()) {
+				btnOption.setVisibility(View.VISIBLE);
+			}
+			else {
+				btnOption.setVisibility(View.GONE);
+			}
 		}
 		
 		// moved page loading here rather than onCreate
@@ -191,9 +195,17 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		Log.d(TAG, "onStop Completed");
 	}
 	
+	@SuppressLint("NewApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_display_light_novel_content, menu);
+
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) { 
+			if(getFullscreenPreferences()) {
+				menu.findItem(R.id.menu_chapter_next).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+				menu.findItem(R.id.menu_chapter_previous).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+			}
+		}
 		return true;
 	}
 
@@ -514,35 +526,19 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			String html = "<html><head><style type=\"text/css\">"
 						+ app.ReadCss(styleId) 
 						+ "</style>"
+						+ "<meta name='viewport' content='width=device-width, minimum-scale=0.5, maximum-scale=5' />"
 						+ prepareJavaScript(lastPos, content.getBookmarks())
 						+ "</head><body onclick='toogleHighlight(this, event);' onload='setup();'>" 
 						+ content.getContent() 
 						+ "</body></html>";
 			wv.loadDataWithBaseURL(Constants.BASE_URL, html, "text/html", "utf-8", "");
-			wv.setInitialScale((int) (content.getLastZoom() * 100));
+			if(content.getLastZoom() > 0) {
+				wv.setInitialScale((int) (content.getLastZoom() * 100));
+			}
+			else {
+				wv.setInitialScale(100);
+			}
 			
-//			wv.setPictureListener(new PictureListener(){
-//				boolean needScroll = true;
-//				@Deprecated
-//				public void onNewPicture(WebView arg0, Picture arg1) {
-//					if(needScroll && wv.getContentHeight() * content.getLastZoom() > content.getLastYScroll()) {
-//						Log.d(TAG, "Content Height: " + wv.getContentHeight() + " : " + content.getLastYScroll());
-//						//wv.scrollTo(0, content.getLastYScroll());
-//						int pos = content.getLastYScroll();
-//						if(pos > 0) pos = pos - 1 ;	
-//						
-//						// launched from bookmark
-//						int pIndex = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, -1);
-//						if(pIndex > -1) {
-//							pos = pIndex;
-//						}
-//											
-//						wv.loadUrl("javascript:goToParagraph(" + pos + ")");
-//						setLastReadState();
-//						needScroll = false;
-//					}						
-//				}					
-//			});
 			try{
 				novelDetails = NovelsDao.getInstance(this).getNovelDetails(pageModel.getParentPageModel(), null);
 				
@@ -568,6 +564,8 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		String js = LNReaderApplication.getInstance().ReadCss(R.raw.content_script);
 		js = "var bookmarkCol = [%bookmarks%];" + js;
 		js = "var lastPos = %lastpos%;" + js;
+		js = "var isBookmarkEnabled = " + getBookmarkPreferences() + ";" + js;
+		
 		if(bookmarks != null && bookmarks.size() > 0) {
 			ArrayList<Integer> list = new ArrayList<Integer>();
 			for (BookmarkModel bookmark : bookmarks) {
@@ -609,6 +607,8 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		wv.getSettings().setLoadsImagesAutomatically(getShowImagesPreferences());
 		wv.setBackgroundColor(0);
 		wv.getSettings().setJavaScriptEnabled(true);
+		
+		wv.loadUrl("javascript:toogleEnableBookmark(" + getBookmarkPreferences() + ")");
 	}
 	
 	public void setMessageDialog(ICallbackEventData message) {
@@ -668,6 +668,10 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	private boolean getFullscreenPreferences() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_FULSCREEN, false);
 	}
+	
+	private boolean getBookmarkPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ENABLE_BOOKMARK, true);
+	}
 
 	public void refreshBookmarkData() {
 		if(bookmarkAdapter != null) bookmarkAdapter.refreshData();		
@@ -675,9 +679,13 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 
 	public void updateLastLine(int pIndex) {
 		if(content != null) content.setLastYScroll(pIndex);
-	}
+	}	
 	
+	@SuppressLint("NewApi")
 	public void OpenMenu(View view) {
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) { 
+			invalidateOptionsMenu();
+		}		
     	openOptionsMenu();
     }
 }
