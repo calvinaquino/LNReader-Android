@@ -60,4 +60,15 @@
             android:textSize="12sp" />
     </RelativeLayout>
 
+    <Button
+        android:id="@+id/btnMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:background="@android:drawable/ic_menu_more"
+        android:minHeight="18dp"
+        android:minWidth="24dp"
+        android:onClick="OpenMenu" />
+
 </RelativeLayout>

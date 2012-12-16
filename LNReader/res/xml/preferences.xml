@@ -73,6 +73,7 @@
         <CheckBoxPreference android:summary="Novel list is always ordered by alphabet." android:key="alphabet_order" android:defaultValue="false" android:title="Alphabetical Order"/>
         <CheckBoxPreference android:summary="Show missing chapter (marked with red color)." android:defaultValue="true" android:key="show_missing" android:title="Show Missing Chapters"/>
         <CheckBoxPreference android:summary="Show external chapter (marked with blue color/EX)." android:defaultValue="true" android:key="show_external" android:title="Show External Chapters"/>
+        <CheckBoxPreference android:defaultValue="false" android:summary="Use fullscreen when reading." android:key="fullscreen" android:title="Use Fullscreen"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="storage_category"

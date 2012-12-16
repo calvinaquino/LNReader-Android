@@ -24,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -61,10 +62,13 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	private BakaTsukiWebViewClient client;
 	private boolean restored;
 	private AlertDialog bookmarkMenu = null;
+	boolean isFullscreen;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		isFullscreen = getFullscreenPreferences();
+		UIHelper.ToggleFullscreen(this, isFullscreen);
         UIHelper.SetTheme(this, R.layout.activity_display_light_novel_content);		
         UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
@@ -84,8 +88,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		webView.setWebViewClient(client);
 		webView.setWebChromeClient(new BakaTsukiWebChromeClient(this));
 		
-		restored = false;
-		
+		restored = false;		
 		Log.d(TAG, "OnCreate Completed.");
 	}
 	
@@ -103,6 +106,18 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	@Override
 	public void onResume() {
 		super.onResume();
+		if(isFullscreen != getFullscreenPreferences()) {
+			UIHelper.Recreate(this);
+		}
+		//hide btn option
+		Button btnOption = (Button) findViewById(R.id.btnMenu);		
+		if(getFullscreenPreferences()) {
+			btnOption.setVisibility(View.VISIBLE);
+		}
+		else {
+			btnOption.setVisibility(View.GONE);
+		}
+		
 		// moved page loading here rather than onCreate
 		// to avoid only the first page loaded when resume from sleep 
 		// (activity destroyed, onCreate called again)
@@ -649,6 +664,10 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	private boolean getZoomControlPreferences() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_SHOW_ZOOM_CONTROL, false);
 	}
+	
+	private boolean getFullscreenPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_FULSCREEN, false);
+	}
 
 	public void refreshBookmarkData() {
 		if(bookmarkAdapter != null) bookmarkAdapter.refreshData();		
@@ -657,4 +676,8 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	public void updateLastLine(int pIndex) {
 		if(content != null) content.setLastYScroll(pIndex);
 	}
+	
+	public void OpenMenu(View view) {
+    	openOptionsMenu();
+    }
 }

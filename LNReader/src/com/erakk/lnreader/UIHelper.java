@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -11,6 +12,8 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.Window;
+import android.view.WindowManager;
 
 /*
  * Class for handling all the UI with API Warning ==> @SuppressLint("NewApi")
@@ -34,8 +37,10 @@ public class UIHelper {
 	 */
 	@SuppressLint("NewApi")
 	public static void SetActionBarDisplayHomeAsUp(Activity activity, boolean enable) {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
-			activity.getActionBar().setDisplayHomeAsUpEnabled(enable);
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			ActionBar actionBar = activity.getActionBar();
+			if(actionBar != null) actionBar.setDisplayHomeAsUpEnabled(enable);
+		}
 		CheckScreenRotation(activity);
 	}
 	
@@ -85,6 +90,28 @@ public class UIHelper {
 			return true;
 		}
 		return false;
+	}
+	
+	@SuppressLint("NewApi")
+	public static void ToggleFullscreen(Activity activity, boolean fullscreen) {
+		if(fullscreen) {
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				ActionBar actionBar = activity.getActionBar();
+				if(actionBar != null) actionBar.hide();
+			}
+			else {
+				activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			}
+			
+			//activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+			//						  WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+		}
+		else {
+			activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+			activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+	    }
 	}
 	
 	/**
