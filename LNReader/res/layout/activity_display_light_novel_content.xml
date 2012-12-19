@@ -45,7 +45,7 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:onClick="searchNext"
-            android:text=">"
+            android:text="&gt;"
             android:textSize="12sp" />
 
         <Button

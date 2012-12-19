@@ -12,7 +12,9 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:choiceMode="multipleChoice"
-        android:longClickable="true" >
+        android:longClickable="true" 
+        android:fastScrollEnabled="true"
+        android:fastScrollAlwaysVisible="true" >
 	</ListView>
 	
 	<TextView

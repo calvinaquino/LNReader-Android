@@ -49,6 +49,7 @@
         android:button="@android:drawable/btn_star"
         android:checked="false"
         android:focusable="false"
-        android:gravity="center" />
+        android:gravity="center"
+        android:layout_marginRight="20dp" />
 
 </RelativeLayout>
