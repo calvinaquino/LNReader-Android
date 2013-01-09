@@ -5,6 +5,8 @@
         android:title="Refresh" />
     <item android:id="@+id/invert_colors"
         android:title="@string/invert_colors" />
+    <item android:id="@+id/menu_bookmarks"
+        android:title="Bookmarks" />
     <item android:id="@+id/menu_manual_add" android:title="Manual Add"></item>
-    <item android:id="@+id/menu_download_all" android:title="Download All"></item>
+    <item android:id="@+id/menu_download_all" android:title="Download All Info"></item>
 </menu>

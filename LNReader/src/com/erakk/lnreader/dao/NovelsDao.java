@@ -14,6 +14,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -75,6 +76,19 @@ public class NovelsDao {
 			}finally{
 				db.close();
 			}
+		}
+	}
+	
+	public String copyDB(Context context, boolean makeBackup) throws IOException {
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			String filePath;
+			try{
+				filePath = dbh.copyDB(db, context, makeBackup);
+			}finally{
+				db.close();
+			}
+			return filePath;
 		}
 	}
 

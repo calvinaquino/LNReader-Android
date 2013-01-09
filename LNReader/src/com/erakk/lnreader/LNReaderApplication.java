@@ -4,11 +4,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import android.R.integer;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
@@ -24,7 +26,9 @@ import android.widget.Toast;
 
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.model.DownloadModel;
 import com.erakk.lnreader.service.UpdateService;
+import com.erakk.lnreader.activity.DownloadListActivity;
 
 /*
  * http://www.devahead.com/blog/2011/06/extending-the-android-application-class-and-dealing-with-singleton/
@@ -32,9 +36,11 @@ import com.erakk.lnreader.service.UpdateService;
 public class LNReaderApplication extends Application {
 	private static final String TAG = LNReaderApplication.class.toString();
 	private static NovelsDao novelsDao = null;
+	private static DownloadListActivity downloadListActivity = null;
 	private static UpdateService service = null;
 	private static LNReaderApplication instance;
 	private static Hashtable<String, AsyncTask<?, ?, ?>> runningTasks;
+	private static ArrayList<DownloadModel> downloadList;
 	
 	@Override
 	public void onCreate()
@@ -57,7 +63,9 @@ public class LNReaderApplication extends Application {
 	protected void initSingletons()
 	{
 		if(novelsDao == null) novelsDao = NovelsDao.getInstance(this);
+		if(downloadListActivity == null) downloadListActivity = DownloadListActivity.getInstance();
 		if(runningTasks == null) runningTasks = new Hashtable<String, AsyncTask<?, ?, ?>>();
+		if(downloadList == null) downloadList = new ArrayList<DownloadModel>();
 	}
 	
 	/*
@@ -70,6 +78,7 @@ public class LNReaderApplication extends Application {
 	public AsyncTask<?, ?, ?> getTask(String key) {
 		return runningTasks.get(key);
 	}
+	
 	
 	public boolean addTask(String key, AsyncTask<?, ?, ?> task) {
 		if(runningTasks.containsKey(key)) {
@@ -85,7 +94,6 @@ public class LNReaderApplication extends Application {
 		runningTasks.remove(key);
 		return true;
 	}
-	
 	public boolean isOnline() {
 	    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
@@ -94,7 +102,54 @@ public class LNReaderApplication extends Application {
 	    }
 	    return false;
 	}
-
+	/*
+	 * DownloadActivity method
+	 */
+	public int addDownload(String id,String name){
+		downloadList.add(new DownloadModel(id,name,0));
+		if (DownloadListActivity.getInstance() != null)
+			DownloadListActivity.getInstance().updateContent();
+		return downloadList.size();
+	}
+	public void removeDownload(String id){
+		for (int i=0;i<downloadList.size();i++) {
+			if (downloadList.get(i).getDownloadId() == id) {
+				downloadList.remove(i);
+			}
+		}
+		if (DownloadListActivity.getInstance() != null)
+			DownloadListActivity.getInstance().updateContent();
+	}
+	public String getDownloadDescription(String id){
+		String name = "";
+		for (int i=0;i<downloadList.size();i++) {
+			if (downloadList.get(i).getDownloadId() == id) {
+				name = downloadList.get(i).getDownloadName();
+			}
+		}
+		return name;
+	}
+	public boolean checkIfDownloadExists(String name) {
+		boolean exists = false;
+		for (int i=0;i<downloadList.size();i++) {
+			if (downloadList.get(i).getDownloadName().equals(name)) {
+				exists = true;
+			}
+		}
+		return exists;
+	}
+	public void updateDownload(String id, Integer progress){
+		for (int i=0;i<downloadList.size();i++) {
+			if (downloadList.get(i).getDownloadId() == id) {
+				downloadList.get(i).setDownloadProgress(progress);
+			}
+		}
+		if (DownloadListActivity.getInstance() != null)
+			DownloadListActivity.getInstance().updateContent();
+	}
+	public ArrayList<DownloadModel> getDownloadList() {
+		return downloadList;
+	}
 	/*
 	 * UpdateService method
 	 */

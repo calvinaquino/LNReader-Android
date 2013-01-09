@@ -31,6 +31,7 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.adapter.BookmarkModelAdapter;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
@@ -58,6 +59,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 	private ProgressDialog dialog;
 	private boolean isInverted;
 	private boolean onlyWatched = false;
+	String touchedForDownload;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -156,6 +158,10 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 		case R.id.menu_download_all:			
 			DownloadAllNovelInfo();
 			return true;
+		case R.id.menu_bookmarks:
+    		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
+        	startActivity(bookmarkIntent);
+			return true;    
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;
@@ -164,8 +170,11 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 	}
 
 	private void DownloadAllNovelInfo() {
-			toggleProgressBar(true);
-			executeDownloadTask(listItems);
+		if (onlyWatched)
+			touchedForDownload = "Watched Light Novels information";
+		else
+			touchedForDownload = "All Light Novels information";
+		executeDownloadTask(listItems);
 	}
 
 	private void ManualAdd() {
@@ -237,10 +246,10 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 			 * Implement code to download novel synopsis
 			 */
 			if(info.position > -1) {
-				toggleProgressBar(true);
 				PageModel novel = listItems.get(info.position);
 				ArrayList<PageModel> novels = new ArrayList<PageModel>();
 				novels.add(novel);
+				touchedForDownload = novel.getTitle()+"'s information";
 				executeDownloadTask(novels);
 			}
 			return true;
@@ -302,6 +311,35 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 			}
 			toggleProgressBar(true);
 		}
+	}
+	
+	public boolean downloadListSetup(String id, String toastText, int type){
+		boolean exists = false;
+		String name = touchedForDownload;
+		if (type == 0) {
+			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
+				exists = true;
+				Toast.makeText(this, "Download already on queue.", Toast.LENGTH_SHORT).show();
+			}
+			else {
+				Toast.makeText(this,"Downloading "+name+".", Toast.LENGTH_SHORT).show();
+				LNReaderApplication.getInstance().addDownload(id, name);
+			}
+		}
+		else if (type == 1) {
+			Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show();
+		}
+		else if (type == 2) {
+			Toast.makeText(this, LNReaderApplication.getInstance().getDownloadDescription(id)+"'s download finished!", Toast.LENGTH_SHORT).show();
+			LNReaderApplication.getInstance().removeDownload(id);
+		}
+		return exists;
+	}
+	public void updateProgress(String id, int current, int total){
+		double cur = (double)current;
+		double tot = (double)total;
+		double result = (cur/tot)*100;
+		LNReaderApplication.getInstance().updateDownload(id, (int)result);
 	}
 	
 	@SuppressLint("NewApi")
@@ -374,17 +412,20 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 			if(LNReaderApplication.isInstanceOf((ArrayList<?>)result.getResult(), PageModel.class)) {
 				@SuppressWarnings("unchecked")
 				ArrayList<PageModel> list = (ArrayList<PageModel>) result.getResult();
+				Log.d("WatchList", "result ok");
 				if(list != null) {
+					Log.d("WatchList", "result not empty");
 					//if (refreshOnly) {
 						adapter.clear();
 					//	refreshOnly = false;
 					//}
-					
 					adapter.addAll(list);
 					toggleProgressBar(false);
-
+					
 					// Show message if watch list is empty
 					if (list.size() == 0 && onlyWatched) {
+
+						Log.d("WatchList", "result set message empty");
 						TextView tv = (TextView) findViewById(R.id.emptyList);
 						tv.setVisibility(TextView.VISIBLE);
 						tv.setText("Watch List is empty.");

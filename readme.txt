@@ -19,18 +19,45 @@ LINE-ENDINGS & SOURCE ENCODING CONFIG
 * Eclipse Config:
   - http://stackoverflow.com/questions/1886185/eclipse-and-windows-newlines
 
-TODO:
-====================================================
-* Remodel UI - Working
-* Create icons,change colors. - Colors working/Icons later
-* MAYBE Rename work. - Baka-Tsuki Reader / TsukiReader or another
-* Basic Auto checking for novel translation updates
 
-TODO Parser:
-- http://www.baka-tsuki.org/project/index.php?title=White_Album_2_Omake = no structure..
-- External link, e.g: Drrrr. I thinks there are more.
-- Template:Abandoned, e.g.: NHK e youkouzo.
-  => Update the db structure, need to update parser.
+
+TASK LIST - Version 20130106 beta
+====================================================
+//DONE
+- inverted default VolumeRocker scroll direction.
+- Removed annoying sound when using VolumeRocker.
+- Database backup/restore implemented
+- Downloads intent+++ Make it cooler
+- anti sleep fuinction 
+- Fix volume buttons when not in scroll mode
+- Unit steps for scrolling Volume Rocker 1 = 100 normalized
+- Verify clicking mascot in chapter and going to jump to screen.
+- make bookmarks accessible in every part of the app
+- Download all info make a background task
+- Reformatted last update/check text
+- Jump to inside content layout fixed
+
+//TODO
+- Bookmarks screen fix layout TODO - Doing it now
+- fix novel content headers/titles TODO
+- Manual add series tutorial for new users TODO lowPriority
+- When loading main page for first time, add message "found x novel series" TODO lowPriority
+- dialog inside a chapter/content reading "Downloading, please wait" TODO
+- Make lightNovel list download a download list task TODO
+
+//TODO NEXT VERSION ONLY
+- let finished downloads stay unless deleted* TODO
+
+//NEEDS VERIFICATION
+- remove stars from novel detail name TODO??
+
+//FUTURE THINKING
+-Advanced Customization options
+-Integration with external cloud apps for image/database saving:
+	DropBox
+	Box
+	Skydrive
+	Google Drive
 
 UNHANDLED EXCEPTION:
 ====================================================

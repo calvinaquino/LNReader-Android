@@ -28,5 +28,9 @@
     <string name="task_loading">Task still loading&#8230;</string>
     <string name="jump_last_read">Jump to Last Read</string>
     <string name="title_activity_display_bookmark">DisplayBookmarkActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_download_list">Downloads List</string>
+    <string name="downloadsList">Downloads</string>
+    <string name="title_activity_download_list_adapter">DownloadListAdapter</string>
 
 </resources>

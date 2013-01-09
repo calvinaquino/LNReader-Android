@@ -56,15 +56,20 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="show_zoom_control"
-            android:summary="Show zoom button in the novel contents, doesn&apos;t affect the zooming function"
+            android:summary="Show zoom button in the novel contents, doesn&apos;t affect the zooming function."
             android:title="Show Zoom Control" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="keep_awake"
+            android:summary="Keeps the screen allways on when on chapter screen."
+            android:title="Keep Awake" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="use_volume_to_scroll"
             android:summary="Use volumer rocker for scrolling when for novel contents."
             android:title="Use Volume Rocker for Scrolling" />
         <EditTextPreference
-            android:defaultValue="500"
+            android:defaultValue="5"
             android:dependency="use_volume_to_scroll"
             android:key="scroll_size"
             android:summary="Scrolling size for volumer rocker."
@@ -83,6 +88,14 @@
             android:key="clear_database"
             android:summary="Erases light novel database"
             android:title="Clear Novel Database" />
+        <Preference
+            android:key="backup_database"
+            android:summary="Creates a backup of the light novel database at the root of the device's internal storage."
+            android:title="Create Novel Database Backup" />
+        <Preference
+            android:key="restore_database"
+            android:summary="Restores a light novel database backup previouslly created from the root of the device's internal storage."
+            android:title="Restore Novel Database Backup" />
         <Preference
             android:key="clear_image_cache"
             android:summary="Clears cached images"

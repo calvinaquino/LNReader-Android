@@ -156,4 +156,16 @@ public class DisplayImageActivity extends Activity implements IAsyncTaskOwner{
 		}
 		//LNReaderApplication.getInstance().removeTask(TAG + ":" + url);
 	}
+
+	@Override
+	public void updateProgress(String id,int current, int total) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean downloadListSetup(String id, String toastText, int type) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -11,5 +11,6 @@
         android:title="Next" android:showAsAction="ifRoom"/>
     <item android:id="@+id/menu_chapter_toc" android:title="Jump To"></item>
     <item android:id="@+id/menu_search" android:title="Search"></item>
+    <item android:id="@+id/menu_bookmarks_here" android:title="Bookmarks on Chapter"></item>
     <item android:id="@+id/menu_bookmarks" android:title="Bookmarks"></item>
 </menu>

@@ -7,11 +7,14 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -106,6 +109,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	@Override
 	public void onResume() {
 		super.onResume();
+		
 		if(isFullscreen != getFullscreenPreferences()) {
 			UIHelper.Recreate(this);
 		}
@@ -148,6 +152,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	@Override
 	public void onPause() {
 		super.onPause();
+		
 		setLastReadState();
 		Log.d(TAG, "onPause Completed");
 	}
@@ -282,12 +287,17 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		case R.id.menu_search:
 			showSearchBox();
 			return true;
-		case R.id.menu_bookmarks:
+		case R.id.menu_bookmarks_here:
 			if(bookmarkMenu != null) bookmarkMenu.show();
 			return true;
+		case R.id.menu_bookmarks:
+    		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
+        	startActivity(bookmarkIntent);
+			return true;    
 		case android.R.id.home:
-			if(tocMenu != null) tocMenu.show();
-			else finish();
+//			if(tocMenu != null) tocMenu.show();
+//			else finish();
+			finish();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -308,21 +318,34 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		boolean useVolumeRocker = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_VOLUME_FOR_SCROLL, false);
 		if(useVolumeRocker) {
-			int scrollSize = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 500);
+			int scrollSize = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5)*100;
 			
 			boolean invertScroll = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_SCROLL, false);
 			if(invertScroll) scrollSize = scrollSize * -1;
 			
 			if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-				webView.flingScroll(0, scrollSize);
+				webView.flingScroll(0, -scrollSize);
+				Log.d("Volume", "Up Pressed");
 				return true;
 			} else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-				webView.flingScroll(0, -scrollSize);
+				webView.flingScroll(0, +scrollSize);
+				Log.d("Volume", "Down Pressed");
 				return true;
 			}
 			else return super.onKeyDown(keyCode, event);
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+	    if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
+	    	boolean useVolumeRocker = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_VOLUME_FOR_SCROLL, false);
+			if(!useVolumeRocker) {
+				return false;
+			}
+	       return true;
+	    }
+	    return super.onKeyUp(keyCode, event);
 	}
 	
 	@SuppressLint("NewApi")
@@ -392,9 +415,9 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 						else chapter.setHighlighted(false);
 					}
 					
-					int resourceId = R.layout.novel_list_item;
+					int resourceId = R.layout.jumpto_list_item;
 					if(UIHelper.IsSmallScreen(this)) {
-						resourceId = R.layout.novel_list_item_small; 
+						resourceId = R.layout.jumpto_list_item; 
 					}
 					jumpAdapter = new PageModelAdapter(this, resourceId, chapters);
 					AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -687,4 +710,16 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}		
     	openOptionsMenu();
     }
+
+	@Override
+	public void updateProgress(String id,int current, int total) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean downloadListSetup(String id, String toastText, int type) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

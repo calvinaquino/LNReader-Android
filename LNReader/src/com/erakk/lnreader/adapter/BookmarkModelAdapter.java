@@ -1,5 +1,6 @@
 package com.erakk.lnreader.adapter;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -68,7 +70,7 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel>{
 		
 		holder.txtCreateDate = (TextView)row.findViewById(R.id.create_date);
 		if(holder.txtCreateDate != null) {
-			holder.txtCreateDate.setText("Added: " + page.getCreationDate().toString());
+			holder.txtCreateDate.setText("Added " + formatDateForDisplay(page.getCreationDate()));
 		}
 		
 		holder.txtExcerpt = (TextView)row.findViewById(R.id.excerpt);
@@ -113,5 +115,38 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel>{
 		TextView txtExcerpt;
 		TextView txtCreateDate;
 	}
-	
+	@SuppressWarnings({ "deprecation", "unused" })
+	private String formatDateForDisplay(Date date) {
+		String since= "";
+		//Setup
+		Time now = new Time();
+		int dif = 0;
+		now.setToNow();
+		dif = now.hour-date.getHours();
+		if(dif<0) {
+			since = "invalid";
+		}
+		else if(dif<24) {
+			since = "hour";
+		}
+		else if (dif<168) {
+			dif/=24;
+			since = "day";
+		}
+		else if (dif<720) {
+			dif/=168;
+			since = "week";
+		}
+		else if (dif<8760) {
+			dif/=720;
+			since = "month";
+		}
+		else {
+			dif/=8760;
+			since = "year";
+		}
+		if (dif < 0) return since;
+		else if (dif == 1) return dif+" "+since+" ago";
+		else return dif+" "+since+"s ago";
+	}
 }

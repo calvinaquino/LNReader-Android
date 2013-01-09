@@ -15,10 +15,23 @@ import com.erakk.lnreader.model.PageModel;
 
 public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEventData, AsyncTaskResult<ArrayList<NovelCollectionModel>>> implements ICallbackNotifier {
 	public volatile IAsyncTaskOwner owner;
+	private int currentPart = 0;
+	private int totalParts = 0;
+	private String taskId;
 	
 	public DownloadNovelDetailsTask(IAsyncTaskOwner owner) {
 		this.owner = owner;
+		this.taskId = this.toString();
 	}
+	@Override
+	protected void onPreExecute (){
+		// executed on UI thread.
+//		owner.toggleProgressBar(true);
+		boolean exists = false;
+		exists = owner.downloadListSetup(this.taskId,null,0);
+		if (exists) this.cancel(true);
+	}
+	
 	
 	public void onCallback(ICallbackEventData message) {
 		publishProgress(message);
@@ -27,7 +40,9 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 	@Override
 	protected AsyncTaskResult<ArrayList<NovelCollectionModel>> doInBackground(PageModel... params) {
 		ArrayList<NovelCollectionModel> result = new ArrayList<NovelCollectionModel>();
+		totalParts = params.length;
 		for (PageModel pageModel : params) {
+			currentPart++;
 			try {
 				publishProgress(new CallbackEventData("Downloading chapter list for: " + pageModel.getTitle()));
 				NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetailsFromInternet(pageModel, this);
@@ -45,10 +60,12 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 	protected void onProgressUpdate (ICallbackEventData... values){
 		//executed on UI thread.
 		owner.setMessageDialog(values[0]);
+		owner.updateProgress(this.taskId,currentPart, totalParts);
 	}
 	
 	@Override
 	protected void onPostExecute(AsyncTaskResult<ArrayList<NovelCollectionModel>> result) {
 		owner.getResult(result);
+		owner.downloadListSetup(this.taskId,null, 2);
 	}
 }

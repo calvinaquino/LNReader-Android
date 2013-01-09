@@ -2,8 +2,13 @@
 package com.erakk.lnreader.helper;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -209,6 +214,48 @@ public class DBHelper extends SQLiteOpenHelper {
 	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_CONTENT);
 	    onCreate(db);
 		Log.w(TAG,"Database Deleted.");
+	}
+	
+	public static void copyFile(File src, File dst) throws IOException
+	{
+	    FileChannel inChannel = new FileInputStream(src).getChannel();
+	    FileChannel outChannel = new FileOutputStream(dst).getChannel();
+	    try
+	    {
+	        inChannel.transferTo(0, inChannel.size(), outChannel);
+	    }
+	    finally
+	    {
+	        if (inChannel != null)
+	            inChannel.close();
+	        if (outChannel != null)
+	            outChannel.close();
+	    }
+	}
+	
+	public String copyDB(SQLiteDatabase db, Context context, boolean makeBackup) throws IOException {
+		Log.d("DatabaseManager", "creating database backup");
+		File srcPath;
+		File dstPath;
+		if (makeBackup) {
+			srcPath = new File(getDbPath(context));
+			dstPath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_pages.db");
+		}
+		else {
+			dstPath = new File(getDbPath(context));
+			srcPath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_pages.db");
+		}
+		Log.d("DatabaseManager", "source file: "+ srcPath.getAbsolutePath());
+		Log.d("DatabaseManager", "destination file: "+ dstPath.getAbsolutePath());
+		if (srcPath.exists()) {
+			copyFile(srcPath, dstPath);
+			Log.d("DatabaseManager", "copy success");
+			return dstPath.getPath();
+		}
+		else {
+			Log.d("DatabaseManager", "source file does not exist");
+			return "null";
+		}
 	}
 	
 	public PageModel getMainPage(SQLiteDatabase db) {

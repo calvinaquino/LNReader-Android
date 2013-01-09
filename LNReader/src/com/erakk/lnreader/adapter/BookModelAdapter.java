@@ -1,11 +1,14 @@
 package com.erakk.lnreader.adapter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 
 import android.app.Activity;
 import android.content.Context;
 import android.preference.PreferenceManager;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,15 +96,50 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		
 		TextView tvLastUpdate = (TextView) view.findViewById(R.id.novel_last_update);
 		if(tvLastUpdate != null){
-			tvLastUpdate.setText("Last Update: " + child.getLastUpdate().toString());
+			tvLastUpdate.setText("Last Update: " + formatDateForDisplay(child.getLastUpdate()));
 		}
 		
 		TextView tvLastCheck = (TextView) view.findViewById(R.id.novel_last_check);
 		if(tvLastCheck != null){
-			tvLastCheck.setText("Last Check: " + child.getLastCheck().toString());
+			tvLastCheck.setText("Last Check: " + formatDateForDisplay(child.getLastCheck()));
 		}
 		
 		return view;
+	}
+	
+	@SuppressWarnings({ "deprecation", "unused" })
+	private String formatDateForDisplay(Date date) {
+		String since= "";
+		//Setup
+		Time now = new Time();
+		int dif = 0;
+		now.setToNow();
+		dif = now.hour-date.getHours();
+		if(dif<0) {
+			since = "invalid";
+		}
+		else if(dif<24) {
+			since = "hour";
+		}
+		else if (dif<168) {
+			dif/=24;
+			since = "day";
+		}
+		else if (dif<720) {
+			dif/=168;
+			since = "week";
+		}
+		else if (dif<8760) {
+			dif/=720;
+			since = "month";
+		}
+		else {
+			dif/=8760;
+			since = "year";
+		}
+		if (dif < 0) return since;
+		else if (dif == 1) return dif+" "+since+" ago";
+		else return dif+" "+since+"s ago";
 	}
 
 	public int getChildrenCount(int groupPosition) {

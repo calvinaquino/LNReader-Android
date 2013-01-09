@@ -11,6 +11,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;
@@ -42,6 +43,7 @@ public class UIHelper {
 			if(actionBar != null) actionBar.setDisplayHomeAsUpEnabled(enable);
 		}
 		CheckScreenRotation(activity);
+		CheckKeepAwake(activity);
 	}
 	
 	/**
@@ -57,6 +59,7 @@ public class UIHelper {
 			activity.finish();
 		}
 		CheckScreenRotation(activity);
+		CheckKeepAwake(activity);
 	}
 	
 	/**
@@ -74,6 +77,16 @@ public class UIHelper {
     	if(layoutId != null) {
     		activity.setContentView(layoutId);
     	}    	
+	}
+	
+	public static boolean CheckKeepAwake(Activity activity) {
+		boolean keep = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_KEEP_AWAKE, false);
+		if (keep) {
+			activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		}
+		Log.d("Preferences", "Keep Awake = "+keep);
+		return keep;
+		
 	}
 	
 	/**

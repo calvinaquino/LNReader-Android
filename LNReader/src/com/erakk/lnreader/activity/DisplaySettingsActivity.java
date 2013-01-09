@@ -1,6 +1,7 @@
 package com.erakk.lnreader.activity;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
 import android.app.ProgressDialog;
@@ -65,10 +66,37 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
             }
         });
         
+        
         Preference clearDatabase = (Preference)  findPreference("clear_database");
         clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
             	clearDB();
+        		return true;
+            }
+        });
+        
+        Preference backupDatabase = (Preference)  findPreference("backup_database");
+        backupDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference p) {
+            	try {
+					copyDB(true);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        		return true;
+            }
+        });
+        
+        Preference restoreDatabase = (Preference)  findPreference("restore_database");
+        restoreDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference p) {
+            	try {
+					copyDB(false);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
         		return true;
             }
         });
@@ -154,7 +182,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 		});
         
         final Preference scrollingSize = (Preference)  findPreference(Constants.PREF_SCROLL_SIZE);
-        int scrollingSizeValue = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 500);
+        int scrollingSizeValue = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5);
         scrollingSize.setSummary("Scrolling size for volumer rocker (" + scrollingSizeValue + ")");
         scrollingSize.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -176,9 +204,24 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 	}
 
 	private void clearDB() {
-		dialog = ProgressDialog.show(this, "Clear Database", "Clearing Database...", true, false); 
+		dialog = ProgressDialog.show(this, "Database Manager", "Clearing Database...", true, false); 
 		NovelsDao.getInstance(getApplicationContext()).deleteDB();
 		Toast.makeText(getApplicationContext(), "Database cleared!", Toast.LENGTH_SHORT).show();
+		dialog.dismiss();
+	}
+	
+	private void copyDB(boolean makeBackup) throws IOException {
+		dialog = ProgressDialog.show(this, "Database Manager", "Creating Database backup...", true, true);
+		String filePath = NovelsDao.getInstance(getApplicationContext()).copyDB(getApplicationContext(),makeBackup);
+		if (filePath == "null") {
+			Toast.makeText(getApplicationContext(), "Could not find a backup database.", Toast.LENGTH_SHORT).show();
+		}
+		else {
+			if (makeBackup)
+				Toast.makeText(getApplicationContext(), "Database backup created at " + filePath + "", Toast.LENGTH_SHORT).show();
+			else
+				Toast.makeText(getApplicationContext(), "Database backup restored!", Toast.LENGTH_SHORT).show();
+		}
 		dialog.dismiss();
 	}
 

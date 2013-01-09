@@ -1,5 +1,6 @@
 package com.erakk.lnreader.adapter;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -9,14 +10,19 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.text.format.Time;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.HorizontalScrollView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,7 +80,8 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			holder.txtNovel.setText(page.getTitle());
 			if(page.isHighlighted()) {
 				holder.txtNovel.setTypeface(null, Typeface.BOLD);
-				holder.txtNovel.setTextSize(20);
+				holder.txtNovel.setTextSize(19);
+				holder.txtNovel.setText(">> "+holder.txtNovel.getText()+" <<");
 			}
 			
 			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
@@ -89,12 +96,12 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		
 		holder.txtLastUpdate = (TextView)row.findViewById(R.id.novel_last_update);
 		if(holder.txtLastUpdate != null) {
-			holder.txtLastUpdate.setText("Last Update: " + page.getLastUpdate().toString());
+			holder.txtLastUpdate.setText("Last Update: " + formatDateForDisplay(page.getLastUpdate()));
 		}
 		
 		holder.txtLastCheck = (TextView)row.findViewById(R.id.novel_last_check);
 		if(holder.txtLastCheck != null) {
-			holder.txtLastCheck.setText("Last Check: " + page.getLastCheck().toString());
+			holder.txtLastCheck.setText("Last Check: " + formatDateForDisplay(page.getLastCheck()));
 		}
 		
 		holder.chkIsWatched = (CheckBox)row.findViewById(R.id.novel_is_watched);
@@ -120,6 +127,41 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 
 		row.setTag(holder);
 		return row;
+	}
+	
+	@SuppressWarnings({ "deprecation", "unused" })
+	private String formatDateForDisplay(Date date) {
+		String since= "";
+		//Setup
+		Time now = new Time();
+		int dif = 0;
+		now.setToNow();
+		dif = now.hour-date.getHours();
+		if(dif<0) {
+			since = "invalid";
+		}
+		else if(dif<24) {
+			since = "hour";
+		}
+		else if (dif<168) {
+			dif/=24;
+			since = "day";
+		}
+		else if (dif<720) {
+			dif/=168;
+			since = "week";
+		}
+		else if (dif<8760) {
+			dif/=720;
+			since = "month";
+		}
+		else {
+			dif/=8760;
+			since = "year";
+		}
+		if (dif < 0) return since;
+		else if (dif == 1) return dif+" "+since+" ago";
+		else return dif+" "+since+"s ago";
 	}
 
 	@Override

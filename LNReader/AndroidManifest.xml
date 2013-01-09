@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.erakk.lnreader"
     android:installLocation="auto"
-    android:versionCode="1"
-    android:versionName="20121219" >
+    android:versionCode="2"
+    android:versionName="20130106" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -94,7 +94,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.erakk.lnreader.activity.MainActivity" />
         </activity>
-        
+        <activity
+            android:name="com.erakk.lnreader.activity.DownloadListActivity"
+            android:label="@string/title_activity_download_list"
+            android:parentActivityName="com.erakk.lnreader.activity.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.erakk.lnreader.activity.MainActivity" />
+        </activity>
+
         <service
             android:name="com.erakk.lnreader.service.UpdateService"
             android:icon="@drawable/ic_launcher"

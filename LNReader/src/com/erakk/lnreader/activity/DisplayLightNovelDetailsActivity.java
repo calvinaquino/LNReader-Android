@@ -62,6 +62,8 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
     
 	private ProgressDialog dialog;
 	private boolean isInverted;
+	
+	String touchedForDownload;
     
 	@Override
      public void onCreate(Bundle savedInstanceState) {
@@ -88,7 +90,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 				if(novelCol != null) {
 					PageModel chapter = bookModelAdapter.getChild(groupPosition, childPosition);
-					loadChapter(chapter);					
+					loadChapter(chapter);
 				}
 				return false;
 			}
@@ -166,6 +168,10 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);
 			return true;
+		case R.id.menu_bookmarks:
+    		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
+        	startActivity(bookmarkIntent);
+			return true;    
 		case R.id.menu_download_all:
 			/*
 			 * Download all chapters
@@ -181,6 +187,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 					notDownloadedChapters.add(pageModel);
 				}
 			}
+			touchedForDownload = "Complete Novel";
 			executeDownloadTask(notDownloadedChapters, true);
 			return true;
         case android.R.id.home:
@@ -234,6 +241,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 					downloadingChapters.add(temp);
 				}
 			}
+			touchedForDownload = "Complete "+book.getTitle();
 			executeDownloadTask(downloadingChapters, false);
 			return true;
 		case R.id.clear_volume:
@@ -268,6 +276,8 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			 * Implement code to download this chapter
 			 */
 			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
+			String bookName = novelCol.getBookCollections().get(groupPosition).getTitle();
+			touchedForDownload = bookName +" "+chapter.getTitle();
 			downloadTask = new DownloadNovelContentTask(new PageModel[] { chapter}, this);
 			downloadTask.execute();
 			return true;
@@ -343,11 +353,39 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 					downloadTask = tempTask;
 					downloadTask.owner = this;
 				}
-				toggleProgressBar(true);
 			}
 		}		
 	}
     
+	public boolean downloadListSetup(String id, String toastText, int type){
+		boolean exists = false;
+		String name = page.getTitle()+" "+touchedForDownload;
+		if (type == 0) {
+			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
+				exists = true;
+				Toast.makeText(this, "Download already on queue.", Toast.LENGTH_SHORT).show();
+			}
+			else {
+				Toast.makeText(this,"Downloading "+name+".", Toast.LENGTH_SHORT).show();
+				LNReaderApplication.getInstance().addDownload(id, name);
+			}
+		}
+		else if (type == 1) {
+			Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show();
+		}
+		else if (type == 2) {
+			Toast.makeText(this, page.getTitle()+" "+LNReaderApplication.getInstance().getDownloadDescription(id)+"'s download finished!", Toast.LENGTH_SHORT).show();
+			LNReaderApplication.getInstance().removeDownload(id);
+		}
+		return exists;
+	}
+	public void updateProgress(String id, int current, int total){
+		double cur = (double)current;
+		double tot = (double)total;
+		double result = (cur/tot)*100;
+		LNReaderApplication.getInstance().updateDownload(id, (int)result);
+	}
+	
 	public void toggleProgressBar(boolean show) {
 		if(show) {
 			dialog = ProgressDialog.show(this, "Novel Details", "Loading. Please wait...", true);
@@ -369,8 +407,9 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 	}
 
 	public void setMessageDialog(ICallbackEventData message) {
-		if(dialog.isShowing())
-			dialog.setMessage(message.getMessage());
+//		if(dialog.isShowing())
+//			dialog.setMessage(message.getMessage());
+//		LNReaderApplication.getInstance().updateDownload(page.getTitle(), 5);
 	}
 
 	public void getResult(AsyncTaskResult<?> result) {

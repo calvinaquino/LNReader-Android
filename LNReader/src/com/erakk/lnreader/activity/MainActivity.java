@@ -94,6 +94,11 @@ public class MainActivity extends Activity {
 			Toast.makeText(this, "No last read novel.", Toast.LENGTH_SHORT).show();
 		}
     }
+    
+    public void openDownloads(View view) {
+    	Intent intent = new Intent(this, DownloadListActivity.class);
+    	startActivity(intent);
+    }
 
 	private boolean getColorPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
