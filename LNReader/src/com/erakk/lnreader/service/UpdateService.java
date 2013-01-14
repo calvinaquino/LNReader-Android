@@ -21,6 +21,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
@@ -76,6 +77,9 @@ public class UpdateService extends Service {
 				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			else
 				task.execute();
+			
+			// add on Download List
+			LNReaderApplication.getInstance().addDownload(TAG, "Update Service");
 		}
 	}
 	
@@ -133,6 +137,7 @@ public class UpdateService extends Service {
 		
 		updateStatus("OK");
     	Toast.makeText(getApplicationContext(), "Update Service completed", Toast.LENGTH_SHORT).show();
+    	LNReaderApplication.getInstance().updateDownload(TAG, 100, "Update Service completed");
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -197,6 +202,8 @@ public class UpdateService extends Service {
 	}
 
 	public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>> implements ICallbackNotifier{
+		private int lastProgress;
+		
 		@Override
 		protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(Void... arg0) {
 			isRunning = true;
@@ -225,11 +232,14 @@ public class UpdateService extends Service {
 			// Reschedule for next run
 			MyScheduleReceiver.reschedule();
 			isRunning = false;
+			
+			// remove from download list
+			LNReaderApplication.getInstance().removeDownload(TAG);
 		}
 		
 		private ArrayList<PageModel> GetUpdatedChapters(ICallbackNotifier callback) throws Exception {
 			Log.d(TAG, "Checking Updates...");
-			ArrayList<PageModel> updates = new ArrayList<PageModel>();
+			ArrayList<PageModel> updatesTotal = new ArrayList<PageModel>();
 			NovelsDao dao = NovelsDao.getInstance();
 			
 			// checking copyrights
@@ -243,7 +253,9 @@ public class UpdateService extends Service {
 			if(callback != null) callback.onCallback(new CallbackEventData("Getting watched novel."));
 			ArrayList<PageModel> watchedNovels = dao.getWatchedNovel();
 			if(watchedNovels != null){
-				for(Iterator<PageModel> iNovels = watchedNovels.iterator(); iNovels.hasNext();){
+				double total = watchedNovels.size() + 1;
+				double current = 1;
+				for(Iterator<PageModel> iNovels = watchedNovels.iterator(); iNovels.hasNext();) {
 					// get last update date from internet
 					PageModel novel = iNovels.next();
 					if(callback != null) callback.onCallback(new CallbackEventData("Checking: " + novel.getTitle()));
@@ -263,7 +275,7 @@ public class UpdateService extends Service {
 						if(callback != null) callback.onCallback(new CallbackEventData("Getting updated chapters: " + novel.getTitle()));
 						NovelCollectionModel updatedNovelDetails = dao.getNovelDetailsFromInternet(novel, callback);
 						if(updatedNovelDetails!= null){
-							updates = updatedNovelDetails.getFlattedChapterList();
+							ArrayList<PageModel> updates = updatedNovelDetails.getFlattedChapterList();
 
 							// compare the chapters!
 							for(int i = 0 ; i < novelDetailsChapters.size() ; ++i) {
@@ -287,16 +299,20 @@ public class UpdateService extends Service {
 										break;
 									}
 								}
+								
+								updatesTotal.addAll(updates);
 							}
 						}
 					}
-				}
+					lastProgress = (int) (++current / total * 100);
+					Log.d(TAG, "Progress: " + lastProgress);
+				}				
 				force = false;
 			}
 			
-			Log.i(TAG, "Found updates: " + updates.size());
+			Log.i(TAG, "Found updates: " + updatesTotal.size());
 			
-			return updates;
+			return updatesTotal;
 		}
 
 		public void onCallback(ICallbackEventData message) {
@@ -306,6 +322,7 @@ public class UpdateService extends Service {
 		@Override
 		protected void onProgressUpdate (String... values){
 			if(notifier != null) notifier.onCallback(new CallbackEventData(values[0]));
+			LNReaderApplication.getInstance().updateDownload(TAG, lastProgress, values[0]);
 		}
 	}
 } 

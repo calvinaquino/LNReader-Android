@@ -1,7 +1,6 @@
 package com.erakk.lnreader.adapter;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -109,7 +108,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		return view;
 	}
 	
-	@SuppressWarnings({ "deprecation", "unused" })
+	@SuppressWarnings({ "deprecation"})
 	private String formatDateForDisplay(Date date) {
 		String since= "";
 		//Setup

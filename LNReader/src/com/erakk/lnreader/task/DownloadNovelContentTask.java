@@ -3,10 +3,7 @@ package com.erakk.lnreader.task;
 import java.util.ArrayList;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
-import com.erakk.lnreader.LNReaderApplication;
-import com.erakk.lnreader.activity.DownloadListActivity;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -33,7 +30,7 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
 		// executed on UI thread.
 //		owner.toggleProgressBar(true);
 		boolean exists = false;
-		exists = owner.downloadListSetup(this.taskId,null,0);
+		exists = owner.downloadListSetup(this.taskId, null, 0);
 		if (exists) this.cancel(true);
 	}
 	
@@ -76,12 +73,12 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
 	protected void onProgressUpdate (ICallbackEventData... values){
 		//executed on UI thread.
 		owner.setMessageDialog(values[0]);
-		owner.updateProgress(this.taskId,currentChapter, chapters.length);
+		owner.updateProgress(this.taskId, currentChapter, chapters.length, values[0].getMessage());
 	}
 	
 	@Override
 	protected void onPostExecute(AsyncTaskResult<NovelContentModel[]> result) {
 		owner.getResult(result);
-		owner.downloadListSetup(this.taskId,null, 2);
+		owner.downloadListSetup(this.taskId, null, 2);
 	}
 }

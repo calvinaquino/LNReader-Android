@@ -132,7 +132,7 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel>{
 		TextView txtCreateDate;
 		TextView txtPageSubTitle;
 	}
-	@SuppressWarnings({ "deprecation", "unused" })
+	@SuppressWarnings({ "deprecation" })
 	private String formatDateForDisplay(Date date) {
 		String since= "";
 		//Setup

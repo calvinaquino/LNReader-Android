@@ -3,7 +3,6 @@ package com.erakk.lnreader.helper;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -23,8 +22,8 @@ import android.util.Log;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.model.BookModel;
-import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.BookmarkModel;
+import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
@@ -218,10 +217,12 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	public static void copyFile(File src, File dst) throws IOException
 	{
-	    FileChannel inChannel = new FileInputStream(src).getChannel();
-	    FileChannel outChannel = new FileOutputStream(dst).getChannel();
+		FileChannel inChannel = null;
+		FileChannel outChannel = null;
 	    try
 	    {
+	    	inChannel = new FileInputStream(src).getChannel();
+		    outChannel = new FileOutputStream(dst).getChannel();
 	        inChannel.transferTo(0, inChannel.size(), outChannel);
 	    }
 	    finally

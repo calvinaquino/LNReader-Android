@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-import android.R.integer;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
@@ -25,11 +24,11 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.erakk.lnreader.activity.DownloadListActivity;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.DownloadModel;
 import com.erakk.lnreader.service.UpdateService;
-import com.erakk.lnreader.activity.DownloadListActivity;
 
 /*
  * http://www.devahead.com/blog/2011/06/extending-the-android-application-class-and-dealing-with-singleton/
@@ -106,8 +105,8 @@ public class LNReaderApplication extends Application {
 	/*
 	 * DownloadActivity method
 	 */
-	public int addDownload(String id,String name){
-		downloadList.add(new DownloadModel(id,name,0));
+	public int addDownload(String id, String name){
+		downloadList.add(new DownloadModel(id, name, 0));
 		if (DownloadListActivity.getInstance() != null)
 			DownloadListActivity.getInstance().updateContent();
 		return downloadList.size();
@@ -155,7 +154,7 @@ public class LNReaderApplication extends Application {
 //	}
 	
 	
-	public void updateDownload(String id, Integer progress){
+	public void updateDownload(String id, Integer progress, String message){
 		
 		/*
 		 * Although this may seem an attempt at a fake incremental download bar
@@ -174,6 +173,15 @@ public class LNReaderApplication extends Application {
 			}
 		}
 		final int idx = index;
+
+		// Download status message 
+		if (downloadList.get(idx) != null) {
+			downloadList.get(idx).setDownloadMessage(message);
+		}
+		if (DownloadListActivity.getInstance() != null) {
+			DownloadListActivity.getInstance().updateContent();
+		}
+		
 		oldProgress = downloadList.get(index).getDownloadProgress();
 		tempIncrease = (progress-oldProgress);
 		if (tempIncrease < smoothTime/tickTime) {
@@ -182,18 +190,26 @@ public class LNReaderApplication extends Application {
 		}
 		else
 			tempIncrease/=(smoothTime/tickTime);
+		
 		Increment = tempIncrease;
-		 new CountDownTimer(smoothTime, tickTime) { 
-		        public void onTick(long millisUntilFinished) {
-		        	if (downloadList.get(idx) != null)
-		        		downloadList.get(idx).setDownloadProgress(downloadList.get(idx).getDownloadProgress()+Increment);         
-		        	if (DownloadListActivity.getInstance() != null)
-		    			DownloadListActivity.getInstance().updateContent();
-		        }            
-		        public void onFinish() {
-		       }
-		   }.start();
+		new CountDownTimer(smoothTime, tickTime) {
+			public void onTick(long millisUntilFinished) {
+				if(downloadList.size() > idx) {
+					DownloadModel temp = downloadList.get(idx);
+					if (temp != null) {
+						temp.setDownloadProgress(temp.getDownloadProgress() + Increment);
+					}
+				}
+				if (DownloadListActivity.getInstance() != null) {
+					DownloadListActivity.getInstance().updateContent();
+				}
+			}
+
+			public void onFinish() {
+			}
+		}.start();
 	}
+	
 	/*
 	 * UpdateService method
 	 */

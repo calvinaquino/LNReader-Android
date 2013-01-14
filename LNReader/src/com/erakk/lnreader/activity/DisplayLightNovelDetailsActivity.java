@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -18,7 +16,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.test.suitebuilder.annotation.Suppress;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -28,7 +25,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -365,14 +361,14 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
     
 	public boolean downloadListSetup(String id, String toastText, int type){
 		boolean exists = false;
-		String name = page.getTitle()+" "+touchedForDownload;
+		String name = page.getTitle() + " " + touchedForDownload;
 		if (type == 0) {
 			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
 				exists = true;
 				Toast.makeText(this, "Download already on queue.", Toast.LENGTH_SHORT).show();
 			}
 			else {
-				Toast.makeText(this,"Downloading "+name+".", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this,"Downloading " + name + ".", Toast.LENGTH_SHORT).show();
 				LNReaderApplication.getInstance().addDownload(id, name);
 			}
 		}
@@ -380,16 +376,17 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show();
 		}
 		else if (type == 2) {
-			Toast.makeText(this, page.getTitle()+" "+LNReaderApplication.getInstance().getDownloadDescription(id)+"'s download finished!", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, page.getTitle() + " " + LNReaderApplication.getInstance().getDownloadDescription(id)+ "'s download finished!", Toast.LENGTH_SHORT).show();
 			LNReaderApplication.getInstance().removeDownload(id);
 		}
 		return exists;
 	}
-	public void updateProgress(String id, int current, int total){
+	
+	public void updateProgress(String id, int current, int total, String message){
 		double cur = (double)current;
 		double tot = (double)total;
 		double result = (cur/tot)*100;
-		LNReaderApplication.getInstance().updateDownload(id, (int)result);
+		LNReaderApplication.getInstance().updateDownload(id, (int)result, message);
 	}
 	
 	public void toggleProgressBar(boolean show) {

@@ -60,7 +60,7 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 	protected void onProgressUpdate (ICallbackEventData... values){
 		//executed on UI thread.
 		owner.setMessageDialog(values[0]);
-		owner.updateProgress(this.taskId,currentPart, totalParts);
+		owner.updateProgress(this.taskId, currentPart, totalParts, values[0].getMessage());
 	}
 	
 	@Override

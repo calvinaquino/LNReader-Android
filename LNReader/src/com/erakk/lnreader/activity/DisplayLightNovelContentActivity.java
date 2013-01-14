@@ -7,14 +7,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -711,7 +708,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
     	openOptionsMenu();
     }
 
-	public void updateProgress(String id,int current, int total) {
+	public void updateProgress(String id,int current, int total, String messString) {
 		// TODO Auto-generated method stub
 		
 	}

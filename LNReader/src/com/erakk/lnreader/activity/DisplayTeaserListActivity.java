@@ -372,7 +372,7 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 
-	public void updateProgress(String id,int current, int total) {
+	public void updateProgress(String id,int current, int total, String messString) {
 		// TODO Auto-generated method stub
 		
 	}

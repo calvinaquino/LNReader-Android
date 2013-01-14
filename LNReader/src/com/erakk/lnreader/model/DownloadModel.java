@@ -4,11 +4,13 @@ public class DownloadModel {
 	private String downloadName;
     private Integer downloadProgress;
     private String downloadId;
+    private String downloadMessage;
     
     public DownloadModel (String id, String name, Integer progress) {
     	downloadName = name;
     	downloadProgress = progress;
     	downloadId = id;
+    	downloadMessage = "N/A";
     }
     
     public String getDownloadName() {
@@ -31,4 +33,12 @@ public class DownloadModel {
     public void setDownloadProgress(Integer	progress) {
         this.downloadProgress = progress;
     }
+
+	public String getDownloadMessage() {
+		return downloadMessage;
+	}
+
+	public void setDownloadMessage(String downloadMessage) {
+		this.downloadMessage = downloadMessage;
+	}
 }

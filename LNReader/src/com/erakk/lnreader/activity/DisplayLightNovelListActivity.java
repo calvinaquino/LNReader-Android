@@ -31,7 +31,6 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.adapter.BookmarkModelAdapter;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
@@ -336,11 +335,11 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 		}
 		return exists;
 	}
-	public void updateProgress(String id, int current, int total){
+	public void updateProgress(String id, int current, int total, String messString){
 		double cur = (double)current;
 		double tot = (double)total;
 		double result = (cur/tot)*100;
-		LNReaderApplication.getInstance().updateDownload(id, (int)result);
+		LNReaderApplication.getInstance().updateDownload(id, (int)result, messString);
 	}
 	
 	@SuppressLint("NewApi")
