@@ -18,6 +18,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.test.suitebuilder.annotation.Suppress;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -417,7 +418,8 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 //		LNReaderApplication.getInstance().updateDownload(page.getTitle(), 5);
 	}
 
-	@SuppressLint("NewApi") public void getResult(AsyncTaskResult<?> result) {
+	@SuppressLint("NewApi")
+	public void getResult(AsyncTaskResult<?> result) {
 		Exception e = result.getError();
 		
 		if(e == null) {
@@ -494,7 +496,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 						}
 						else {
 							
-							if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+							if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 								Drawable coverDrawable = new BitmapDrawable(getResources(),novelCol.getCoverBitmap());
 								int coverHeight = novelCol.getCoverBitmap().getHeight();
 								int coverWidth = novelCol.getCoverBitmap().getWidth();

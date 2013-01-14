@@ -372,13 +372,11 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 
-	@Override
 	public void updateProgress(String id,int current, int total) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public boolean downloadListSetup(String id, String toastText, int type) {
 		// TODO Auto-generated method stub
 		return false;
