@@ -309,6 +309,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 				task = tempTask;
 				task.owner = this;
 			}
+			
 			toggleProgressBar(true);
 		}
 	}

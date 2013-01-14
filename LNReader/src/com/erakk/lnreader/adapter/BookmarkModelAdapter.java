@@ -85,7 +85,7 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel>{
 				try{
 					PageModel pageModel = page.getPageModel();
 					PageModel parentPage = pageModel.getParentPageModel();
-					holder.txtPageTitle.setText(parentPage.getTitle() + " : " + pageModel.getTitle());
+					holder.txtPageTitle.setText(parentPage.getTitle());
 				} catch (Exception ex) {
 					Log.e(TAG, "Failed to get pageModel: " + ex.getMessage(), ex);
 					holder.txtPageTitle.setText(page.getPage());
@@ -93,6 +93,22 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel>{
 			}
 			else {
 				holder.txtPageTitle.setVisibility(View.GONE);
+			}
+		}
+		holder.txtPageSubTitle = (TextView)row.findViewById(R.id.page_subtitle);
+		if(holder.txtPageSubTitle != null) {
+			if(showPage) {
+				holder.txtPageSubTitle.setVisibility(View.VISIBLE);
+				try{
+					PageModel pageModel = page.getPageModel();
+					holder.txtPageSubTitle.setText(pageModel.getTitle());
+				} catch (Exception ex) {
+					Log.e(TAG, "Failed to get pageModel: " + ex.getMessage(), ex);
+					holder.txtPageSubTitle.setText(page.getPage());
+				}
+			}
+			else {
+				holder.txtPageSubTitle.setVisibility(View.GONE);
 			}
 		}
 		
@@ -114,6 +130,7 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel>{
 		TextView txtPIndex;
 		TextView txtExcerpt;
 		TextView txtCreateDate;
+		TextView txtPageSubTitle;
 	}
 	@SuppressWarnings({ "deprecation", "unused" })
 	private String formatDateForDisplay(Date date) {

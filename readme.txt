@@ -21,49 +21,62 @@ LINE-ENDINGS & SOURCE ENCODING CONFIG
 
 
 
-TASK LIST - Version 20130106 beta
+TASK LIST - Version 1.1.0 beta build 25 (Old Version 20130106)
 ====================================================
 //DONE
 - inverted default VolumeRocker scroll direction.
 - Removed annoying sound when using VolumeRocker.
 - Database backup/restore implemented
 - Downloads intent+++ Make it cooler
-- anti sleep fuinction 
+- anti sleep function 
 - Fix volume buttons when not in scroll mode
 - Unit steps for scrolling Volume Rocker 1 = 100 normalized
-- Verify clicking mascot in chapter and going to jump to screen.
 - make bookmarks accessible in every part of the app
 - Download all info make a background task
 - Reformatted last update/check text
 - Jump to inside content layout fixed
+- Bookmarks screen fix layout
+- fix novel content headers/titles
+//CRASH FIXES
+- Fixed a crash that would occur if trying to unbind an unregistered service on low memory warning.
+- Fixed a crash that related to scrolling while reading a novel.
 
 //TODO
-- Bookmarks screen fix layout TODO - Doing it now
-- fix novel content headers/titles TODO
-- Manual add series tutorial for new users TODO lowPriority
-- When loading main page for first time, add message "found x novel series" TODO lowPriority
-- dialog inside a chapter/content reading "Downloading, please wait" TODO
-- Make lightNovel list download a download list task TODO
+- Add download List too all intents
+- Add Orignal Light Novels List
+- Remove Downloads ans Settings buttons from main menu, add them as popup menu.
+- Teaser list to use Download List Model
+- Rename ImageActivity to something better
+- Remove asyncTaskCount from settings
+- Fix manual add crash
+- make external chapters open in an internal customized webview
+- Light Novel List Layout <DOING
+- Empty WatchList hangup bug 
+- dialog inside a chapter/content reading "Downloading, please wait"
+- Manual add series tutorial for new users lowPriority
+- Add first time Tutorial for new users to show off functionalities, skipable. // May go to next version only, or will be added later.
+- TOC/BT Copyrights on first time run // Need to prepare a TOC. or only show BT's copyrights.
 
 //TODO NEXT VERSION ONLY
-- let finished downloads stay unless deleted* TODO
+- let finished downloads stay unless deleted*
 
-//NEEDS VERIFICATION
-- remove stars from novel detail name TODO??
+maybe ill add an option to "remove complete downloads automatically" for those who dont like removing manually...
 
-//FUTURE THINKING
--Advanced Customization options
--Integration with external cloud apps for image/database saving:
-	DropBox
-	Box
-	Skydrive
-	Google Drive
+//NEEDS RETHINKING/CHECKING
+- Verify clicking mascot in chapter and going to jump to screen.
+- Make lightNovel list download a download list task
+- When loading main page for first time, add message "found x novel series" lowPriority
 
-UNHANDLED EXCEPTION:
-====================================================
-* Performing pause of activity that is not resumed: {com.erakk.lnreader/com.erakk.lnreader.activity.DisplayLightNovelListActivity}
-  This can happen in any activity...
-* Unhandled exception when creating menus...
+this mascot (is the icon on the upper left, only shows on newer android versions, like a back button) bug is not checked yet.
+
+//FUTURE IDEAS
+- Advanced Customization options
+- Integration with external cloud apps for image/database saving:
+> DropBox
+> Box
+> Skydrive
+> Google Drive
+> This is just an IDEA, and as such, not to worry for now.
 
 ANDROID PERMISSION LIST
 ====================================================

@@ -47,5 +47,9 @@ public class AddNovelTask extends AsyncTask<PageModel, ICallbackEventData, Async
 	@Override
 	protected void onPostExecute(AsyncTaskResult<NovelCollectionModel> result) {
 		owner.getResult(result);
+		/*
+		 *  possible crash related to
+		 *  java.lang.ClassCastException: com.erakk.lnreader.model.NovelCollectionModel cannot be cast to java.util.ArrayList
+		 */
 	}
 }

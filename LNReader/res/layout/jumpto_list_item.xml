@@ -4,30 +4,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <HorizontalScrollView
-	 	android:id="@+id/novel_name_scroll"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/novel_name"
+        android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
-        android:layout_alignParentTop="true" >
-	    <TextView
-	        android:id="@+id/novel_name"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:paddingTop="5dp"
-	        android:paddingLeft="15dp"
-	        android:paddingRight="15dp"
-	        android:paddingBottom="5dp"
-	        android:textSize="16sp"
-	        android:text="@string/novel_title" />
-    </HorizontalScrollView>
+        android:layout_alignParentTop="true" 
+        android:paddingTop="5dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="5dp"
+        android:textSize="16sp"
+        android:text="@string/novel_title" />
 	<LinearLayout 
 	    android:id="@+id/novel_update_layout_container"
 	    android:layout_width="fill_parent"
 	    android:layout_height="match_parent"
 	    android:gravity="center_horizontal"
-	    android:layout_below="@+id/novel_name_scroll">
+	    android:layout_below="@+id/novel_name">
 	    <TextView
 	        android:id="@+id/novel_last_update"
 	        android:layout_width="wrap_content"

@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.erakk.lnreader.Constants;
@@ -75,21 +76,22 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			tv.setTextColor(Constants.COLOR_EXTERNAL);
 		}
 		
-		TextView tvIsDownloaded = (TextView) view.findViewById(R.id.novel_is_downloaded);
+		ImageView tvIsDownloaded = (ImageView) view.findViewById(R.id.novel_is_downloaded);
 		//Log.d("getChildView", "Downloaded " + child.getTitle() + " id " + child.getId() + " : " + child.isDownloaded() );
 		if(tvIsDownloaded != null) {
-			if(child.isExternal()) {
-				tvIsDownloaded.setText("(EX)");
-				tvIsDownloaded.setVisibility(TextView.VISIBLE);
-			}
-			else if(!child.isDownloaded()) {
+//			if(child.isExternal()) {
+//				tvIsDownloaded.setText("(EX)");
+//				tvIsDownloaded.setVisibility(TextView.VISIBLE);
+//			}
+//			else if(!child.isDownloaded()) {
+			if(!child.isDownloaded()) {
 				tvIsDownloaded.setVisibility(TextView.GONE);
 			}
 			else {
-				tvIsDownloaded.setText("(DL)");
-				if(NovelsDao.getInstance().isContentUpdated(child)) {
-					tvIsDownloaded.setText("! (DL)");
-				}
+//				tvIsDownloaded.setText("(DL)");
+//				if(NovelsDao.getInstance().isContentUpdated(child)) {
+//					tvIsDownloaded.setText("! (DL)");
+//				}
 				tvIsDownloaded.setVisibility(TextView.VISIBLE);
 			}
 		}

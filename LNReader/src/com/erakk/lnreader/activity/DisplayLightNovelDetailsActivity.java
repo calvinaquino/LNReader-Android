@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -23,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -412,7 +417,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 //		LNReaderApplication.getInstance().updateDownload(page.getTitle(), 5);
 	}
 
-	public void getResult(AsyncTaskResult<?> result) {
+	@SuppressLint("NewApi") public void getResult(AsyncTaskResult<?> result) {
 		Exception e = result.getError();
 		
 		if(e == null) {
@@ -488,7 +493,20 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 							Toast.makeText(getApplicationContext(), "Bitmap empty", Toast.LENGTH_LONG).show();
 						}
 						else {
-							ImageViewCover.setImageBitmap(novelCol.getCoverBitmap());
+							
+							if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+								Drawable coverDrawable = new BitmapDrawable(getResources(),novelCol.getCoverBitmap());
+								int coverHeight = novelCol.getCoverBitmap().getHeight();
+								int coverWidth = novelCol.getCoverBitmap().getWidth();
+								int screenWidth = (int) (UIHelper.getScreenHeight(this)*0.9);
+								int finalHeight = coverHeight*(screenWidth/coverWidth);
+								ImageViewCover.setBackground(coverDrawable);
+								ImageViewCover.getLayoutParams().height = finalHeight;
+								ImageViewCover.getLayoutParams().width = screenWidth;
+							}
+							else {
+								ImageViewCover.setImageBitmap(novelCol.getCoverBitmap());
+							}
 						}
 
 						expandList.addHeaderView(synopsis);

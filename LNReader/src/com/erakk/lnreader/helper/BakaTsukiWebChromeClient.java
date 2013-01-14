@@ -46,7 +46,13 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 		}
 		else if (consoleMessage.message().startsWith(SCROLL_EVENT)) {
 			String data[] = consoleMessage.message().split(":");
-			caller.updateLastLine(Integer.parseInt(data[1]));						
+			if (data[1] != null )
+				caller.updateLastLine(Integer.parseInt(data[1]));	
+			/*
+			 * Possible crash due to index out of bounds at line 50
+			 */
+			else
+				Log.e(TAG, "line 50: index out of bounds.");
 		}
 		else {
 			Log.d(TAG, "Console: " + consoleMessage.lineNumber() + ":" + consoleMessage.message());

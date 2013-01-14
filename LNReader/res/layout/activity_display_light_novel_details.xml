@@ -20,7 +20,8 @@
 	    android:layout_alignParentBottom="true"
 	    android:layout_alignParentLeft="true"
 	    android:layout_alignParentTop="true"
-	    android:headerDividersEnabled="true">
+	    android:headerDividersEnabled="true"
+		android:groupIndicator="@drawable/exp_list_indicator">
 
 	</ExpandableListView>
     

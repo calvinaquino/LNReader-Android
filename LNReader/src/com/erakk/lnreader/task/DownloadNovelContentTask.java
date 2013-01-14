@@ -49,7 +49,6 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
 			for(int i = 0; i < chapters.length; ++i) {
 				currentChapter++;
 				NovelContentModel oldContent = NovelsDao.getInstance() .getNovelContent(chapters[i], false, null);
-				
 				if(oldContent == null) {
 					publishProgress(new CallbackEventData("Downloading now " + chapters[i].getTitle()));
 				}

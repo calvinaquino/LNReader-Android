@@ -17,7 +17,7 @@
         android:paddingTop="12dp"
         android:text="@string/novel_chapter" />
 
-    <TextView
+    <ImageView
         android:id="@+id/novel_is_downloaded"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
@@ -25,7 +25,8 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="20dp"
         android:gravity="center"
-        android:text="@string/novel_chapter_dl" />
+        android:src="@drawable/ic_downloaded"
+        android:contentDescription="Downloaded"  />
     
     <TextView
         android:id="@+id/novel_last_update"

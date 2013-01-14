@@ -6,8 +6,10 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 
@@ -21,13 +23,13 @@ import com.erakk.lnreader.model.BookmarkModel;
 public class DisplayBookmarkActivity extends ListActivity  {
 	private boolean isInverted;
 	private BookmarkModelAdapter adapter = null;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		UIHelper.SetTheme(this, R.layout.activity_display_bookmark);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
-
+		
 		isInverted = getColorPreferences();
 		setTitle("Bookmarks");
 		getBookmarks();
@@ -36,7 +38,7 @@ public class DisplayBookmarkActivity extends ListActivity  {
 	private void getBookmarks() {
 		int resourceId = R.layout.bookmark_list_item;
 		if(UIHelper.IsSmallScreen(this)) {
-			resourceId = R.layout.bookmark_list_item_small; 
+			resourceId = R.layout.bookmark_list_item; 
 		}
 		ArrayList<BookmarkModel> bookmarks = NovelsDao.getInstance(this).getAllBookmarks();
 		adapter = new BookmarkModelAdapter(this, resourceId, bookmarks, null);

@@ -60,7 +60,6 @@ public class DownloadListActivity extends Activity {
 	public void updateContent () {
 		try {
 		int resourceId = R.layout.download_list_item;
-		
 		adapter = new DownloadListAdapter(getApplicationContext(), resourceId, downloadList);
 		downliadListView.setAdapter(adapter);
 		} catch (Exception e) {

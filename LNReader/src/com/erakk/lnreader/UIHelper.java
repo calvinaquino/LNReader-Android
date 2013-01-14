@@ -105,6 +105,14 @@ public class UIHelper {
 		return false;
 	}
 	
+	@SuppressWarnings("deprecation")
+	public static int getScreenHeight(Activity activity) {
+		DisplayMetrics metrics = new DisplayMetrics();
+		activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+		Display display = activity.getWindowManager().getDefaultDisplay();
+		return display.getWidth();
+	}
+	
 	@SuppressLint("NewApi")
 	public static void ToggleFullscreen(Activity activity, boolean fullscreen) {
 		if(fullscreen) {

@@ -14,36 +14,50 @@
         android:layout_marginTop="5dp"
         android:text="pageTitle"
         android:textSize="14sp" />
-    
+
+
+    <TextView
+        android:id="@+id/page_subtitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pageTitle"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:paddingBottom="6dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:paddingTop="5dp"
+        android:text="subTitle" />
+
     <TextView
         android:id="@+id/p_index"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/pageTitle"
-        android:layout_marginLeft="45dp"
+        android:layout_alignLeft="@+id/page_subtitle"
+        android:layout_below="@+id/page_subtitle"
         android:text="#pIndex"
         android:textSize="14sp" />
-    <TextView
-        android:id="@+id/excerpt"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/create_date"
-        android:layout_margin="10dp"
-        android:text="Excerpt..."
-        android:textColor="#888888"
-        android:textSize="12sp" />
-    
 
     <TextView
         android:id="@+id/create_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="15dp"
-        android:layout_below="@+id/p_index"
+        android:layout_alignBottom="@+id/pageTitle"
+        android:layout_alignRight="@+id/excerpt"
         android:text="Create Date"
-        android:textColor="#888888"
-        android:textSize="12sp" />
+        android:textColor="#777777"
+        android:textSize="11sp" />
+
+    <TextView
+        android:id="@+id/excerpt"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/p_index"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:paddingBottom="10dp"
+        android:text="Excerpt..."
+        android:textColor="#999999"
+        android:textSize="13sp" />
 
 </RelativeLayout>

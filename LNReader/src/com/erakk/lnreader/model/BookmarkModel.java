@@ -7,6 +7,7 @@ import com.erakk.lnreader.dao.NovelsDao;
 public class BookmarkModel {
 	private int id;
 	private String page;
+	private String subPage;
 	private int pIndex;
 	private String excerpt;
 	private Date creationDate;
@@ -24,6 +25,12 @@ public class BookmarkModel {
 	}
 	public void setPage(String page) {
 		this.page = page;
+	}
+	public String getSubPage() {
+		return subPage;
+	}
+	public void setSubPage(String subPage) {
+		this.subPage = subPage;
 	}
 	public int getpIndex() {
 		return pIndex;

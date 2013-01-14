@@ -8,39 +8,75 @@
 		    xmlns:tools="http://schemas.android.com/tools"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content" > 
-
 		    <TextView
 		        android:id="@+id/title"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:layout_centerHorizontal="true"
-		        android:layout_marginLeft="8dp"
-		        android:layout_marginRight="8dp"
+		        android:layout_marginLeft="5dp"
+		        android:layout_marginRight="5dp"
+		        android:paddingRight="25dp"
 		        android:layout_marginTop="20dp"
-		        android:gravity="center"
 		        android:text="@string/novel_title"
+		        android:textStyle="bold"
 		        tools:context=".LightNovelChaptersActivity" />
+			<View 
+			    android:id="@+id/divider_bottom"
+		        android:layout_width="match_parent"
+		        android:layout_marginTop="10dp"
+		        android:paddingBottom="25dp"
+		        android:layout_marginLeft="40dp"
+		        android:layout_marginRight="40dp"
+		        android:layout_height="1dp"
+		        android:layout_below="@+id/title"
+		        android:background="@color/divider"
+		        android:layout_centerHorizontal="true"
+			    />
 		
 		    <ImageView
 		        android:id="@+id/cover"
-		        android:layout_width="wrap_content"
+		        android:layout_width="match_parent"
 		        android:layout_height="wrap_content"
-		        android:layout_below="@+id/title"
+		        android:layout_marginLeft="12dp"
+		        android:layout_marginRight="12dp"
+		        android:layout_below="@+id/divider_bottom"
 		        android:layout_centerHorizontal="true"
+		        android:adjustViewBounds="true"
 		        android:layout_marginTop="20dp"
 		        android:contentDescription="@string/novel_cover" />
-
+			<View 
+			    android:id="@+id/divider_bottom2"
+		        android:layout_width="match_parent"
+		        android:layout_marginTop="25dp"
+		        android:paddingBottom="25dp"
+		        android:layout_marginLeft="40dp"
+		        android:layout_marginRight="40dp"
+		        android:layout_height="1dp"
+		        android:layout_below="@+id/cover"
+		        android:background="@color/divider"
+		        android:layout_centerHorizontal="true"
+			    />
 		    <TextView
 		        android:id="@+id/synopsys"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:layout_alignParentLeft="true"
-		        android:layout_below="@+id/cover"
+		        android:layout_below="@+id/divider_bottom2"
 		        android:layout_marginLeft="8dp"
 		        android:layout_marginRight="8dp"
 		        android:layout_marginTop="20dp"
 		        android:text="@string/novel_synopsys"
 		        tools:context=".LightNovelChaptersActivity" />
+			<View 
+			    android:id="@+id/divider_bottom3"
+		        android:layout_width="match_parent"
+		        android:layout_marginTop="10dp"
+		        android:paddingBottom="25dp"
+		        android:layout_height="1dp"
+		        android:layout_below="@+id/synopsys"
+		        android:background="@color/divider"
+		        android:layout_centerHorizontal="true"
+			    />
 
 		    <CheckBox
 		        android:id="@+id/isWatched"

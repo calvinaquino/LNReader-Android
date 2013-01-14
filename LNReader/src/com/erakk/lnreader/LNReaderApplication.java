@@ -20,6 +20,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
+import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -138,17 +139,60 @@ public class LNReaderApplication extends Application {
 		}
 		return exists;
 	}
-	public void updateDownload(String id, Integer progress){
-		for (int i=0;i<downloadList.size();i++) {
-			if (downloadList.get(i).getDownloadId() == id) {
-				downloadList.get(i).setDownloadProgress(progress);
-			}
-		}
-		if (DownloadListActivity.getInstance() != null)
-			DownloadListActivity.getInstance().updateContent();
-	}
 	public ArrayList<DownloadModel> getDownloadList() {
 		return downloadList;
+	}
+	
+//	public void updateDownload(String id, Integer progress){
+//		
+//		for (int i=0;i<downloadList.size();i++) {
+//			if (downloadList.get(i).getDownloadId() == id) {
+//				downloadList.get(i).setDownloadProgress(progress);
+//			}
+//		}
+//		if (DownloadListActivity.getInstance() != null)
+//			DownloadListActivity.getInstance().updateContent();
+//	}
+	
+	
+	public void updateDownload(String id, Integer progress){
+		
+		/*
+		 * Although this may seem an attempt at a fake incremental download bar
+		 * its actually a progressbar smoother.
+		 */
+		
+		int index = 0;
+		Integer oldProgress;
+		final Integer Increment;
+		int smoothTime = 1000;
+		int tickTime = 25;
+		int tempIncrease = 0;
+		for (int i=0;i<downloadList.size();i++) {
+			if (downloadList.get(i).getDownloadId() == id) {
+				index = i;
+			}
+		}
+		final int idx = index;
+		oldProgress = downloadList.get(index).getDownloadProgress();
+		tempIncrease = (progress-oldProgress);
+		if (tempIncrease < smoothTime/tickTime) {
+			smoothTime = tickTime*tempIncrease;
+			tempIncrease = 1;
+		}
+		else
+			tempIncrease/=(smoothTime/tickTime);
+		Increment = tempIncrease;
+		 new CountDownTimer(smoothTime, tickTime) { 
+		        public void onTick(long millisUntilFinished) {
+		        	if (downloadList.get(idx) != null)
+		        		downloadList.get(idx).setDownloadProgress(downloadList.get(idx).getDownloadProgress()+Increment);         
+		        	if (DownloadListActivity.getInstance() != null)
+		    			DownloadListActivity.getInstance().updateContent();
+		        }            
+		        public void onFinish() {
+		       }
+		   }.start();
 	}
 	/*
 	 * UpdateService method
@@ -192,8 +236,18 @@ public class LNReaderApplication extends Application {
 	
 	@Override
 	public void onLowMemory () {
-		Log.w(TAG, "Low Memory, unbind service...");
-		unbindService(mConnection);
+		
+		/*
+		 * java.lang.IllegalArgumentException
+		 * in android.app.LoadedApk.forgetServiceDispatcher
+		 * 
+		 * probable crash: service is not checked if it exists after onLowMemory.
+		 * Technically fixed. needs checking.
+		 */
+		if (mConnection != null) {
+			Log.w(TAG, "Low Memory, unbind service...");
+			unbindService(mConnection);
+		}
 		super.onLowMemory();		
 	}
 	

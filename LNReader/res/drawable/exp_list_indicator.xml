@@ -1,0 +1,5 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_empty="true" android:drawable="@drawable/ic_book_closed"/>
+    <item android:state_expanded="true" android:drawable="@drawable/ic_book_open" />
+    <item android:drawable="@drawable/ic_book_closed" />
+</selector>
