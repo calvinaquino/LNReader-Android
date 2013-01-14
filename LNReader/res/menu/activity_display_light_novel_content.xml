@@ -13,4 +13,6 @@
     <item android:id="@+id/menu_search" android:title="Search"></item>
     <item android:id="@+id/menu_bookmarks_here" android:title="Bookmarks on Chapter"></item>
     <item android:id="@+id/menu_bookmarks" android:title="Bookmarks"></item>
+    <item android:id="@+id/menu_downloads"
+        android:title="Download List" />
 </menu>

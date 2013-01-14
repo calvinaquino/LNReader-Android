@@ -291,6 +291,10 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
     		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
         	startActivity(bookmarkIntent);
 			return true;    
+		case R.id.menu_downloads:
+    		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
+        	startActivity(downloadsItent);;
+			return true; 
 		case android.R.id.home:
 //			if(tocMenu != null) tocMenu.show();
 //			else finish();
@@ -486,6 +490,16 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	    	SharedPreferences.Editor editor = sharedPrefs.edit();
 	    	editor.putString(Constants.PREF_LAST_READ, content.getPage());
 	    	editor.commit();
+	    	
+
+			try {
+				PageModel pageModel = content.getPageModel();
+				Toast.makeText(getApplicationContext(), "Resume point saved.", Toast.LENGTH_SHORT).show();
+		    	
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	    	
 			Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 		}

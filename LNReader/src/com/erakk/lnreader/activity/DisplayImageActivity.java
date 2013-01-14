@@ -95,6 +95,10 @@ public class DisplayImageActivity extends Activity implements IAsyncTaskOwner{
 			//refresh = true;
 			executeTask(url, true);			
 			return true;
+		case R.id.menu_downloads:
+    		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
+        	startActivity(downloadsItent);;
+			return true; 
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;

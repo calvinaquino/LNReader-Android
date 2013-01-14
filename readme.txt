@@ -21,7 +21,7 @@ LINE-ENDINGS & SOURCE ENCODING CONFIG
 
 
 
-TASK LIST - Version 1.1.0 beta build 25 (Old Version 20130106)
+TASK LIST - Version 1.1.0 beta build 26 (Old Version 20130106)
 ====================================================
 //DONE
 - inverted default VolumeRocker scroll direction.
@@ -37,20 +37,23 @@ TASK LIST - Version 1.1.0 beta build 25 (Old Version 20130106)
 - Jump to inside content layout fixed
 - Bookmarks screen fix layout
 - fix novel content headers/titles
+- Fixed an issue where only the last updated novel was notified
+- Add update service to download list.
+- Add status message in download list.
+- Add download List too all intents
+- Remove Downloads ans Settings buttons from main menu, add them as popup menu.
+- Rename ImageActivity to something better
 //CRASH FIXES
 - Fixed a crash that would occur if trying to unbind an unregistered service on low memory warning.
 - Fixed a crash that related to scrolling while reading a novel.
 
 //TODO
-- Add download List too all intents
 - Add Orignal Light Novels List
-- Remove Downloads ans Settings buttons from main menu, add them as popup menu.
 - Teaser list to use Download List Model
-- Rename ImageActivity to something better
 - Remove asyncTaskCount from settings
 - Fix manual add crash
 - make external chapters open in an internal customized webview
-- Light Novel List Layout <DOING
+- Light Novel List Layout
 - Empty WatchList hangup bug 
 - dialog inside a chapter/content reading "Downloading, please wait"
 - Manual add series tutorial for new users lowPriority
@@ -77,6 +80,7 @@ this mascot (is the icon on the upper left, only shows on newer android versions
 > Skydrive
 > Google Drive
 > This is just an IDEA, and as such, not to worry for now.
+
 
 ANDROID PERMISSION LIST
 ====================================================

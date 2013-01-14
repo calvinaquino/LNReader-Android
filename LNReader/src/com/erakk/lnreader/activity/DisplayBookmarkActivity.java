@@ -67,6 +67,10 @@ public class DisplayBookmarkActivity extends ListActivity  {
 			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);
 			return true;
+		case R.id.menu_downloads:
+    		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
+        	startActivity(downloadsItent);;
+			return true; 
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;

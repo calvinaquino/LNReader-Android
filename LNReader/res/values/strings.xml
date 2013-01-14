@@ -12,10 +12,10 @@
     <string name="novel_title">title</string>
     <string name="novel_cover">cover</string>
     <string name="novel_synopsys"></string>
-    <string name="title_activity_display_synopsys">DisplaySynopsysActivity</string>
-    <string name="title_activity_display_novel_content">DisplayNovelContent</string>
+    <string name="title_activity_display_synopsys">Novel Synopsis</string>
+    <string name="title_activity_display_novel_content">Novel Content</string>
     <string name="invert_colors">Invert Colors</string>
-    <string name="title_activity_display_image">DisplayImageActivity</string>
+    <string name="title_activity_display_image">Image Viewer</string>
     <string name="novel_last_update">last update</string>
     <string name="novel_chapter">Novel Chapter</string>
     <string name="novel_chapter_dl">(DL)</string>
@@ -26,11 +26,11 @@
     <string name="search">Search</string>
     <string name="novel_only">Novel Only</string>
     <string name="task_loading">Task still loading&#8230;</string>
-    <string name="jump_last_read">Jump to Last Read</string>
-    <string name="title_activity_display_bookmark">DisplayBookmarkActivity</string>
+    <string name="jump_last_read">Resume Novel</string>
+    <string name="title_activity_display_bookmark">Bookmarksy</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_download_list">Downloads List</string>
     <string name="downloadsList">Downloads</string>
-    <string name="title_activity_download_list_adapter">DownloadListAdapter</string>
+    <string name="title_activity_download_list_adapter">Downloads List</string>
 
 </resources>

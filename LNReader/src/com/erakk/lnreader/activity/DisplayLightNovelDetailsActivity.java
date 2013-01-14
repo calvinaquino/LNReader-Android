@@ -192,6 +192,10 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			touchedForDownload = "Complete Novel";
 			executeDownloadTask(notDownloadedChapters, true);
 			return true;
+		case R.id.menu_downloads:
+    		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
+        	startActivity(downloadsItent);;
+			return true; 
         case android.R.id.home:
         	super.onBackPressed();
             return true;

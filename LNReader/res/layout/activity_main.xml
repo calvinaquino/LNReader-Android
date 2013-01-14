@@ -34,8 +34,8 @@
 	            android:layout_marginTop="20dp"
 	            android:minHeight="66dp"
 	            android:minWidth="192dp"
-	            android:onClick="openWatchList"
-	            android:text="@string/watch_list" />
+	            android:onClick="openTeaserList"
+	            android:text="@string/teasers" />
 	
    	        <Button
    	            android:id="@+id/button4"
@@ -44,18 +44,9 @@
 	            android:layout_marginTop="20dp"
    	            android:minHeight="66dp"
    	            android:minWidth="192dp"
-   	            android:onClick="jumpLastRead"
-   	            android:text="@string/jump_last_read" />
+	            android:onClick="openWatchList"
+	            android:text="@string/watch_list" />
 	            
-			<Button
-	            android:id="@+id/button3"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:layout_marginTop="20dp"
-	            android:minHeight="66dp"
-	            android:minWidth="192dp"
-	            android:onClick="openSettings"
-	            android:text="@string/settings" />
 	            
 	        <Button
 	            android:id="@+id/button5"
@@ -64,18 +55,8 @@
 	            android:layout_marginTop="20dp"
 	            android:minHeight="66dp"
 	            android:minWidth="192dp"
-	            android:onClick="openTeaserList"
-	            android:text="@string/teasers" />
-	        
-	        <Button
-	            android:id="@+id/button6"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:layout_marginTop="20dp"
-	            android:minHeight="66dp"
-	            android:minWidth="192dp"
-	            android:onClick="openDownloads"
-	            android:text="@string/downloadsList" />
+   	            android:onClick="jumpLastRead"
+   	            android:text="@string/jump_last_read" />
             
 	    </LinearLayout>
 	    

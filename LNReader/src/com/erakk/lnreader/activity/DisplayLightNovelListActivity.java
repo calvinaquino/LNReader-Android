@@ -161,6 +161,10 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
     		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
         	startActivity(bookmarkIntent);
 			return true;    
+		case R.id.menu_downloads:
+    		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
+        	startActivity(downloadsItent);;
+			return true; 
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;

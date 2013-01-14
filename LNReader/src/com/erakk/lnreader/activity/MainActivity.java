@@ -53,7 +53,15 @@ public class MainActivity extends Activity {
         	case R.id.menu_bookmarks:
         		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
             	startActivity(bookmarkIntent);
-    			return true;    		
+    			return true;   
+        	case R.id.menu_settings:
+        		Intent settingsIntent = new Intent(this, DisplaySettingsActivity.class);
+            	startActivity(settingsIntent);
+    			return true; 
+        	case R.id.menu_downloads:
+        		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
+            	startActivity(downloadsItent);;
+    			return true; 
             case android.R.id.home:
                 finish();
                 return true;
@@ -78,10 +86,10 @@ public class MainActivity extends Activity {
     	startActivity(intent);
     }
     
-    public void openSettings(View view) {
-    	Intent intent = new Intent(this, DisplaySettingsActivity.class);
-    	startActivity(intent);
-    }
+//    public void openSettings(View view) {
+//    	Intent intent = new Intent(this, DisplaySettingsActivity.class);
+//    	startActivity(intent);
+//    }
     
     public void jumpLastRead(View view) {
 		String lastReadPage = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LAST_READ, "");
@@ -91,14 +99,14 @@ public class MainActivity extends Activity {
 	        startActivity(intent);
 		}
 		else{
-			Toast.makeText(this, "No last read novel.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "You have no novel to resume reading.", Toast.LENGTH_SHORT).show();
 		}
     }
     
-    public void openDownloads(View view) {
-    	Intent intent = new Intent(this, DownloadListActivity.class);
-    	startActivity(intent);
-    }
+//    public void openDownloads(View view) {
+//    	Intent intent = new Intent(this, DownloadListActivity.class);
+//    	startActivity(intent);
+//    }
 
 	private boolean getColorPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);

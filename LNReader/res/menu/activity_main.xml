@@ -8,5 +8,9 @@
         android:showAsAction="never" />
     <item android:id="@+id/menu_bookmarks"
         android:title="Bookmarks" />
+    <item android:id="@+id/menu_settings"
+        android:title="Settings" />
+    <item android:id="@+id/menu_downloads"
+        android:title="Download List" />
     
 </menu>

@@ -7,6 +7,8 @@
         android:title="@string/invert_colors" />
     <item android:id="@+id/menu_bookmarks"
         android:title="Bookmarks" />
+    <item android:id="@+id/menu_downloads"
+        android:title="Download List" />
     <item android:id="@+id/menu_manual_add" android:title="Manual Add"></item>
     <item android:id="@+id/menu_download_all" android:title="Download All Info"></item>
 </menu>
