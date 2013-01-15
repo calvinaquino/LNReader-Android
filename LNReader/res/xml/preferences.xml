@@ -32,7 +32,7 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:key="layout_category"
-        android:title="Layout Preferences" >
+        android:title="General Preferences" >
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="invert_colors"
@@ -63,6 +63,11 @@
             android:key="keep_awake"
             android:summary="Keeps the screen allways on when on chapter screen."
             android:title="Keep Awake" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="auto_download_chapter"
+            android:summary="Automatically adds a chapter to the download list when touched, if it hasn't been downloaded yet."
+            android:title="Touch for Download" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="use_volume_to_scroll"

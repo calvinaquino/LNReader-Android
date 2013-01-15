@@ -70,20 +70,21 @@ public class MainActivity extends Activity {
     }
 	
     public void openNovelList(View view) {
-    	Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
+//    	Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
+    	Intent intent = new Intent(this, DisplayNovelPagerActivity.class);
     	intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
     	startActivity(intent);
     }
-    
-    public void openTeaserList(View view) {
-    	Intent intent = new Intent(this, DisplayTeaserListActivity.class);
-    	startActivity(intent);
-    }
-    
-    public void openOriginalsList(View view) {
-    	Intent intent = new Intent(this, DisplayOriginalListActivity.class);
-    	startActivity(intent);
-    }
+//    
+//    public void openTeaserList(View view) {
+//    	Intent intent = new Intent(this, DisplayTeaserListActivity.class);
+//    	startActivity(intent);
+//    }
+//    
+//    public void openOriginalsList(View view) {
+//    	Intent intent = new Intent(this, DisplayOriginalListActivity.class);
+//    	startActivity(intent);
+//    }
     
     public void openWatchList(View view) {
     	Intent intent = new Intent(this, DisplayLightNovelListActivity.class);

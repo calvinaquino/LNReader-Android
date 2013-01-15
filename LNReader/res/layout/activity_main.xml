@@ -27,16 +27,6 @@
 	            android:onClick="openNovelList"
 	            android:text="@string/light_novels" />
 	
-	        <Button
-	            android:id="@+id/button2"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:layout_marginTop="20dp"
-	            android:minHeight="66dp"
-	            android:minWidth="192dp"
-	            android:onClick="openTeaserList"
-	            android:text="@string/teasers" />
-	
    	        <Button
    	            android:id="@+id/button4"
    	            android:layout_width="wrap_content"
@@ -47,16 +37,6 @@
 	            android:onClick="openWatchList"
 	            android:text="@string/watch_list" />
 	            
-	        <Button
-	            android:id="@+id/button5"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:layout_marginTop="20dp"
-	            android:minHeight="66dp"
-	            android:minWidth="192dp"
-   	            android:onClick="openOriginalsList"
-   	            android:text="@string/originals" />
-	        
 	        <Button
 	            android:id="@+id/button6"
 	            android:layout_width="wrap_content"

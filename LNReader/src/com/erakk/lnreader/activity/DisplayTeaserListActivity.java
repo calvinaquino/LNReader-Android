@@ -142,7 +142,7 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
 		return super.onOptionsItemSelected(item);
 	}
 	private void DownloadAllNovelInfo() {
-		touchedForDownload = "All Original Light Novels information";
+		touchedForDownload = "All Teaser Light Novels information";
 		executeDownloadTask(listItems);
 	}
 	

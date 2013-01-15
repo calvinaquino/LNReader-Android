@@ -106,8 +106,6 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
     
 	private void loadChapter(PageModel chapter) {
 		if(chapter.isExternal()) {
-
-			Log.d("External", "Is External");
 			try{
 				Uri url = Uri.parse(chapter.getPage());
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
@@ -119,8 +117,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			}
 		}
 		else {
-			if (chapter.isDownloaded()) {
-				Log.d("External", "Not External");
+			if (chapter.isDownloaded() || !getDownloadTouchPreference()) {
 				Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
 		        intent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
 		        startActivity(intent);
@@ -545,5 +542,8 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 	
 	private boolean getColorPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
+	}
+	private boolean getDownloadTouchPreference(){
+    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_DOWNLOAD_TOUCH, false);
 	}
 }

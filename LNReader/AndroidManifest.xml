@@ -109,6 +109,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.erakk.lnreader.activity.MainActivity" />
         </activity>
+        
+        
+        <activity
+            android:name="com.erakk.lnreader.activity.DisplayNovelPagerActivity"
+            android:label="@string/title_activity_display_novel_pager"
+            android:parentActivityName="com.erakk.lnreader.activity.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.erakk.lnreader.activity.MainActivity" />
+        </activity>
 
         <service
             android:name="com.erakk.lnreader.service.UpdateService"

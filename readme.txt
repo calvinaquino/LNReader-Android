@@ -22,7 +22,7 @@ LINE-ENDINGS & SOURCE ENCODING CONFIG
 
 
 (Old Version 20130106)
-TASK LIST - Version 1.1.0 beta build 27
+TASK LIST - Version 1.1.0 beta build 28
 ====================================================
 //DONE
 - inverted default VolumeRocker scroll direction.
@@ -48,6 +48,8 @@ TASK LIST - Version 1.1.0 beta build 27
 - Teaser and Original list to use Download List Model
 - Clicking an undownloaded chapter will add it to the download list if it hasn't been downloaded.
 - Added more visual tips about novel states "Read", "Has Update" and "External"
+- Novels, Teasers and Original novels lists are all shown under "Light Novels", separated by tabs.
+- Added option to enable auto downloading an undownloaded chapter on the download list
 //CRASH FIXES
 - Fixed a crash that would occur if trying to unbind an unregistered service on low memory warning.
 - Fixed a crash that related to scrolling while reading a novel.
