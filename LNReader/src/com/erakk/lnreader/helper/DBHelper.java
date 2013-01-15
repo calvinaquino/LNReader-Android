@@ -269,6 +269,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		PageModel page = getPageModel(db, "Category:Teasers");
 		return page;
 	}
+	
+	public PageModel getOriginalPage(SQLiteDatabase db) {
+		PageModel page = getPageModel(db, "Category:Original");
+		return page;
+	}
 
 	public ArrayList<PageModel> insertAllNovel(SQLiteDatabase db, ArrayList<PageModel> list) {
 		ArrayList<PageModel> updatedList = new ArrayList<PageModel>();
@@ -430,6 +435,24 @@ public class DBHelper extends SQLiteOpenHelper {
 		else 		  sql += " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE;
 		
 		Cursor cursor = rawQuery(db, sql, new String[] {"Category:Teasers"});
+		cursor.moveToFirst();
+	    while (!cursor.isAfterLast()) {
+	    	PageModel page = cursorToPageModel(cursor);
+	    	pages.add(page);
+	    	cursor.moveToNext();
+	    }
+	    cursor.close();
+		return pages;
+	}
+	
+	public ArrayList<PageModel> getAllOriginal(SQLiteDatabase db, boolean alphOrder) {
+		ArrayList<PageModel> pages = new ArrayList<PageModel>();
+		
+		String sql = "select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ? ";
+		if(alphOrder) sql += " ORDER BY " + COLUMN_TITLE;
+		else 		  sql += " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE;
+		
+		Cursor cursor = rawQuery(db, sql, new String[] {"Category:Original"});
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
 	    	PageModel page = cursorToPageModel(cursor);

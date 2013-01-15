@@ -65,7 +65,7 @@ public class BakaTsukiParser {
 		Elements redirects = doc.select("r");
 		//Log.d(TAG, "parsePageAPI redirected size: " + redirects.size());
 		Elements pages = doc.select("page");
-		//Log.d(TAG, "parsePageAPI pages size: " + pages.size());
+		Log.d(TAG, "parsePageAPI pages size: " + pages.size());
 		
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
 		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -188,6 +188,39 @@ public class BakaTsukiParser {
 				page.setType(PageModel.TYPE_NOVEL);
 				page.setTitle(link.text());
 				page.setStatus(Constants.STATUS_TEASER);
+				page.setOrder(order);
+				
+				result.add(page);
+				++order;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Parse originals list from http://www.baka-tsuki.org/project/index.php?title=Category:Original
+	 * @param doc
+	 * @return
+	 */
+	public static ArrayList<PageModel> ParseOriginalList(Document doc) {
+		ArrayList<PageModel> result = new ArrayList<PageModel>();
+		
+		if(doc == null) throw new NullPointerException("Document cannot be null.");
+		
+		Element stage = doc.select("#mw-pages").first();
+		int order = 0;
+		if(stage != null) {
+			Elements list = stage.select("li");
+			for (Element element : list) {
+				Element link = element.select("a").first();
+				PageModel page = new PageModel();
+				page.setParent("Category:Original");
+				String tempPage = link.attr("href").replace("/project/index.php?title=","")
+                        .replace(Constants.BASE_URL, "");
+				page.setPage(tempPage);
+				page.setType(PageModel.TYPE_NOVEL);
+				page.setTitle(link.text());
+				page.setStatus(Constants.STATUS_ORIGINAL);
 				page.setOrder(order);
 				
 				result.add(page);

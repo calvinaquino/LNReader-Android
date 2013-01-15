@@ -80,6 +80,11 @@ public class MainActivity extends Activity {
     	startActivity(intent);
     }
     
+    public void openOriginalsList(View view) {
+    	Intent intent = new Intent(this, DisplayOriginalListActivity.class);
+    	startActivity(intent);
+    }
+    
     public void openWatchList(View view) {
     	Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
     	intent.putExtra(Constants.EXTRA_ONLY_WATCHED, true);

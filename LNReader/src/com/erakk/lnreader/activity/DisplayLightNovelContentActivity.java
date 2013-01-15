@@ -492,14 +492,14 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	    	editor.commit();
 	    	
 
-			try {
-				PageModel pageModel = content.getPageModel();
-				Toast.makeText(getApplicationContext(), "Resume point saved.", Toast.LENGTH_SHORT).show();
-		    	
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			try {
+//				PageModel pageModel = content.getPageModel();
+//				Toast.makeText(getApplicationContext(), "Resume point saved.", Toast.LENGTH_SHORT).show();
+//		    	
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 	    	
 			Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 		}

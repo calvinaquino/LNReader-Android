@@ -22,9 +22,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
@@ -34,30 +34,29 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
-import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.task.AddNovelTask;
 import com.erakk.lnreader.task.DownloadNovelDetailsTask;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
-import com.erakk.lnreader.task.LoadNovelsTask;
+import com.erakk.lnreader.task.LoadOriginalsTask;
+import com.erakk.lnreader.task.LoadTeasersTask;
 
 /*
  * Author: Nandaka
  * Copy from: NovelsActivity.java
  */
 
-public class DisplayLightNovelListActivity extends ListActivity implements IAsyncTaskOwner{
-	private static final String TAG = DisplayLightNovelListActivity.class.toString();
+public class DisplayOriginalListActivity extends ListActivity implements IAsyncTaskOwner{
+	private static final String TAG = DisplayOriginalListActivity.class.toString();
 	private ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	private PageModelAdapter adapter;
-	private LoadNovelsTask task = null;
+	private LoadOriginalsTask task = null;
 	private DownloadNovelDetailsTask downloadTask = null;
 	private AddNovelTask addTask = null;
 	private ProgressDialog dialog;
 	private boolean isInverted;
-	private boolean onlyWatched = false;
 	String touchedForDownload;
 	
 	@Override
@@ -67,18 +66,9 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 		
 		registerForContextMenu(getListView());
-		onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
+		updateContent(false);
 		
-		//Encapsulated in updateContent
-		updateContent(false, onlyWatched);
-		
-		if(onlyWatched){
-			setTitle("Watched Light Novels");
-		}
-		else {
-			setTitle("Light Novels");
-		}
-		registerForContextMenu(getListView());
+		setTitle("Light Novels: Original");
 		isInverted = getColorPreferences();
 	}
 
@@ -106,20 +96,6 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 	
 	@Override
 	protected void onStop() {
-		// cancel running task
-		// disable cancel so the task can run in background
-//		if(task != null) {
-//			if(!(task.getStatus() == Status.FINISHED)) {
-//				task.cancel(true);
-//				Log.d(TAG, "Stopping running task.");
-//			}
-//		}
-//		if(downloadTask != null) {
-//			if(!(downloadTask.getStatus() == Status.FINISHED)) {
-//				downloadTask.cancel(true);
-//				Log.d(TAG, "Stopping running download task.");
-//			}
-//		}
 		super.onStop();
 	}
 	
@@ -143,8 +119,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 			/*
 			 * Implement code to refresh novel list
 			 */
-			boolean onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
-			updateContent(true, onlyWatched);			
+			updateContent(true);			
 			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.invert_colors:			
@@ -156,10 +131,6 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 			return true;
 		case R.id.menu_download_all:			
 			DownloadAllNovelInfo();
-			return true;
-		case R.id.menu_bookmarks:
-    		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
-        	startActivity(bookmarkIntent);
 			return true;    
 		case R.id.menu_downloads:
     		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
@@ -171,15 +142,11 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
 	private void DownloadAllNovelInfo() {
-		if (onlyWatched)
-			touchedForDownload = "Watched Light Novels information";
-		else
-			touchedForDownload = "All Light Novels information";
+		touchedForDownload = "All Original Light Novels information";
 		executeDownloadTask(listItems);
 	}
-
+	
 	private void ManualAdd() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setTitle("Add Novel");
@@ -208,7 +175,8 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 			temp.setPage(novel);
 			temp.setTitle(title);
 			temp.setType(PageModel.TYPE_NOVEL);
-			temp.setParent("Main_Page");
+			temp.setParent("Category:Original");
+			temp.setStatus(Constants.STATUS_ORIGINAL);
 			executeAddTask(temp);
 		}
 		else {
@@ -224,30 +192,24 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		switch(item.getItemId()) {
 		case R.id.add_to_watch:			
 			/*
 			 * Implement code to toggle watch of this novel
 			 */
-			if(info.position > -1) {
-				PageModel novel = listItems.get(info.position);
-		        if (novel.isWatched()) {
-		        	novel.setWatched(false);
-		        	Toast.makeText(this, "Removed from watch list: " + novel.getTitle(),	Toast.LENGTH_SHORT).show();
-		        }
-		        else {
-		        	novel.setWatched(true);
-		        	Toast.makeText(this, "Added to watch list: " + novel.getTitle(),	Toast.LENGTH_SHORT).show();
-		        }
-		        NovelsDao.getInstance(this).updatePageModel(novel);
-		        adapter.notifyDataSetChanged();
-			}
+	        CheckBox checkBox = (CheckBox) findViewById(R.id.novel_is_watched);
+	        if (checkBox.isChecked()) {
+	        	checkBox.setChecked(false);
+	        }
+	        else {
+	        	checkBox.setChecked(true);
+	        }
 			return true;
 		case R.id.download_novel:			
 			/*
 			 * Implement code to download novel synopsis
 			 */
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 			if(info.position > -1) {
 				PageModel novel = listItems.get(info.position);
 				ArrayList<PageModel> novels = new ArrayList<PageModel>();
@@ -256,24 +218,12 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 				executeDownloadTask(novels);
 			}
 			return true;
-		case R.id.delete_novel:
-			if(info.position > -1) {
-				toggleProgressBar(true);
-				PageModel novel = listItems.get(info.position);
-				boolean result = NovelsDao.getInstance(this).deleteNovel(novel);
-				if(result) {
-					listItems.remove(novel);
-					adapter.notifyDataSetChanged();
-				}				
-				toggleProgressBar(false);
-			}
-			return true;
 		default:
 			return super.onContextItemSelected(item);
 		}
 	}
 	
-	private void updateContent (boolean isRefresh, boolean onlyWatched) {
+	private void updateContent (boolean isRefresh) {
 		try {
 			// Check size
 			int resourceId = R.layout.novel_list_item;
@@ -286,7 +236,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 				adapter = new PageModelAdapter(this, resourceId, listItems);
 			}
 			boolean alphOrder = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ALPH_ORDER, false);
-			executeTask(isRefresh, onlyWatched, alphOrder);
+			executeTask(isRefresh, alphOrder);
 			setListAdapter(adapter);
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
@@ -295,9 +245,9 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 	}
 	
 	@SuppressLint("NewApi")
-	private void executeTask(boolean isRefresh, boolean onlyWatched, boolean alphOrder) {
-		task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder);
-		String key = TAG + ":Main+Page";
+	private void executeTask(boolean isRefresh, boolean alphOrder) {
+		task = new LoadOriginalsTask(this, isRefresh, alphOrder);
+		String key = TAG + ":Category:Original";
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if(isAdded) {
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -307,51 +257,21 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 		}
 		else {
 			Log.i(TAG, "Continue execute task: " + key);
-			LoadNovelsTask tempTask = (LoadNovelsTask) LNReaderApplication.getInstance().getTask(key);
+			LoadOriginalsTask tempTask = (LoadOriginalsTask) LNReaderApplication.getInstance().getTask(key);
 			if(tempTask != null) {
 				task = tempTask;
 				task.owner = this;
 			}
-			//This
 			toggleProgressBar(true);
 		}
-	}
-	
-	public boolean downloadListSetup(String id, String toastText, int type){
-		boolean exists = false;
-		String name = touchedForDownload;
-		if (type == 0) {
-			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
-				exists = true;
-				Toast.makeText(this, "Download already on queue.", Toast.LENGTH_SHORT).show();
-			}
-			else {
-				Toast.makeText(this,"Downloading "+name+".", Toast.LENGTH_SHORT).show();
-				LNReaderApplication.getInstance().addDownload(id, name);
-			}
-		}
-		else if (type == 1) {
-			Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show();
-		}
-		else if (type == 2) {
-			Toast.makeText(this, LNReaderApplication.getInstance().getDownloadDescription(id)+"'s download finished!", Toast.LENGTH_SHORT).show();
-			LNReaderApplication.getInstance().removeDownload(id);
-		}
-		return exists;
-	}
-	public void updateProgress(String id, int current, int total, String messString){
-		double cur = (double)current;
-		double tot = (double)total;
-		double result = (cur/tot)*100;
-		LNReaderApplication.getInstance().updateDownload(id, (int)result, messString);
 	}
 	
 	@SuppressLint("NewApi")
 	private void executeDownloadTask(ArrayList<PageModel> novels) {
 		downloadTask = new DownloadNovelDetailsTask(this);
-		String key = DisplayLightNovelDetailsActivity.TAG + ":" + novels.get(0).getPage();
+		String key = DisplayOriginalListActivity.TAG + ":" + novels.get(0).getPage();
 		if(novels.size() > 1) {
-			key = DisplayLightNovelDetailsActivity.TAG + ":All_Novels";
+			key = DisplayOriginalListActivity.TAG + ":All_Original";
 		}
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if(isAdded) {
@@ -395,7 +315,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 	
 	public void toggleProgressBar(boolean show) {
 		if(show) {
-			dialog = ProgressDialog.show(this, "Novel List", "Loading. Please wait...", true);
+			dialog = ProgressDialog.show(this, "Originals List", "Loading. Please wait...", true);
 			dialog.getWindow().setGravity(Gravity.CENTER);
 			dialog.setCanceledOnTouchOutside(true);
 		}
@@ -416,24 +336,10 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 			if(LNReaderApplication.isInstanceOf((ArrayList<?>)result.getResult(), PageModel.class)) {
 				@SuppressWarnings("unchecked")
 				ArrayList<PageModel> list = (ArrayList<PageModel>) result.getResult();
-				Log.d("WatchList", "result ok");
 				if(list != null) {
-					Log.d("WatchList", "result not empty");
-					//if (refreshOnly) {
-						adapter.clear();
-					//	refreshOnly = false;
-					//}
+					adapter.clear();
 					adapter.addAll(list);
 					toggleProgressBar(false);
-					
-					// Show message if watch list is empty
-					if (list.size() == 0 && onlyWatched) {
-
-						Log.d("WatchList", "result set message empty");
-						TextView tv = (TextView) findViewById(R.id.emptyList);
-						tv.setVisibility(TextView.VISIBLE);
-						tv.setText("Watch List is empty.");
-					}
 				}
 			}
 			// from DownloadNovelDetailsTask
@@ -470,6 +376,36 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 	
 	private boolean getColorPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
+	}
+
+	public void updateProgress(String id, int current, int total, String messString){
+		double cur = (double)current;
+		double tot = (double)total;
+		double result = (cur/tot)*100;
+		LNReaderApplication.getInstance().updateDownload(id, (int)result, messString);
+	}
+
+	public boolean downloadListSetup(String id, String toastText, int type){
+		boolean exists = false;
+		String name = touchedForDownload;
+		if (type == 0) {
+			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
+				exists = true;
+				Toast.makeText(this, "Download already on queue.", Toast.LENGTH_SHORT).show();
+			}
+			else {
+				Toast.makeText(this,"Downloading "+name+".", Toast.LENGTH_SHORT).show();
+				LNReaderApplication.getInstance().addDownload(id, name);
+			}
+		}
+		else if (type == 1) {
+			Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show();
+		}
+		else if (type == 2) {
+			Toast.makeText(this, LNReaderApplication.getInstance().getDownloadDescription(id)+"'s download finished!", Toast.LENGTH_SHORT).show();
+			LNReaderApplication.getInstance().removeDownload(id);
+		}
+		return exists;
 	}
 }
 

@@ -48,52 +48,83 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		PageModel child = getChild(groupPosition, childPosition);
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		int resourceId = R.layout.expandchapter_list_item;
-		if(UIHelper.IsSmallScreen(((Activity)context))) {
-			resourceId = R.layout.expandchapter_list_item_small; 
-		}
+//		if(UIHelper.IsSmallScreen(((Activity)context))) {
+//			resourceId = R.layout.expandchapter_list_item_small; 
+//		}
 		view = inflater.inflate(resourceId, null);
 		
 		TextView tv = (TextView) view.findViewById(R.id.novel_chapter);
 		tv.setText(child.getTitle());
 		tv.setTag(child.getPage());
+
+		ImageView ivFinishedReading = (ImageView) view.findViewById(R.id.novel_finished_reading);
+		ImageView ivIsExternal = (ImageView) view.findViewById(R.id.novel_is_external);
 		
 		if(child.isFinishedRead()) {
-			tv.setTextColor(Constants.COLOR_READ);
+			
+			//Old check
+//			tv.setTextColor(Constants.COLOR_READ);
+//		}
+//		else {
+//			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
+//				tv.setTextColor(Constants.COLOR_UNREAD);
+//			}
+//			else {
+//				tv.setTextColor(Constants.COLOR_UNREAD_INVERT);
+//			}
+			
+			//New check
+			if(ivFinishedReading != null) {
+				ivFinishedReading.setVisibility(ImageView.VISIBLE);
+			}
 		}
 		else {
-			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
-				tv.setTextColor(Constants.COLOR_UNREAD);
-			}
-			else {
-				tv.setTextColor(Constants.COLOR_UNREAD_INVERT);
+		
+			if(ivFinishedReading != null) {
+				if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
+					ivFinishedReading.setVisibility(ImageView.GONE);
+				}
+				else {
+					ivFinishedReading.setVisibility(ImageView.GONE); //Invert later
+				}
 			}
 		}
+		
+		
 		if(child.isMissing()) {
 			tv.setTextColor(Constants.COLOR_MISSING);
 		}
 		if(child.isExternal()) {
-			tv.setTextColor(Constants.COLOR_EXTERNAL);
+			ivIsExternal.setVisibility(ImageView.VISIBLE);
 		}
-		
-		ImageView tvIsDownloaded = (ImageView) view.findViewById(R.id.novel_is_downloaded);
+		else {
+			ivIsExternal.setVisibility(ImageView.GONE);
+		}
+
+		ImageView ivIsDownloaded = (ImageView) view.findViewById(R.id.novel_is_downloaded);
+		ImageView ivHasUpdates = (ImageView) view.findViewById(R.id.novel_has_updates);
 		//Log.d("getChildView", "Downloaded " + child.getTitle() + " id " + child.getId() + " : " + child.isDownloaded() );
-		if(tvIsDownloaded != null) {
+		if(ivIsDownloaded != null && ivHasUpdates != null) {
 //			if(child.isExternal()) {
 //				tvIsDownloaded.setText("(EX)");
 //				tvIsDownloaded.setVisibility(TextView.VISIBLE);
+			//Get a image for this too
 //			}
 //			else if(!child.isDownloaded()) {
 			if(!child.isDownloaded()) {
-				tvIsDownloaded.setVisibility(TextView.GONE);
+				ivIsDownloaded.setVisibility(ImageView.GONE);
 			}
 			else {
-//				tvIsDownloaded.setText("(DL)");
-//				if(NovelsDao.getInstance().isContentUpdated(child)) {
-//					tvIsDownloaded.setText("! (DL)");
-//				}
-				tvIsDownloaded.setVisibility(TextView.VISIBLE);
+				if(NovelsDao.getInstance().isContentUpdated(child)) {
+					ivHasUpdates.setVisibility(ImageView.VISIBLE);
+				}
+				else
+					ivHasUpdates.setVisibility(ImageView.GONE);
+					
+				ivIsDownloaded.setVisibility(TextView.VISIBLE);
 			}
 		}
+		
 		
 		TextView tvLastUpdate = (TextView) view.findViewById(R.id.novel_last_update);
 		if(tvLastUpdate != null){

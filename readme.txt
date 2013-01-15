@@ -21,7 +21,8 @@ LINE-ENDINGS & SOURCE ENCODING CONFIG
 
 
 
-TASK LIST - Version 1.1.0 beta build 26 (Old Version 20130106)
+(Old Version 20130106)
+TASK LIST - Version 1.1.0 beta build 27
 ====================================================
 //DONE
 - inverted default VolumeRocker scroll direction.
@@ -43,16 +44,17 @@ TASK LIST - Version 1.1.0 beta build 26 (Old Version 20130106)
 - Add download List too all intents
 - Remove Downloads ans Settings buttons from main menu, add them as popup menu.
 - Rename ImageActivity to something better
+- Add Orignal Light Novels List
+- Teaser and Original list to use Download List Model
+- Clicking an undownloaded chapter will add it to the download list if it hasn't been downloaded.
+- Added more visual tips about novel states "Read", "Has Update" and "External"
 //CRASH FIXES
 - Fixed a crash that would occur if trying to unbind an unregistered service on low memory warning.
 - Fixed a crash that related to scrolling while reading a novel.
 
 //TODO
-- Add Orignal Light Novels List
-- Teaser list to use Download List Model
 - Remove asyncTaskCount from settings
 - Fix manual add crash
-- make external chapters open in an internal customized webview
 - Light Novel List Layout
 - Empty WatchList hangup bug 
 - dialog inside a chapter/content reading "Downloading, please wait"
@@ -66,6 +68,7 @@ TASK LIST - Version 1.1.0 beta build 26 (Old Version 20130106)
 maybe ill add an option to "remove complete downloads automatically" for those who dont like removing manually...
 
 //NEEDS RETHINKING/CHECKING
+- make external chapters open in an internal customized webview (not all externals open the same way?)
 - Verify clicking mascot in chapter and going to jump to screen.
 - Make lightNovel list download a download list task
 - When loading main page for first time, add message "found x novel series" lowPriority
@@ -80,7 +83,6 @@ this mascot (is the icon on the upper left, only shows on newer android versions
 > Skydrive
 > Google Drive
 > This is just an IDEA, and as such, not to worry for now.
-
 
 ANDROID PERMISSION LIST
 ====================================================

@@ -76,8 +76,8 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			holder.txtNovel.setText(page.getTitle());
 			if(page.isHighlighted()) {
 				holder.txtNovel.setTypeface(null, Typeface.BOLD);
-				holder.txtNovel.setTextSize(19);
-				holder.txtNovel.setText(">> "+holder.txtNovel.getText()+" <<");
+				holder.txtNovel.setTextSize(20);
+				holder.txtNovel.setText(">"+holder.txtNovel.getText());
 			}
 			
 			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_INVERT_COLOR, true)) {

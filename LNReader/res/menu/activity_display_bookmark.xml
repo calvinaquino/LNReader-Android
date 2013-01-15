@@ -1,14 +1,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
+    
+    <item android:id="@+id/menu_downloads"
+        android:orderInCategory="99"
+        android:title="Download List" />
+    
     <item
         android:id="@+id/menu_settings"
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/menu_settings"/>
-    <item android:id="@+id/menu_downloads"
-        android:title="Download List" />
     
     <item android:id="@+id/invert_colors"
+        android:orderInCategory="98"
         android:title="@string/invert_colors" />
 
 </menu>

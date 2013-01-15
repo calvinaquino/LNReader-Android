@@ -4,7 +4,9 @@
         android:orderInCategory="100"
         android:showAsAction="never" />
     <item android:id="@+id/menu_downloads"
+        android:orderInCategory="99"
         android:title="Download List" />
     <item android:id="@+id/menu_refresh_image" 
+        android:orderInCategory="98"
         android:title="Refresh"></item>
 </menu>

@@ -1,14 +1,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menu_settings"
+        android:orderInCategory="100"
         android:title="@string/menu_settings" />
-    <item android:id="@+id/menu_refresh_novel_list" 
+    <item android:id="@+id/menu_refresh_novel_list"
+        android:orderInCategory="3" 
         android:title="Refresh" />
     <item android:id="@+id/invert_colors"
+        android:orderInCategory="97"
         android:title="@string/invert_colors" />
     <item android:id="@+id/menu_bookmarks"
+        android:orderInCategory="98"
         android:title="Bookmarks" />
     <item android:id="@+id/menu_downloads"
+        android:orderInCategory="99"
         android:title="Download List" />
-    <item android:id="@+id/menu_manual_add" android:title="Manual Add"></item>
-    <item android:id="@+id/menu_download_all" android:title="Download All Info"></item>
+    <item android:id="@+id/menu_manual_add"
+        android:orderInCategory="2" 
+        android:title="Manual Add"></item>
+    <item android:id="@+id/menu_download_all"
+        android:orderInCategory="1" 
+        android:title="Download All Info"></item>
 </menu>

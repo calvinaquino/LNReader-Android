@@ -4,5 +4,6 @@
             android:title="Download Novel Info" />
       <item android:id="@+id/add_to_watch"
               android:title="Add/remove from Watch" />
-      <item android:id="@+id/delete_novel" android:title="Delete Novel"></item>
+      <item android:id="@+id/delete_novel" 
+          android:title="Delete Novel"></item>
 </menu>

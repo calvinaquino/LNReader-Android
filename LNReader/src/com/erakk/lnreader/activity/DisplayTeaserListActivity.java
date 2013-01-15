@@ -56,6 +56,7 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
 	private AddNovelTask addTask = null;
 	private ProgressDialog dialog;
 	private boolean isInverted;
+	String touchedForDownload;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -129,7 +130,11 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
 			return true;
 		case R.id.menu_download_all:			
 			DownloadAllNovelInfo();
-			return true;
+			return true;    
+		case R.id.menu_downloads:
+    		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
+        	startActivity(downloadsItent);;
+			return true; 
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;
@@ -137,7 +142,7 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
 		return super.onOptionsItemSelected(item);
 	}
 	private void DownloadAllNovelInfo() {
-		toggleProgressBar(true);
+		touchedForDownload = "All Original Light Novels information";
 		executeDownloadTask(listItems);
 	}
 	
@@ -205,10 +210,10 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
 			 */
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 			if(info.position > -1) {
-				toggleProgressBar(true);
 				PageModel novel = listItems.get(info.position);
 				ArrayList<PageModel> novels = new ArrayList<PageModel>();
 				novels.add(novel);
+				touchedForDownload = novel.getTitle()+"'s information";
 				executeDownloadTask(novels);
 			}
 			return true;
@@ -372,14 +377,34 @@ public class DisplayTeaserListActivity extends ListActivity implements IAsyncTas
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 
-	public void updateProgress(String id,int current, int total, String messString) {
-		// TODO Auto-generated method stub
-		
+	public void updateProgress(String id, int current, int total, String messString){
+		double cur = (double)current;
+		double tot = (double)total;
+		double result = (cur/tot)*100;
+		LNReaderApplication.getInstance().updateDownload(id, (int)result, messString);
 	}
 
-	public boolean downloadListSetup(String id, String toastText, int type) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean downloadListSetup(String id, String toastText, int type){
+		boolean exists = false;
+		String name = touchedForDownload;
+		if (type == 0) {
+			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
+				exists = true;
+				Toast.makeText(this, "Download already on queue.", Toast.LENGTH_SHORT).show();
+			}
+			else {
+				Toast.makeText(this,"Downloading "+name+".", Toast.LENGTH_SHORT).show();
+				LNReaderApplication.getInstance().addDownload(id, name);
+			}
+		}
+		else if (type == 1) {
+			Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show();
+		}
+		else if (type == 2) {
+			Toast.makeText(this, LNReaderApplication.getInstance().getDownloadDescription(id)+"'s download finished!", Toast.LENGTH_SHORT).show();
+			LNReaderApplication.getInstance().removeDownload(id);
+		}
+		return exists;
 	}
 }
 

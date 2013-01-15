@@ -1,18 +1,34 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menu_settings"
+        android:orderInCategory="100"
         android:title="@string/menu_settings" />
     <item android:id="@+id/menu_refresh_chapter_content" 
+        android:orderInCategory="96"
         android:title="Refresh" />
     <item android:id="@+id/invert_colors"
+        android:orderInCategory="95"
         android:title="@string/invert_colors" />
     <item android:id="@+id/menu_chapter_previous"
-        android:title="Previous" android:showAsAction="ifRoom"/>
-    <item android:id="@+id/menu_chapter_next" 
-        android:title="Next" android:showAsAction="ifRoom"/>
-    <item android:id="@+id/menu_chapter_toc" android:title="Jump To"></item>
-    <item android:id="@+id/menu_search" android:title="Search"></item>
-    <item android:id="@+id/menu_bookmarks_here" android:title="Bookmarks on Chapter"></item>
-    <item android:id="@+id/menu_bookmarks" android:title="Bookmarks"></item>
+        android:orderInCategory="1"
+        android:title="Previous" 
+        android:showAsAction="ifRoom"/>
+    <item android:id="@+id/menu_chapter_next"
+        android:orderInCategory="2" 
+        android:title="Next" 
+        android:showAsAction="ifRoom"/>
+    <item android:id="@+id/menu_chapter_toc"
+        android:orderInCategory="3" 
+        android:title="Jump To"></item>
+    <item android:id="@+id/menu_search"
+        android:orderInCategory="4" 
+        android:title="Search"></item>
+    <item android:id="@+id/menu_bookmarks_here"
+        android:orderInCategory="97" 
+        android:title="Bookmarks on Chapter"></item>
+    <item android:id="@+id/menu_bookmarks" 
+        android:orderInCategory="98"
+        android:title="Bookmarks"></item>
     <item android:id="@+id/menu_downloads"
+        android:orderInCategory="99"
         android:title="Download List" />
 </menu>

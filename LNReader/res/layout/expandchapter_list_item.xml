@@ -12,21 +12,54 @@
         android:layout_alignParentTop="true"
         android:gravity="center_vertical"
         android:paddingBottom="12dp"
-        android:paddingLeft="17dp"
-        android:paddingRight="65dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="70dp"
         android:paddingTop="12dp"
         android:text="@string/novel_chapter" />
 
+    <ImageView
+        android:id="@+id/novel_finished_reading"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignBottom="@+id/novel_chapter"
+        android:layout_marginRight="2dp"
+        android:paddingRight="30dp"
+        android:gravity="right"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_finished_reading"
+        android:contentDescription="Finished"  />
+    <ImageView
+        android:id="@+id/novel_has_updates"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignBottom="@+id/novel_chapter"
+        android:layout_marginRight="2dp"
+        android:paddingRight="57dp"
+        android:gravity="right"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/ic_update_avaliable"
+        android:contentDescription="Updates"
+        android:visibility="gone"  />
     <ImageView
         android:id="@+id/novel_is_downloaded"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:layout_alignBottom="@+id/novel_chapter"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="20dp"
-        android:gravity="center"
+        android:layout_marginRight="10dp"
+        android:gravity="right"
         android:src="@drawable/ic_downloaded"
         android:contentDescription="Downloaded"  />
+    <ImageView
+        android:id="@+id/novel_is_external"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignBottom="@+id/novel_chapter"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:gravity="right"
+        android:src="@drawable/ic_is_external"
+        android:contentDescription="External"  />
     
     <TextView
         android:id="@+id/novel_last_update"
