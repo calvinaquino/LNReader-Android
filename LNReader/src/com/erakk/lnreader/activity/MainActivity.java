@@ -59,9 +59,13 @@ public class MainActivity extends Activity {
             	startActivity(settingsIntent);
     			return true; 
         	case R.id.menu_downloads:
-        		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
-            	startActivity(downloadsItent);;
+        		Intent downloadsIntent = new Intent(this, DownloadListActivity.class);
+            	startActivity(downloadsIntent);;
     			return true; 
+        	case R.id.menu_update_history:
+        		Intent updateHistoryIntent  = new Intent(this, UpdateHistoryActivity.class);
+            	startActivity(updateHistoryIntent);;
+    			return true;
             case android.R.id.home:
                 finish();
                 return true;

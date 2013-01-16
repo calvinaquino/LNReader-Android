@@ -54,8 +54,7 @@
 	            android:minHeight="66dp"
 	            android:minWidth="192dp"
    	            android:onClick="openSettings"
-   	            android:text="@string/settings"
-				android:typeface="serif" />
+   	            android:text="@string/settings" />
             
 	    </LinearLayout>
 	    

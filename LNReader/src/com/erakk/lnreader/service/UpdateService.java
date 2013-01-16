@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
+import com.erakk.lnreader.activity.UpdateHistoryActivity;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -30,6 +31,8 @@ import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
+import com.erakk.lnreader.model.UpdateInfoModel;
+import com.erakk.lnreader.model.UpdateType;
 
 public class UpdateService extends Service {
 	private final IBinder mBinder = new MyBinder();
@@ -90,50 +93,77 @@ public class UpdateService extends Service {
 	    }
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void sendNotification(ArrayList<PageModel> updatedChapters) {
 		int id = Constants.NOTIFIER_ID;
 		boolean first = true;
+		boolean consolidateNotification = true;
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		
-		if(updatedChapters != null && updatedChapters.size() > 0) {		
+		if(updatedChapters != null && updatedChapters.size() > 0) {
 			Log.d(TAG, "sendNotification");
-			for(Iterator<PageModel> iChapter = updatedChapters.iterator(); iChapter.hasNext();) {
+			
+			// remove previous update history.
+			NovelsDao.getInstance(this).deleteAllUpdateHistory();
+			
+			// create UpdateInfoModel list
+			int updateCount = 0;
+			int newCount = 0;
+			ArrayList<UpdateInfoModel> updatesInfo = new ArrayList<UpdateInfoModel>();
+			for (PageModel pageModel : updatedChapters) {
+				UpdateInfoModel updateInfo = new UpdateInfoModel();
+				if(pageModel.isUpdated()) {
+					updateInfo.setUpdateType(UpdateType.Updated);
+					++updateCount;
+				}
+				else {
+					updateInfo.setUpdateType(UpdateType.New);
+					++newCount;
+				}
+				
+				String novelTitle = "";
+				try{
+					novelTitle = pageModel.getBook().getParent().getPageModel().getTitle() + ": ";
+				}
+				catch(Exception ex){
+					Log.e(TAG, "Error when getting Novel title", ex);
+				}
+								
+				updateInfo.setUpdateTitle(novelTitle + pageModel.getTitle() + " (" + pageModel.getBook().getTitle() + ")");
+				updateInfo.setUpdateDate(pageModel.getLastUpdate());
+				updateInfo.setUpdatePage(pageModel.getPage());
+				updateInfo.setUpdatePageModel(pageModel);
+				// insert to db
+				NovelsDao.getInstance(this).insertUpdateHistory(updateInfo);
+				updatesInfo.add(updateInfo);
+			}
+			
+			if(consolidateNotification) {
 				final int notifId = ++id;
-				PageModel chapter = iChapter.next();
-				Log.d(TAG, "set Notification for: " + chapter.getPage());
+				Log.d(TAG, "set consolidated Notification");
 				Notification notification = getNotificationTemplate(first);
-				first = false;
+				CharSequence contentTitle = "BakaReader EX Updates";
+				CharSequence contentText = "Found " + updateCount + " update and " + newCount + " new chapter(s).";
 				
-				prepareNotification(notifId, chapter, notification);
-				
+				Intent notificationIntent = new Intent(this, UpdateHistoryActivity.class);
+				int pendingFlag = PendingIntent.FLAG_CANCEL_CURRENT;
+				PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, pendingFlag);
+
+				notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
 				mNotificationManager.notify(notifId, notification);
-			}		
+			}
+			else {
+				for (UpdateInfoModel updateInfoModel : updatesInfo) {
+					final int notifId = ++id;
+					Log.d(TAG, "set Notification for: " + updateInfoModel.getUpdatePage());
+					Notification notification = getNotificationTemplate(first);
+					first = false;
+					
+					prepareNotification(notifId, updateInfoModel, notification);
+					mNotificationManager.notify(notifId, notification);
+				}	
+			}
 		}
-		
-//		try {
-//			//testing only
-//			Notification notification = getNotificationTemplate(true);
-//			int notifId = ++id;
-//			PageModel testPageModel = new PageModel();
-//			testPageModel.setPage("Hyouka:Volume_3_Chapter_2-1");
-//			testPageModel = NovelsDao.getInstance().getPageModel(testPageModel, notifier);
-//			prepareNotification(notifId, testPageModel, notification);
-//			mNotificationManager.notify(notifId, notification);			
-//		} catch (Exception e) {
-//			Log.e(TAG, "" + e.getMessage(), e);
-//		}
-//		try {
-//			//testing only
-//			Notification notification = getNotificationTemplate(false);
-//			int notifId = ++id;
-//			PageModel testPageModel = new PageModel();
-//			testPageModel.setPage("Hyouka:Volume_3_Chapter_2-2");
-//			testPageModel = NovelsDao.getInstance().getPageModel(testPageModel, notifier);
-//			prepareNotification(notifId, testPageModel, notification);
-//			mNotificationManager.notify(notifId, notification);			
-//		} catch (Exception e) {
-//			Log.e(TAG, "???" + e.getMessage(), e);
-//		}
 		
 		updateStatus("OK");
     	Toast.makeText(getApplicationContext(), "Update Service completed", Toast.LENGTH_SHORT).show();
@@ -141,28 +171,14 @@ public class UpdateService extends Service {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void prepareNotification(final int notifId, PageModel chapter, Notification notification) {
-		CharSequence contentTitle = "New Chapter";
-		if(chapter.isUpdated()) contentTitle = "Updated Chapter";
-
-		String novelTitle = "";
-		try{
-			novelTitle = chapter.getBook().getParent().getPageModel().getTitle() + " ";
-		}
-		catch(Exception ex){
-			Log.e(TAG, "Error when getting Novel title", ex);
-		}
-						
-		CharSequence contentText = novelTitle + chapter.getTitle() + " (" + chapter.getBook().getTitle() + ")";
+	public void prepareNotification(final int notifId, UpdateInfoModel chapter, Notification notification) {
+		CharSequence contentTitle = chapter.getUpdateType().toString();
+		CharSequence contentText = chapter.getUpdateTitle();
 		
 		Intent notificationIntent = new Intent(this, DisplayLightNovelContentActivity.class);
-		notificationIntent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
-//		int intentFlag = Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-//		   		 	   | Intent.FLAG_ACTIVITY_NEW_TASK;
-//		notificationIntent.setFlags(intentFlag);
+		notificationIntent.putExtra(Constants.EXTRA_PAGE, chapter.getUpdatePage());
 		
 		int pendingFlag = PendingIntent.FLAG_CANCEL_CURRENT;
-						//| PendingIntent.FLAG_ONE_SHOT;
 		PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, pendingFlag);
 
 		notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
@@ -276,7 +292,8 @@ public class UpdateService extends Service {
 						NovelCollectionModel updatedNovelDetails = dao.getNovelDetailsFromInternet(novel, callback);
 						if(updatedNovelDetails!= null){
 							ArrayList<PageModel> updates = updatedNovelDetails.getFlattedChapterList();
-
+							
+							Log.d(TAG, "Starting size: " + updates.size());
 							// compare the chapters!
 							for(int i = 0 ; i < novelDetailsChapters.size() ; ++i) {
 								PageModel oldChapter = novelDetailsChapters.get(i);
@@ -294,14 +311,16 @@ public class UpdateService extends Service {
 										}
 										else{
 											updates.remove(newChapter);
+											//updates.remove(j);
+											//--j;
 											Log.i(TAG, "No Update for Chapter: " + newChapter.getTitle());
 										}											
 										break;
 									}
-								}
-								
-								updatesTotal.addAll(updates);
+								}								
 							}
+							Log.d(TAG, "End size: " + updates.size());							
+							updatesTotal.addAll(updates);
 						}
 					}
 					lastProgress = (int) (++current / total * 100);

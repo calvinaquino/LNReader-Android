@@ -20,8 +20,7 @@ public class DownloadListActivity extends Activity {
 	ListView downloadListView;
 	DownloadListAdapter adapter;
 	private static DownloadListActivity instance;
-	
-	
+		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

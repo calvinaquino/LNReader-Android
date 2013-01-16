@@ -6,16 +6,15 @@
         android:icon="@drawable/ic_action_search"></item>
     <item android:id="@+id/invert_colors"
         android:title="@string/invert_colors"
-        android:orderInCategory="97"
+        android:orderInCategory="2"
         android:showAsAction="never" />
     <item android:id="@+id/menu_bookmarks"
-        android:orderInCategory="98"
+        android:orderInCategory="3"
         android:title="Bookmarks" />
-    <item android:id="@+id/menu_settings"
-        android:orderInCategory="100"
-        android:title="Settings" />
+    
     <item android:id="@+id/menu_downloads"
-        android:orderInCategory="99"
+        android:orderInCategory="4"
         android:title="Download List" />
+    <item android:id="@+id/menu_update_history" android:title="Update History" android:orderInCategory="5"></item><item android:id="@+id/menu_settings" android:orderInCategory="99" android:title="Settings" />
     
 </menu>

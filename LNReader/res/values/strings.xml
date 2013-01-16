@@ -34,5 +34,6 @@
     <string name="downloadsList">Downloads</string>
     <string name="title_activity_download_list_adapter">Downloads List</string>
     <string name="title_activity_display_novel_pager">Light Novel Lists</string>
+    <string name="title_activity_update_history">Update History</string>
 
 </resources>

@@ -2,12 +2,9 @@
 package com.erakk.lnreader.helper;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -27,6 +24,8 @@ import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
+import com.erakk.lnreader.model.UpdateInfoModel;
+import com.erakk.lnreader.model.UpdateType;
 
 public class DBHelper extends SQLiteOpenHelper {
 	public static final String TAG = DBHelper.class.toString();
@@ -67,9 +66,13 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_PARAGRAPH_INDEX = "p_index";
 	public static final String COLUMN_EXCERPT = "excerpt";
 	public static final String COLUMN_CREATE_DATE = "create_date";
+	
+	public static final String TABLE_UPDATE_HISTORY = "update_history";
+	public static final String COLUMN_UPDATE_TITLE = "update_title";
+	public static final String COLUMN_UPDATE_TYPE = "update_type";
 
 	public static final String DATABASE_NAME = "pages.db";
-	public static final int DATABASE_VERSION = 23;
+	public static final int DATABASE_VERSION = 24;
 
 	// Database creation SQL statement
 	private static final String DATABASE_CREATE_PAGES = "create table if not exists "
@@ -131,6 +134,13 @@ public class DBHelper extends SQLiteOpenHelper {
 				  				    + COLUMN_EXCERPT + " text, "								// 3
 				  				    + COLUMN_CREATE_DATE + " integer);";						// 4
 	
+	private static final String DATABASE_CREATE_UPDATE_HISTORY = "create table if not exists "
+			  + TABLE_UPDATE_HISTORY + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
+			  						+ COLUMN_PAGE + " text not null, "							// 1
+			  						+ COLUMN_UPDATE_TITLE + " text not null, "					// 2
+			  						+ COLUMN_UPDATE_TYPE + " integer not null, "				// 3
+			  						+ COLUMN_LAST_UPDATE + " integer);";						// 4
+	
 	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files/databases";
 	
 	private static String getDbPath(Context context) {
@@ -160,6 +170,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		 db.execSQL(DATABASE_CREATE_NOVEL_BOOKS);
 		 db.execSQL(DATABASE_CREATE_NOVEL_CONTENT);
 		 db.execSQL(DATABASE_CREATE_NOVEL_BOOKMARK);
+		 db.execSQL(DATABASE_CREATE_UPDATE_HISTORY);
 	}
 
 	@Override
@@ -202,6 +213,10 @@ public class DBHelper extends SQLiteOpenHelper {
 			db.execSQL("ALTER TABLE " + TABLE_PAGE + " ADD COLUMN " + COLUMN_IS_EXTERNAL + " boolean" );
 			oldVersion = 23;
 		}
+		if(oldVersion == 23) {
+			db.execSQL(DATABASE_CREATE_UPDATE_HISTORY);
+			oldVersion = 24;
+		}
 	}
 	
 	public void deletePagesDB(SQLiteDatabase db) {
@@ -211,28 +226,11 @@ public class DBHelper extends SQLiteOpenHelper {
 	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_DETAILS);
 	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_BOOK);
 	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_CONTENT);
+	    db.execSQL("DROP TABLE IF EXISTS " + TABLE_UPDATE_HISTORY);
 	    onCreate(db);
 		Log.w(TAG,"Database Deleted.");
 	}
-	
-	public static void copyFile(File src, File dst) throws IOException
-	{
-		FileChannel inChannel = null;
-		FileChannel outChannel = null;
-	    try
-	    {
-	    	inChannel = new FileInputStream(src).getChannel();
-		    outChannel = new FileOutputStream(dst).getChannel();
-	        inChannel.transferTo(0, inChannel.size(), outChannel);
-	    }
-	    finally
-	    {
-	        if (inChannel != null)
-	            inChannel.close();
-	        if (outChannel != null)
-	            outChannel.close();
-	    }
-	}
+
 	
 	public String copyDB(SQLiteDatabase db, Context context, boolean makeBackup) throws IOException {
 		Log.d("DatabaseManager", "creating database backup");
@@ -249,7 +247,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		Log.d("DatabaseManager", "source file: "+ srcPath.getAbsolutePath());
 		Log.d("DatabaseManager", "destination file: "+ dstPath.getAbsolutePath());
 		if (srcPath.exists()) {
-			copyFile(srcPath, dstPath);
+			Util.copyFile(srcPath, dstPath);
 			Log.d("DatabaseManager", "copy success");
 			return dstPath.getPath();
 		}
@@ -1049,6 +1047,72 @@ public class DBHelper extends SQLiteOpenHelper {
 		return content;
 	}
 	
+	public UpdateInfoModel getUpdateHistory(SQLiteDatabase db, UpdateInfoModel update) {
+		UpdateInfoModel result = null;
+		
+		Cursor cursor = rawQuery(db, "select * from " + TABLE_UPDATE_HISTORY + " where " + COLUMN_PAGE + " = ? "
+				                   , new String[] {update.getUpdatePage()});
+		cursor.moveToFirst();
+	    while (!cursor.isAfterLast()) {
+	    	result = cursorToUpdateInfoModel(cursor);
+	    	break;
+	    }
+	    cursor.close();
+		
+		return result;
+	}
+	
+	public int insertUpdateHistory(SQLiteDatabase db, UpdateInfoModel update) {
+		UpdateInfoModel tempUpdate = getUpdateHistory(db, update);
+		
+		ContentValues cv = new ContentValues();
+		cv.put(COLUMN_PAGE, update.getUpdatePage());
+		cv.put(COLUMN_UPDATE_TITLE, update.getUpdateTitle());
+		cv.put(COLUMN_UPDATE_TYPE, update.getUpdateType().ordinal());
+		cv.put(COLUMN_LAST_UPDATE, (int) (update.getUpdateDate().getTime() / 1000));
+		
+		if(tempUpdate == null) {			
+			return (int) insertOrThrow(db, TABLE_UPDATE_HISTORY, null, cv);
+		}
+		else {
+			return update(db, TABLE_UPDATE_HISTORY, cv, COLUMN_ID + " = ? ", new String[] {"" + tempUpdate.getId()});
+		}
+	}
+	
+	public ArrayList<UpdateInfoModel> getAllUpdateHistory(SQLiteDatabase db) {
+		ArrayList<UpdateInfoModel> updates = new ArrayList<UpdateInfoModel>();
+		
+		Cursor cursor = rawQuery(db, "select * from " + TABLE_UPDATE_HISTORY
+				                   + " order by " + COLUMN_LAST_UPDATE
+				                   + ", " + COLUMN_PAGE, null);
+		cursor.moveToFirst();
+	    while (!cursor.isAfterLast()) {
+	    	UpdateInfoModel update = cursorToUpdateInfoModel(cursor);
+	    	updates.add(update);
+	    	cursor.moveToNext();
+	    }
+	    cursor.close();
+		
+		return updates;
+	}
+	
+	public void deleteAllUpdateHistory(SQLiteDatabase db) {
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_UPDATE_HISTORY);
+		db.execSQL(DATABASE_CREATE_UPDATE_HISTORY);
+		Log.d(TAG, "Recreate " + TABLE_UPDATE_HISTORY);
+	}
+	
+	private UpdateInfoModel cursorToUpdateInfoModel(Cursor cursor) {
+		UpdateInfoModel update = new UpdateInfoModel();
+		update.setId(cursor.getInt(0));
+		update.setUpdatePage(cursor.getString(1));
+		update.setUpdateTitle(cursor.getString(2));
+		int type = cursor.getInt(3);
+		update.setUpdateType(UpdateType.values()[type]);
+		update.setUpdateDate(new Date(cursor.getLong(4)*1000));
+		return update;
+	}
+
 	/*
 	 * To avoid android.database.sqlite.SQLiteException: unable to close due to unfinalised statements
 	 */

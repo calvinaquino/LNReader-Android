@@ -31,6 +31,7 @@ import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
+import com.erakk.lnreader.model.UpdateInfoModel;
 import com.erakk.lnreader.parser.BakaTsukiParser;
 
 /**
@@ -1030,6 +1031,27 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			return dbh.isContentUpdated(db, page);
+		}
+	}
+	
+	public ArrayList<UpdateInfoModel> getAllUpdateHistory() {
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			return dbh.getAllUpdateHistory(db);
+		}
+	}
+	
+	public void deleteAllUpdateHistory() {
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			dbh.deleteAllUpdateHistory(db);
+		}
+	}
+	
+	public void insertUpdateHistory(UpdateInfoModel update) {
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			dbh.insertUpdateHistory(db, update);
 		}
 	}
 	
