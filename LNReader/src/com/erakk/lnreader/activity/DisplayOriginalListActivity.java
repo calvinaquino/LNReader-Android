@@ -25,6 +25,8 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
@@ -59,11 +61,17 @@ public class DisplayOriginalListActivity extends ListActivity implements IAsyncT
 	private boolean isInverted;
 	String touchedForDownload;
 	
+	private TextView loadingText;
+	private ProgressBar loadingBar;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		UIHelper.SetTheme(this, R.layout.activity_display_light_novel_list);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
+		
+		loadingText = (TextView)findViewById(R.id.emptyList);
+		loadingBar = (ProgressBar)findViewById(R.id.empttListProgress);
 		
 		registerForContextMenu(getListView());
 		updateContent(false);
@@ -314,19 +322,32 @@ public class DisplayOriginalListActivity extends ListActivity implements IAsyncT
 	}
 	
 	public void toggleProgressBar(boolean show) {
+//		if(show) {
+//			dialog = ProgressDialog.show(this, "Originals List", "Loading. Please wait...", true);
+//			dialog.getWindow().setGravity(Gravity.CENTER);
+//			dialog.setCanceledOnTouchOutside(true);
+//		}
+//		else {
+//			dialog.dismiss();
+//		}
 		if(show) {
-			dialog = ProgressDialog.show(this, "Originals List", "Loading. Please wait...", true);
-			dialog.getWindow().setGravity(Gravity.CENTER);
-			dialog.setCanceledOnTouchOutside(true);
+			loadingText.setText("Loading List, please wait...");
+			loadingText.setVisibility(TextView.VISIBLE);
+			loadingBar.setVisibility(ProgressBar.VISIBLE);
+			getListView().setVisibility(ListView.GONE);
 		}
 		else {
-			dialog.dismiss();
+			loadingText.setVisibility(TextView.GONE);
+			loadingBar.setVisibility(ProgressBar.GONE);
+			getListView().setVisibility(ListView.VISIBLE);
 		}
 	}
 
 	public void setMessageDialog(ICallbackEventData message) {
-		if(dialog.isShowing())
-			dialog.setMessage(message.getMessage());		
+//		if(dialog.isShowing())
+//			dialog.setMessage(message.getMessage());
+		if(loadingText.getVisibility() == TextView.VISIBLE)
+			loadingText.setText(message.getMessage());
 	}
 
 	public void getResult(AsyncTaskResult<?> result) {

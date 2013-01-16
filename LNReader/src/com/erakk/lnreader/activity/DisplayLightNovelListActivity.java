@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,11 +61,17 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 	private boolean onlyWatched = false;
 	String touchedForDownload;
 	
+	private TextView loadingText;
+	private ProgressBar loadingBar;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		UIHelper.SetTheme(this, R.layout.activity_display_light_novel_list);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
+		
+		loadingText = (TextView)findViewById(R.id.emptyList);
+		loadingBar = (ProgressBar)findViewById(R.id.empttListProgress);
 		
 		registerForContextMenu(getListView());
 		onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
@@ -176,7 +183,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 		if (onlyWatched)
 			touchedForDownload = "Watched Light Novels information";
 		else
-			touchedForDownload = "All Light Novels information";
+			touchedForDownload = "All Main Light Novels information";
 		executeDownloadTask(listItems);
 	}
 
@@ -394,19 +401,32 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 	}
 	
 	public void toggleProgressBar(boolean show) {
+//		if(show) {
+//			dialog = ProgressDialog.show(this, "Novel List", "Loading. Please wait...", true);
+//			dialog.getWindow().setGravity(Gravity.CENTER);
+//			dialog.setCanceledOnTouchOutside(true);
+//		}
+//		else {
+//			dialog.dismiss();
+//		}
 		if(show) {
-			dialog = ProgressDialog.show(this, "Novel List", "Loading. Please wait...", true);
-			dialog.getWindow().setGravity(Gravity.CENTER);
-			dialog.setCanceledOnTouchOutside(true);
+			loadingText.setText("Loading List, please wait...");
+			loadingText.setVisibility(TextView.VISIBLE);
+			loadingBar.setVisibility(ProgressBar.VISIBLE);
+			getListView().setVisibility(ListView.GONE);
 		}
 		else {
-			dialog.dismiss();
+			loadingText.setVisibility(TextView.GONE);
+			loadingBar.setVisibility(ProgressBar.GONE);
+			getListView().setVisibility(ListView.VISIBLE);
 		}
 	}
 
 	public void setMessageDialog(ICallbackEventData message) {
-		if(dialog.isShowing())
-			dialog.setMessage(message.getMessage());		
+//		if(dialog.isShowing())
+//			dialog.setMessage(message.getMessage());
+		if(loadingText.getVisibility() == TextView.VISIBLE)
+			loadingText.setText(message.getMessage());
 	}
 
 	public void getResult(AsyncTaskResult<?> result) {

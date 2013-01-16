@@ -197,7 +197,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 					notDownloadedChapters.add(pageModel);
 				}
 			}
-			touchedForDownload = "Complete Novel";
+			touchedForDownload = "Volumes";
 			executeDownloadTask(notDownloadedChapters, true);
 			return true;
 		case R.id.menu_downloads:
@@ -255,7 +255,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 					downloadingChapters.add(temp);
 				}
 			}
-			touchedForDownload = "Complete "+book.getTitle();
+			touchedForDownload = book.getTitle();
 			executeDownloadTask(downloadingChapters, false);
 			return true;
 		case R.id.clear_volume:

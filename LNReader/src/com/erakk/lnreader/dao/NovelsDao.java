@@ -143,13 +143,13 @@ public class NovelsDao {
 	public ArrayList<PageModel> getNovelsFromInternet(ICallbackNotifier notifier) throws Exception {
 		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
 		if (notifier != null) {
-			notifier.onCallback(new CallbackEventData("Downloading novel list..."));
+			notifier.onCallback(new CallbackEventData("Downloading Main Novels list..."));
 		}
 		// get last updated main page revision from internet
 		
 		PageModel mainPage = new PageModel();
 		mainPage.setPage("Main_Page");
-		mainPage.setTitle("Main Page");
+		mainPage.setTitle("Main Novels");
 		mainPage = getPageModel(mainPage, notifier);
 		mainPage.setType(PageModel.TYPE_OTHER);
 		mainPage.setParent("");
@@ -262,7 +262,7 @@ public class NovelsDao {
 	public ArrayList<PageModel> getTeaserFromInternet(ICallbackNotifier notifier) throws Exception {
 		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
 		if (notifier != null) {
-			notifier.onCallback(new CallbackEventData("Downloading teaser list..."));
+			notifier.onCallback(new CallbackEventData("Downloading Teaser Novels list..."));
 		}
 		
 		// parse Category:Teasers information
@@ -361,13 +361,13 @@ public class NovelsDao {
 	public ArrayList<PageModel> getOriginalFromInternet(ICallbackNotifier notifier) throws Exception {
 		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
 		if (notifier != null) {
-			notifier.onCallback(new CallbackEventData("Downloading original list..."));
+			notifier.onCallback(new CallbackEventData("Downloading Original Novels list..."));
 		}
 		
 		// parse Category:Teasers information
 		PageModel teaserPage = new PageModel();
 		teaserPage.setPage("Category:Original");
-		teaserPage.setTitle("Original");
+		teaserPage.setTitle("Original Novels");
 		teaserPage = getPageModel(teaserPage, notifier);
 		teaserPage.setType(PageModel.TYPE_OTHER);
 		
@@ -448,7 +448,7 @@ public class NovelsDao {
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
 				if(notifier != null) {
-					notifier.onCallback(new CallbackEventData("Getting page for: " + page.getPage()));
+					notifier.onCallback(new CallbackEventData("Fetching " + page.getTitle() + " list... First time may be slow."));
 				}
 				String encodedTitle = UIHelper.UrlEncode(page.getPage());
 				String fullUrl = "http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=" + encodedTitle;

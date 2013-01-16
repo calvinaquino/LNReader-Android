@@ -46,6 +46,16 @@
 	            android:minWidth="192dp"
    	            android:onClick="jumpLastRead"
    	            android:text="@string/jump_last_read" />
+	        <Button
+	            android:id="@+id/button5"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginTop="20dp"
+	            android:minHeight="66dp"
+	            android:minWidth="192dp"
+   	            android:onClick="openSettings"
+   	            android:text="@string/settings"
+				android:typeface="serif" />
             
 	    </LinearLayout>
 	    

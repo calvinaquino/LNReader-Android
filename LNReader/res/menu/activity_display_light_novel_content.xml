@@ -19,6 +19,12 @@
     <item android:id="@+id/menu_chapter_toc"
         android:orderInCategory="3" 
         android:title="Jump To"></item>
+     <item android:id="@+id/menu_go_top"
+        android:orderInCategory="5" 
+        android:title="Go Top"></item>
+    <item android:id="@+id/menu_go_bottom"
+        android:orderInCategory="6" 
+        android:title="Go Bottom"></item>
     <item android:id="@+id/menu_search"
         android:orderInCategory="4" 
         android:title="Search"></item>

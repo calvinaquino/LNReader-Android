@@ -16,7 +16,7 @@ import com.erakk.lnreader.UIHelper;
 @SuppressWarnings("deprecation")
 public class DisplayNovelPagerActivity extends TabActivity {
     // TabSpec Names
-    private static final String MAIN_SPEC = "Standard";
+    private static final String MAIN_SPEC = "Main";
     private static final String TEASER_SPEC = "Teaser";
     private static final String ORIGINAL_SPEC = "Original";
     static TabHost tabHost;
@@ -62,7 +62,22 @@ public class DisplayNovelPagerActivity extends TabActivity {
             	setTabColor();
             }
         });
+        
+        //Cheap preload list hack.
+        tabHost.setCurrentTabByTag(TEASER_SPEC);
+        tabHost.setCurrentTabByTag(ORIGINAL_SPEC);
+        tabHost.setCurrentTabByTag(MAIN_SPEC);
+        
     }
+    
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if(isInverted != getColorPreferences()) {
+        	UIHelper.Recreate(this);
+        }
+    }
+    
     public static void setTabColor() {
         for(int i=0;i<tabHost.getTabWidget().getChildCount();i++)
         {

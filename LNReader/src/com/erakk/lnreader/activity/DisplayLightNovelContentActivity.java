@@ -294,6 +294,12 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		case R.id.menu_downloads:
     		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
         	startActivity(downloadsItent);;
+			return true;
+		case R.id.menu_go_top:
+			webView.pageUp(true);
+			return true; 
+		case R.id.menu_go_bottom:
+			webView.pageDown(true);
 			return true; 
 		case android.R.id.home:
 //			if(tocMenu != null) tocMenu.show();

@@ -92,10 +92,10 @@ public class MainActivity extends Activity {
     	startActivity(intent);
     }
     
-//    public void openSettings(View view) {
-//    	Intent intent = new Intent(this, DisplaySettingsActivity.class);
-//    	startActivity(intent);
-//    }
+    public void openSettings(View view) {
+    	Intent intent = new Intent(this, DisplaySettingsActivity.class);
+    	startActivity(intent);
+    }
     
     public void jumpLastRead(View view) {
 		String lastReadPage = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LAST_READ, "");
