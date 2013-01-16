@@ -479,6 +479,25 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 				adapter.notifyDataSetChanged();
 				toggleProgressBar(false);
 			}
+			else {
+				if(result.getResult() instanceof ArrayList ) {
+					// Empty ArrayList.
+					if(((ArrayList<?>) result.getResult()).size() == 0) {
+						toggleProgressBar(false);
+						TextView tv = (TextView) findViewById(R.id.emptyList);
+						tv.setVisibility(TextView.VISIBLE);
+						tv.setText("List is empty.");
+						Log.w(TAG, "Empty ArrayList!");
+						
+					}
+					else {
+						Log.e(TAG, "Unknown ArrayList!");
+					}
+				}
+				else {
+					Log.e(TAG, "Uknown ResultType!");
+				}				
+			}
 		}
 		else {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
