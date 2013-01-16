@@ -22,7 +22,7 @@ LINE-ENDINGS & SOURCE ENCODING CONFIG
 
 
 (Old Version 20130106)
-TASK LIST - Version 1.1.0 beta build 29
+TASK LIST - Version 1.1.0 beta build 30
 ====================================================
 //DONE
 - inverted default VolumeRocker scroll direction.
@@ -53,22 +53,28 @@ TASK LIST - Version 1.1.0 beta build 29
 - added "Go Top" and "Go Bottom" to chapter menu
 - preloading all lists on the tab activity
 - "download XXX novels" instead of "complete novel"
+- Add Update History Activity
+- Consolidate updates into single notification
+- Fix formatDateForDisplay() bug
+- Refactor some Util method.
+- Fix issue #20: Infinite Loading for Empty Watch List
+- FIx too many update notification problem
+- Home button (mascot) on download list not working
+
 //CRASH FIXES
 - Fixed a crash that would occur if trying to unbind an unregistered service on low memory warning.
 - Fixed a crash that related to scrolling while reading a novel.
 
 //TODO
-- Create Notifications List
+- Tabs not showing correctly on Android ver 2.2 - 2.3.7
 - Reduce image download message sizes on download list
-- Back button mascot on download list not working
 - Remove asyncTaskCount from settings
 - Fix manual add crash
 - Light Novel List Layout
-- Empty WatchList hangup bug 
-- dialog inside a chapter/content reading "Downloading, please wait"
-- Manual add series tutorial for new users lowPriority
+<low priority/>
 - Add first time Tutorial for new users to show off functionalities, skipable. // May go to next version only, or will be added later.
-- TOC/BT Copyrights on first time run // Need to prepare a TOC. or only show BT's copyrights.
+- EULA/BT Copyrights on first time run // Need to prepare a EULA.
+- Manual add series tutorial for new users
 
 //TODO NEXT VERSION ONLY
 - let finished downloads stay unless deleted*
@@ -91,8 +97,6 @@ this mascot (is the icon on the upper left, only shows on newer android versions
 > Skydrive
 > Google Drive
 > This is just an IDEA, and as such, not to worry for now.
-
-
 
 ANDROID PERMISSION LIST
 ====================================================
