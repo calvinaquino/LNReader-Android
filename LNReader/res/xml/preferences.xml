@@ -107,11 +107,12 @@
             android:title="Clear Image Cache" />
         <Preference
             android:key="save_location"
-            android:title="Default Save Location" />
-        <CheckBoxPreference
+            android:title="Image Save Location" />
+        <Preference android:key="db_location" android:title="Database Save Location"/><CheckBoxPreference
             android:key="download_big_image"
             android:summary="Download linked full resolution image. Might take a lot of space."
             android:title="Download Full-Res Image" />
+        
     </PreferenceCategory>
     <PreferenceCategory
         android:key="application_info"
@@ -122,9 +123,6 @@
         <Preference
             android:key="app_version"
             android:title="Version" />
-        <Preference
-            android:key="task_count"
-            android:title="AsyncTask Count" />
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -26,6 +26,7 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.service.MyScheduleReceiver;
 
 public class DisplaySettingsActivity extends PreferenceActivity implements ICallbackNotifier{
@@ -142,31 +143,9 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
         Preference defaultSaveLocation = (Preference) findPreference("save_location");
         defaultSaveLocation.setSummary("Downloaded images saved to: " + Constants.IMAGE_ROOT);
         
-        Preference asyncTaskCount = (Preference) findPreference("task_count");
-        int running = 0;
-        int finished = 0;
-        int pending = 0;
-        int unknown = 0;
-        Collection<AsyncTask<?, ?, ?>> list = LNReaderApplication.getTaskList().values(); 
-        for (AsyncTask<?, ?, ?> asyncTask : list) {
-			if(asyncTask.getStatus() == Status.RUNNING){
-				++running;
-			}
-			else if(asyncTask.getStatus() == Status.FINISHED) {
-				++finished;
-			}
-			else if(asyncTask.getStatus() == Status.PENDING) {
-				++pending;
-			}
-			else {
-				++unknown;
-			}
-        }        
-        asyncTaskCount.setSummary("AsyncTask Count: " + running + " running, " 
-                                                      + finished + " stopped, "
-                                                      + pending + " pending, "
-                                                      + unknown + " unknown.");
-        
+        Preference defaultDbLocation = (Preference) findPreference("db_location");
+        defaultDbLocation.setSummary("Novel Database saved to: " + DBHelper.getDbPath(this));
+                        
         Preference tos = (Preference) findPreference("tos");
         tos.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
@@ -250,6 +229,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 	    if (fileOrDirectory.isDirectory())
 	        for (File child : fileOrDirectory.listFiles())
 	            DeleteRecursive(child);
+	    Log.d(TAG, "Deleting: " + fileOrDirectory.getAbsolutePath());
 	    fileOrDirectory.delete();
 	}
 
