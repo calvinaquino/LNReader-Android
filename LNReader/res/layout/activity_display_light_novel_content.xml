@@ -73,4 +73,30 @@
         android:onClick="OpenMenu"
         android:visibility="gone" />
 
+    <ImageButton
+        android:id="@+id/webview_go_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="0dp"
+        android:padding="0dp"
+        android:src="@drawable/webview_go_top"
+        android:contentDescription="GoTop"
+        android:visibility="gone"
+        android:onClick="goTop" />
+
+    <ImageButton
+        android:id="@+id/webview_go_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="0dp"
+        android:padding="0dp"
+        android:src="@drawable/webview_go_botttom"
+        android:contentDescription="GoBottom"
+        android:visibility="gone"
+        android:onClick="goBottom" />
+
 </RelativeLayout>

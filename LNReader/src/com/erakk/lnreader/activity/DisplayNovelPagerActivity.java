@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -28,29 +29,35 @@ public class DisplayNovelPagerActivity extends TabActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UIHelper.SetTheme(this, R.layout.activity_display_novel_pager);
-        UIHelper.SetActionBarDisplayHomeAsUp(this, false);
-//        setContentView(R.layout.activity_display_novel_pager);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+            UIHelper.SetTheme(this, R.layout.activity_display_novel_pager);
+            UIHelper.SetActionBarDisplayHomeAsUp(this, false);
+            setContentView(R.layout.activity_display_novel_pager);
+        }
+		else{
+            UIHelper.SetTheme(this, R.layout.activity_display_novel_pager_fix);
+            UIHelper.SetActionBarDisplayHomeAsUp(this, false);
+            setContentView(R.layout.activity_display_novel_pager_fix);
+		} 
         tabHost = getTabHost();
-//        tabHost = (TabHost)findViewById(R.id.list_tabhost);
         isInverted = getColorPreferences();
         
         // First Tab - Normal Novels
         TabSpec firstSpec = tabHost.newTabSpec(MAIN_SPEC);
-        firstSpec.setIndicator(MAIN_SPEC, getResources().getDrawable(R.drawable.tab_novels));
+        firstSpec.setIndicator(MAIN_SPEC);
         Intent firstIntent = new Intent(this, DisplayLightNovelListActivity.class);
     	firstIntent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
         firstSpec.setContent(firstIntent);
         
         // Second Tab - Teasers
         TabSpec secondSpec = tabHost.newTabSpec(TEASER_SPEC);
-        secondSpec.setIndicator(TEASER_SPEC, getResources().getDrawable(R.drawable.tab_novels));
+        secondSpec.setIndicator(TEASER_SPEC);
         Intent secondIntent = new Intent(this, DisplayTeaserListActivity.class);
         secondSpec.setContent(secondIntent);
         
         // Third Tab - Original
         TabSpec thirdSpec = tabHost.newTabSpec(ORIGINAL_SPEC);
-        thirdSpec.setIndicator(ORIGINAL_SPEC, getResources().getDrawable(R.drawable.tab_novels));
+        thirdSpec.setIndicator(ORIGINAL_SPEC);
         Intent thirdIntent = new Intent(this, DisplayOriginalListActivity.class);
         thirdSpec.setContent(thirdIntent);
  

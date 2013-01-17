@@ -16,16 +16,20 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,10 +63,19 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	private BookmarkModelAdapter bookmarkAdapter = null;
 	private ProgressDialog dialog;
 	private WebView webView;
+	private ImageButton goTop;
+	private ImageButton goBottom;
 	private BakaTsukiWebViewClient client;
 	private boolean restored;
 	private AlertDialog bookmarkMenu = null;
 	boolean isFullscreen;
+
+	boolean dynamicButtonsEnabled;
+	Runnable hideBottom;
+	Runnable hideTop;
+	Handler mHandler=new Handler();
+	
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -82,6 +95,8 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		});
 		
 		webView = (WebView) findViewById(R.id.webView1);
+		goTop = (ImageButton) findViewById(R.id.webview_go_top);
+		goBottom = (ImageButton) findViewById(R.id.webview_go_bottom);
 		
 		// custom link handler
 		client = new BakaTsukiWebViewClient(this);
@@ -90,6 +105,24 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		
 		restored = false;		
 		Log.d(TAG, "OnCreate Completed.");
+		
+		// Hide button after a certain time being shown 
+		hideBottom=new Runnable() {
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+    			goBottom.setVisibility(ImageButton.GONE);  
+            }
+        };
+        hideTop=new Runnable() {
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+    			goTop.setVisibility(ImageButton.GONE);  
+            }
+        };
+		
+		
 	}
 	
 	protected void onStart() {
@@ -106,6 +139,8 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	@Override
 	public void onResume() {
 		super.onResume();
+		
+		dynamicButtonsEnabled = getDynamicButtonsPreferences();
 		
 		if(isFullscreen != getFullscreenPreferences()) {
 			UIHelper.Recreate(this);
@@ -153,6 +188,33 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		setLastReadState();
 		Log.d(TAG, "onPause Completed");
 	}
+	
+	public void toggleTopButton(boolean enable) {
+		if(enable) {
+			goTop.setVisibility(ImageButton.VISIBLE);
+			mHandler.removeCallbacks(hideTop);
+			mHandler.postDelayed(hideTop, 1000);
+		}
+		else
+			goTop.setVisibility(ImageButton.GONE);
+	}
+	public void toggleBottomButton(boolean enable) {
+		if(enable) {
+			goBottom.setVisibility(ImageButton.VISIBLE);
+			mHandler.removeCallbacks(hideBottom);
+			mHandler.postDelayed(hideBottom, 1000);
+		}
+		else
+			goBottom.setVisibility(ImageButton.GONE);
+	}
+	
+	public void goTop(View view) {
+		webView.pageUp(true);
+	}
+	public void goBottom(View view) {
+		webView.pageDown(true);
+	}
+	
 	
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
@@ -295,12 +357,12 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
     		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
         	startActivity(downloadsItent);;
 			return true;
-		case R.id.menu_go_top:
-			webView.pageUp(true);
-			return true; 
-		case R.id.menu_go_bottom:
-			webView.pageDown(true);
-			return true; 
+//		case R.id.menu_go_top:
+//			webView.pageUp(true);
+//			return true; 
+//		case R.id.menu_go_bottom:
+//			webView.pageDown(true);
+//			return true; 
 		case android.R.id.home:
 //			if(tocMenu != null) tocMenu.show();
 //			else finish();
@@ -710,6 +772,14 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	
 	private boolean getBookmarkPreferences() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ENABLE_BOOKMARK, true);
+	}
+	
+	private boolean getDynamicButtonsPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ENABLE_WEBVIEW_BUTTONS, false);
+	}
+	
+	public boolean getDynamicButtons(){
+		return dynamicButtonsEnabled;
 	}
 
 	public void refreshBookmarkData() {

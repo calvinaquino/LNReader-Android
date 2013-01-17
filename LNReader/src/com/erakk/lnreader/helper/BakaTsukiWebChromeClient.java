@@ -16,6 +16,7 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 	private static final String ADD = "highlighted";
 	private static final String REMOVE = "clear";
 	private static final String SCROLL_EVENT = "SCROLL_EVENT";
+	private int oldScrollY = 0;
 	private DisplayLightNovelContentActivity caller;
 	
 	public BakaTsukiWebChromeClient(DisplayLightNovelContentActivity caller) {
@@ -46,13 +47,27 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 		}
 		else if (consoleMessage.message().startsWith(SCROLL_EVENT)) {
 			String data[] = consoleMessage.message().split(":");
-			if (data[1] != null )
+			if (data[1] != null ) {
 				caller.updateLastLine(Integer.parseInt(data[1]));	
 			/*
 			 * Possible crash due to index out of bounds at line 50
 			 */
-			else
-				Log.e(TAG, "line 50: index out of bounds.");
+				Log.d("SCROLL", "" + data[0] + " " + data[1]);
+				
+				int newScrollY = Integer.parseInt(data[1]);
+				
+				if (caller.getDynamicButtons()) {
+					if (oldScrollY < newScrollY) {
+						caller.toggleTopButton(false);
+						caller.toggleBottomButton(true);
+					}
+					else if (oldScrollY > newScrollY) {
+						caller.toggleBottomButton(false);
+						caller.toggleTopButton(true);
+					}
+				}
+				oldScrollY = newScrollY;
+			}
 		}
 		else {
 			Log.d(TAG, "Console: " + consoleMessage.lineNumber() + ":" + consoleMessage.message());

@@ -58,6 +58,7 @@ public class Constants {
 	public static final String PREF_KEEP_AWAKE = "keep_awake";
 	public static final String PREF_FULSCREEN = "fullscreen";
 	public static final String PREF_ENABLE_BOOKMARK = "enable_bookmark";
+	public static final String PREF_ENABLE_WEBVIEW_BUTTONS = "enable_webview_buttons";
 	
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 
@@ -75,4 +76,5 @@ public class Constants {
 	public static final int COLOR_UNREAD_INVERT = Color.parseColor("#222222");
 	public static final int COLOR_MISSING = Color.parseColor("#ff0000");
 	public static final int COLOR_EXTERNAL = Color.parseColor("#3333ff");	
+			
 }

@@ -60,6 +60,11 @@
             android:title="Show Zoom Control" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="enable_webview_buttons"
+            android:summary="Enable dynamic buttons while scrolling the chapter"
+            android:title="Dynamic Buttons" />
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="keep_awake"
             android:summary="Keeps the screen allways on when on chapter screen."
             android:title="Keep Awake" />
