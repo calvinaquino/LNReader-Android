@@ -1,10 +1,13 @@
 package com.erakk.lnreader.activity;
 
+import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
@@ -94,5 +97,73 @@ public class DisplayNovelPagerActivity extends TabActivity {
     
     private boolean getColorPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
+	}
+    
+    
+    // Option Menu related
+    @Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
+		return true;
+	}
+    
+    @Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+    	Activity activity = getCurrentActivity();
+		switch (item.getItemId()) {
+		case R.id.menu_settings:
+			Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
+			startActivity(launchNewIntent);
+			return true;
+		case R.id.menu_refresh_novel_list:			
+			if(activity instanceof DisplayLightNovelListActivity) {
+				((DisplayLightNovelListActivity)activity).refreshList();								
+			}
+			else if(activity instanceof DisplayTeaserListActivity) {
+				((DisplayTeaserListActivity)activity).refreshList();
+			}
+			else if(activity instanceof DisplayOriginalListActivity) {
+				((DisplayOriginalListActivity)activity).refreshList();
+			}
+			return true;
+		case R.id.invert_colors:			
+			UIHelper.ToggleColorPref(this);
+			UIHelper.Recreate(this);
+			return true;
+		case R.id.menu_manual_add:			
+			if(activity instanceof DisplayLightNovelListActivity) {
+				((DisplayLightNovelListActivity)activity).manualAdd();								
+			}
+			else if(activity instanceof DisplayTeaserListActivity) {
+				((DisplayTeaserListActivity)activity).refreshList();
+			}
+			else if(activity instanceof DisplayOriginalListActivity) {
+				((DisplayOriginalListActivity)activity).refreshList();
+			}
+			return true;
+		case R.id.menu_download_all:
+			if(activity instanceof DisplayLightNovelListActivity) {
+				((DisplayLightNovelListActivity)activity).downloadAllNovelInfo();								
+			}
+			else if(activity instanceof DisplayTeaserListActivity) {
+				((DisplayTeaserListActivity)activity).downloadAllNovelInfo();
+			}
+			else if(activity instanceof DisplayOriginalListActivity) {
+				((DisplayOriginalListActivity)activity).downloadAllNovelInfo();
+			}
+			return true;
+		case R.id.menu_bookmarks:
+    		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
+        	startActivity(bookmarkIntent);
+			return true;    
+		case R.id.menu_downloads:
+    		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
+        	startActivity(downloadsItent);
+			return true; 
+		case android.R.id.home:
+			super.onBackPressed();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }

@@ -121,21 +121,17 @@ public class DisplayOriginalListActivity extends ListActivity implements IAsyncT
 			startActivity(launchNewIntent);
 			return true;
 		case R.id.menu_refresh_novel_list:			
-			/*
-			 * Implement code to refresh novel list
-			 */
-			updateContent(true);			
-			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
+			refreshList();
 			return true;
 		case R.id.invert_colors:			
 			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);
 			return true;
 		case R.id.menu_manual_add:			
-			ManualAdd();
+			manualAdd();
 			return true;
 		case R.id.menu_download_all:			
-			DownloadAllNovelInfo();
+			downloadAllNovelInfo();
 			return true;    
 		case R.id.menu_downloads:
     		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
@@ -147,12 +143,21 @@ public class DisplayOriginalListActivity extends ListActivity implements IAsyncT
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	private void DownloadAllNovelInfo() {
+
+	public void refreshList() {
+		/*
+		 * Implement code to refresh novel list
+		 */
+		updateContent(true);			
+		Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
+	}
+	
+	public void downloadAllNovelInfo() {
 		touchedForDownload = "All Original Light Novels information";
 		executeDownloadTask(listItems);
 	}
 	
-	private void ManualAdd() {
+	private void manualAdd() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setTitle("Add Novel");
 		//alert.setMessage("Message");
@@ -164,7 +169,7 @@ public class DisplayOriginalListActivity extends ListActivity implements IAsyncT
 		alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				if(whichButton == DialogInterface.BUTTON_POSITIVE) {
-					HandleOK(inputName, inputTitle);
+					handleOK(inputName, inputTitle);
 				}
 			}
 		});
@@ -172,7 +177,7 @@ public class DisplayOriginalListActivity extends ListActivity implements IAsyncT
 		alert.show();
 	}
 	
-	private void HandleOK(EditText input, EditText inputTitle) {
+	private void handleOK(EditText input, EditText inputTitle) {
 		String novel = input.getText().toString();
 		String title = inputTitle.getText().toString();
 		if(novel != null && novel.length() > 0 && inputTitle != null && inputTitle.length() > 0) {
