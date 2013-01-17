@@ -22,7 +22,7 @@ LINE-ENDINGS & SOURCE ENCODING CONFIG
 
 
 (Old Version 20130106)
-TASK LIST - Version 1.1.0 beta build 30
+TASK LIST - Version 1.1.0 beta build 31
 ====================================================
 //DONE
 - inverted default VolumeRocker scroll direction.
@@ -58,23 +58,26 @@ TASK LIST - Version 1.1.0 beta build 30
 - Fix formatDateForDisplay() bug
 - Refactor some Util method.
 - Fix issue #20: Infinite Loading for Empty Watch List
-- FIx too many update notification problem
+- FIx too many update notification problem - Impolemented Notification Screen
 - Home button (mascot) on download list not working
+- Webview Dynamic buttons first implementation
+- Remove asyncTaskCount from settings
+- Added options menu in Novels lists
+- Fixed database location issues
 
 //CRASH FIXES
 - Fixed a crash that would occur if trying to unbind an unregistered service on low memory warning.
 - Fixed a crash that related to scrolling while reading a novel.
 
 //TODO
+- Manual Add Crash fix
 - Tabs not showing correctly on Android ver 2.2 - 2.3.7
-- Reduce image download message sizes on download list
-- Remove asyncTaskCount from settings
-- Fix manual add crash
-- Light Novel List Layout
+- Light Novel List / Main Menu Layouts
 <low priority/>
 - Add first time Tutorial for new users to show off functionalities, skipable. // May go to next version only, or will be added later.
 - EULA/BT Copyrights on first time run // Need to prepare a EULA.
 - Manual add series tutorial for new users
+
 
 //TODO NEXT VERSION ONLY
 - let finished downloads stay unless deleted*
@@ -82,6 +85,7 @@ TASK LIST - Version 1.1.0 beta build 30
 maybe ill add an option to "remove complete downloads automatically" for those who dont like removing manually...
 
 //NEEDS RETHINKING/CHECKING
+- Reduce image download message sizes on download list
 - make external chapters open in an internal customized webview (not all externals open the same way?)
 - Verify clicking mascot in chapter and going to jump to screen.
 - Make lightNovel list download a download list task
@@ -97,6 +101,8 @@ this mascot (is the icon on the upper left, only shows on newer android versions
 > Skydrive
 > Google Drive
 > This is just an IDEA, and as such, not to worry for now.
+
+
 
 ANDROID PERMISSION LIST
 ====================================================
