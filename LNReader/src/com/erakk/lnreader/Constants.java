@@ -59,6 +59,7 @@ public class Constants {
 	public static final String PREF_FULSCREEN = "fullscreen";
 	public static final String PREF_ENABLE_BOOKMARK = "enable_bookmark";
 	public static final String PREF_ENABLE_WEBVIEW_BUTTONS = "enable_webview_buttons";
+	public static final String PREF_USE_INTERNAL_WEBVIEW = "use_internal_webview";
 	
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 

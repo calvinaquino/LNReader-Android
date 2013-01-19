@@ -74,8 +74,6 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	Runnable hideTop;
 	Handler mHandler=new Handler();
 	
-	
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -583,8 +581,17 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 	}
 	
-	//@SuppressLint("NewApi")
-	//@SuppressWarnings("deprecation")
+	public void loadExternalUrl(String url) {
+		try{
+			final WebView wv = (WebView) findViewById(R.id.webView1);
+			setWebViewSettings();
+			wv.loadUrl(url);
+			setTitle(url);
+		} catch(Exception ex) {
+			Log.e(TAG, "Cannot load external content: " + url, ex);
+		}
+	}
+	
 	public void setContent(NovelContentModel loadedContent) {
 		this.content = loadedContent;
 		try {

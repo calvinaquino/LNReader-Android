@@ -4,11 +4,13 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.activity.DisplayImageActivity;
 import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.dao.NovelsDao;
@@ -38,7 +40,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 		}
 		else {
 			// get the title from url
-			boolean useDefault = true;
+			boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(caller.getApplicationContext()).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
 			if(url.contains("/project/index.php?title=")) {
 				String titles[] = url.split("title=", 2);
 				if(titles.length == 2 && !(titles[1].length() == 0)) {
@@ -68,14 +70,18 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 							}
 						}
 						
-						useDefault = false;
+						useInternalWebView = false;
 					} catch (Exception e) {
 						Log.e(TAG, "Failed to load: " + titles[1], e);
 					}
 				}
 			}
 			
-			if(useDefault){				
+			if(useInternalWebView){				
+				caller.loadExternalUrl(url);
+			}
+			else {
+				// use default handler.
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 				context.startActivity(browserIntent);
 			}

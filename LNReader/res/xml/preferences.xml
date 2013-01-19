@@ -90,6 +90,7 @@
         <CheckBoxPreference android:summary="Show external chapter (marked with blue color/EX)." android:defaultValue="true" android:key="show_external" android:title="Show External Chapters"/>
         <CheckBoxPreference android:defaultValue="false" android:summary="Use fullscreen when reading." android:key="fullscreen" android:title="Use Fullscreen"/>
         <CheckBoxPreference android:summary="Enable bookmark feature when reading." android:key="enable_bookmark" android:title="Enable Bookmark" android:defaultValue="true"/>
+        <CheckBoxPreference android:summary="Handle external link with internal WebView." android:title="Use Internal WebView" android:defaultValue="false" android:key="use_internal_webview"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="storage_category"
