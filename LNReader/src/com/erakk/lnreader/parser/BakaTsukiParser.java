@@ -24,8 +24,8 @@ import org.jsoup.select.Elements;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
@@ -291,7 +291,7 @@ public class BakaTsukiParser {
 		if(isAbandoned) statuses.add(Constants.STATUS_ABANDONED);
 		if(isPending) statuses.add(Constants.STATUS_PENDING);
 		
-		page.setStatus(LNReaderApplication.join(statuses, "|"));
+		page.setStatus(Util.join(statuses, "|"));
 		
 		return page;
 		}
@@ -322,7 +322,8 @@ public class BakaTsukiParser {
 	private static String sanitize(String title, boolean isAggresive) {
 		title = title.replaceAll("<.+?>", "")				 //Strip tags
 					 .replaceAll("\\[.+?\\]", "")		 //Strip [___]s
-					 .replaceAll("- PDF", "");
+					 .replaceAll("- PDF", "")
+					 .replaceAll("\\(.*PDF.*\\)", "");
 		if(isAggresive) title = title.replaceAll("^(.+?)[(\\[].*$", "$1"); //Leaves only the text before brackets (might be a bit too aggressive);
 				
 		return title.trim();
@@ -332,6 +333,7 @@ public class BakaTsukiParser {
 		//Log.d(TAG, "Start parsing book collections for " + novel.getPage());
 		// parse the collection
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
+		boolean oneBookOnly = false;
 		try{
 			Elements h2s = doc.select("h1,h2");
 			for(Iterator<Element> i = h2s.iterator(); i.hasNext();){
@@ -340,25 +342,30 @@ public class BakaTsukiParser {
 				Elements spans = h2.select("span");
 				if(spans.size() > 0) {
 					// find span with id containing "_by" or 'Full_Text' 
-					// or contains with Page Name or "Side_Stor*"
+					// or contains with Page Name or "Side_Stor*" or "Short_Stor*"
 					// or contains "_Series" (Maru-MA)
 					// or if redirected, use the redirect page name.
 					boolean containsBy = false;
 					for(Iterator<Element> iSpan = spans.iterator(); iSpan.hasNext(); ) {
 						Element s = iSpan.next();
-						//Log.d(TAG, "Checking: " + s.id());
+						Log.d(TAG, "Checking: " + s.id());
 						if(s.id().contains("_by") || 
 						   s.id().contains("Full_Text") ||
 						   s.id().contains("_Series") || 
 						   s.id().contains("_series") ||
 						   s.id().contains(novel.getPage()) ||
 						   s.id().contains("Side_Stor") ||
+						   s.id().contains("Short_Stor") ||
 						   (novel.getRedirectTo() != null && s.id().contains(novel.getRedirectTo())) ) {
 							containsBy = true;
+							Log.d(TAG, "Got valid id: " + s.id());
 							break;
 						}
+						Log.d(TAG, "Not valid id: " + s.id());
 					}
-					if(!containsBy) continue;
+					if(!containsBy) {
+						continue;						
+					}
 					
 					//Log.d(TAG, "Found h2: " +h2.text());
 					ArrayList<BookModel> tempBooks = parseBooksMethod1(novel, h2);					
@@ -366,19 +373,21 @@ public class BakaTsukiParser {
 					{
 						books.addAll(tempBooks);
 					}										
-					if(books.size() == 0) {
-						Log.d(TAG, "No books found, use method 2");
+					if(books.size() == 0 || ( oneBookOnly && tempBooks.size() == 0 )) {
+						Log.d(TAG, "No books found, use method 2: Only have 1 book, chapter in <p> tag.");
 						tempBooks = parseBooksMethod2(novel, h2);
 						if(tempBooks != null && tempBooks.size() > 0 ) 
 						{
+							oneBookOnly = true;
 							books.addAll(tempBooks);
 						}
 					}
-					if(books.size() == 0) {
-						Log.d(TAG, "No books found, use method 3");
+					if(books.size() == 0 || ( oneBookOnly && tempBooks.size() == 0 )) {
+						Log.d(TAG, "No books found, use method 3: Only have 1 book.");
 						tempBooks = parseBooksMethod3(novel, h2);
 						if(tempBooks != null && tempBooks.size() > 0 ) 
 						{
+							oneBookOnly = true;
 							books.addAll(tempBooks);
 						}
 					}
@@ -473,6 +482,10 @@ public class BakaTsukiParser {
 		if(links != null && links.size() > 0) {
 			//TODO: need to handle multiple link in one list item
 			Element link = links.first();
+
+			// skip if User_talk:
+			if(link.attr("href").contains("User_talk:")) return null; 
+				
 			p = processA(li.text(), parent, chapterOrder, link);
 		}
 		return p;
@@ -493,7 +506,7 @@ public class BakaTsukiParser {
 		p.setType(PageModel.TYPE_CONTENT);
 		p.setOrder(chapterOrder);
 		p.setLastUpdate(new Date(0));
-		
+				
 		//External link
 		if(link.className().contains("external text")) {
 			p.setExternal(true);
@@ -511,7 +524,7 @@ public class BakaTsukiParser {
 	
 	/***
 	 * parse book method 2:
-	 * Look for <p> after <h2> containing the chapter list, usually only have 1 book.
+	 * Look for &lt;p&gt; after &lt;h2&gt; containing the chapter list, usually only have 1 book.
 	 * See 7_Nights
 	 * @param novel
 	 * @param h2

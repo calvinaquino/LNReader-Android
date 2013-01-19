@@ -17,14 +17,12 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -45,6 +43,7 @@ import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.BakaTsukiWebChromeClient;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.BookmarkModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
@@ -108,14 +107,12 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		
 		// Hide button after a certain time being shown 
 		hideBottom=new Runnable() {
-            @Override
             public void run() {
                 // TODO Auto-generated method stub
     			goBottom.setVisibility(ImageButton.GONE);  
             }
         };
         hideTop=new Runnable() {
-            @Override
             public void run() {
                 // TODO Auto-generated method stub
     			goTop.setVisibility(ImageButton.GONE);  
@@ -559,16 +556,6 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	    	editor.putString(Constants.PREF_LAST_READ, content.getPage());
 	    	editor.commit();
 	    	
-
-//			try {
-//				PageModel pageModel = content.getPageModel();
-//				Toast.makeText(getApplicationContext(), "Resume point saved.", Toast.LENGTH_SHORT).show();
-//		    	
-//			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-	    	
 			Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 		}
 	}
@@ -672,7 +659,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			for (BookmarkModel bookmark : bookmarks) {
 				list.add(bookmark.getpIndex());
 			}
-			js = js.replace("%bookmarks%", LNReaderApplication.join(list, ","));
+			js = js.replace("%bookmarks%", Util.join(list, ","));
 		}
 		else {
 			js = js.replace("%bookmarks%", "");

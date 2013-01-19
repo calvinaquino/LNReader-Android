@@ -5,10 +5,17 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 
 public class Util {
 
+	/**
+	 * Show date/time difference in words.
+	 * @param date
+	 * @return
+	 */
 	public static String formatDateForDisplay(Date date) {
 		String since= "";
 		//Setup
@@ -42,6 +49,12 @@ public class Util {
 		else return dif + " " + since + "s ago ";// + date.toLocaleString();
 	}
 	
+	/**
+	 * Copy file
+	 * @param src
+	 * @param dst
+	 * @throws IOException
+	 */
 	public static void copyFile(File src, File dst) throws IOException
 	{
 		FileChannel inChannel = null;
@@ -61,4 +74,40 @@ public class Util {
 	    }
 	}
 
+	/**
+	 * http://stackoverflow.com/questions/6350158/check-arraylist-for-instance-of-object
+	 * @param arrayList
+	 * @param clazz
+	 * @return
+	 */
+	public static boolean isInstanceOf(Collection<?> arrayList, Class<?> clazz)
+	{
+	    for(Object o : arrayList)
+	    {
+	        if (o != null && o.getClass() == clazz)
+	        {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+	
+	/**
+	 * Join collection with given separator into string.
+	 * @param s
+	 * @param delimiter
+	 * @return
+	 */
+	public static String join(Collection<?> s, String delimiter) {
+	     StringBuilder builder = new StringBuilder();
+	     Iterator<?> iter = s.iterator();
+	     while (iter.hasNext()) {
+	         builder.append(iter.next());
+	         if (!iter.hasNext()) {
+	           break;                  
+	         }
+	         builder.append(delimiter);
+	     }
+	     return builder.toString();
+	 }
 }

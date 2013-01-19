@@ -35,6 +35,7 @@ import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.task.AddNovelTask;
@@ -433,7 +434,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 		Exception e = result.getError();
 		if(e == null) {
 			// from LoadNovelsTask
-			if(LNReaderApplication.isInstanceOf((ArrayList<?>)result.getResult(), PageModel.class)) {
+			if(Util.isInstanceOf((ArrayList<?>)result.getResult(), PageModel.class)) {
 				@SuppressWarnings("unchecked")
 				ArrayList<PageModel> list = (ArrayList<PageModel>) result.getResult();
 				Log.d("WatchList", "result ok");
@@ -457,7 +458,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 				}
 			}
 			// from DownloadNovelDetailsTask
-			else if(LNReaderApplication.isInstanceOf((ArrayList<?>)result.getResult(), NovelCollectionModel.class)) {
+			else if(Util.isInstanceOf((ArrayList<?>)result.getResult(), NovelCollectionModel.class)) {
 				setMessageDialog(new CallbackEventData("Download complete."));
 				@SuppressWarnings("unchecked")
 				ArrayList<NovelCollectionModel> list = (ArrayList<NovelCollectionModel>) result.getResult();

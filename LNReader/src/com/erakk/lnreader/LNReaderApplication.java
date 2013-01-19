@@ -5,10 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 import android.app.Application;
 import android.content.ComponentName;
@@ -41,6 +39,8 @@ public class LNReaderApplication extends Application {
 	private static LNReaderApplication instance;
 	private static Hashtable<String, AsyncTask<?, ?, ?>> runningTasks;
 	private static ArrayList<DownloadModel> downloadList;
+	
+	private static Object lock = new Object();
 	
 	@Override
 	public void onCreate()
@@ -81,18 +81,22 @@ public class LNReaderApplication extends Application {
 	
 	
 	public boolean addTask(String key, AsyncTask<?, ?, ?> task) {
-		if(runningTasks.containsKey(key)) {
-			AsyncTask<?, ?, ?> tempTask = runningTasks.get(key);
-			if(tempTask != null && tempTask.getStatus() != Status.FINISHED) return false;
+		synchronized (lock) {
+			if(runningTasks.containsKey(key)) {
+				AsyncTask<?, ?, ?> tempTask = runningTasks.get(key);
+				if(tempTask != null && tempTask.getStatus() != Status.FINISHED) return false;
+			}
+			runningTasks.put(key, task);
+			return true;
 		}
-		runningTasks.put(key, task);
-		return true;
 	}
 	
 	public boolean removeTask(String key) {
-		if(!runningTasks.containsKey(key)) return false;
-		runningTasks.remove(key);
-		return true;
+		synchronized (lock) {
+			if(!runningTasks.containsKey(key)) return false;
+			runningTasks.remove(key);
+			return true;
+		}
 	}
 	public boolean isOnline() {
 	    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -102,24 +106,31 @@ public class LNReaderApplication extends Application {
 	    }
 	    return false;
 	}
+	
 	/*
 	 * DownloadActivity method
 	 */
 	public int addDownload(String id, String name){
-		downloadList.add(new DownloadModel(id, name, 0));
-		if (DownloadListActivity.getInstance() != null)
-			DownloadListActivity.getInstance().updateContent();
-		return downloadList.size();
+		synchronized (lock) {
+			downloadList.add(new DownloadModel(id, name, 0));
+			if (DownloadListActivity.getInstance() != null)
+				DownloadListActivity.getInstance().updateContent();
+			return downloadList.size();
+		}
 	}
+	
 	public void removeDownload(String id){
-		for (int i=0;i<downloadList.size();i++) {
-			if (downloadList.get(i).getDownloadId() == id) {
-				downloadList.remove(i);
+		synchronized (lock) {
+			for (int i=0;i<downloadList.size();i++) {
+				if (downloadList.get(i).getDownloadId() == id) {
+					downloadList.remove(i);
+				}
 			}
 		}
 		if (DownloadListActivity.getInstance() != null)
 			DownloadListActivity.getInstance().updateContent();
 	}
+	
 	public String getDownloadDescription(String id){
 		String name = "";
 		for (int i=0;i<downloadList.size();i++) {
@@ -129,15 +140,19 @@ public class LNReaderApplication extends Application {
 		}
 		return name;
 	}
+	
 	public boolean checkIfDownloadExists(String name) {
-		boolean exists = false;
-		for (int i=0;i<downloadList.size();i++) {
-			if (downloadList.get(i).getDownloadName().equals(name)) {
-				exists = true;
+		synchronized (lock) {
+			boolean exists = false;
+			for (int i=0;i<downloadList.size();i++) {
+				if (downloadList.get(i).getDownloadName().equals(name)) {
+					exists = true;
+				}
 			}
+			return exists;
 		}
-		return exists;
 	}
+	
 	public ArrayList<DownloadModel> getDownloadList() {
 		return downloadList;
 	}
@@ -294,38 +309,5 @@ public class LNReaderApplication extends Application {
 			cssCache.put(styleId, contents.toString());
 		}
 		return cssCache.get(styleId);
-	}
-	
-	// Helper method
-	public static String join(Collection<?> s, String delimiter) {
-	     StringBuilder builder = new StringBuilder();
-	     Iterator<?> iter = s.iterator();
-	     while (iter.hasNext()) {
-	         builder.append(iter.next());
-	         if (!iter.hasNext()) {
-	           break;                  
-	         }
-	         builder.append(delimiter);
-	     }
-	     return builder.toString();
-	 }
-	
-	/**
-	 * http://stackoverflow.com/questions/6350158/check-arraylist-for-instance-of-object
-	 * @param arrayList
-	 * @param clazz
-	 * @return
-	 */
-	public static boolean isInstanceOf(Collection<?> arrayList, Class<?> clazz)
-	{
-	    for(Object o : arrayList)
-	    {
-	        if (o != null && o.getClass() == clazz)
-	        {
-	            return true;
-	        }
-	    }
-
-	    return false;
-	}
+	}	
 }
