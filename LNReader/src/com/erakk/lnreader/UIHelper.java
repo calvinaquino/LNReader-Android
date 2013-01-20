@@ -6,6 +6,9 @@ import java.net.URLEncoder;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
@@ -167,5 +170,22 @@ public class UIHelper {
 		} catch (NumberFormatException ex) {
 			return defaultValue;
 		}
+	}
+	
+	/**
+	 * Create Yes/No Alert Dialog
+	 * @param context
+	 * @param message
+	 * @param caption
+	 * @param listener
+	 * @return
+	 */
+	public static AlertDialog createYesNoDialog(Context context, String message, String caption, DialogInterface.OnClickListener listener) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);		
+		builder.setMessage(message);
+		builder.setTitle(caption);
+		builder.setPositiveButton("Yes", listener);
+		builder.setNegativeButton("No", listener);
+		return builder.create();
 	}
 }

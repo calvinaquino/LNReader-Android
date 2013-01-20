@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -68,7 +70,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
         Preference clearDatabase = (Preference)  findPreference("clear_database");
         clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
-            	clearDB();
+            	clearDB();            	
         		return true;
             }
         });
@@ -79,8 +81,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
             	try {
 					copyDB(true);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Log.e(TAG, "Error when backing up DB", e);
 				}
         		return true;
             }
@@ -92,8 +93,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
             	try {
 					copyDB(false);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Log.e(TAG, "Error when restoring DB", e);
 				}
         		return true;
             }
@@ -173,17 +173,27 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
     }
 
 	private void clearImages() {
-		dialog = ProgressDialog.show(this, "Clear Images", "Clearing Images...", true, false);
-		DeleteRecursive(new File(Constants.IMAGE_ROOT));
-		Toast.makeText(getApplicationContext(), "Image cache cleared!", Toast.LENGTH_SHORT).show();
-		dialog.dismiss();
+		UIHelper.createYesNoDialog(this, "Do you want to clear the Image Cache?", "Clear Image Cache", new OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				if(which == DialogInterface.BUTTON_POSITIVE) {
+					Toast.makeText(getApplicationContext(), "Clearing Images...", Toast.LENGTH_SHORT).show();
+					DeleteRecursive(new File(Constants.IMAGE_ROOT));
+					Toast.makeText(getApplicationContext(), "Image cache cleared!", Toast.LENGTH_SHORT).show();
+				}
+			}
+		}).show();
 	}
 
 	private void clearDB() {
-		dialog = ProgressDialog.show(this, "Database Manager", "Clearing Database...", true, false); 
-		NovelsDao.getInstance(getApplicationContext()).deleteDB();
-		Toast.makeText(getApplicationContext(), "Database cleared!", Toast.LENGTH_SHORT).show();
-		dialog.dismiss();
+		UIHelper.createYesNoDialog(this, "Do you want to clear the DB?", "Clear DB", new OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				if(which == DialogInterface.BUTTON_POSITIVE) {
+					Toast.makeText(getApplicationContext(), "Clearing Database...", Toast.LENGTH_SHORT).show();
+					NovelsDao.getInstance(getApplicationContext()).deleteDB();
+					Toast.makeText(getApplicationContext(), "Database cleared!", Toast.LENGTH_SHORT).show();
+				}
+			}
+		}).show();
 	}
 	
 	private void copyDB(boolean makeBackup) throws IOException {
@@ -223,6 +233,9 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 	}
 	
 	private void DeleteRecursive(File fileOrDirectory) {
+		// Skip Database
+		if(fileOrDirectory.getAbsolutePath() == DBHelper.getDbPath(this)) return;
+		
 	    if (fileOrDirectory.isDirectory())
 	        for (File child : fileOrDirectory.listFiles())
 	            DeleteRecursive(child);

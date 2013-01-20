@@ -47,10 +47,10 @@ public class BakaTsukiParser {
 	 * @param doc parsed page for given pageName
 	 * @return PageModel status, no parent and type defined
 	 */
-	public static PageModel parsePageAPI(PageModel pageModel, Document doc) throws Exception {
+	public static PageModel parsePageAPI(PageModel pageModel, Document doc, String url) throws Exception {
 		ArrayList<PageModel> temp = new ArrayList<PageModel>();
 		temp.add(pageModel);
-		temp = parsePageAPI(temp, doc);
+		temp = parsePageAPI(temp, doc, url);
 		return temp.get(0);				
 	}
 	
@@ -60,7 +60,7 @@ public class BakaTsukiParser {
 	 * @param doc parsed page for given pages
 	 * @return PageModel status, no parent and type defined
 	 */
-	public static ArrayList<PageModel> parsePageAPI(ArrayList<PageModel> pageModels, Document doc) throws Exception {
+	public static ArrayList<PageModel> parsePageAPI(ArrayList<PageModel> pageModels, Document doc, String url) throws Exception {
 		Elements normalized = doc.select("n");
 		Elements redirects = doc.select("r");
 		//Log.d(TAG, "parsePageAPI redirected size: " + redirects.size());
@@ -82,22 +82,22 @@ public class BakaTsukiParser {
 				Element nElement = nElements.first();
 				to = nElement.attr("to");
 				Log.d(TAG, "parsePageAPI normalized: " + to);
-				
-				// check redirects
-				if(redirects != null && redirects.size() > 0 ) {
-					Elements rElements = redirects.select("r[from="+ to + "]");
-					if(rElements != null && rElements.size() > 0) {
-						Element rElement = rElements.first();
-						to = rElement.attr("to");
-						temp.setRedirectedTo(to);
-						Log.i(TAG, "parsePageAPI redirected: " + to);
-					}
-				}				
 			}
+			
+			// check redirects
+			if(redirects != null && redirects.size() > 0 ) {
+				Elements rElements = redirects.select("r[from="+ to + "]");
+				if(rElements != null && rElements.size() > 0) {
+					Element rElement = rElements.first();
+					to = rElement.attr("to");
+					temp.setRedirectedTo(to);
+					Log.i(TAG, "parsePageAPI redirected: " + to);
+				}
+			}	
 			
 			Element pElement = pages.select("page[title="+ to + "]").first();
 			if(pElement == null) {
-				Log.w(TAG, "parsePageAPI "+ temp.getPage() + ": No Info");
+				Log.w(TAG, "parsePageAPI "+ temp.getPage() + ": No Info, please check the url: " + url);
 			}
 			else if(!pElement.hasAttr("missing")) {
 				// parse date

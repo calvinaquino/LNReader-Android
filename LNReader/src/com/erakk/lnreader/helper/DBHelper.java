@@ -141,7 +141,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			  						+ COLUMN_UPDATE_TYPE + " integer not null, "				// 3
 			  						+ COLUMN_LAST_UPDATE + " integer);";						// 4
 	
-	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/databases";
+	// Use /files/database to standarize with newer android.
+	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files/databases";
 	
 	public static String getDbPath(Context context) {
 		String dbPath = null;

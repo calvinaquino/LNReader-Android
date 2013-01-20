@@ -454,7 +454,7 @@ public class NovelsDao {
 				String encodedTitle = UIHelper.UrlEncode(page.getPage());
 				String fullUrl = "http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=" + encodedTitle;
 				Response response = Jsoup.connect(fullUrl).timeout(Constants.TIMEOUT).execute();
-				PageModel pageModel = BakaTsukiParser.parsePageAPI(page, response.parse());
+				PageModel pageModel = BakaTsukiParser.parsePageAPI(page, response.parse(), fullUrl);
 				pageModel.setFinishedRead(page.isFinishedRead());
 				pageModel.setWatched(page.isWatched());
 				
@@ -679,9 +679,10 @@ public class NovelsDao {
 			while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 				try{
 					//Log.d(TAG, "Trying to get: " + baseUrl + titles);
-					Response response = Jsoup.connect(baseUrl + titles).timeout(Constants.TIMEOUT).execute();
+					String url = baseUrl + titles;
+					Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
 					Document doc = response.parse();
-					ArrayList<PageModel> updatedPageModels = BakaTsukiParser.parsePageAPI(checkedPageModel, doc);
+					ArrayList<PageModel> updatedPageModels = BakaTsukiParser.parsePageAPI(checkedPageModel, doc, url);
 					resultPageModel.addAll(updatedPageModels);
 					break;
 				}catch(EOFException eof) {
