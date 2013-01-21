@@ -20,6 +20,7 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.UpdateInfoModelAdapter;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.UpdateInfoModel;
+import com.erakk.lnreader.model.UpdateType;
 
 public class UpdateHistoryActivity extends Activity {
 	private static final String TAG = UpdateHistoryActivity.class.toString();
@@ -45,8 +46,15 @@ public class UpdateHistoryActivity extends Activity {
 	}
 	
 	private void openChapter(UpdateInfoModel item) {
-		Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
-        intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
+		Intent intent = null;
+		if(item.getUpdateType() == UpdateType.NewNovel) {
+			intent = new Intent(getApplicationContext(), DisplayLightNovelDetailsActivity.class);
+			intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
+		}
+		else {
+			intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
+	        intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
+		}
         startActivity(intent);
 	}
 	

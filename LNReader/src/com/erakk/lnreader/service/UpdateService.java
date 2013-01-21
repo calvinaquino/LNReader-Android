@@ -109,30 +109,41 @@ public class UpdateService extends Service {
 			// create UpdateInfoModel list
 			int updateCount = 0;
 			int newCount = 0;
+			int newNovel = 0;
 			ArrayList<UpdateInfoModel> updatesInfo = new ArrayList<UpdateInfoModel>();
 			for (PageModel pageModel : updatedChapters) {
 				UpdateInfoModel updateInfo = new UpdateInfoModel();
-				if(pageModel.isUpdated()) {
-					updateInfo.setUpdateType(UpdateType.Updated);
-					++updateCount;
+				
+				if(pageModel.getType().equalsIgnoreCase(PageModel.TYPE_NOVEL)) {
+					++newNovel;
+					updateInfo.setUpdateTitle("New Novel: " + pageModel.getTitle());
+					updateInfo.setUpdateType(UpdateType.NewNovel);
 				}
 				else {
-					updateInfo.setUpdateType(UpdateType.New);
-					++newCount;
+					if(pageModel.isUpdated()) {
+						updateInfo.setUpdateType(UpdateType.Updated);
+						++updateCount;
+					}
+					else {
+						updateInfo.setUpdateType(UpdateType.New);
+						++newCount;
+					}
+
+					String novelTitle = "";
+					try{
+						novelTitle = pageModel.getBook().getParent().getPageModel().getTitle() + ": ";
+					}
+					catch(Exception ex){
+						Log.e(TAG, "Error when getting Novel title", ex);
+					}
+									
+					updateInfo.setUpdateTitle(novelTitle + pageModel.getTitle() + " (" + pageModel.getBook().getTitle() + ")");
 				}
 				
-				String novelTitle = "";
-				try{
-					novelTitle = pageModel.getBook().getParent().getPageModel().getTitle() + ": ";
-				}
-				catch(Exception ex){
-					Log.e(TAG, "Error when getting Novel title", ex);
-				}
-								
-				updateInfo.setUpdateTitle(novelTitle + pageModel.getTitle() + " (" + pageModel.getBook().getTitle() + ")");
 				updateInfo.setUpdateDate(pageModel.getLastUpdate());
 				updateInfo.setUpdatePage(pageModel.getPage());
 				updateInfo.setUpdatePageModel(pageModel);
+			
 				// insert to db
 				NovelsDao.getInstance(this).insertUpdateHistory(updateInfo);
 				updatesInfo.add(updateInfo);
@@ -143,7 +154,19 @@ public class UpdateService extends Service {
 				Log.d(TAG, "set consolidated Notification");
 				Notification notification = getNotificationTemplate(first);
 				CharSequence contentTitle = "BakaReader EX Updates";
-				CharSequence contentText = "Found " + updateCount + " update and " + newCount + " new chapter(s).";
+				String contentText = "Found ";
+				if(newCount > 0) {
+					contentText += updateCount + " updated chapter(s)";
+				}
+				if(updateCount > 0) {
+					if(newCount > 0) contentText += " and ";
+					contentText += newCount + " new chapter(s)";
+				}
+				if(newNovel > 0) {
+					if(updateCount > 0) contentText += " and ";
+					contentText += newNovel + " new novel(s)";
+				}				
+				contentText += ".";
 				
 				Intent notificationIntent = new Intent(this, UpdateHistoryActivity.class);
 				int pendingFlag = PendingIntent.FLAG_CANCEL_CURRENT;
@@ -258,19 +281,26 @@ public class UpdateService extends Service {
 			ArrayList<PageModel> updatesTotal = new ArrayList<PageModel>();
 			NovelsDao dao = NovelsDao.getInstance();
 			
-			// checking copyrights
-			PageModel p = new PageModel();
-			p.setPage("Baka-Tsuki:Copyrights");
-			p.setTitle("Baka-Tsuki:Copyrights");
-			p.setType("Copyrights");
-			p = NovelsDao.getInstance().getPageModelFromInternet(p, callback);			
+			PageModel updatedTos = getUpdatedTOS(callback);
+			if(updatedTos != null) {
+				updatesTotal.add(updatedTos);
+			}
 			
+			// check updated novel list
+			ArrayList<PageModel> updatedNovelList = getUpdatedNovelList(callback);
+			if(updatedNovelList != null && updatedNovelList.size() > 0) {
+				Log.d(TAG, "Got new novel! ");
+				for (PageModel pageModel : updatedNovelList) {
+					updatesTotal.add(pageModel);
+				}
+			}
+
 			// check only watched novel
 			if(callback != null) callback.onCallback(new CallbackEventData("Getting watched novel."));
 			ArrayList<PageModel> watchedNovels = dao.getWatchedNovel();
 			if(watchedNovels != null){
 				double total = watchedNovels.size() + 1;
-				double current = 1;
+				double current = 0;
 				for(Iterator<PageModel> iNovels = watchedNovels.iterator(); iNovels.hasNext();) {
 					// get last update date from internet
 					PageModel novel = iNovels.next();
@@ -332,6 +362,54 @@ public class UpdateService extends Service {
 			Log.i(TAG, "Found updates: " + updatesTotal.size());
 			
 			return updatesTotal;
+		}
+		
+		private ArrayList<PageModel> getUpdatedNovelList(ICallbackNotifier callback) throws Exception {
+			ArrayList<PageModel> newList = null;
+			
+			PageModel mainPage = new PageModel();
+			mainPage.setPage("Main_Page");
+			
+			mainPage = NovelsDao.getInstance().getPageModel(mainPage, callback);
+
+			// check if more than 7 day
+			Date today = new Date();
+			long diff = today.getTime() - mainPage.getLastCheck().getTime();
+			if (force || diff > (Constants.CHECK_INTERVAL * 24 * 3600 * 1000) && LNReaderApplication.getInstance().isOnline()) {
+				Log.d(TAG, "Last check is over 7 days, checking online status");
+				ArrayList<PageModel> currList =  NovelsDao.getInstance().getNovels(callback, true);
+				newList = NovelsDao.getInstance().getNovelsFromInternet(callback);
+				
+				for(int i = 0; i < currList.size(); ++i) {
+					for(int j = 0; j < newList.size(); ++j) {
+						if(currList.get(i).getPage().equalsIgnoreCase(newList.get(j).getPage())) {
+							newList.remove(j);
+							break;
+						}
+					}					
+				}
+			}
+			return newList;			
+		}
+		
+		public PageModel getUpdatedTOS(ICallbackNotifier callback) throws Exception {
+
+			// checking copyrights
+			PageModel p = new PageModel();
+			p.setPage("Baka-Tsuki:Copyrights");
+			p.setTitle("Baka-Tsuki:Copyrights");
+			p.setType("Copyrights");
+			
+			// get current tos
+			NovelsDao.getInstance().getPageModel(p, callback);
+			
+			PageModel newP = NovelsDao.getInstance().getPageModelFromInternet(p, callback);
+			
+			if(newP.getLastUpdate().getTime() > p.getLastUpdate().getTime()) {
+				Log.d(TAG, "TOS Updated.");
+				return newP;
+			}
+			return null;
 		}
 
 		public void onCallback(ICallbackEventData message) {

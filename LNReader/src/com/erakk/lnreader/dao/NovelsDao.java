@@ -94,7 +94,6 @@ public class NovelsDao {
 
 	public ArrayList<PageModel> getNovels(ICallbackNotifier notifier, boolean alphOrder) throws Exception {
 		ArrayList<PageModel> list = null;
-		boolean refresh = false;
 		PageModel page = null;
 		SQLiteDatabase db = null;
 		
@@ -108,23 +107,8 @@ public class NovelsDao {
 			}
 		}
 		if (page == null) {
-			refresh = true;
 			Log.d(TAG, "No Main_Page data!");
-		} else {
-			Log.d(TAG, "Found Main_Page (" + page.getLastUpdate().toString() + "), last check: " + page.getLastCheck().toString());
-			// compare if less than 7 day
-			Date today = new Date();
-			long diff = today.getTime() - page.getLastCheck().getTime();
-			if (diff > (Constants.CHECK_INTERVAL * 24 * 3600 * 1000) && LNReaderApplication.getInstance().isOnline()) {
-				refresh = true;
-				Log.d(TAG, "Last check is over 7 days, checking online status");
-			}
-		}
-
-		if (refresh) {
-			// get updated main page and novel list from internet
 			list = getNovelsFromInternet(notifier);
-			Log.d(TAG, "Updated Novel List");
 		} else {
 			// get from db
 			synchronized (dbh) {
