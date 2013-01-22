@@ -91,10 +91,10 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
         expandList.setOnChildClickListener(new OnChildClickListener() {			
 			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 				if(novelCol != null) {
-					PageModel chapter = bookModelAdapter.getChild(groupPosition, childPosition);String bookName = novelCol.getBookCollections().get(groupPosition).getTitle();
-					touchedForDownload = bookName +" "+chapter.getTitle();
-					loadChapter(chapter);
-						
+					PageModel chapter = bookModelAdapter.getChild(groupPosition, childPosition);
+					String bookName = novelCol.getBookCollections().get(groupPosition).getTitle();
+					touchedForDownload = bookName + " " + chapter.getTitle();
+					loadChapter(chapter);						
 				}
 				return false;
 			}
@@ -105,7 +105,9 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
     }
     
 	private void loadChapter(PageModel chapter) {
-		if(chapter.isExternal()) {
+		boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
+		
+		if(chapter.isExternal() && !useInternalWebView) {
 			try{
 				Uri url = Uri.parse(chapter.getPage());
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
@@ -117,7 +119,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 			}
 		}
 		else {
-			if (chapter.isDownloaded() || !getDownloadTouchPreference()) {
+			if (chapter.isExternal() || chapter.isDownloaded() || !getDownloadTouchPreference()) {
 				Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
 		        intent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
 		        startActivity(intent);

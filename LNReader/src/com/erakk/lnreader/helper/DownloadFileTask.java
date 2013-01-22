@@ -89,7 +89,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 					// download the file
 					input = new BufferedInputStream(url.openStream());
 					output = new FileOutputStream(tempFilename);
-		
+					
 					byte data[] = new byte[1024];
 					long total = 0;
 					int count;
@@ -114,7 +114,10 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 					Log.d(TAG, "Filesize: " + total);
 					if(total > 0) break;
 				} catch(Exception ex) {
-					if(i > Constants.IMAGE_DOWNLOAD_RETRY) throw ex;
+					if(i > Constants.IMAGE_DOWNLOAD_RETRY) {
+						Log.e(TAG, "Failed to download: " + url.toString(), ex);
+						throw ex;
+					}
 					else {
 						if(notifier!=null) {
 							notifier.onCallback(new CallbackEventData("Downloading: " + url + "\nRetry: " + i+ "x"));

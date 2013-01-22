@@ -560,24 +560,31 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel, boolean refresh) {
-		task = new LoadNovelContentTask(refresh, this);
-		String key = TAG + ":" + pageModel.getPage();
-		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
-		if(isAdded) {
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {pageModel});
-			else
-				task.execute(new PageModel[] {pageModel});
+		if(pageModel.isExternal()) {
+			//Toast.makeText(this, "External: " + pageModel.getPage() , Toast.LENGTH_SHORT).show();
+			WebView wv = (WebView) findViewById(R.id.webView1);
+			wv.loadUrl(pageModel.getPage());
 		}
 		else {
-			WebView webView = (WebView) findViewById(R.id.webView1);
-			webView.loadData("<p style='background: black; color: white;'>Background task still loading...</p>", "text/html", "utf-8");
-			LoadNovelContentTask tempTask = (LoadNovelContentTask) LNReaderApplication.getInstance().getTask(key);
-			if(tempTask != null) {
-				task = tempTask;
-				task.owner = this;
+			task = new LoadNovelContentTask(refresh, this);
+			String key = TAG + ":" + pageModel.getPage();
+			boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
+			if(isAdded) {
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+					task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {pageModel});
+				else
+					task.execute(new PageModel[] {pageModel});
 			}
-			toggleProgressBar(true);
+			else {
+				WebView webView = (WebView) findViewById(R.id.webView1);
+				webView.loadData("<p style='background: black; color: white;'>Background task still loading...</p>", "text/html", "utf-8");
+				LoadNovelContentTask tempTask = (LoadNovelContentTask) LNReaderApplication.getInstance().getTask(key);
+				if(tempTask != null) {
+					task = tempTask;
+					task.owner = this;
+				}
+				toggleProgressBar(true);
+			}
 		}
 	}
 	
@@ -635,6 +642,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			}
 			
 			try{
+				Log.e(TAG, pageModel.getParent());
 				novelDetails = NovelsDao.getInstance(this).getNovelDetails(pageModel.getParentPageModel(), null);
 				
 				String volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");

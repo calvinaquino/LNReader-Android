@@ -235,11 +235,16 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 	private void DeleteRecursive(File fileOrDirectory) {
 		// Skip Database
 		if(fileOrDirectory.getAbsolutePath() == DBHelper.getDbPath(this)) return;
+		if(fileOrDirectory.getAbsolutePath().contains("databases/pages.db")) {
+			Log.d(TAG, "Skippin DB!");
+			return;
+		}
 		
 	    if (fileOrDirectory.isDirectory())
+	    	Log.d(TAG, "Deleting Dir: " + fileOrDirectory.getAbsolutePath());
 	        for (File child : fileOrDirectory.listFiles())
 	            DeleteRecursive(child);
-	    Log.d(TAG, "Deleting: " + fileOrDirectory.getAbsolutePath());
+	    
 	    fileOrDirectory.delete();
 	}
 

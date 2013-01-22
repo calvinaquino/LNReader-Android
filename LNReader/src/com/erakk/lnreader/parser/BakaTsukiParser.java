@@ -681,6 +681,7 @@ public class BakaTsukiParser {
 			if(!imageUrl.startsWith("http")) {
 				imageUrl = "http://www.baka-tsuki.org" + imageUrl;
 			}
+			Log.d(TAG, "Cover: " + imageUrl);
 		}
 		novel.setCover(imageUrl);
 		if(imageUrl != null && imageUrl.length() > 0) {

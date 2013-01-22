@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
 import java.util.Collection;
 import java.util.Date;
@@ -110,4 +112,17 @@ public class Util {
 	     }
 	     return builder.toString();
 	 }
+	
+
+	public static String UrlEncode(String param) throws UnsupportedEncodingException {
+		if(!param.contains("%")) {
+			param = URLEncoder.encode(param, "utf-8");
+		}
+		return param;
+	}
+	
+	public static boolean isStringNullOrEmpty(String input) {
+		if(input == null || input.length() == 0) return true;
+		return false;
+	}
 }

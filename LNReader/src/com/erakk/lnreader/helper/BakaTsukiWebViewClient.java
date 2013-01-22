@@ -10,7 +10,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.activity.DisplayImageActivity;
 import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.dao.NovelsDao;

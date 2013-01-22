@@ -25,6 +25,7 @@ import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.DownloadFileTask;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.BookmarkModel;
 import com.erakk.lnreader.model.ImageModel;
@@ -435,7 +436,7 @@ public class NovelsDao {
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData("Fetching " + page.getTitle() + " list... First time may be slow."));
 				}
-				String encodedTitle = UIHelper.UrlEncode(page.getPage());
+				String encodedTitle = Util.UrlEncode(page.getPage());
 				String fullUrl = "http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=" + encodedTitle;
 				Response response = Jsoup.connect(fullUrl).timeout(Constants.TIMEOUT).execute();
 				PageModel pageModel = BakaTsukiParser.parsePageAPI(page, response.parse(), fullUrl);
@@ -518,7 +519,7 @@ public class NovelsDao {
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData("Downloading novel details page for: " + page.getPage()));
 				}
-				String encodedTitle = UIHelper.UrlEncode(page.getPage());
+				String encodedTitle = Util.UrlEncode(page.getPage());
 				String fullUrl = Constants.BASE_URL + "/project/index.php?action=render&title=" + encodedTitle;
 				Response response = Jsoup.connect(fullUrl).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
@@ -650,7 +651,7 @@ public class NovelsDao {
 					continue;
 				}
 				if(titles.length() + pageModels.get(i).getPage().length() < 2000) {
-					titles += "|" + UIHelper.UrlEncode(pageModels.get(i).getPage());
+					titles += "|" + Util.UrlEncode(pageModels.get(i).getPage());
 					checkedPageModel.add(pageModels.get(i));
 					++i;
 					++apiPageCount;
@@ -773,7 +774,7 @@ public class NovelsDao {
 		Document doc = null;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
-				String encodedUrl = Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&redirects=yes&page=" + UIHelper.UrlEncode(page.getPage());;
+				String encodedUrl = Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&redirects=yes&page=" + Util.UrlEncode(page.getPage());;
 				Response response = Jsoup.connect(encodedUrl).timeout(Constants.TIMEOUT).execute();
 				doc = response.parse();
 				content = BakaTsukiParser.ParseNovelContent(doc, page);
