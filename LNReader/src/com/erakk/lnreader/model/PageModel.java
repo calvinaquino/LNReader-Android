@@ -4,6 +4,8 @@ package com.erakk.lnreader.model;
 import java.util.Date;
 import java.util.Iterator;
 
+import android.util.Log;
+
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.dao.NovelsDao;
 
@@ -11,6 +13,7 @@ public class PageModel{
 	public static final String TYPE_NOVEL = "Novel";
 	public static final String TYPE_OTHER = "Other";
 	public static final String TYPE_CONTENT = "Content";
+	private static final String TAG = PageModel.class.toString();
 	
 	private int id;
 	private String page;
@@ -139,7 +142,7 @@ public class PageModel{
 			if(this.book == null) {
 				NovelsDao dao = NovelsDao.getInstance();
 				try {
-					String bookTitle = parent.substring(parent.indexOf(Constants.NOVEL_BOOK_DIVIDER)+1);
+					String bookTitle = parent.substring(parent.indexOf(Constants.NOVEL_BOOK_DIVIDER) + Constants.NOVEL_BOOK_DIVIDER.length());
 					NovelCollectionModel details = dao.getNovelDetails(getParentPageModel(), null);
 					for(Iterator<BookModel> iBook = details.getBookCollections().iterator();iBook.hasNext();) {
 						BookModel tempBook = iBook.next();
@@ -149,8 +152,7 @@ public class PageModel{
 						}						
 					}
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Log.e(TAG, "Unable to get book for: " + getPage(), e);
 				}				
 			}
 			return this.book;

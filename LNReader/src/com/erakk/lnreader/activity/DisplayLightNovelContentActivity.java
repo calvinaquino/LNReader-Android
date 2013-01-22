@@ -466,6 +466,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	}
 	
 	private void buildTOCMenu() {
+		Log.d(TAG, "Trying to create TOC");
 		if(novelDetails != null && content != null) {
 			try {
 				PageModel pageModel = content.getPageModel();
@@ -478,6 +479,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 						}
 						else chapter.setHighlighted(false);
 					}
+					Log.d(TAG, "TOC Found: " + chapters.size());
 					
 					int resourceId = R.layout.jumpto_list_item;
 					if(UIHelper.IsSmallScreen(this)) {
@@ -566,6 +568,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			wv.loadUrl(pageModel.getPage());
 		}
 		else {
+			isLoaded = false;
 			task = new LoadNovelContentTask(refresh, this);
 			String key = TAG + ":" + pageModel.getPage();
 			boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
@@ -642,7 +645,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			}
 			
 			try{
-				Log.e(TAG, pageModel.getParent());
+				Log.d(TAG, "Parent Page: " + pageModel.getParent());
 				novelDetails = NovelsDao.getInstance(this).getNovelDetails(pageModel.getParentPageModel(), null);
 				
 				String volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
@@ -711,7 +714,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		wv.setBackgroundColor(0);
 		wv.getSettings().setJavaScriptEnabled(true);
 		
-		wv.loadUrl("javascript:toogleEnableBookmark(" + getBookmarkPreferences() + ")");
+		if(isLoaded) wv.loadUrl("javascript:toogleEnableBookmark(" + getBookmarkPreferences() + ")");
 	}
 	
 	public void setMessageDialog(ICallbackEventData message) {
@@ -808,5 +811,10 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	public boolean downloadListSetup(String id, String toastText, int type) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	boolean isLoaded = false;
+	public void notifyLoadComplete() {
+		isLoaded = true;
 	}
 }

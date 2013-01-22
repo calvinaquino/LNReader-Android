@@ -19,6 +19,7 @@ function setup() {
 	}
     highlightBookmark();
     goToParagraph(lastPos);
+    console.log("LOAD_COMPLETE_EVENT:" + pCollections.length);
 }
 
 /* Handle touch event for bookmark highlighting */
