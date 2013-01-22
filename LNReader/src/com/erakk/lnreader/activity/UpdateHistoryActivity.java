@@ -51,11 +51,14 @@ public class UpdateHistoryActivity extends Activity {
 			intent = new Intent(getApplicationContext(), DisplayLightNovelDetailsActivity.class);
 			intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
 		}
-		else {
+		else if (item.getUpdateType() == UpdateType.New || 
+				 item.getUpdateType() == UpdateType.Updated ||
+				 item.getUpdateType() == UpdateType.UpdateTos ) {
 			intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
 	        intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
 		}
-        startActivity(intent);
+		
+		if(intent != null) startActivity(intent);
 	}
 	
 	@Override

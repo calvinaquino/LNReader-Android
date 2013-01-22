@@ -59,7 +59,26 @@ public class UpdateInfoModelAdapter  extends ArrayAdapter<UpdateInfoModel> {
 		holder = new UpdateInfoModelHolder();
 		holder.txtUpdateType = (TextView)row.findViewById(R.id.update_type);
 		if(holder.txtUpdateType != null) {
-			holder.txtUpdateType.setText(page.getUpdateType().toString());
+			switch(page.getUpdateType()) {
+				case New:
+					holder.txtUpdateType.setText("New Chapter");
+					break;
+				case NewNovel:
+					holder.txtUpdateType.setText("New Novel");
+					break;
+				case Updated:
+					holder.txtUpdateType.setText("Updated Chapter");
+					break;
+				case UpdateTos:
+					holder.txtUpdateType.setText("TOS Updated");
+					break;
+				case Deleted:
+					holder.txtUpdateType.setText("Deleted Chapter");
+					break;
+				default:
+					holder.txtUpdateType.setText("Unknown!");
+					break;
+			}			
 		}
 		
 		holder.txtUpdateTitle = (TextView)row.findViewById(R.id.update_chapter);

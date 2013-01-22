@@ -119,6 +119,10 @@ public class UpdateService extends Service {
 					updateInfo.setUpdateTitle("New Novel: " + pageModel.getTitle());
 					updateInfo.setUpdateType(UpdateType.NewNovel);
 				}
+				else if(pageModel.getType().equalsIgnoreCase(PageModel.TYPE_TOS)) {
+					updateInfo.setUpdateTitle("Updated TOS");
+					updateInfo.setUpdateType(UpdateType.UpdateTos);
+				}
 				else {
 					if(pageModel.isUpdated()) {
 						updateInfo.setUpdateType(UpdateType.Updated);
@@ -154,17 +158,17 @@ public class UpdateService extends Service {
 				Log.d(TAG, "set consolidated Notification");
 				Notification notification = getNotificationTemplate(first);
 				CharSequence contentTitle = "BakaReader EX Updates";
-				String contentText = "Found ";
-				if(newCount > 0) {
-					contentText += updateCount + " updated chapter(s)";
-				}
+				String contentText = "Found";
 				if(updateCount > 0) {
-					if(newCount > 0) contentText += " and ";
-					contentText += newCount + " new chapter(s)";
+					contentText += " " + updateCount + " updated chapter(s)";
+				}
+				if(newCount > 0) {
+					if(updateCount > 0) contentText += " and ";
+					contentText += " " + newCount + " new chapter(s)";
 				}
 				if(newNovel > 0) {
-					if(updateCount > 0) contentText += " and ";
-					contentText += newNovel + " new novel(s)";
+					if(updateCount > 0 || newCount > 0) contentText += " and ";
+					contentText += " " + newNovel + " new novel(s)";
 				}				
 				contentText += ".";
 				
@@ -398,7 +402,7 @@ public class UpdateService extends Service {
 			PageModel p = new PageModel();
 			p.setPage("Baka-Tsuki:Copyrights");
 			p.setTitle("Baka-Tsuki:Copyrights");
-			p.setType("Copyrights");
+			p.setType(PageModel.TYPE_TOS);
 			
 			// get current tos
 			NovelsDao.getInstance().getPageModel(p, callback);

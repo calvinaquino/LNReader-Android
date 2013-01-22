@@ -13,6 +13,7 @@ public class PageModel{
 	public static final String TYPE_NOVEL = "Novel";
 	public static final String TYPE_OTHER = "Other";
 	public static final String TYPE_CONTENT = "Content";
+	public static final String TYPE_TOS = "Copyrights";
 	private static final String TAG = PageModel.class.toString();
 	
 	private int id;
