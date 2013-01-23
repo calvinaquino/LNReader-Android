@@ -20,7 +20,6 @@ import android.util.Log;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
-import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.helper.DBHelper;

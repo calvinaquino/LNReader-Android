@@ -29,6 +29,7 @@
             android:key="persist_notification"
             android:summary="Keep the update notification after click."
             android:title="Persist Notifications" />
+        <CheckBoxPreference android:key="consolidate_notification" android:title="Consolidate Notification" android:defaultValue="true"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="layout_category"

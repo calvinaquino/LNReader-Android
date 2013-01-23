@@ -96,8 +96,7 @@ public class UpdateService extends Service {
 	@SuppressWarnings("deprecation")
 	public void sendNotification(ArrayList<PageModel> updatedChapters) {
 		int id = Constants.NOTIFIER_ID;
-		boolean first = true;
-		boolean consolidateNotification = true;
+		
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		
 		if(updatedChapters != null && updatedChapters.size() > 0) {
@@ -153,10 +152,10 @@ public class UpdateService extends Service {
 				updatesInfo.add(updateInfo);
 			}
 			
-			if(consolidateNotification) {
+			if(getConsolidateNotificationPref()) {
 				final int notifId = ++id;
 				Log.d(TAG, "set consolidated Notification");
-				Notification notification = getNotificationTemplate(first);
+				Notification notification = getNotificationTemplate(true);
 				CharSequence contentTitle = "BakaReader EX Updates";
 				String contentText = "Found";
 				if(updateCount > 0) {
@@ -180,6 +179,7 @@ public class UpdateService extends Service {
 				mNotificationManager.notify(notifId, notification);
 			}
 			else {
+				boolean first = true;
 				for (UpdateInfoModel updateInfoModel : updatesInfo) {
 					final int notifId = ++id;
 					Log.d(TAG, "set Notification for: " + updateInfoModel.getUpdatePage());
@@ -426,4 +426,9 @@ public class UpdateService extends Service {
 			LNReaderApplication.getInstance().updateDownload(TAG, lastProgress, values[0]);
 		}
 	}
+
+	private boolean getConsolidateNotificationPref() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_CONSOLIDATE_NOTIFICATION, true);
+	}
 } 
+
