@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.helper.Util;
 
 public class NovelCollectionModel {
 	private static final String TAG = NovelCollectionModel.class.toString();
@@ -90,7 +91,7 @@ public class NovelCollectionModel {
 				// TODO: maybe it is better to use ImageModel
 				if(getCoverUrl() != null) {
 					@SuppressWarnings("deprecation")
-					String filepath = Constants.IMAGE_ROOT + URLDecoder.decode(getCoverUrl().getFile());
+					String filepath = Constants.IMAGE_ROOT + Util.sanitizeFilename(URLDecoder.decode(getCoverUrl().getFile()));
 					Log.d("GetCover", filepath);
 					this.coverBitmap = BitmapFactory.decodeFile(filepath);
 				}				

@@ -545,6 +545,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 	private boolean getColorPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
+	
 	private boolean getDownloadTouchPreference(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_DOWNLOAD_TOUCH, false);
 	}

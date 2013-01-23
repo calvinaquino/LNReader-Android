@@ -125,4 +125,13 @@ public class Util {
 		if(input == null || input.length() == 0) return true;
 		return false;
 	}
+	
+	/**
+	 * Remove | \ ? * < " : > + [ ] / ' from filename
+	 * @param filename
+	 * @return
+	 */
+	public static String sanitizeFilename(String filename) {
+		return filename.replaceAll("[\\|\\\\?*<\\\":>+\\[\\]']", "_");		
+	}
 }

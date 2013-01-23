@@ -44,18 +44,22 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		OutputStream output = null;
 		String filepath = Constants.IMAGE_ROOT + url.getFile();
 		@SuppressWarnings("deprecation")
-		String decodedUrl = URLDecoder.decode(filepath);
+		String decodedUrl = Util.sanitizeFilename(URLDecoder.decode(filepath));
 		Log.d(TAG, "Saving to: " + decodedUrl);
 
 		// create dir if not exist
 		String path = decodedUrl.substring(0, decodedUrl.lastIndexOf("/"));
 		File cacheDir = new File(path);
-		cacheDir.mkdirs();
-		Log.d(TAG, "Path to: " + path);
+
+		if(cacheDir.mkdirs() || cacheDir.isDirectory()) {
+			Log.d(TAG, "Path to: " + path);
+		}
+		else {
+			Log.e(TAG, "Failed to create Path: " + path);
+		}
 
 		File tempFilename = new File(decodedUrl + ".!tmp");
 		File decodedFile = new File(decodedUrl);
-
 
 		Log.d(TAG, "Start downloading image: " + url);
 
@@ -89,7 +93,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 					// download the file
 					input = new BufferedInputStream(url.openStream());
 					output = new FileOutputStream(tempFilename);
-					
+										
 					byte data[] = new byte[1024];
 					long total = 0;
 					int count;
@@ -100,7 +104,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 						publishProgress(progress);
 		
 						//via notifier, C# style :)
-						if(notifier!=null) {
+						if(notifier != null) {
 							DownloadCallbackEventData message = new DownloadCallbackEventData();
 							message.setUrl(url.toString());
 							message.setTotalSize(fileLength);
@@ -147,6 +151,8 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		Log.d(TAG, "Complete Downloading: " + url.toString());
 		return image;
 	}
+	
+	
 }
 
 

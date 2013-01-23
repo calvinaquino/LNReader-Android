@@ -22,6 +22,7 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.DownloadCallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadImageTask;
@@ -148,7 +149,7 @@ public class DisplayImageActivity extends Activity implements IAsyncTaskOwner{
 		if(e == null) {
 			ImageModel imageModel = (ImageModel) result.getResult();
 			imgWebView = (WebView) findViewById(R.id.webView1);
-			String imageUrl = "file:///" + imageModel.getPath(); 
+			String imageUrl = "file:///" + Util.sanitizeFilename(imageModel.getPath()); 
 			imgWebView.loadUrl(imageUrl);
 			String title = imageModel.getName();
 			setTitle(title.substring(title.lastIndexOf("/")));

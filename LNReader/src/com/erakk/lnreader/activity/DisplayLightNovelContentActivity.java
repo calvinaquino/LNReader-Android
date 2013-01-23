@@ -451,7 +451,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	
 	public void jumpTo(PageModel page){
 		setLastReadState();
-		if(page.isExternal()) {
+		if(page.isExternal() && !getHandleExternalLinkPreferences()) {
 			try{
 				Uri url = Uri.parse(page.getPage());
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
@@ -563,9 +563,9 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel, boolean refresh) {
 		if(pageModel.isExternal()) {
-			//Toast.makeText(this, "External: " + pageModel.getPage() , Toast.LENGTH_SHORT).show();
 			WebView wv = (WebView) findViewById(R.id.webView1);
 			wv.loadUrl(pageModel.getPage());
+			
 		}
 		else {
 			isLoaded = false;
@@ -816,5 +816,9 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	boolean isLoaded = false;
 	public void notifyLoadComplete() {
 		isLoaded = true;
+	}
+	
+	private boolean getHandleExternalLinkPreferences(){
+    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
 	}
 }
