@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 /*
  * Class for handling all the UI with API Warning ==> @SuppressLint("NewApi")
@@ -177,5 +178,18 @@ public class UIHelper {
 		builder.setPositiveButton("Yes", listener);
 		builder.setNegativeButton("No", listener);
 		return builder.create();
+	}
+	
+	/**
+	 * Change the color of image in ImageView, works nicely with single coloured images.
+	 * @param targetIv
+	 */
+	public static void setColorFilter(ImageView targetIv) {
+		if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
+			targetIv.setColorFilter(Constants.COLOR_UNREAD);
+		}
+		else {
+			targetIv.setColorFilter(Constants.COLOR_UNREAD_DARK);
+		}
 	}
 }

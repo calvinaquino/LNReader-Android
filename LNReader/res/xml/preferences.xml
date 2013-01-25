@@ -11,11 +11,9 @@
             android:key="updates_interval"
             android:summary="Define how often updates will be verified"
             android:title="Updates interval" />
-
         <Preference
             android:key="run_update"
-            android:title="Run Update" />
-
+            android:title="Tap to force Run Update" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="update_use_sound"
@@ -34,7 +32,8 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="consolidate_notification"
-            android:title="Consolidate Notification" android:summary="Consolidate the notification into one."/>
+            android:title="Consolidate Notification" 
+            android:summary="Consolidate the notification into single notification which launch Update History."/>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="general_category"
@@ -67,12 +66,12 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="show_external"
-            android:summary="Show external chapter (marked with blue color/EX)."
+            android:summary="Show external chapter (marked with blue color/&gt; icon)."
             android:title="Show External Chapters" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="use_internal_webview"
-            android:summary="Handle external link with internal WebView."
+            android:summary="Handle external link with internally, rather than using browser."
             android:title="Use Internal WebView" />
     </PreferenceCategory>
     <PreferenceCategory
@@ -81,7 +80,7 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="show_images"
-            android:summary="Controls if images are displayed or not (performance)"
+            android:summary="Controls if images are displayed or not (for performance)."
             android:title="Show Images" />
         <CheckBoxPreference
             android:defaultValue="true"
@@ -91,7 +90,7 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="show_zoom_control"
-            android:summary="Show zoom button in the novel contents, doesn&apos;t affect the zooming function."
+            android:summary="Show zoom button in the novel contents, doesn&apos;t affect the zooming function (HONEYCOMB and up only)."
             android:title="Show Zoom Control" />
         <CheckBoxPreference
             android:defaultValue="false"
@@ -101,7 +100,7 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="keep_awake"
-            android:summary="Keeps the screen allways on when on chapter screen."
+            android:summary="Keeps the screen on when on chapter screen."
             android:title="Keep Awake" />
         <CheckBoxPreference
             android:defaultValue="false"
@@ -141,7 +140,7 @@
         android:title="Storage" >
         <Preference
             android:key="clear_database"
-            android:summary="Erases light novel database"
+            android:summary="Erases the light novel database."
             android:title="Clear Novel Database" />
         <Preference
             android:key="backup_database"
@@ -163,7 +162,7 @@
             android:title="Database Save Location" />
         <CheckBoxPreference
             android:key="download_big_image"
-            android:summary="Download linked full resolution image. Might take a lot of space."
+            android:summary="Download linked full resolution image. *Will* take a lot of space."
             android:title="Download Full-Res Image" />
     </PreferenceCategory>
     <PreferenceCategory

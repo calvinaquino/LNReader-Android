@@ -76,8 +76,22 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 				}
 			}
 			
-			if(useInternalWebView){				
-				caller.loadExternalUrl(url);
+			if(useInternalWebView){	
+				PageModel pageModel = new PageModel();
+				pageModel.setPage(url);
+				try {
+					pageModel = NovelsDao.getInstance().getExistingPageModel(pageModel, null);
+				} catch (Exception e) {
+					Log.e(TAG, "Failed to get pageModel: " + url, e);
+				}
+				if(pageModel != null) {
+					caller.loadExternalUrl(pageModel);
+				}
+				else {
+					// use default handler.
+					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+					context.startActivity(browserIntent);
+				}
 			}
 			else {
 				// use default handler.

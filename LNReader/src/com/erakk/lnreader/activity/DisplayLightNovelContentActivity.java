@@ -465,16 +465,15 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		else executeTask(page, false);
 	}
 	
-	private void buildTOCMenu() {
+	private void buildTOCMenu(PageModel referencePageModel) {
 		Log.d(TAG, "Trying to create TOC");
-		if(novelDetails != null && content != null) {
+		//if(novelDetails != null) {
 			try {
-				PageModel pageModel = content.getPageModel();
-				BookModel book = pageModel.getBook();
+				BookModel book = referencePageModel.getBook();
 				if(book != null) {
 					ArrayList<PageModel> chapters = book.getChapterCollection();
 					for (PageModel chapter : chapters) {
-						if(chapter.getPage().contentEquals(pageModel.getPage())) {
+						if(chapter.getPage().contentEquals(referencePageModel.getPage())) {
 							chapter.setHighlighted(true);
 						}
 						else chapter.setHighlighted(false);
@@ -499,7 +498,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			} catch (Exception e) {
 				Log.e(TAG, "Cannot get current page for menu.", e);
 			}
-		}
+		//}
 	}
 	
 	public void buildBookmarkMenu() {
@@ -562,10 +561,9 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel, boolean refresh) {
+		WebView webView = (WebView) findViewById(R.id.webView1);
 		if(pageModel.isExternal()) {
-			WebView wv = (WebView) findViewById(R.id.webView1);
-			wv.loadUrl(pageModel.getPage());
-			
+			loadExternalUrl(pageModel);
 		}
 		else {
 			isLoaded = false;
@@ -579,7 +577,6 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 					task.execute(new PageModel[] {pageModel});
 			}
 			else {
-				WebView webView = (WebView) findViewById(R.id.webView1);
 				webView.loadData("<p style='background: black; color: white;'>Background task still loading...</p>", "text/html", "utf-8");
 				LoadNovelContentTask tempTask = (LoadNovelContentTask) LNReaderApplication.getInstance().getTask(key);
 				if(tempTask != null) {
@@ -591,14 +588,16 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 	}
 	
-	public void loadExternalUrl(String url) {
+	public void loadExternalUrl(PageModel pageModel) {
 		try{
 			final WebView wv = (WebView) findViewById(R.id.webView1);
 			setWebViewSettings();
-			wv.loadUrl(url);
-			setTitle(url);
+			wv.loadUrl(pageModel.getPage());
+			setChapterTitle(pageModel);
+			buildTOCMenu(pageModel);
+			content = null;
 		} catch(Exception ex) {
-			Log.e(TAG, "Cannot load external content: " + url, ex);
+			Log.e(TAG, "Cannot load external content: " + pageModel.getPage(), ex);
 		}
 	}
 	
@@ -645,19 +644,10 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 				wv.setInitialScale(100);
 			}
 			
-			try{
-				Log.d(TAG, "Parent Page: " + pageModel.getParent());
-				novelDetails = NovelsDao.getInstance(this).getNovelDetails(pageModel.getParentPageModel(), null);
-				
-				String volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
-				
-				setTitle(pageModel.getTitle() + " (" + volume + ")");
-			} catch (Exception ex) {
-				Log.e(TAG, "Error when setting title: " + ex.getMessage(), ex);
-			}
+			setChapterTitle(pageModel);
 			Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
 			
-			buildTOCMenu();
+			buildTOCMenu(pageModel);
 			buildBookmarkMenu();
 			
 			Log.d(TAG, "Loaded: " + content.getPage());
@@ -666,6 +656,19 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 	}
 	
+	private void setChapterTitle(PageModel pageModel) {
+		try{
+			Log.d(TAG, "Parent Page: " + pageModel.getParent());
+			novelDetails = NovelsDao.getInstance(this).getNovelDetails(pageModel.getParentPageModel(), null);
+			
+			String volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
+			
+			setTitle(pageModel.getTitle() + " (" + volume + ")");
+		} catch (Exception ex) {
+			Log.e(TAG, "Error when setting title: " + ex.getMessage(), ex);
+		}
+	}
+
 	private String getJustifiedCss(boolean useJustified) {
 		if(useJustified) {
 			return "\nbody { text-align: justify !important; }\n";

@@ -76,14 +76,14 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			if(page.isHighlighted()) {
 				holder.txtNovel.setTypeface(null, Typeface.BOLD);
 				holder.txtNovel.setTextSize(20);
-				holder.txtNovel.setText(">"+holder.txtNovel.getText());
+				holder.txtNovel.setText("> " + holder.txtNovel.getText());
 			}
 			
 			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
 				holder.txtNovel.setTextColor(Constants.COLOR_UNREAD);
 			}
 			else {
-				holder.txtNovel.setTextColor(Constants.COLOR_UNREAD_INVERT);
+				holder.txtNovel.setTextColor(Constants.COLOR_UNREAD_DARK);
 			}
 			if(page.isMissing()) holder.txtNovel.setTextColor(Constants.COLOR_MISSING);
 			if(page.isExternal()) holder.txtNovel.setTextColor(Constants.COLOR_EXTERNAL);

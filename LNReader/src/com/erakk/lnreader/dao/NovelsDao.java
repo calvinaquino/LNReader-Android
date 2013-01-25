@@ -424,6 +424,28 @@ public class NovelsDao {
 		}
 		return pageModel;
 	}
+	
+	
+	/**
+	 * Return pageModel, null if not exist.
+	 * @param page
+	 * @param notifier
+	 * @return
+	 * @throws Exception
+	 */
+	public PageModel getExistingPageModel(PageModel page, ICallbackNotifier notifier) throws Exception {
+		PageModel pageModel = null;
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			try{
+				pageModel = dbh.getPageModel(db, page.getPage());
+			}finally{
+				db.close();
+			}
+		}
+		
+		return pageModel;
+	}
 
 	public PageModel getPageModelFromInternet(PageModel page, ICallbackNotifier notifier) throws Exception {
 		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");

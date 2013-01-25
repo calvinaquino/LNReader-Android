@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
@@ -57,36 +58,14 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		ImageView ivFinishedReading = (ImageView) view.findViewById(R.id.novel_finished_reading);
 		ImageView ivIsExternal = (ImageView) view.findViewById(R.id.novel_is_external);
 		
-		if(child.isFinishedRead()) {
-			
-			//Old check
-//			tv.setTextColor(Constants.COLOR_READ);
-//		}
-//		else {
-//			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
-//				tv.setTextColor(Constants.COLOR_UNREAD);
-//			}
-//			else {
-//				tv.setTextColor(Constants.COLOR_UNREAD_INVERT);
-//			}
-			
-			//New check
-			if(ivFinishedReading != null) {
+		if (ivFinishedReading != null) {
+			if (child.isFinishedRead()) {
 				ivFinishedReading.setVisibility(ImageView.VISIBLE);
+				UIHelper.setColorFilter(ivFinishedReading);
+			} else {
+				ivFinishedReading.setVisibility(ImageView.GONE);
 			}
-		}
-		else {
-		
-			if(ivFinishedReading != null) {
-				if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
-					ivFinishedReading.setVisibility(ImageView.GONE);
-				}
-				else {
-					ivFinishedReading.setVisibility(ImageView.GONE); //Invert later
-				}
-			}
-		}
-		
+		}		
 		
 		if(child.isMissing()) {
 			tv.setTextColor(Constants.COLOR_MISSING);
@@ -102,12 +81,6 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		ImageView ivHasUpdates = (ImageView) view.findViewById(R.id.novel_has_updates);
 		//Log.d("getChildView", "Downloaded " + child.getTitle() + " id " + child.getId() + " : " + child.isDownloaded() );
 		if(ivIsDownloaded != null && ivHasUpdates != null) {
-//			if(child.isExternal()) {
-//				tvIsDownloaded.setText("(EX)");
-//				tvIsDownloaded.setVisibility(TextView.VISIBLE);
-			//Get a image for this too
-//			}
-//			else if(!child.isDownloaded()) {
 			if(!child.isDownloaded()) {
 				ivIsDownloaded.setVisibility(ImageView.GONE);
 			}
@@ -115,11 +88,14 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 				if(NovelsDao.getInstance().isContentUpdated(child)) {
 					ivHasUpdates.setVisibility(ImageView.VISIBLE);
 				}
-				else
+				else {
 					ivHasUpdates.setVisibility(ImageView.GONE);
+				}					
 					
 				ivIsDownloaded.setVisibility(TextView.VISIBLE);
 			}
+			UIHelper.setColorFilter(ivIsDownloaded);
+			UIHelper.setColorFilter(ivHasUpdates);
 		}
 		
 		
@@ -136,6 +112,8 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		return view;
 	}
 	
+
+
 	public int getChildrenCount(int groupPosition) {
 		boolean showExternal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_EXTERNAL, true);
 		boolean showMissing = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_MISSING, true);
@@ -218,7 +196,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 				tv.setTextColor(Constants.COLOR_UNREAD);
 			}
 			else {
-				tv.setTextColor(Constants.COLOR_UNREAD_INVERT);
+				tv.setTextColor(Constants.COLOR_UNREAD_DARK);
 			}
 		}
 		

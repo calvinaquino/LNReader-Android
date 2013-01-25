@@ -1,11 +1,14 @@
 package com.erakk.lnreader.helper;
 
 import android.util.Log;
+import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.ProgressBar;
 
+import com.erakk.lnreader.R;
 import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookmarkModel;
@@ -82,4 +85,19 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 		Log.d(TAG, "JSAlert: " + message);
 		return true;
 	}
+	
+	@Override
+	public void onProgressChanged(WebView view, int progress) {
+		Log.d(TAG, "Progress: " + progress);
+		ProgressBar progressBar = (ProgressBar) caller.findViewById(R.id.progressBar1);
+		if(progressBar != null) {
+			if(progress < 100) {
+				progressBar.setVisibility(View.VISIBLE);
+				progressBar.setProgress(progress);
+			}
+			else {
+				progressBar.setVisibility(View.GONE);
+			}
+		}
+   }
 }
