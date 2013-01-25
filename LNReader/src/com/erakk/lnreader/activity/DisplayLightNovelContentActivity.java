@@ -630,6 +630,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			LNReaderApplication app = (LNReaderApplication) getApplication();
 			String html = "<html><head><style type=\"text/css\">"
 						+ app.ReadCss(styleId) 
+						+ getJustifiedCss(getUseJustifiedPreferences())
 						+ "</style>"
 						+ "<meta name='viewport' content='width=device-width, minimum-scale=0.5, maximum-scale=5' />"
 						+ prepareJavaScript(lastPos, content.getBookmarks())
@@ -665,6 +666,13 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 	}
 	
+	private String getJustifiedCss(boolean useJustified) {
+		if(useJustified) {
+			return "\nbody { text-align: justify !important; }\n";
+		}
+		else return "";
+	}
+
 	private String prepareJavaScript(int lastPos, ArrayList<BookmarkModel> bookmarks) {
 		String script ="<script type='text/javascript'>";
 		String js = LNReaderApplication.getInstance().ReadCss(R.raw.content_script);
@@ -820,5 +828,9 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	
 	private boolean getHandleExternalLinkPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
+	}
+	
+	private boolean getUseJustifiedPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_FORCE_JUSTIFIED, false);
 	}
 }

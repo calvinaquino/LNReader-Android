@@ -11,9 +11,11 @@
             android:key="updates_interval"
             android:summary="Define how often updates will be verified"
             android:title="Updates interval" />
+
         <Preference
             android:key="run_update"
             android:title="Run Update" />
+
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="update_use_sound"
@@ -29,10 +31,13 @@
             android:key="persist_notification"
             android:summary="Keep the update notification after click."
             android:title="Persist Notifications" />
-        <CheckBoxPreference android:key="consolidate_notification" android:title="Consolidate Notification" android:defaultValue="true"/>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="consolidate_notification"
+            android:title="Consolidate Notification" android:summary="Consolidate the notification into one."/>
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="layout_category"
+        android:key="general_category"
         android:title="General Preferences" >
         <CheckBoxPreference
             android:defaultValue="true"
@@ -44,6 +49,35 @@
             android:key="lock_horizontal"
             android:summary="Enters horizontal orientation and locks the orientation"
             android:title="Lock for Horizontal" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="auto_download_chapter"
+            android:summary="Automatically adds a chapter to the download list when touched, if it hasn&apos;t been downloaded yet."
+            android:title="Touch for Download" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="alphabet_order"
+            android:summary="Novel list is always ordered by alphabet."
+            android:title="Alphabetical Order" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="show_missing"
+            android:summary="Show missing chapter (marked with red color)."
+            android:title="Show Missing Chapters" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="show_external"
+            android:summary="Show external chapter (marked with blue color/EX)."
+            android:title="Show External Chapters" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="use_internal_webview"
+            android:summary="Handle external link with internal WebView."
+            android:title="Use Internal WebView" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="reading_category"
+        android:title="Reading Layout" >
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="show_images"
@@ -71,11 +105,6 @@
             android:title="Keep Awake" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="auto_download_chapter"
-            android:summary="Automatically adds a chapter to the download list when touched, if it hasn't been downloaded yet."
-            android:title="Touch for Download" />
-        <CheckBoxPreference
-            android:defaultValue="false"
             android:key="use_volume_to_scroll"
             android:summary="Use volumer rocker for scrolling when for novel contents."
             android:title="Use Volume Rocker for Scrolling" />
@@ -85,13 +114,27 @@
             android:key="scroll_size"
             android:summary="Scrolling size for volumer rocker."
             android:title="Scrolling Size" />
-        <CheckBoxPreference android:key="invert_scroll" android:title="Invert Scroll Direction" android:defaultValue="false" android:dependency="use_volume_to_scroll" android:summary="Invert scrolling direction for volumer rocker."/>
-        <CheckBoxPreference android:summary="Novel list is always ordered by alphabet." android:key="alphabet_order" android:defaultValue="false" android:title="Alphabetical Order"/>
-        <CheckBoxPreference android:summary="Show missing chapter (marked with red color)." android:defaultValue="true" android:key="show_missing" android:title="Show Missing Chapters"/>
-        <CheckBoxPreference android:summary="Show external chapter (marked with blue color/EX)." android:defaultValue="true" android:key="show_external" android:title="Show External Chapters"/>
-        <CheckBoxPreference android:defaultValue="false" android:summary="Use fullscreen when reading." android:key="fullscreen" android:title="Use Fullscreen"/>
-        <CheckBoxPreference android:summary="Enable bookmark feature when reading." android:key="enable_bookmark" android:title="Enable Bookmark" android:defaultValue="true"/>
-        <CheckBoxPreference android:summary="Handle external link with internal WebView." android:title="Use Internal WebView" android:defaultValue="false" android:key="use_internal_webview"/>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="use_volume_to_scroll"
+            android:key="invert_scroll"
+            android:summary="Invert scrolling direction for volumer rocker."
+            android:title="Invert Scroll Direction" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="fullscreen"
+            android:summary="Use fullscreen when reading."
+            android:title="Use Fullscreen" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_bookmark"
+            android:summary="Enable bookmark feature when reading."
+            android:title="Enable Bookmark" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="force_justified"
+            android:summary="Force justified text for novel content, need to reload the chapter to take effect."
+            android:title="Force Justified" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="storage_category"
@@ -102,11 +145,11 @@
             android:title="Clear Novel Database" />
         <Preference
             android:key="backup_database"
-            android:summary="Creates a backup of the light novel database at the root of the device's internal storage."
+            android:summary="Creates a backup of the light novel database at the root of the device&apos;s internal storage."
             android:title="Create Novel Database Backup" />
         <Preference
             android:key="restore_database"
-            android:summary="Restores a light novel database backup previouslly created from the root of the device's internal storage."
+            android:summary="Restores a light novel database backup previouslly created from the root of the device&apos;s internal storage."
             android:title="Restore Novel Database Backup" />
         <Preference
             android:key="clear_image_cache"
@@ -115,11 +158,13 @@
         <Preference
             android:key="save_location"
             android:title="Image Save Location" />
-        <Preference android:key="db_location" android:title="Database Save Location"/><CheckBoxPreference
+        <Preference
+            android:key="db_location"
+            android:title="Database Save Location" />
+        <CheckBoxPreference
             android:key="download_big_image"
             android:summary="Download linked full resolution image. Might take a lot of space."
             android:title="Download Full-Res Image" />
-        
     </PreferenceCategory>
     <PreferenceCategory
         android:key="application_info"
@@ -131,5 +176,4 @@
             android:key="app_version"
             android:title="Version" />
     </PreferenceCategory>
-
 </PreferenceScreen>
