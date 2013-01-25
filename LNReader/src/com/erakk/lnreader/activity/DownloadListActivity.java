@@ -37,6 +37,10 @@ public class DownloadListActivity extends Activity {
 		return instance;
 	}
 	
+	public int getDownloadListCount() {
+		return downloadList.size();
+	}
+	
 	public void updateContent () {
 		try {
 			int resourceId = R.layout.download_list_item;

@@ -29,7 +29,7 @@
     <string name="task_loading">Task still loading&#8230;</string>
     <string name="jump_last_read">Resume Novel</string>
     <string name="title_activity_display_bookmark">Bookmarksy</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="main_activity_menu">Main Menu</string>
     <string name="title_activity_download_list">Downloads List</string>
     <string name="downloadsList">Downloads</string>
     <string name="title_activity_download_list_adapter">Downloads List</string>

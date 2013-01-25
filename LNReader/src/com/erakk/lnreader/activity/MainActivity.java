@@ -2,6 +2,7 @@ package com.erakk.lnreader.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -20,7 +21,11 @@ public class MainActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UIHelper.SetTheme(this, R.layout.activity_main);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
+            UIHelper.SetTheme(this, R.layout.activity_main);
+		else{
+	        UIHelper.SetTheme(this, R.layout.activity_main_no_tab);
+		}
         UIHelper.SetActionBarDisplayHomeAsUp(this, false);
         isInverted = getColorPreferences();
     }
@@ -79,16 +84,37 @@ public class MainActivity extends Activity {
     	intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
     	startActivity(intent);
     }
-//    
-//    public void openTeaserList(View view) {
-//    	Intent intent = new Intent(this, DisplayTeaserListActivity.class);
-//    	startActivity(intent);
-//    }
-//    
-//    public void openOriginalsList(View view) {
-//    	Intent intent = new Intent(this, DisplayOriginalListActivity.class);
-//    	startActivity(intent);
-//    }
+    public void openNovelListNoTab(View view) {
+    	Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
+    	intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
+    	startActivity(intent);
+    }
+    
+    public void openTeaserList(View view) {
+    	Intent intent = new Intent(this, DisplayTeaserListActivity.class);
+    	startActivity(intent);
+    }
+    
+    public void openOriginalsList(View view) {
+    	Intent intent = new Intent(this, DisplayOriginalListActivity.class);
+    	startActivity(intent);
+    }
+    public void openDownloadsList(View view) {
+    	Intent intent = new Intent(this, DownloadListActivity.class);
+    	startActivity(intent);
+    }
+    public void openUpdatesList(View view) {
+    	Intent intent = new Intent(this, UpdateHistoryActivity.class);
+    	startActivity(intent);
+    }
+    public void openBookmarks(View view) {
+    	Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
+    	startActivity(bookmarkIntent);
+    }
+    public void openSearch(View view) {
+    	Intent intent = new Intent(this, DisplaySearchActivity.class);
+    	startActivity(intent); 
+    }
     
     public void openWatchList(View view) {
     	Intent intent = new Intent(this, DisplayLightNovelListActivity.class);

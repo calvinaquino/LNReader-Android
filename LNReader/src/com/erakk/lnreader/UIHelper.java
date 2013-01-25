@@ -136,6 +136,19 @@ public class UIHelper {
 	    }
 	}
 	
+	@SuppressLint("NewApi")
+	public static void ToggleActionBar(Activity activity, boolean show) {
+		if(!show) {
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				ActionBar actionBar = activity.getActionBar();
+				if(actionBar != null) actionBar.hide();
+			}
+			else {
+				activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+			}
+		}
+	}
+	
 	/**
 	 * Toggle the Preferences:Constants.PREF_INVERT_COLOR
 	 * @param activity target activity

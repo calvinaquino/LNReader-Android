@@ -90,7 +90,7 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="show_zoom_control"
-            android:summary="Show zoom button in the novel contents, doesn&apos;t affect the zooming function (HONEYCOMB and up only)."
+            android:summary="Show zoom button in the novel contents, doesn&apos;t affect the zooming function."
             android:title="Show Zoom Control" />
         <CheckBoxPreference
             android:defaultValue="false"
@@ -102,6 +102,11 @@
             android:key="keep_awake"
             android:summary="Keeps the screen on when on chapter screen."
             android:title="Keep Awake" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="auto_download_chapter"
+            android:summary="Automatically adds a chapter to the download list when touched, if it hasn't been downloaded yet."
+            android:title="Touch for Download" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="use_volume_to_scroll"
@@ -144,16 +149,17 @@
             android:title="Clear Novel Database" />
         <Preference
             android:key="backup_database"
-            android:summary="Creates a backup of the light novel database at the root of the device&apos;s internal storage."
+            android:summary="Creates a backup of the light novel database at the root of the device's internal storage."
             android:title="Create Novel Database Backup" />
         <Preference
             android:key="restore_database"
-            android:summary="Restores a light novel database backup previouslly created from the root of the device&apos;s internal storage."
+            android:summary="Restores a light novel database backup previouslly created from the root of the device's internal storage."
             android:title="Restore Novel Database Backup" />
         <Preference
             android:key="clear_image_cache"
             android:summary="Clears cached images"
             android:title="Clear Image Cache" />
+        
         <Preference
             android:key="save_location"
             android:title="Image Save Location" />
