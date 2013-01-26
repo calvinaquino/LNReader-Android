@@ -137,11 +137,6 @@ table:not([class]) {
 }
 
 p {
-	font-family: Tahoma, Verdana;
-	line-height:200%;
-}
-
-div > p {
 	font-family: Georgia, serif;
-	line-height:200%
+	line-height:200%;
 }
