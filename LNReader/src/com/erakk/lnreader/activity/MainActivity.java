@@ -28,6 +28,7 @@ public class MainActivity extends Activity {
 		}
         UIHelper.SetActionBarDisplayHomeAsUp(this, false);
         isInverted = getColorPreferences();
+
     }
 
     @Override
