@@ -6,11 +6,15 @@ import java.util.Iterator;
 import android.content.Context;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.erakk.lnreader.Constants;
@@ -53,17 +57,49 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		
 		TextView tv = (TextView) view.findViewById(R.id.novel_chapter);
 		tv.setText(child.getTitle());
-		tv.setTag(child.getPage());
+		tv.setTag(child.getPage());		
+		
+		/*	DYNAMIC ICON ADDITION
+		 * 	
+		 * 	This will creating icons without a 8dp padding, then send it over to the end of the list container.
+		 * 	To reorder the icons, simply reorder when they get added in. The first will be the one farthest to the left.
+		 * 	Addition command: container.addView([insert ImageView]);
+		 */
+		
+		ViewGroup container = (ViewGroup) view.findViewById(R.id.novel_chapter_container);
+		
+		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+		int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics()); // Converts 8dp into px
+		
+		ImageView ivFinishedReading = new ImageView(context);
+		ivFinishedReading.setImageResource(R.drawable.ic_finished_reading);
+		ivFinishedReading.setScaleType(ImageView.ScaleType.CENTER);
+		ivFinishedReading.setPadding(padding, padding, padding, padding);
+		ivFinishedReading.setLayoutParams(params);
+		
+		
+		ImageView ivExternal = new ImageView(context);
+		ivExternal.setImageResource(R.drawable.ic_is_external);
+		ivExternal.setScaleType(ImageView.ScaleType.CENTER);
+		ivExternal.setPadding(padding, padding, padding, padding);
+		ivExternal.setLayoutParams(params);
 
-		ImageView ivFinishedReading = (ImageView) view.findViewById(R.id.novel_finished_reading);
-		ImageView ivIsExternal = (ImageView) view.findViewById(R.id.novel_is_external);
+		ImageView ivIsDownloaded = new ImageView(context);
+		ivIsDownloaded.setImageResource(R.drawable.ic_downloaded);
+		ivIsDownloaded.setScaleType(ImageView.ScaleType.CENTER);
+		ivIsDownloaded.setPadding(padding, padding, padding, padding);
+		ivIsDownloaded.setLayoutParams(params);
+		
+		ImageView ivHasUpdates = new ImageView(context);
+		ivHasUpdates.setImageResource(R.drawable.ic_update_avaliable);
+		ivHasUpdates.setScaleType(ImageView.ScaleType.CENTER);
+		ivHasUpdates.setPadding(padding, padding, padding, padding);
+		ivHasUpdates.setLayoutParams(params);
 		
 		if (ivFinishedReading != null) {
 			if (child.isFinishedRead()) {
-				ivFinishedReading.setVisibility(ImageView.VISIBLE);
+				container.addView(ivFinishedReading);
 				UIHelper.setColorFilter(ivFinishedReading);
-			} else {
-				ivFinishedReading.setVisibility(ImageView.GONE);
 			}
 		}		
 		
@@ -71,28 +107,16 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			tv.setTextColor(Constants.COLOR_MISSING);
 		}
 		if(child.isExternal()) {
-			ivIsExternal.setVisibility(ImageView.VISIBLE);
-		}
-		else {
-			ivIsExternal.setVisibility(ImageView.GONE);
+			container.addView(ivExternal);
 		}
 
-		ImageView ivIsDownloaded = (ImageView) view.findViewById(R.id.novel_is_downloaded);
-		ImageView ivHasUpdates = (ImageView) view.findViewById(R.id.novel_has_updates);
 		//Log.d("getChildView", "Downloaded " + child.getTitle() + " id " + child.getId() + " : " + child.isDownloaded() );
 		if(ivIsDownloaded != null && ivHasUpdates != null) {
-			if(!child.isDownloaded()) {
-				ivIsDownloaded.setVisibility(ImageView.GONE);
-			}
-			else {
+			if(child.isDownloaded()) {
 				if(NovelsDao.getInstance().isContentUpdated(child)) {
-					ivHasUpdates.setVisibility(ImageView.VISIBLE);
+					container.addView(ivHasUpdates);			
 				}
-				else {
-					ivHasUpdates.setVisibility(ImageView.GONE);
-				}					
-					
-				ivIsDownloaded.setVisibility(TextView.VISIBLE);
+				container.addView(ivIsDownloaded);
 			}
 			UIHelper.setColorFilter(ivIsDownloaded);
 			UIHelper.setColorFilter(ivHasUpdates);

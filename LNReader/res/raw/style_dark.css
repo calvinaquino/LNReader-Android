@@ -47,15 +47,13 @@ div.gallerytext {
     word-wrap: break-word;
 }
 /*For Image Thumbnail in Content*/
-div.tright {
-    margin: 0.5em 0 1.3em 1.4em;
-}
 div.thumb {
     background-color: transparent;
     margin-bottom: 0.5em;
     width: auto;
 }
 div.tright, div.floatright, table.floatright {
+	margin: 0.5em 0 1.3em 1.4em;
     clear: right;
     float: right;
 }
@@ -137,7 +135,11 @@ table:not([class]) {
 }
 
 p {
-	font-family: Georgia, serif;
+	font-family: Tahoma, Verdana;
 	line-height:200%;
 }
-	
+
+div > p {
+	font-family: Georgia, serif;
+	line-height:200%
+}
