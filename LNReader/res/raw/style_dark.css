@@ -1,8 +1,7 @@
 body {
  background-color: #000000;
  color: #dddddd;
- margin-left: 2mm !important;
- margin-right: 2mm !important;
+ margin: 10mm !important;
  word-wrap:break-word !important;
 }
 
@@ -131,3 +130,14 @@ table.wikitable>caption {
 table:not([class]) {
 	background-color: #1D1D1D !important;
 }
+
+/* For Novel content parsing */
+.mw-headline{
+	font-family: Georgia,serif;
+}
+
+p {
+	font-family: Georgia, serif;
+	line-height:200%;
+}
+	
