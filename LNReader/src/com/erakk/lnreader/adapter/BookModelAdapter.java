@@ -72,6 +72,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		}
 		if(child.isExternal()) {
 			ivIsExternal.setVisibility(ImageView.VISIBLE);
+			UIHelper.setColorFilter(ivIsExternal);
 		}
 		else {
 			ivIsExternal.setVisibility(ImageView.GONE);
