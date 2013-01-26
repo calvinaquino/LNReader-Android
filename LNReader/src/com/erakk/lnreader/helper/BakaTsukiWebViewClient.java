@@ -39,7 +39,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 		}
 		else {
 			// get the title from url
-			boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(caller.getApplicationContext()).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
+			boolean isInternalPages = false;
 			if(url.contains("/project/index.php?title=")) {
 				String titles[] = url.split("title=", 2);
 				if(titles.length == 2 && !(titles[1].length() == 0)) {
@@ -69,23 +69,27 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 							}
 						}
 						
-						useInternalWebView = false;
+						isInternalPages = true;
 					} catch (Exception e) {
 						Log.e(TAG, "Failed to load: " + titles[1], e);
 					}
 				}
 			}
 			
-			if(useInternalWebView){	
-				PageModel pageModel = new PageModel();
-				pageModel.setPage(url);
-				try {
-					pageModel = NovelsDao.getInstance().getExistingPageModel(pageModel, null);
-				} catch (Exception e) {
-					Log.e(TAG, "Failed to get pageModel: " + url, e);
-				}
-				if(pageModel != null) {
+			if(!isInternalPages){
+				boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(caller.getApplicationContext()).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
+				if(useInternalWebView) {
+					PageModel pageModel = new PageModel();
+					pageModel.setPage(url);
+					PageModel temp = pageModel;
+					try {
+						temp = NovelsDao.getInstance().getExistingPageModel(pageModel, null);
+					} catch (Exception e) {
+						Log.e(TAG, "Failed to get pageModel: " + url, e);
+					}
+					if(temp != null) pageModel = temp;
 					caller.loadExternalUrl(pageModel);
+					
 				}
 				else {
 					// use default handler.
@@ -93,12 +97,6 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 					context.startActivity(browserIntent);
 				}
 			}
-			else {
-				// use default handler.
-				Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-				context.startActivity(browserIntent);
-			}
-			return true;
 		}
         return true;
     }	
