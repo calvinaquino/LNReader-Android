@@ -85,7 +85,6 @@ public class UIHelper {
 		if (keep) {
 			activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		}
-		Log.d("Preferences", "Keep Awake = "+keep);
 		return keep;
 		
 	}

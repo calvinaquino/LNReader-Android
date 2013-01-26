@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center" >
     
     <LinearLayout 
         android:id="@+id/menu_main"
@@ -12,10 +13,11 @@
 	    <LinearLayout
 	        android:id="@+id/menu_left"
             android:layout_weight="14"
+            android:layout_gravity="center_vertical"
 	        android:layout_width="0dp"
 	      	android:layout_marginLeft="25dp"
-	      	android:layout_marginTop="100dp"
-	      	android:layout_marginBottom="100dp"
+	      	android:layout_marginTop="50dp"
+	      	android:layout_marginBottom="50dp"
 	        android:layout_height="wrap_content"
 	        android:orientation="vertical" >
 	        
@@ -24,7 +26,7 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
    	            android:layout_gravity="center"
-	            android:layout_marginTop="50dp"
+	            android:layout_marginTop="40dp"
 	            android:minHeight="66dp"
 	            android:minWidth="165dp"
 	            android:onClick="openNovelList"
@@ -39,7 +41,7 @@
    	            android:layout_width="wrap_content"
    	            android:layout_height="wrap_content"
    	            android:layout_gravity="center"
-	            android:layout_marginTop="50dp"
+	            android:layout_marginTop="40dp"
    	            android:minHeight="66dp"
    	            android:minWidth="165dp"
 	            android:onClick="openWatchList"
@@ -54,7 +56,8 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
    	            android:layout_gravity="center"
-	            android:layout_marginTop="50dp"
+	            android:layout_marginTop="40dp"
+	            android:layout_marginBottom="40dp"
 	            android:minHeight="66dp"
 	            android:minWidth="165dp"
    	            android:onClick="jumpLastRead"
@@ -69,16 +72,17 @@
 	    <View 
 		    android:id="@+id/divider_vertical"
 	        android:layout_width="1dp"
-	        android:layout_height="match_parent"
-	        android:layout_marginTop="55dp"
-			android:layout_marginBottom="45dp"
+	        android:layout_height="fill_parent"
+	        android:layout_marginTop="30dp"
+			android:layout_marginBottom="30dp"
+			
 	        android:background="@color/divider"
 		    />
 	    
 	    <LinearLayout
 	        android:id="@+id/menu_right"
 	        android:layout_width="wrap_content"
-	        android:layout_height="fill_parent"
+	        android:layout_height="wrap_content"
 	        android:gravity="center_vertical|center_horizontal"
 	        android:orientation="vertical"
 	        android:layout_weight="2" >

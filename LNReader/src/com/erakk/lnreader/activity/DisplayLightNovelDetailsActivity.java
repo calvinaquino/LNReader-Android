@@ -507,7 +507,7 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 						}
 						else {
 							
-							if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+							if((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && getStrechCoverPreference()) {
 								Drawable coverDrawable = new BitmapDrawable(getResources(),novelCol.getCoverBitmap());
 								int coverHeight = novelCol.getCoverBitmap().getHeight();
 								int coverWidth = novelCol.getCoverBitmap().getWidth();
@@ -548,5 +548,9 @@ public class DisplayLightNovelDetailsActivity extends Activity implements IAsync
 	
 	private boolean getDownloadTouchPreference(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_DOWNLOAD_TOUCH, false);
+	}
+	
+	private boolean getStrechCoverPreference(){
+    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_STRETCH_COVER, false);
 	}
 }

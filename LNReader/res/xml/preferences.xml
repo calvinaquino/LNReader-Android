@@ -73,6 +73,11 @@
             android:key="use_internal_webview"
             android:summary="Handle external link with internally, rather than using browser."
             android:title="Use Internal WebView" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="strech_detail_image"
+            android:summary="Makes the cover for the novel fit the screen (with insets) instead of it's original size."
+            android:title="Resize Cover" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="reading_category"
@@ -102,11 +107,6 @@
             android:key="keep_awake"
             android:summary="Keeps the screen on when on chapter screen."
             android:title="Keep Awake" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="auto_download_chapter"
-            android:summary="Automatically adds a chapter to the download list when touched, if it hasn't been downloaded yet."
-            android:title="Touch for Download" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="use_volume_to_scroll"
