@@ -11,7 +11,6 @@ import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;

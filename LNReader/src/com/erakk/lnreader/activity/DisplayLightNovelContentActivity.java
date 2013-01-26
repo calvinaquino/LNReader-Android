@@ -666,6 +666,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			setTitle(pageModel.getTitle() + " (" + volume + ")");
 		} catch (Exception ex) {
 			Log.e(TAG, "Error when setting title: " + ex.getMessage(), ex);
+			setTitle(pageModel.getPage());
 		}
 	}
 
