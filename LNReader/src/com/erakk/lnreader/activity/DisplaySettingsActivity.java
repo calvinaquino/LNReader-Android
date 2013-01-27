@@ -1,15 +1,22 @@
 package com.erakk.lnreader.activity;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -32,10 +39,12 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 	private static final String TAG = DisplaySettingsActivity.class.toString();
 	private boolean isInverted;
 	private ProgressDialog dialog = null;
+	Context context;
 	
 	@SuppressWarnings("deprecation")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
+		context = this;
 		UIHelper.SetTheme(this, null);
 		super.onCreate(savedInstanceState);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);   	
@@ -171,10 +180,92 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
         LNReaderApplication.getInstance().setUpdateServiceListener(this);
         isInverted = getColorPreferences();        
         
-        // Line Spacing Preference update for Screen
+        
+        /************************************************************
+         *  CSS Layout Behaviours
+         *  1. When user's css sheet is used, disable the force justify and linespacing preferences
+         *  2. When about to use user's css sheet, display a warning/message
+         *  
+         *  3. When linespacing is changed, update the summary text to reflect current value
+         ***************************************************************/
+        
+        final Preference user_cssPref = (Preference) findPreference(Constants.PREF_USER_CSS);
         final Preference lineSpacePref = (Preference) findPreference(Constants.PREF_LINESPACING);
+        final Preference justifyPref = (Preference) findPreference(Constants.PREF_FORCE_JUSTIFIED);
+        
+        // Retrieve inital values stored
+        Boolean currUserCSS = getPreferenceScreen().getSharedPreferences().getBoolean(Constants.PREF_USER_CSS, false);
         String currLineSpacing = getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_LINESPACING, "150");
-        lineSpacePref.setSummary("Increases the space between lines. The greater the number, the more padding it has. Current value " + currLineSpacing + "%");
+        
+        // Behaviour 1 (Activity first loaded)
+        if(currUserCSS){
+        	lineSpacePref.setEnabled(false);
+        	justifyPref.setEnabled(false);
+        }
+        
+        // Behaviour 3 (Activity first loaded)
+        lineSpacePref.setSummary("Increases the space between lines. The greater the number, the more padding it has. \nCurrent value: " + currLineSpacing + "%");
+        
+        //Behaviour 1 (Updated Preference)
+        user_cssPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
+        	{
+
+				public boolean onPreferenceChange(Preference preference, Object newValue) {
+						Boolean set = (Boolean) newValue;
+						
+						if(set){
+							// Behaviour 2
+							AlertDialog.Builder builder = new AlertDialog.Builder(context);
+							builder.setTitle("Using style.css");
+							builder.setMessage("Requires knowledge of CSS language to be effective. Templete will be created if Downloads/style.css does not exist.");
+							builder.setCancelable(true);
+							builder.show();
+							
+							// Creates style.css if it doesn't already exist (taken from getExternalFilesDir() javaDocs)
+							File path = Environment.getExternalStoragePublicDirectory(
+						            Environment.DIRECTORY_DOWNLOADS);
+						    File file = new File(path, "style.css");
+						    
+						    if(file.exists()== false){
+
+						    try {
+						        // Make sure the Pictures directory exists.
+						        path.mkdirs();
+
+						        // Very simple code to copy a picture from the application's
+						        // resource into the external file.  Note that this code does
+						        // no error checking, and assumes the picture is small (does not
+						        // try to copy it in chunks).  Note that if external storage is
+						        // not currently mounted this will silently fail.
+						        InputStream is = getResources().openRawResource(R.raw.style);
+						        OutputStream os = new FileOutputStream(file);
+						        byte[] data = new byte[is.available()];
+						        is.read(data);
+						        os.write(data);
+						        is.close();
+						        os.close();
+							    } catch (IOException e) {
+							        // Unable to create file, likely because external storage is
+							        // not currently mounted.
+							        Log.w("ExternalStorage", "Error writing " + file, e);
+							    }
+							}
+								
+							
+							lineSpacePref.setEnabled(false);
+					        justifyPref.setEnabled(false);
+							
+
+						} else {
+					        lineSpacePref.setEnabled(true);
+					        justifyPref.setEnabled(true);
+						}
+					return true;
+				}
+        	}
+        );
+ 
+        // Line Spacing Preference update for Screen
         lineSpacePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
         	{
 				public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -186,6 +277,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
         );        
     }
 
+	
 	private void clearImages() {
 		UIHelper.createYesNoDialog(this, "Do you want to clear the Image Cache?", "Clear Image Cache", new OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {

@@ -64,6 +64,7 @@ public class Constants {
 	public static final String PREF_FORCE_JUSTIFIED = "force_justified";
 	public static final String PREF_STRETCH_COVER = "strech_detail_image";
 	public static final String PREF_LINESPACING = "line_spacing";
+	public static final String PREF_USER_CSS = "user_css";
 	
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 

@@ -1,5 +1,9 @@
 package com.erakk.lnreader.activity;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -16,6 +20,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -613,24 +618,17 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			final WebView wv = (WebView) findViewById(R.id.webView1);
 			setWebViewSettings();
 			
-			int styleId = -1;
-			if(getColorPreferences()) {
-				styleId = R.raw.style_dark;
-				//Log.d("CSS", "CSS = dark");					
-			}
-			else {
-				styleId = R.raw.style;
-				//Log.d("CSS", "CSS = normal");
-			}
+			// Deals with which CSS Stylesheet to use
+			
+
+			
 			int lastPos = content.getLastYScroll();
 			int pIndex = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, -1);
 			if(pIndex > 0) lastPos = pIndex;
 			
-			LNReaderApplication app = (LNReaderApplication) getApplication();
+
 			String html = "<html><head><style type=\"text/css\">"
-						+ app.ReadCss(styleId)
-						+ getJustifiedCss(getUseJustifiedPreferences())
-						+ getLineSpacing(getLineSpacingPreferences())
+						+ getCSSSheet()
 						+ "</style>"
 						+ "<meta name='viewport' content='width=device-width, minimum-scale=0.5, maximum-scale=5' />"
 						+ prepareJavaScript(lastPos, content.getBookmarks())
@@ -671,17 +669,48 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 	}
 
-	private String getJustifiedCss(boolean useJustified) {
-		if(useJustified) {
-			return "\nbody { text-align: justify !important; }\n";
+	private String getCSSSheet(){
+		StringBuilder text = new StringBuilder();
+		
+		if(getExternalCSSPreferences()){
+			File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "style.css");
+			
+			
+			try{
+				BufferedReader br = new BufferedReader(new FileReader(file));
+				String line;
+				
+				while ((line = br.readLine()) != null) {
+					text.append(line);
+					text.append('\n');
+					
+				}
+					return text.toString();
+				} catch (IOException e){
+					Log.w("ExternalStorage", "Error reading " + file, e);
+				}
 		}
-		else return "";
+		
+		int styleId = -1;
+		if(getColorPreferences()) {
+			styleId = R.raw.style_dark;
+			//Log.d("CSS", "CSS = dark");					
+		}
+		else {
+			styleId = R.raw.style;
+			//Log.d("CSS", "CSS = normal");
+		}
+		LNReaderApplication app = (LNReaderApplication) getApplication();
+		text.append(app.ReadCss(styleId));
+		
+		if(getUseJustifiedPreferences()) {
+			text.append("\nbody { text-align: justify !important; }\n");
+		}
+		text.append("\np { line-height:" + getLineSpacingPreferences() + "%; }\n");
+			
+		return text.toString();
 	}
-	
-	private String getLineSpacing(float space_value) {
-		return "\np { line-height:" + space_value+ "%; }\n";
-	}
-	
+
 
 	private String prepareJavaScript(int lastPos, ArrayList<BookmarkModel> bookmarks) {
 		String script ="<script type='text/javascript'>";
@@ -834,6 +863,10 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	boolean isLoaded = false;
 	public void notifyLoadComplete() {
 		isLoaded = true;
+	}
+
+	private boolean getExternalCSSPreferences(){
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USER_CSS, false);
 	}
 	
 	private float getLineSpacingPreferences(){
