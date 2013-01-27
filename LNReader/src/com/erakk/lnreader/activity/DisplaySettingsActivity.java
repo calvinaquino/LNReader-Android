@@ -170,6 +170,25 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
         
         LNReaderApplication.getInstance().setUpdateServiceListener(this);
         isInverted = getColorPreferences();
+        
+        
+        // Line Spacing Preference update for Screen
+        final Preference line_space = (Preference) findPreference(Constants.PREF_LINESPACING);
+        line_space.setSummary(getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_LINESPACING, "1") + "%");
+        line_space.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
+        	{
+				@Override
+				public boolean onPreferenceChange(Preference preference,
+						Object newValue) {
+					// TODO Auto-generated method stub
+						String set = (String) newValue;
+						preference.setSummary(set+"%");
+					return true;
+				}
+        	}
+        );
+        
+        
     }
 
 	private void clearImages() {
