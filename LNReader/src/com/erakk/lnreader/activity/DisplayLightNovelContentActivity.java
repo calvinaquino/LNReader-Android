@@ -669,6 +669,8 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 	}
 
+	// getCSSSheet() method will put all the CSS data into the HTML header.
+	// At the current moment, it reads the external data line by line then applies it directly to the header.
 	private String getCSSSheet(){
 		StringBuilder text = new StringBuilder();
 		
