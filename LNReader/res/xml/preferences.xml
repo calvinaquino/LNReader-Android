@@ -139,6 +139,17 @@
             android:key="force_justified"
             android:summary="Force justified text for novel content, need to reload the chapter to take effect."
             android:title="Force Justified" />
+        <EditTextPreference 
+            android:key="line_spacing" 
+            android:inputType="number"
+            android:title="Line Spacing" 
+            android:summary="Increases the space between lines. The greater the number, the more padding it has." 
+            android:defaultValue="100" 
+            android:negativeButtonText="Cancel" 
+            android:positiveButtonText="Set" 
+            android:dialogMessage="Please enter the desired number of your line spacing in percentage. (Default is 100%)" 
+            android:dialogTitle="Line Spacing"/>
+
     </PreferenceCategory>
     <PreferenceCategory
         android:key="storage_category"

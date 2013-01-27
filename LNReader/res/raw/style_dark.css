@@ -1,7 +1,10 @@
 body {
  background-color: #000000;
  color: #dddddd;
- margin: 2mm !important;
+ margin-left: 5%;
+ margin-right: 5%;
+ margin-top: 5%;
+ margin-bottom: 5%;
  word-wrap:break-word !important;
 }
 
