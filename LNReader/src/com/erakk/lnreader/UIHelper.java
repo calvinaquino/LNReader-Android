@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
@@ -195,12 +197,23 @@ public class UIHelper {
 	 * Change the color of image in ImageView, works nicely with single coloured images.
 	 * @param targetIv
 	 */
-	public static void setColorFilter(ImageView targetIv) {
+	public static ImageView setColorFilter(ImageView targetIv) {
 		if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
 			targetIv.setColorFilter(Constants.COLOR_UNREAD);
 		}
 		else {
 			targetIv.setColorFilter(Constants.COLOR_UNREAD_DARK);
 		}
+		return targetIv;
+	}
+	
+	public static Drawable setColorFilter(Drawable targetIv) {
+		if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
+			targetIv.setColorFilter(Constants.COLOR_UNREAD, Mode.SRC_ATOP);
+		}
+		else {
+			targetIv.setColorFilter(Constants.COLOR_UNREAD_DARK, Mode.SRC_ATOP);
+		}		
+		return targetIv;
 	}
 }
