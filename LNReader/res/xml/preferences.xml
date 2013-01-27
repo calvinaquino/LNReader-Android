@@ -144,7 +144,7 @@
             android:inputType="number"
             android:title="Line Spacing" 
             android:summary="Increases the space between lines. The greater the number, the more padding it has." 
-            android:defaultValue="100" 
+            android:defaultValue="150" 
             android:negativeButtonText="Cancel" 
             android:positiveButtonText="Set" 
             android:dialogMessage="Please enter the desired number of your line spacing in percentage. (Default is 100%)" 
