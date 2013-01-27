@@ -628,8 +628,9 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			
 			LNReaderApplication app = (LNReaderApplication) getApplication();
 			String html = "<html><head><style type=\"text/css\">"
-						+ app.ReadCss(styleId) 
+						+ app.ReadCss(styleId)
 						+ getJustifiedCss(getUseJustifiedPreferences())
+						+ getLineSpacing(getLineSpacingPreferences())
 						+ "</style>"
 						+ "<meta name='viewport' content='width=device-width, minimum-scale=0.5, maximum-scale=5' />"
 						+ prepareJavaScript(lastPos, content.getBookmarks())
@@ -676,6 +677,11 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 		else return "";
 	}
+	
+	private String getLineSpacing(float space_value) {
+		return "\np { line-height:" + space_value+ "%; }\n";
+	}
+	
 
 	private String prepareJavaScript(int lastPos, ArrayList<BookmarkModel> bookmarks) {
 		String script ="<script type='text/javascript'>";
@@ -830,9 +836,15 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		isLoaded = true;
 	}
 	
+	private float getLineSpacingPreferences(){
+		return (float) Float.parseFloat(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LINESPACING, "1"));
+	}
+	
+	
 	private boolean getHandleExternalLinkPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
 	}
+	
 	
 	private boolean getUseJustifiedPreferences() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_FORCE_JUSTIFIED, false);
