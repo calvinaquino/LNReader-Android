@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    <PreferenceCategory
+	<PreferenceCategory
         android:key="update_category"
         android:title="Update" >
         <ListPreference
@@ -134,15 +133,21 @@
             android:key="enable_bookmark"
             android:summary="Enable bookmark feature when reading."
             android:title="Enable Bookmark" />
-
-        <PreferenceScreen
+        <PreferenceScreen 
             android:title="CSS Layouts">
-             <CheckBoxPreference
-	            android:defaultValue="false"
-	            android:key="user_css"
-	            android:summary="Select if there is a style.css stylesheet in the Downloads Folder that can be used"
-	            android:title="Use User Stylesheet" />
-	        <CheckBoxPreference
+
+	        <CheckBoxPreference 
+				android:title="Use Custom CSS" 
+				android:summary="Use custom CSS for reading. Reload chapter to take effect (including changing the css path)." 
+				android:key="use_custom_css" 
+				android:defaultValue="false"/>
+			<EditTextPreference 
+				android:summary="Path to Custom CSS to be used for reading." 
+				android:title="Custom CSS Path" 
+				android:key="custom_css_path" 
+				android:dependency="use_custom_css" 
+				android:defaultValue="/mnt/sdcard/custom.css"/>  
+			<CheckBoxPreference
 	            android:defaultValue="false"
 	            android:key="force_justified"
 	            android:summary="Force justified text for novel content, need to reload the chapter to take effect."
@@ -156,10 +161,9 @@
 	            android:negativeButtonText="Cancel" 
 	            android:positiveButtonText="Set" 
 	            android:dialogMessage="Please enter the desired number of your line spacing in percentage. (Default is 150%)" 
-	            android:dialogTitle="Line Spacing"/>            
-            
-        </PreferenceScreen>
-
+	            android:dialogTitle="Line Spacing"/>
+			
+		</PreferenceScreen>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="storage_category"
@@ -180,7 +184,6 @@
             android:key="clear_image_cache"
             android:summary="Clears cached images"
             android:title="Clear Image Cache" />
-        
         <Preference
             android:key="save_location"
             android:title="Image Save Location" />

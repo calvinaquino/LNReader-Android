@@ -189,18 +189,24 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
          *  3. When linespacing is changed, update the summary text to reflect current value
          ***************************************************************/
         
-        final Preference user_cssPref = (Preference) findPreference(Constants.PREF_USER_CSS);
+        final Preference user_cssPref = (Preference) findPreference(Constants.PREF_USE_CUSTOM_CSS);
         final Preference lineSpacePref = (Preference) findPreference(Constants.PREF_LINESPACING);
         final Preference justifyPref = (Preference) findPreference(Constants.PREF_FORCE_JUSTIFIED);
+        final Preference customCssPathPref = (Preference) findPreference(Constants.PREF_CUSTOM_CSS_PATH);
         
         // Retrieve inital values stored
-        Boolean currUserCSS = getPreferenceScreen().getSharedPreferences().getBoolean(Constants.PREF_USER_CSS, false);
+        Boolean currUserCSS = getPreferenceScreen().getSharedPreferences().getBoolean(Constants.PREF_USE_CUSTOM_CSS, false);
         String currLineSpacing = getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_LINESPACING, "150");
         
         // Behaviour 1 (Activity first loaded)
         if(currUserCSS){
         	lineSpacePref.setEnabled(false);
         	justifyPref.setEnabled(false);
+        	customCssPathPref.setEnabled(true);
+        } else {
+        	lineSpacePref.setEnabled(true);
+        	justifyPref.setEnabled(true);
+        	customCssPathPref.setEnabled(false);       	
         }
         
         // Behaviour 3 (Activity first loaded)
@@ -214,56 +220,30 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 						Boolean set = (Boolean) newValue;
 						
 						if(set){
-							// Behaviour 2
-							AlertDialog.Builder builder = new AlertDialog.Builder(context);
-							builder.setTitle("Using style.css");
-							builder.setMessage("Requires knowledge of CSS language to be effective. Templete will be created if Downloads/style.css does not exist.");
-							builder.setCancelable(true);
-							builder.show();
-							
-							// Creates style.css if it doesn't already exist (taken from getExternalFilesDir() javaDocs)
-							File path = Environment.getExternalStoragePublicDirectory(
-						            Environment.DIRECTORY_DOWNLOADS);
-						    File file = new File(path, "style.css");
-						    
-						    if(file.exists()== false){
-
-						    try {
-						        // Make sure the Pictures directory exists.
-						        path.mkdirs();
-
-						        // Very simple code to copy a picture from the application's
-						        // resource into the external file.  Note that this code does
-						        // no error checking, and assumes the picture is small (does not
-						        // try to copy it in chunks).  Note that if external storage is
-						        // not currently mounted this will silently fail.
-						        InputStream is = getResources().openRawResource(R.raw.style);
-						        OutputStream os = new FileOutputStream(file);
-						        byte[] data = new byte[is.available()];
-						        is.read(data);
-						        os.write(data);
-						        is.close();
-						        os.close();
-							    } catch (IOException e) {
-							        // Unable to create file, likely because external storage is
-							        // not currently mounted.
-							        Log.w("ExternalStorage", "Error writing " + file, e);
-							    }
-							}
-								
-							
-							lineSpacePref.setEnabled(false);
-					        justifyPref.setEnabled(false);
-							
+				        	lineSpacePref.setEnabled(false);
+				        	justifyPref.setEnabled(false);
+				        	customCssPathPref.setEnabled(true);
 
 						} else {
-					        lineSpacePref.setEnabled(true);
-					        justifyPref.setEnabled(true);
+				        	lineSpacePref.setEnabled(true);
+				        	justifyPref.setEnabled(true);
+				        	customCssPathPref.setEnabled(false);
 						}
 					return true;
 				}
         	}
         );
+        
+
+        String customCssPath = customCssPathPref.getSharedPreferences().getString(Constants.PREF_CUSTOM_CSS_PATH, "/mnt/sdcard/custom.css");
+        customCssPathPref.setSummary("Path: " + customCssPath);
+        customCssPathPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				customCssPathPref.setSummary("Path: " + newValue.toString());
+				return true;
+			}
+		});
  
         // Line Spacing Preference update for Screen
         lineSpacePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener()

@@ -669,49 +669,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 	}
 
-	// getCSSSheet() method will put all the CSS data into the HTML header.
-	// At the current moment, it reads the external data line by line then applies it directly to the header.
-	private String getCSSSheet(){
-		StringBuilder text = new StringBuilder();
-		
-		if(getExternalCSSPreferences()){
-			File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "style.css");
-			
-			
-			try{
-				BufferedReader br = new BufferedReader(new FileReader(file));
-				String line;
-				
-				while ((line = br.readLine()) != null) {
-					text.append(line);
-					text.append('\n');
-					
-				}
-					return text.toString();
-				} catch (IOException e){
-					Log.w("ExternalStorage", "Error reading " + file, e);
-				}
-		}
-		
-		int styleId = -1;
-		if(getColorPreferences()) {
-			styleId = R.raw.style_dark;
-			//Log.d("CSS", "CSS = dark");					
-		}
-		else {
-			styleId = R.raw.style;
-			//Log.d("CSS", "CSS = normal");
-		}
-		LNReaderApplication app = (LNReaderApplication) getApplication();
-		text.append(app.ReadCss(styleId));
-		
-		if(getUseJustifiedPreferences()) {
-			text.append("\nbody { text-align: justify !important; }\n");
-		}
-		text.append("\np { line-height:" + getLineSpacingPreferences() + "%; }\n");
-			
-		return text.toString();
-	}
+
 
 
 	private String prepareJavaScript(int lastPos, ArrayList<BookmarkModel> bookmarks) {
@@ -867,10 +825,9 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		isLoaded = true;
 	}
 
-	private boolean getExternalCSSPreferences(){
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USER_CSS, false);
+	private boolean getUseCustomCSS() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_CUSTOM_CSS, false);
 	}
-	
 	private float getLineSpacingPreferences(){
 		return (float) Float.parseFloat(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LINESPACING, "1"));
 	}
@@ -883,5 +840,62 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	
 	private boolean getUseJustifiedPreferences() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_FORCE_JUSTIFIED, false);
+	}
+	
+	// getCSSSheet() method will put all the CSS data into the HTML header.
+	// At the current moment, it reads the external data line by line then applies it directly to the header.
+	private String getCSSSheet(){
+		StringBuilder css = new StringBuilder();
+		
+		if(getUseCustomCSS()){
+			String cssPath = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_CUSTOM_CSS_PATH, "/mnt/sdcard/custom.css");
+			if(!Util.isStringNullOrEmpty(cssPath)) {
+				File cssFile = new File(cssPath);
+				if (cssFile.exists()) {
+					// read the file
+					BufferedReader br = null;
+					FileReader fr = null;
+					try {
+						try {
+							fr = new FileReader(cssFile);
+							br = new BufferedReader(fr);
+							String line;
+	
+							while ((line = br.readLine()) != null) {
+								css.append(line);
+							}
+							return css.toString();
+						} catch (Exception e) {
+							throw e;
+						} finally {
+							if (fr != null)	fr.close();
+							if (br != null)	br.close();
+						}
+					} catch (Exception e) {
+						Log.e(TAG, "Error when reading Custom CSS: " + cssPath, e);
+					}
+				} else {
+					Toast.makeText(getApplicationContext(), "CSS Layout does not exists at the assigned path. Using default.", Toast.LENGTH_SHORT).show();
+				}
+			}
+		}
+		int styleId = -1;
+		if(getColorPreferences()) {
+			styleId = R.raw.style_dark;
+			//Log.d("CSS", "CSS = dark");					
+		}
+		else {
+			styleId = R.raw.style;
+			//Log.d("CSS", "CSS = normal");
+		}
+		LNReaderApplication app = (LNReaderApplication) getApplication();
+		css.append(app.ReadCss(styleId));
+		
+		if(getUseJustifiedPreferences()) {
+			css.append("\nbody { text-align: justify !important; }\n");
+		}
+		css.append("\np { line-height:" + getLineSpacingPreferences() + "%; }\n");
+			
+		return css.toString();
 	}
 }
