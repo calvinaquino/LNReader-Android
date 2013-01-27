@@ -169,26 +169,21 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 		});
         
         LNReaderApplication.getInstance().setUpdateServiceListener(this);
-        isInverted = getColorPreferences();
-        
+        isInverted = getColorPreferences();        
         
         // Line Spacing Preference update for Screen
-        final Preference line_space = (Preference) findPreference(Constants.PREF_LINESPACING);
-        line_space.setSummary(getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_LINESPACING, "1") + "%");
-        line_space.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
+        final Preference lineSpacePref = (Preference) findPreference(Constants.PREF_LINESPACING);
+        String currLineSpacing = getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_LINESPACING, "100");
+        lineSpacePref.setSummary("Increases the space between lines. The greater the number, the more padding it has. Current value " + currLineSpacing + "%");
+        lineSpacePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
         	{
-				@Override
-				public boolean onPreferenceChange(Preference preference,
-						Object newValue) {
-					// TODO Auto-generated method stub
+				public boolean onPreferenceChange(Preference preference, Object newValue) {
 						String set = (String) newValue;
-						preference.setSummary(set+"%");
+						preference.setSummary("Increases the space between lines. The greater the number, the more padding it has. Current value " + set + "%");
 					return true;
 				}
         	}
-        );
-        
-        
+        );        
     }
 
 	private void clearImages() {
