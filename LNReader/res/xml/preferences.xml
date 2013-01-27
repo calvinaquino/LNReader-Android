@@ -149,6 +149,8 @@
             android:positiveButtonText="Set" 
             android:dialogMessage="Please enter the desired number of your line spacing in percentage. (Default is 100%)" 
             android:dialogTitle="Line Spacing"/>
+        <CheckBoxPreference android:title="Use Custom CSS" android:summary="Use custom CSS for reading. Reload chapter to take effect (including changing the css path)." android:key="use_custom_css" android:defaultValue="false"/><EditTextPreference android:summary="Path to Custom CSS to be used for reading." android:title="Custom CSS Path" android:key="custom_css_path" android:dependency="use_custom_css" android:defaultValue="/mnt/sdcard/custom.css"/>
+        
 
     </PreferenceCategory>
     <PreferenceCategory

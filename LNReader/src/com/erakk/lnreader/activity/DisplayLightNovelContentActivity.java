@@ -1,5 +1,8 @@
 package com.erakk.lnreader.activity;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -612,23 +615,33 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			// load the contents here
 			final WebView wv = (WebView) findViewById(R.id.webView1);
 			setWebViewSettings();
-			
-			int styleId = -1;
-			if(getColorPreferences()) {
-				styleId = R.raw.style_dark;
-				//Log.d("CSS", "CSS = dark");					
-			}
-			else {
-				styleId = R.raw.style;
-				//Log.d("CSS", "CSS = normal");
-			}
+						
 			int lastPos = content.getLastYScroll();
 			int pIndex = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, -1);
 			if(pIndex > 0) lastPos = pIndex;
 			
 			LNReaderApplication app = (LNReaderApplication) getApplication();
+			String css = null;
+			if(getUseCustomCSS()) {
+				css = getCustomCSS();
+				if(Util.isStringNullOrEmpty(css)) Toast.makeText(this, "Custom CSS not exist or empty! Use default css", Toast.LENGTH_SHORT).show();
+			}
+			// either use default css or failed to read custom css
+			if (Util.isStringNullOrEmpty(css)) {
+				int styleId = -1;
+				if(getColorPreferences()) {
+					styleId = R.raw.style_dark;
+					//Log.d("CSS", "CSS = dark");					
+				}
+				else {
+					styleId = R.raw.style;
+					//Log.d("CSS", "CSS = normal");
+				}
+				css = app.ReadCss(styleId); 
+			}				
+			
 			String html = "<html><head><style type=\"text/css\">"
-						+ app.ReadCss(styleId)
+						+ css
 						+ getJustifiedCss(getUseJustifiedPreferences())
 						+ getLineSpacing(getLineSpacingPreferences())
 						+ "</style>"
@@ -848,5 +861,43 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	
 	private boolean getUseJustifiedPreferences() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_FORCE_JUSTIFIED, false);
+	}
+	
+	private boolean getUseCustomCSS() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_CUSTOM_CSS, false);
+	}
+	
+	private String getCustomCSS() {
+		String css = null;
+		String cssPath = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_CUSTOM_CSS_PATH, "/mnt/sdcard/custom.css");
+		if(!Util.isStringNullOrEmpty(cssPath)) {
+			File cssFile = new File(cssPath);
+			if (cssFile.exists()) {
+				// read the file
+				BufferedReader br = null;
+				FileReader fr = null;
+				try {
+					try {
+						StringBuilder text = new StringBuilder();
+						fr = new FileReader(cssFile);
+						br = new BufferedReader(fr);
+						String line;
+
+						while ((line = br.readLine()) != null) {
+							text.append(line);
+						}
+						css = text.toString();
+					} catch (Exception e) {
+						throw e;
+					} finally {
+						if (fr != null)	fr.close();
+						if (br != null)	br.close();
+					}
+				} catch (Exception e) {
+					Log.e(TAG, "Error when reading Custom CSS: " + cssPath, e);
+				}
+			}
+		}		
+		return css;
 	}
 }

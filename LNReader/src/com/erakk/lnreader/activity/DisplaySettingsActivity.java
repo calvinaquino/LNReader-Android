@@ -183,7 +183,18 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 					return true;
 				}
         	}
-        );        
+        );
+        
+        final Preference customCssPathPref = (Preference) findPreference(Constants.PREF_CUSTOM_CSS_PATH);
+        String customCssPath = customCssPathPref.getSharedPreferences().getString(Constants.PREF_CUSTOM_CSS_PATH, "/mnt/sdcard/custom.css");
+        customCssPathPref.setSummary("Path: " + customCssPath);
+        customCssPathPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				customCssPathPref.setSummary("Path: " + newValue.toString());
+				return true;
+			}
+		});
     }
 
 	private void clearImages() {
