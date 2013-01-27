@@ -1,7 +1,7 @@
 body {
  background-color: #ffffff;
  color: #000000;
- margin: 10mm !important;
+ margin: 2mm !important;
  word-wrap:break-word !important;
 }
 
@@ -136,10 +136,8 @@ table:not([class]) {
 
 p {
 	font-family: Tahoma, Verdana;
-	line-height:200%;
 }
 
 div > p {
 	font-family: Georgia, serif;
-	line-height:200%
 }
