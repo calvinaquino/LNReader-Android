@@ -173,7 +173,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
         
         // Line Spacing Preference update for Screen
         final Preference lineSpacePref = (Preference) findPreference(Constants.PREF_LINESPACING);
-        String currLineSpacing = getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_LINESPACING, "100");
+        String currLineSpacing = getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_LINESPACING, "150");
         lineSpacePref.setSummary("Increases the space between lines. The greater the number, the more padding it has. Current value " + currLineSpacing + "%");
         lineSpacePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
         	{
