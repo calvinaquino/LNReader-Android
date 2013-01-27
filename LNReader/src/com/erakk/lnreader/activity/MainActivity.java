@@ -8,6 +8,8 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
@@ -28,8 +30,7 @@ public class MainActivity extends Activity {
 		}
         UIHelper.SetActionBarDisplayHomeAsUp(this, false);
         isInverted = getColorPreferences();
-
-
+        setIconColor();
     }
 
     @Override
@@ -43,6 +44,7 @@ public class MainActivity extends Activity {
         super.onRestart();
         if(isInverted != getColorPreferences()) {
         	UIHelper.Recreate(this);
+        	setIconColor();
         }
     }
 	
@@ -51,7 +53,8 @@ public class MainActivity extends Activity {
         switch (item.getItemId()) {
         	case R.id.invert_colors:    			
         		UIHelper.ToggleColorPref(this);
-        		UIHelper.Recreate(this);    			
+        		UIHelper.Recreate(this);
+        		setIconColor();
     			return true;
         	case R.id.menu_search:    			
         		Intent intent = new Intent(this, DisplaySearchActivity.class);
@@ -146,6 +149,14 @@ public class MainActivity extends Activity {
 //    	startActivity(intent);
 //    }
 
+    private void setIconColor() {
+    	LinearLayout rightMenu = (LinearLayout) findViewById(R.id.menu_right);
+    	int childCount = rightMenu.getChildCount();
+    	for(int i = 0; i < childCount; ++i) {
+    		ImageButton btn = (ImageButton) rightMenu.getChildAt(i);
+    		btn.setImageDrawable(UIHelper.setColorFilter(btn.getDrawable()));
+    	}
+    }
 	private boolean getColorPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}

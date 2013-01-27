@@ -30,8 +30,7 @@
 	            android:minHeight="66dp"
 	            android:minWidth="165dp"
 	            android:onClick="openNovelList"
-	            android:background="@drawable/button"
-	            android:textColor="#FFFFFF"
+	            android:background="@drawable/button"	            
 	            android:textStyle="bold"
 	            android:textSize="22sp"
 	            android:text="@string/light_novels" />
@@ -45,8 +44,7 @@
    	            android:minHeight="66dp"
    	            android:minWidth="165dp"
 	            android:onClick="openWatchList"
-	            android:background="@drawable/button"
-	            android:textColor="#FFFFFF"
+	            android:background="@drawable/button"	            
 	            android:textStyle="bold"
 	            android:textSize="22sp"
 	            android:text="@string/watch_list" />
@@ -61,8 +59,7 @@
 	            android:minHeight="66dp"
 	            android:minWidth="165dp"
    	            android:onClick="jumpLastRead"
-	            android:background="@drawable/button"
-	            android:textColor="#FFFFFF"
+	            android:background="@drawable/button"	            
 	            android:textStyle="bold"
 	            android:textSize="22sp"
    	            android:text="@string/jump_last_read" />
@@ -74,8 +71,7 @@
 	        android:layout_width="1dp"
 	        android:layout_height="fill_parent"
 	        android:layout_marginTop="30dp"
-			android:layout_marginBottom="30dp"
-			
+			android:layout_marginBottom="30dp"			
 	        android:background="@color/divider"
 		    />
 	    
