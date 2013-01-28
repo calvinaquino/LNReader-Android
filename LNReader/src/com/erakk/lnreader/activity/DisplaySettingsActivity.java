@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -32,10 +33,12 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 	private static final String TAG = DisplaySettingsActivity.class.toString();
 	private boolean isInverted;
 	private ProgressDialog dialog = null;
+	Context context;
 	
 	@SuppressWarnings("deprecation")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
+		context = this;
 		UIHelper.SetTheme(this, null);
 		super.onCreate(savedInstanceState);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);   	
@@ -170,22 +173,60 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
         
         LNReaderApplication.getInstance().setUpdateServiceListener(this);
         isInverted = getColorPreferences();        
+
+        /************************************************************
+         *  CSS Layout Behaviours
+         *  1. When user's css sheet is used, disable the force justify and linespace preferences
+         *  2. When about to use user's css sheet, display a warning/message
+         *  3. When linespace is changed, update the summary text to reflect current value
+         ***************************************************************/
         
-        // Line Spacing Preference update for Screen
+        final Preference user_cssPref = (Preference) findPreference(Constants.PREF_USE_CUSTOM_CSS);
         final Preference lineSpacePref = (Preference) findPreference(Constants.PREF_LINESPACING);
+        final Preference justifyPref = (Preference) findPreference(Constants.PREF_FORCE_JUSTIFIED);
+        final Preference customCssPathPref = (Preference) findPreference(Constants.PREF_CUSTOM_CSS_PATH);
+        
+        // Retrieve inital values stored
+        Boolean currUserCSS = getPreferenceScreen().getSharedPreferences().getBoolean(Constants.PREF_USE_CUSTOM_CSS, false);
         String currLineSpacing = getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_LINESPACING, "150");
-        lineSpacePref.setSummary("Increases the space between lines. The greater the number, the more padding it has. Current value " + currLineSpacing + "%");
-        lineSpacePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
+        
+        // Behaviour 1 (Activity first loaded)
+        if(currUserCSS){
+        	lineSpacePref.setEnabled(false);
+        	justifyPref.setEnabled(false);
+        	customCssPathPref.setEnabled(true);
+        } else {
+        	lineSpacePref.setEnabled(true);
+        	justifyPref.setEnabled(true);
+        	customCssPathPref.setEnabled(false);       	
+        }
+        
+        // Behaviour 3 (Activity first loaded)
+        lineSpacePref.setSummary("Increases the space between lines. The greater the number, the more padding it has. \nCurrent value: " + currLineSpacing + "%");
+        
+        //Behaviour 1 (Updated Preference)
+        user_cssPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
         	{
+
 				public boolean onPreferenceChange(Preference preference, Object newValue) {
-						String set = (String) newValue;
-						preference.setSummary("Increases the space between lines. The greater the number, the more padding it has. Current value " + set + "%");
+						Boolean set = (Boolean) newValue;
+						
+						if(set){
+				        	lineSpacePref.setEnabled(false);
+				        	justifyPref.setEnabled(false);
+				        	customCssPathPref.setEnabled(true);
+
+						} else {
+				        	lineSpacePref.setEnabled(true);
+				        	justifyPref.setEnabled(true);
+				        	customCssPathPref.setEnabled(false);
+						}
 					return true;
 				}
         	}
         );
         
-        final Preference customCssPathPref = (Preference) findPreference(Constants.PREF_CUSTOM_CSS_PATH);
+
         String customCssPath = customCssPathPref.getSharedPreferences().getString(Constants.PREF_CUSTOM_CSS_PATH, "/mnt/sdcard/custom.css");
         customCssPathPref.setSummary("Path: " + customCssPath);
         customCssPathPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -195,8 +236,19 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 				return true;
 			}
 		});
+        // Line Spacing Preference update for Screen
+        lineSpacePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
+        	{
+				public boolean onPreferenceChange(Preference preference, Object newValue) {
+						String set = (String) newValue;
+						preference.setSummary("Increases the space between lines. The greater the number, the more padding it has. Current value " + set + "%");
+					return true;
+				}
+        	}
+        );
     }
 
+	
 	private void clearImages() {
 		UIHelper.createYesNoDialog(this, "Do you want to clear the Image Cache?", "Clear Image Cache", new OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {

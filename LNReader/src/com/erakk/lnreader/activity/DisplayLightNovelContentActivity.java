@@ -109,13 +109,11 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		// Hide button after a certain time being shown 
 		hideBottom=new Runnable() {
             public void run() {
-                // TODO Auto-generated method stub
     			goBottom.setVisibility(ImageButton.GONE);  
             }
         };
         hideTop=new Runnable() {
             public void run() {
-                // TODO Auto-generated method stub
     			goTop.setVisibility(ImageButton.GONE);  
             }
         };
@@ -615,35 +613,13 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 			// load the contents here
 			final WebView wv = (WebView) findViewById(R.id.webView1);
 			setWebViewSettings();
-						
+			
 			int lastPos = content.getLastYScroll();
 			int pIndex = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, -1);
 			if(pIndex > 0) lastPos = pIndex;
 			
-			LNReaderApplication app = (LNReaderApplication) getApplication();
-			String css = null;
-			if(getUseCustomCSS()) {
-				css = getCustomCSS();
-				if(Util.isStringNullOrEmpty(css)) Toast.makeText(this, "Custom CSS not exist or empty! Use default css", Toast.LENGTH_SHORT).show();
-			}
-			// either use default css or failed to read custom css
-			if (Util.isStringNullOrEmpty(css)) {
-				int styleId = -1;
-				if(getColorPreferences()) {
-					styleId = R.raw.style_dark;
-					//Log.d("CSS", "CSS = dark");					
-				}
-				else {
-					styleId = R.raw.style;
-					//Log.d("CSS", "CSS = normal");
-				}
-				css = app.ReadCss(styleId); 
-			}				
-			
 			String html = "<html><head><style type=\"text/css\">"
-						+ css
-						+ getJustifiedCss(getUseJustifiedPreferences())
-						+ getLineSpacing(getLineSpacingPreferences())
+						+ getCSSSheet()
 						+ "</style>"
 						+ "<meta name='viewport' content='width=device-width, minimum-scale=0.5, maximum-scale=5' />"
 						+ prepareJavaScript(lastPos, content.getBookmarks())
@@ -684,17 +660,8 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 		}
 	}
 
-	private String getJustifiedCss(boolean useJustified) {
-		if(useJustified) {
-			return "\nbody { text-align: justify !important; }\n";
-		}
-		else return "";
-	}
-	
-	private String getLineSpacing(float space_value) {
-		return "\np { line-height:" + space_value+ "%; }\n";
-	}
-	
+
+
 
 	private String prepareJavaScript(int lastPos, ArrayList<BookmarkModel> bookmarks) {
 		String script ="<script type='text/javascript'>";
@@ -848,56 +815,83 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	public void notifyLoadComplete() {
 		isLoaded = true;
 	}
-	
+
+	private boolean getUseCustomCSS() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_CUSTOM_CSS, false);
+	}
 	private float getLineSpacingPreferences(){
 		return (float) Float.parseFloat(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LINESPACING, "1"));
-	}
-	
+	}	
 	
 	private boolean getHandleExternalLinkPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
 	}
-	
-	
+		
 	private boolean getUseJustifiedPreferences() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_FORCE_JUSTIFIED, false);
 	}
-	
-	private boolean getUseCustomCSS() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_CUSTOM_CSS, false);
-	}
-	
-	private String getCustomCSS() {
-		String css = null;
-		String cssPath = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_CUSTOM_CSS_PATH, "/mnt/sdcard/custom.css");
-		if(!Util.isStringNullOrEmpty(cssPath)) {
-			File cssFile = new File(cssPath);
-			if (cssFile.exists()) {
-				// read the file
-				BufferedReader br = null;
-				FileReader fr = null;
-				try {
-					try {
-						StringBuilder text = new StringBuilder();
-						fr = new FileReader(cssFile);
-						br = new BufferedReader(fr);
-						String line;
 
-						while ((line = br.readLine()) != null) {
-							text.append(line);
+	/**
+	 * getCSSSheet() method will put all the CSS data into the HTML header.
+	 * At the current moment, it reads the external data line by line then applies it directly to the header.
+	 * @return
+	 */
+	private String getCSSSheet(){
+		StringBuilder css = new StringBuilder();
+		
+		if(getUseCustomCSS()){
+			String cssPath = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_CUSTOM_CSS_PATH, "/mnt/sdcard/custom.css");
+			if(!Util.isStringNullOrEmpty(cssPath)) {
+				File cssFile = new File(cssPath);
+				if (cssFile.exists()) {
+					// read the file
+					BufferedReader br = null;
+					FileReader fr = null;
+					try {
+						try {
+							fr = new FileReader(cssFile);
+							br = new BufferedReader(fr);
+							String line;
+	
+							while ((line = br.readLine()) != null) {
+								css.append(line);
+							}
+							
+							return css.toString();
+							
+						} catch (Exception e) {
+							throw e;
+						} finally {
+							if (fr != null)	fr.close();
+							if (br != null)	br.close();
 						}
-						css = text.toString();
 					} catch (Exception e) {
-						throw e;
-					} finally {
-						if (fr != null)	fr.close();
-						if (br != null)	br.close();
+						Log.e(TAG, "Error when reading Custom CSS: " + cssPath, e);
 					}
-				} catch (Exception e) {
-					Log.e(TAG, "Error when reading Custom CSS: " + cssPath, e);
+				} else {
+					Toast.makeText(getApplicationContext(), "CSS Layout does not exists at the assigned path. Using default.", Toast.LENGTH_SHORT).show();
 				}
 			}
-		}		
-		return css;
+		}
+		
+		// Default CSS start here
+		int styleId = -1;
+		if(getColorPreferences()) {
+			styleId = R.raw.style_dark;
+			//Log.d("CSS", "CSS = dark");					
+		}
+		else {
+			styleId = R.raw.style;
+			//Log.d("CSS", "CSS = normal");
+		}
+		LNReaderApplication app = (LNReaderApplication) getApplication();
+		css.append(app.ReadCss(styleId));
+		
+		if(getUseJustifiedPreferences()) {
+			css.append("\nbody { text-align: justify !important; }\n");
+		}
+		css.append("\np { line-height:" + getLineSpacingPreferences() + "%; }\n");
+			
+		return css.toString();
 	}
 }

@@ -133,32 +133,35 @@
             android:key="enable_bookmark"
             android:summary="Enable bookmark feature when reading."
             android:title="Enable Bookmark" />
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="force_justified"
-            android:summary="Force justified text for novel content, need to reload the chapter to take effect."
-            android:title="Force Justified" />
-        <EditTextPreference 
-            android:key="line_spacing" 
-            android:inputType="number"
-            android:title="Line Spacing" 
-            android:summary="Increases the space between lines. The greater the number, the more padding it has." 
-            android:defaultValue="150" 
-            android:negativeButtonText="Cancel" 
-            android:positiveButtonText="Set" 
-            android:dialogMessage="Please enter the desired number of your line spacing in percentage. (Default is 150%)" 
-            android:dialogTitle="Line Spacing"/>
-        <CheckBoxPreference 
-			android:title="Use Custom CSS" 
-			android:summary="Use custom CSS for reading. Reload chapter to take effect (including changing the css path)." 
-			android:key="use_custom_css" 
-			android:defaultValue="false"/>
-		<EditTextPreference 
-			android:summary="Path to Custom CSS to be used for reading." 
-			android:title="Custom CSS Path" 
-			android:key="custom_css_path" 
-			android:dependency="use_custom_css" 
-			android:defaultValue="/mnt/sdcard/custom.css"/>  
+        <PreferenceScreen 
+            android:title="CSS Layouts">
+	        <CheckBoxPreference 
+				android:title="Use Custom CSS" 
+				android:summary="Use custom CSS for reading. Reload chapter to take effect (including changing the css path)." 
+				android:key="use_custom_css" 
+				android:defaultValue="false"/>
+			<EditTextPreference 
+				android:summary="Path to Custom CSS to be used for reading." 
+				android:title="Custom CSS Path" 
+				android:key="custom_css_path" 
+				android:dependency="use_custom_css" 
+				android:defaultValue="/mnt/sdcard/custom.css"/>  
+			<CheckBoxPreference
+	            android:defaultValue="false"
+	            android:key="force_justified"
+	            android:summary="Force justified text for novel content. Reload the chapter to take effect."
+	            android:title="Force Justified" />
+	        <EditTextPreference 
+	            android:key="line_spacing" 
+	            android:inputType="number"
+	            android:title="Line Spacing" 
+	            android:summary="Increases the space between lines. The greater the number, the more padding it has. Reload the chapter to take effect." 
+	            android:defaultValue="150" 
+	            android:negativeButtonText="Cancel" 
+	            android:positiveButtonText="Set" 
+	            android:dialogMessage="Please enter the desired number of your line spacing in percentage. (Default is 150%)" 
+	            android:dialogTitle="Line Spacing"/>
+		</PreferenceScreen>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="storage_category"
