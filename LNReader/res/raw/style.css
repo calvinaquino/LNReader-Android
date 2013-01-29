@@ -54,11 +54,48 @@ body {
  word-wrap:break-word !important;
 }
 
-/*	Highlighted text	*/
-.highlighted { 
+/*******************************************
+*	STANDARD NOVEL TEXT SETTINGS
+*	
+********************************************/
+.mw-headline{	/* Headings*/
+	font-family: Georgia,serif;
+}
+
+p {	/* Standard Text */
+	font-family: Tahoma, Verdana;
+}
+
+li {	/* List Items */
+    margin-bottom: .1em;
+}
+
+ul {	/* Unordered List Container (ie Bullet Points) */
+    line-height: 1.5em;
+    list-style-type: square;
+    margin: 0.3em 0 0 1.6em;
+    padding: 0;
+}
+
+.highlighted { /*	Highlighted text	*/
 	background-color : orange !important;
 }
 
+/* Modified for larger touch area for References	*/
+.reference {
+	letter-spacing: 10px;
+}
+.mw-cite-backlink{
+	font-size: xx-large;
+	letter-spacing: 10px;
+}
+
+
+a {	/*	Links	*/
+    background: none repeat scroll 0 0 transparent;
+    color: #3333DD;
+    text-decoration: none;
+}
 /**************************************************
 *	PICTURE SETTINGS
 **************************************************/
@@ -76,7 +113,6 @@ div.tright, div.floatright, table.floatright {
 }
 div.thumbinner {
     background-color: #D6D6D6;
-    border: 1px solid #333333;
     font-size: 94%;
     overflow: hidden;
     padding: 3px !important;
@@ -93,26 +129,19 @@ html .thumbcaption {
     text-align: left;
 }
 
-/* Handles pictures in the Illustration page	*/
-ul {
-    line-height: 1.5em;
-    list-style-type: square;
-    margin: 0.3em 0 0 1.6em;
-    padding: 0;
-}
+/* Handles pictures in the Illustration page (Normal style)	*/
 ul.gallery {
     display: block;
 	text-align: center;
 	
 }
-li {
-    margin-bottom: 2%	!important;
-}
+
 li.gallerybox {
-	margin:2px 2px 2px 2px;
+	margin:2px 2px 2% 2px;
     display: inline-block;
     vertical-align: top;
 }
+
 li.gallerybox div.thumb {
 	background-color: #D6D6D6;
     border: 1px solid #D6D6D6;
@@ -131,33 +160,36 @@ div.gallerytext > p {
 	font-family: Tahoma, Verdana;
 }
 
-/*Link*/
-a {
-    background: none repeat scroll 0 0 transparent;
-    color: #3333DD;
-    text-decoration: none;
+/* Handles pictures in the Illustration page for the following:
+*	Boku wa Tomodachi ga Sukunai, Volume 1, Colour Illustration 2	
+*
+*	NOTE: There is no real way to differentiate between the navigation bar at the bottom of
+*	the screen and the table that contains the illustrations.
+*/
+
+div.floatnone > a > img {
+	width: 100%	!important;
+	height: auto !important;
 }
 
-/* Hide unwanted elements*/
-#siteSub, #catlinks, #jump-to-nav, .printfooter, .editsection, .collapsed /*, .thumbcaption, .toc*/ {
-	display:none !important;
+div.floatleft > a > img {
+	width: 100%	!important;
+	height: auto !important;
 }
 
-/* hide {{Template:PREVIEW}} which have bad class name: {{{id}}} */
-table.\{\{\{id\}\}\} {
-    display:none !important;
+td {
+	vertical-align: top;
 }
 
-/* Modified for larger touch area */
-.reference {
-	letter-spacing: 10px;
-}
-.mw-cite-backlink{
-	font-size: xx-large;
-	letter-spacing: 10px;
+table:not([class]) ,table:not([class])> tbody >tr >td {
+	background-color: #C2C2C2 !important;
+	border: solid 1px black;
+	border-spacing: 0px;
 }
 
-/* Wikitable */
+/********************************************
+* Wikitable 
+********************************************/
 table.wikitable {
 	margin: 1em 1em 1em 0;
 	background-color: #D6D6D6 !important;
@@ -185,15 +217,14 @@ table:not([class]) {
 	background-color: #C2C2C2 !important;
 }
 
-/* For Novel content parsing */
-.mw-headline{
-	font-family: Georgia,serif;
+/******************************************************************************
+* HIDING UNWANTED ELEMENTS
+*******************************************************************************/
+#siteSub, #catlinks, #jump-to-nav, .printfooter, .editsection, .collapsed /*, .thumbcaption, .toc*/ {
+	display:none !important;
 }
 
-p {
-	font-family: Tahoma, Verdana;
-}
-
-div > p {
-	font-family: Georgia, serif;
+/* hide {{Template:PREVIEW}} which have bad class name: {{{id}}} */
+table.\{\{\{id\}\}\} {
+    display:none !important;
 }
