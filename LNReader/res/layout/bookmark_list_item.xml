@@ -45,6 +45,7 @@
         android:layout_alignBottom="@+id/pageTitle"
         android:layout_alignRight="@+id/excerpt"
         android:text="Create Date"
+        android:gravity="right"
         android:textColor="#777777"
         android:textSize="11sp" />
 
@@ -54,7 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/p_index"
         android:layout_centerHorizontal="true"
-        android:layout_margin="10dp"
+        android:layout_margin="20dp"
         android:paddingBottom="10dp"
         android:text="Excerpt..."
         android:textColor="#999999"
