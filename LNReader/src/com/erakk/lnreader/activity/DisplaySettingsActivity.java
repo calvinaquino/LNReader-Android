@@ -172,7 +172,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 		});
         
         LNReaderApplication.getInstance().setUpdateServiceListener(this);
-        isInverted = getColorPreferences();        
+		isInverted = getColorPreferences();        
 
         /************************************************************
          *  CSS Layout Behaviours
