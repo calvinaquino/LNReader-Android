@@ -111,7 +111,8 @@ div.tright, div.floatright, table.floatright {
     float: right;
 }
 div.thumbinner {
-    background-color: #D6D6D6;
+    background-color: #060606;
+    border: 1px solid #333333;
     font-size: 94%;
     overflow: hidden;
     padding: 3px !important;
@@ -132,20 +133,21 @@ html .thumbcaption {
 ul.gallery {
     display: block;
 	text-align: center;
+    padding: 2px;
 	
 }
 
 li.gallerybox {
-	margin:2px 2px 2% 2px;
+	border: 2px solid #222222;
+	margin-bottom: 2%;
     display: inline-block;
     vertical-align: top;
 }
 li.gallerybox div.thumb {
-	background-color: #D6D6D6;
-    border: 1px solid #D6D6D6;
-    width: 100%	!important;
+    background-color: #060606;
+    border: 1px solid #333333;
 	text-align: center;
-	margin: 0px 0px 0px 0px;
+	margin: 2px;
 }
 
 div.gallerytext {
