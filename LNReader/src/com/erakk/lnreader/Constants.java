@@ -34,6 +34,7 @@ public class Constants {
 	public static final String TAG = "LNReader";
 	
 	// Shared Preferences keys
+	public static final String PREF_FIRST_RUN = "first_run";
 	public static final String PREF_DOWNLOAD_TOUCH = "auto_download_chapter";
 	public static final String PREF_INVERT_COLOR = "invert_colors";
 	public static final String PREF_LOCK_HORIZONTAL = "lock_horizontal";
