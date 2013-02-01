@@ -44,17 +44,11 @@ public class MainActivity extends Activity {
         if (isFirstRun()) {
         	//Show copyrights
         	new AlertDialog.Builder(this).setTitle("Terms of Use").setMessage("Before using this application, keep in mind that we, the developers of BakaTsuki EX, are not responsible for the content displayed by the application in any way. Therefore, you must read and agree to the TLG Translation Common Agreement of Baka-Tsuki.org:\n\n" + getString(R.string.bakatsuki_copyrights) + "\n\nBy clicking \"I Agree\" below, you confirm that you have read the TLG Translation Common Agreement in it's entirety.").setPositiveButton("I Agree", new OnClickListener() {
-				
-				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					// TODO Auto-generated method stub
 		        	setFirstRun();
 				}
 			}).setNegativeButton("Exit App", new OnClickListener() {
-				
-				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					// TODO Auto-generated method stub
 					finish();
 				}
 			}).show();
@@ -199,9 +193,10 @@ public class MainActivity extends Activity {
 	    edit.putBoolean(Constants.PREF_FIRST_RUN, false);
 	    edit.commit();
 	}
-//	private void resetFirstRun() {
-//		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
-//	    edit.remove(Constants.PREF_FIRST_RUN);
-//	    edit.commit();
-//	}
+	
+	private void resetFirstRun() {
+		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
+	    edit.remove(Constants.PREF_FIRST_RUN);
+	    edit.commit();
+	}
 }

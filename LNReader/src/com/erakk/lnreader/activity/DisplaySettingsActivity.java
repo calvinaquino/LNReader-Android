@@ -319,10 +319,14 @@ public class DisplaySettingsActivity extends PreferenceActivity implements ICall
 		
 	    if (fileOrDirectory.isDirectory())
 	    	Log.d(TAG, "Deleting Dir: " + fileOrDirectory.getAbsolutePath());
-	        for (File child : fileOrDirectory.listFiles())
+	    	File[] fileList = fileOrDirectory.listFiles();
+	    	if(fileList == null || fileList.length == 0) return;
+	    	
+	        for (File child : fileList)
 	            DeleteRecursive(child);
 	    
-	    fileOrDirectory.delete();
+	    boolean result = fileOrDirectory.delete();
+	    if(!result) Log.e(TAG, "Failed to delete: " + fileOrDirectory.getAbsolutePath());
 	}
 
 	@SuppressWarnings("deprecation")
