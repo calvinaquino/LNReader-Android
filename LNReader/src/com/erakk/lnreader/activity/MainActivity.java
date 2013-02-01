@@ -2,17 +2,14 @@ package com.erakk.lnreader.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
+import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
-import android.preference.Preference.OnPreferenceClickListener;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,7 +40,9 @@ public class MainActivity extends Activity {
         
         if (isFirstRun()) {
         	//Show copyrights
-        	new AlertDialog.Builder(this).setTitle("Terms of Use").setMessage("Before using this application, keep in mind that we, the developers of BakaTsuki EX, are not responsible for the content displayed by the application in any way. Therefore, you must read and agree to the TLG Translation Common Agreement of Baka-Tsuki.org:\n\n" + getString(R.string.bakatsuki_copyrights) + "\n\nBy clicking \"I Agree\" below, you confirm that you have read the TLG Translation Common Agreement in it's entirety.").setPositiveButton("I Agree", new OnClickListener() {
+        	Builder tosDialog = new AlertDialog.Builder(this).setTitle("Terms of Use");
+        	tosDialog.setMessage("Before using this application, keep in mind that we, the developers of BakaTsuki EX, are not responsible for the content displayed by the application in any way. Therefore, you must read and agree to the TLG Translation Common Agreement of Baka-Tsuki.org:\n\n" + getString(R.string.bakatsuki_copyrights) + "\n\nBy clicking \"I Agree\" below, you confirm that you have read the TLG Translation Common Agreement in it's entirety.");
+        	tosDialog.setPositiveButton("I Agree", new OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 		        	setFirstRun();
 				}
@@ -51,9 +50,9 @@ public class MainActivity extends Activity {
 				public void onClick(DialogInterface dialog, int which) {
 					finish();
 				}
-			}).show();
-        }
-        
+			});
+        	tosDialog.show();
+        }        
     }
 
     @Override
@@ -154,7 +153,7 @@ public class MainActivity extends Activity {
     	Intent intent = new Intent(this, DisplaySettingsActivity.class);
     	startActivity(intent);
 //    	FOR TESTING
-//    	resetFirstRun();
+//    	UIHelper.resetFirstRun(this);
     }
     
     public void jumpLastRead(View view) {
@@ -182,21 +181,18 @@ public class MainActivity extends Activity {
     		btn.setImageDrawable(UIHelper.setColorFilter(btn.getDrawable()));
     	}
     }
+    
 	private boolean getColorPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
+	
 	private boolean isFirstRun() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_FIRST_RUN, true);
 	}
+	
 	private void setFirstRun() {
 		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
 	    edit.putBoolean(Constants.PREF_FIRST_RUN, false);
-	    edit.commit();
-	}
-	
-	private void resetFirstRun() {
-		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
-	    edit.remove(Constants.PREF_FIRST_RUN);
 	    edit.commit();
 	}
 }
