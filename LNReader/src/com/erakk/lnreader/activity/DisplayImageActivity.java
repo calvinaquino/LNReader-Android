@@ -1,7 +1,6 @@
 package com.erakk.lnreader.activity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -10,11 +9,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
@@ -27,7 +27,7 @@ import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadImageTask;
 
-public class DisplayImageActivity extends Activity implements IAsyncTaskOwner{
+public class DisplayImageActivity extends SherlockActivity implements IAsyncTaskOwner{
 	private static final String TAG = DisplayImageActivity.class.toString();
 	private WebView imgWebView;
 	private LoadImageTask task;
@@ -78,7 +78,7 @@ public class DisplayImageActivity extends Activity implements IAsyncTaskOwner{
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_display_image, menu);
+        getSupportMenuInflater().inflate(R.menu.activity_display_image, menu);
         return true;
     }
     

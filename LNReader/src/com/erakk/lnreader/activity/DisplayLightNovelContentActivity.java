@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -24,8 +23,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -35,6 +32,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
@@ -55,7 +55,7 @@ import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelContentTask;
 
-public class DisplayLightNovelContentActivity extends Activity implements IAsyncTaskOwner{
+public class DisplayLightNovelContentActivity extends SherlockActivity implements IAsyncTaskOwner{
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
 	public NovelContentModel content;
 	private NovelCollectionModel novelDetails;
@@ -257,7 +257,7 @@ public class DisplayLightNovelContentActivity extends Activity implements IAsync
 	@SuppressLint("NewApi")
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_display_light_novel_content, menu);
+		getSupportMenuInflater().inflate(R.menu.activity_display_light_novel_content, menu);
 
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) { 
 			if(getFullscreenPreferences()) {

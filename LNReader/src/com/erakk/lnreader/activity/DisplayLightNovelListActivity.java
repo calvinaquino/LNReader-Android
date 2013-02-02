@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -15,9 +14,7 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.EditText;
@@ -26,6 +23,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockListActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
@@ -48,7 +48,7 @@ import com.erakk.lnreader.task.LoadNovelsTask;
  * Copy from: NovelsActivity.java
  */
 
-public class DisplayLightNovelListActivity extends ListActivity implements IAsyncTaskOwner{
+public class DisplayLightNovelListActivity extends SherlockListActivity implements IAsyncTaskOwner{
 	private static final String TAG = DisplayLightNovelListActivity.class.toString();
 	private ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	private PageModelAdapter adapter;
@@ -106,7 +106,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
+		getSupportMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
 		return true;
 	}
 	
@@ -230,7 +230,7 @@ public class DisplayLightNovelListActivity extends ListActivity implements IAsyn
 	}
 
 	@Override
-	public boolean onContextItemSelected(MenuItem item) {
+	public boolean onContextItemSelected(android.view.MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		switch(item.getItemId()) {
 		case R.id.add_to_watch:			

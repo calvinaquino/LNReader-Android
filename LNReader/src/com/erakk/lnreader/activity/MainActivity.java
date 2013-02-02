@@ -1,8 +1,6 @@
 package com.erakk.lnreader.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -10,19 +8,21 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.Menu;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends SherlockActivity {
 	private static final String TAG = MainActivity.class.toString();
 	private boolean isInverted;
 	
@@ -40,9 +40,9 @@ public class MainActivity extends Activity {
         
         if (isFirstRun()) {
         	//Show copyrights
-        	Builder tosDialog = new AlertDialog.Builder(this).setTitle("Terms of Use");
-        	tosDialog.setMessage("Before using this application, keep in mind that we, the developers of BakaTsuki EX, are not responsible for the content displayed by the application in any way. Therefore, you must read and agree to the TLG Translation Common Agreement of Baka-Tsuki.org:\n\n" + getString(R.string.bakatsuki_copyrights) + "\n\nBy clicking \"I Agree\" below, you confirm that you have read the TLG Translation Common Agreement in it's entirety.");
-        	tosDialog.setPositiveButton("I Agree", new OnClickListener() {
+
+        	new AlertDialog.Builder(this).setTitle("Terms of Use").setMessage("Before using this application, keep in mind that we, the developers of BakaTsuki EX, are not responsible for the content displayed by the application in any way. Therefore, you must read and agree to the TLG Translation Common Agreement of Baka-Tsuki.org:\n\n" + getString(R.string.bakatsuki_copyrights) + "\n\nBy clicking \"I Agree\" below, you confirm that you have read the TLG Translation Common Agreement in it's entirety.").setPositiveButton("I Agree", new OnClickListener() {
+
 				public void onClick(DialogInterface dialog, int which) {
 		        	setFirstRun();
 				}
@@ -50,14 +50,14 @@ public class MainActivity extends Activity {
 				public void onClick(DialogInterface dialog, int which) {
 					finish();
 				}
-			});
-        	tosDialog.show();
-        }        
+			}).show();
+        }
+        
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
+        getSupportMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
     }
     
@@ -153,7 +153,7 @@ public class MainActivity extends Activity {
     	Intent intent = new Intent(this, DisplaySettingsActivity.class);
     	startActivity(intent);
 //    	FOR TESTING
-//    	UIHelper.resetFirstRun(this);
+//    	resetFirstRun();
     }
     
     public void jumpLastRead(View view) {
@@ -181,18 +181,21 @@ public class MainActivity extends Activity {
     		btn.setImageDrawable(UIHelper.setColorFilter(btn.getDrawable()));
     	}
     }
-    
 	private boolean getColorPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
-	
 	private boolean isFirstRun() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_FIRST_RUN, true);
 	}
-	
 	private void setFirstRun() {
 		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
 	    edit.putBoolean(Constants.PREF_FIRST_RUN, false);
+	    edit.commit();
+	}
+	
+	private void resetFirstRun() {
+		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
+	    edit.remove(Constants.PREF_FIRST_RUN);
 	    edit.commit();
 	}
 }

@@ -14,11 +14,11 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
@@ -29,7 +29,7 @@ import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.service.MyScheduleReceiver;
 
-public class DisplaySettingsActivity extends PreferenceActivity implements ICallbackNotifier{
+public class DisplaySettingsActivity extends SherlockPreferenceActivity implements ICallbackNotifier{
 	private static final String TAG = DisplaySettingsActivity.class.toString();
 	private boolean isInverted;
 	private ProgressDialog dialog = null;
