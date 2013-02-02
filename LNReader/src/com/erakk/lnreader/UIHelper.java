@@ -216,4 +216,10 @@ public class UIHelper {
 		}		
 		return targetIv;
 	}
+	
+	public static void resetFirstRun(Context context) {
+		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(context).edit();
+	    edit.remove(Constants.PREF_FIRST_RUN);
+	    edit.commit();
+	}
 }
