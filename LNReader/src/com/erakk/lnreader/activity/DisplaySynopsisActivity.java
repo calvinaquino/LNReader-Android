@@ -1,6 +1,5 @@
 package com.erakk.lnreader.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -9,14 +8,15 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
@@ -26,7 +26,7 @@ import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 
-public class DisplaySynopsisActivity extends Activity {
+public class DisplaySynopsisActivity extends SherlockActivity {
 	NovelsDao dao = NovelsDao.getInstance(this);
 	NovelCollectionModel novelCol;
 	
@@ -80,7 +80,7 @@ public class DisplaySynopsisActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_display_synopsis, menu);
+        getSupportMenuInflater().inflate(R.menu.activity_display_synopsis, menu);
         return true;
     }
 

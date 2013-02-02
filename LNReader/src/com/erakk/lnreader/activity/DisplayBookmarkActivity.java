@@ -2,15 +2,15 @@ package com.erakk.lnreader.activity;
 
 import java.util.ArrayList;
 
-import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+import com.actionbarsherlock.app.SherlockListActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
@@ -18,7 +18,7 @@ import com.erakk.lnreader.adapter.BookmarkModelAdapter;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookmarkModel;
 
-public class DisplayBookmarkActivity extends ListActivity  {
+public class DisplayBookmarkActivity extends SherlockListActivity  {
 	private boolean isInverted;
 	private BookmarkModelAdapter adapter = null;
 	
@@ -56,7 +56,7 @@ public class DisplayBookmarkActivity extends ListActivity  {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_display_bookmark, menu);
+		getSupportMenuInflater().inflate(R.menu.activity_display_bookmark, menu);
 		return true;
 	}
 

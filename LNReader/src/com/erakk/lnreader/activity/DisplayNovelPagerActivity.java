@@ -1,30 +1,33 @@
 package com.erakk.lnreader.activity;
 
 import android.app.Activity;
-import android.app.TabActivity;
+import android.app.LocalActivityManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 
 
 @SuppressWarnings("deprecation")
-public class DisplayNovelPagerActivity extends TabActivity {
+public class DisplayNovelPagerActivity extends SherlockActivity {
     // TabSpec Names
     private static final String MAIN_SPEC = "Main";
     private static final String TEASER_SPEC = "Teaser";
     private static final String ORIGINAL_SPEC = "Original";
     static TabHost tabHost;
 	private boolean isInverted;
+	private Activity context;
+	LocalActivityManager lam;
  
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,7 +42,12 @@ public class DisplayNovelPagerActivity extends TabActivity {
             UIHelper.SetActionBarDisplayHomeAsUp(this, false);
             setContentView(R.layout.activity_display_novel_pager_fix);
 		} 
-        tabHost = getTabHost();
+        
+        context = this;
+        tabHost = (TabHost) findViewById(android.R.id.tabhost);
+        lam = new LocalActivityManager(this,false);
+        lam.dispatchCreate(savedInstanceState);
+        tabHost.setup(lam);
         isInverted = getColorPreferences();
         
         // First Tab - Normal Novels
@@ -81,6 +89,20 @@ public class DisplayNovelPagerActivity extends TabActivity {
     }
     
     @Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		lam.dispatchPause(isFinishing());
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		lam.dispatchResume();
+	}
+
+	@Override
     protected void onRestart() {
         super.onRestart();
         if(isInverted != getColorPreferences()) {
@@ -110,13 +132,13 @@ public class DisplayNovelPagerActivity extends TabActivity {
     // Option Menu related
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
+		getSupportMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
 		return true;
 	}
     
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-    	Activity activity = getCurrentActivity();
+    	Activity activity = context;
 		switch (item.getItemId()) {
 		case R.id.menu_settings:
 			Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
