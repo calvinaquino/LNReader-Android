@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     
     <LinearLayout 
         android:id="@+id/menu_main"
@@ -29,7 +29,6 @@
 	            android:minWidth="165dp"
 	            android:onClick="openNovelListNoTab"
 	            android:background="@drawable/button"
-	            android:textColor="#FFFFFF"
 	            android:textStyle="bold"
 	            android:textSize="22sp"
 	            android:text="@string/light_novels" />
@@ -44,7 +43,6 @@
 	            android:minWidth="165dp"
 	            android:onClick="openTeaserList"
 	            android:background="@drawable/button"
-	            android:textColor="#FFFFFF"
 	            android:textStyle="bold"
 	            android:textSize="22sp"
 	            android:text="@string/teasers" />
@@ -59,7 +57,6 @@
 	            android:minWidth="165dp"
 	            android:onClick="openOriginalsList"
 	            android:background="@drawable/button"
-	            android:textColor="#FFFFFF"
 	            android:textStyle="bold"
 	            android:textSize="22sp"
 	            android:text="@string/originals" />
@@ -74,7 +71,6 @@
    	            android:minWidth="165dp"
 	            android:onClick="openWatchList"
 	            android:background="@drawable/button"
-	            android:textColor="#FFFFFF"
 	            android:textStyle="bold"
 	            android:textSize="22sp"
 	            android:text="@string/watch_list" />
@@ -90,7 +86,6 @@
 	            android:minWidth="165dp"
    	            android:onClick="jumpLastRead"
 	            android:background="@drawable/button"
-	            android:textColor="#FFFFFF"
 	            android:textStyle="bold"
 	            android:textSize="22sp"
    	            android:text="@string/jump_last_read" />
