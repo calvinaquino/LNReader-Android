@@ -15,6 +15,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -35,6 +36,25 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	private ProgressDialog dialog = null;
 	Context context;
 	
+	/**************************************************************
+	 *	The onPreferenceTreeClick method's sole purpose is to deal with the known Android
+	 *	bug that doesn't custom theme the child preference screen
+	 *****************************************************************/
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
+			Preference preference) {
+		// TODO Auto-generated method stub
+		super.onPreferenceTreeClick(preferenceScreen, preference);
+    	if (preference!=null)
+	    	if (preference instanceof PreferenceScreen)
+	        	if (((PreferenceScreen)preference).getDialog()!=null)
+	        		((PreferenceScreen)preference).getDialog().getWindow().getDecorView().setBackgroundDrawable(this.getWindow().getDecorView().getBackground().getConstantState().newDrawable());
+    	return false;
+		
+	}
+
+
 	@SuppressWarnings("deprecation")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
