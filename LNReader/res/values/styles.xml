@@ -6,7 +6,12 @@
     </style>
     <style name="AppTheme2" parent="Theme.Sherlock" >
         <item name="android:background">#222222</item>
+        <item name="android:buttonStyle">@style/DarkButton</item>
         <item name="android:divider">@drawable/divider</item>
    		<item name="android:dividerHeight">1dp</item>
     </style>
+    <style name="DarkButton" parent="@android:style/Widget.Button">
+    	<item name="android:textColor">#ffffff</item>
+    	<item name="android:background">#222222</item>
+	</style>
 </resources>

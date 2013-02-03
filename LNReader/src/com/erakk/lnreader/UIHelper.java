@@ -57,8 +57,8 @@ public class UIHelper {
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
 			activity.recreate();
 		else{
-			activity.startActivity(activity.getIntent());
 			activity.finish();
+			activity.startActivity(activity.getIntent());
 		}
 		CheckScreenRotation(activity);
 		CheckKeepAwake(activity);
