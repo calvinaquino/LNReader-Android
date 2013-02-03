@@ -820,7 +820,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_CUSTOM_CSS, false);
 	}
 	private float getLineSpacingPreferences(){
-		return (float) Float.parseFloat(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LINESPACING, "1"));
+		return (float) Float.parseFloat(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LINESPACING, "150"));
 	}	
 	
 	private boolean getHandleExternalLinkPreferences(){
@@ -890,7 +890,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		if(getUseJustifiedPreferences()) {
 			css.append("\nbody { text-align: justify !important; }\n");
 		}
-		css.append("\np { line-height:" + getLineSpacingPreferences() + "%; }\n");
+		css.append("\np { line-height:" + getLineSpacingPreferences() + "% !important; }\n");
 			
 		return css.toString();
 	}
