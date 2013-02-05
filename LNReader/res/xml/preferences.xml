@@ -167,7 +167,7 @@
 	            android:positiveButtonText="Set" 
 	            android:negativeButtonText="Cancel" 
 	            android:key="margin_space" 
-	            android:title="Magins" 
+	            android:title="Margins" 
 	            android:summary="Increases the space from the text and the edge of the screen. Reload the chapter to take affect." 
 	            android:defaultValue="5"
 	            android:inputType="number"/>
