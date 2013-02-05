@@ -67,6 +67,7 @@ public class Constants {
 	public static final String PREF_LINESPACING = "line_spacing";
 	public static final String PREF_USE_CUSTOM_CSS = "use_custom_css";
 	public static final String PREF_CUSTOM_CSS_PATH = "custom_css_path";
+	public static final String PREF_MARGINS = "margin_space";
 	
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 

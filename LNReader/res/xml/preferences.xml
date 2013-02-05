@@ -161,6 +161,16 @@
 	            android:positiveButtonText="Set" 
 	            android:dialogMessage="Please enter the desired number of your line spacing in percentage. (Default is 150%)" 
 	            android:dialogTitle="Line Spacing"/>
+	        <EditTextPreference 
+	            android:dialogTitle="Margins" 
+	            android:dialogMessage="Please enter the desired margin in percentage of screen space. Don't forget that this affects the left and right margin. (Default is 5%)" 
+	            android:positiveButtonText="Set" 
+	            android:negativeButtonText="Cancel" 
+	            android:key="margin_space" 
+	            android:title="Magins" 
+	            android:summary="Increases the space from the text and the edge of the screen. Reload the chapter to take affect." 
+	            android:defaultValue="5"
+	            android:inputType="number"/>
 		</PreferenceScreen>
     </PreferenceCategory>
     <PreferenceCategory
