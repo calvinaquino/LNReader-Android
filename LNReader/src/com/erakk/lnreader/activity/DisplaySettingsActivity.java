@@ -196,26 +196,30 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
         /************************************************************
          *  CSS Layout Behaviours
-         *  1. When user's css sheet is used, disable the force justify and linespace preferences
-         *  2. When about to use user's css sheet, display a warning/message
-         *  3. When linespace is changed, update the summary text to reflect current value
+         *  1. When user's css sheet is used, disable the force justify, linespace and margin preferences
+         *  2. When about to use user's css sheet, display a warning/message (NOT IMPLEMENTED)
+         *  3. When linespace/margin is changed, update the summary text to reflect current value
          ***************************************************************/
         
         final Preference user_cssPref = (Preference) findPreference(Constants.PREF_USE_CUSTOM_CSS);
         final Preference lineSpacePref = (Preference) findPreference(Constants.PREF_LINESPACING);
         final Preference justifyPref = (Preference) findPreference(Constants.PREF_FORCE_JUSTIFIED);
         final Preference customCssPathPref = (Preference) findPreference(Constants.PREF_CUSTOM_CSS_PATH);
+        final Preference marginPref = (Preference) findPreference(Constants.PREF_MARGINS);
         
         // Retrieve inital values stored
         Boolean currUserCSS = getPreferenceScreen().getSharedPreferences().getBoolean(Constants.PREF_USE_CUSTOM_CSS, false);
         String currLineSpacing = getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_LINESPACING, "150");
+        String currMargin = getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_MARGINS, "5");
         
         // Behaviour 1 (Activity first loaded)
         if(currUserCSS){
+        	marginPref.setEnabled(false);
         	lineSpacePref.setEnabled(false);
         	justifyPref.setEnabled(false);
         	customCssPathPref.setEnabled(true);
         } else {
+        	marginPref.setEnabled(true);
         	lineSpacePref.setEnabled(true);
         	justifyPref.setEnabled(true);
         	customCssPathPref.setEnabled(false);       	
@@ -223,6 +227,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         
         // Behaviour 3 (Activity first loaded)
         lineSpacePref.setSummary("Increases the space between lines. The greater the number, the more padding it has. \nCurrent value: " + currLineSpacing + "%");
+        marginPref.setSummary("Increases the space between the text and the edge of the screen. \nCurrent value: " + currMargin + "%");
         
         //Behaviour 1 (Updated Preference)
         user_cssPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
@@ -232,11 +237,13 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 						Boolean set = (Boolean) newValue;
 						
 						if(set){
+							marginPref.setEnabled(false);
 				        	lineSpacePref.setEnabled(false);
 				        	justifyPref.setEnabled(false);
 				        	customCssPathPref.setEnabled(true);
 
 						} else {
+							marginPref.setEnabled(true);
 				        	lineSpacePref.setEnabled(true);
 				        	justifyPref.setEnabled(true);
 				        	customCssPathPref.setEnabled(false);
@@ -266,6 +273,21 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				}
         	}
         );
+        
+        marginPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
+        		{
+
+					@Override
+					public boolean onPreferenceChange(Preference preference,
+							Object newValue) {
+						// TODO Auto-generated method stub
+						
+						String set = (String) newValue;
+						preference.setSummary("Increases the space between the text and the edge of the screen. \nCurrent value: " + set + "%");
+						return true;
+					}
+        			
+        		});
     }
 
 	

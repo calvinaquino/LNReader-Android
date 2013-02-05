@@ -830,6 +830,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	private boolean getUseJustifiedPreferences() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_FORCE_JUSTIFIED, false);
 	}
+	
+	private float getMarginPreferences() {
+		return (float) Float.parseFloat(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_MARGINS, "5"));
+	}
 
 	/**
 	 * getCSSSheet() method will put all the CSS data into the HTML header.
@@ -891,6 +895,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			css.append("\nbody { text-align: justify !important; }\n");
 		}
 		css.append("\np { line-height:" + getLineSpacingPreferences() + "% !important; }\n");
+		css.append("\nbody {margin: " + getMarginPreferences() + "% !important;}\n");
 			
 		return css.toString();
 	}
