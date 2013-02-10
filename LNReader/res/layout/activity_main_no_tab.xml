@@ -89,7 +89,7 @@
 	            android:textStyle="bold"
 	            android:textSize="22sp"
    	            android:text="@string/jump_last_read" />
-            
+
 	    </LinearLayout>
 	    
 	    <View 
