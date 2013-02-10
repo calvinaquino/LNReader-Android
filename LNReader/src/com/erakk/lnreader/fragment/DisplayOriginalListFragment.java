@@ -6,12 +6,10 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -20,17 +18,14 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
@@ -39,7 +34,6 @@ import com.erakk.lnreader.activity.DisplayLightNovelDetailsActivity;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
-import com.erakk.lnreader.fragment.DisplayLightNovelListFragment.FragmentListener;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.NovelCollectionModel;
@@ -93,9 +87,7 @@ public class DisplayOriginalListFragment extends SherlockListFragment implements
 		
 		loadingText = (TextView) view.findViewById(R.id.emptyList);
 		loadingBar = (ProgressBar) view.findViewById(R.id.empttListProgress);
-		
-		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		
+				
 		getSherlockActivity().setTitle("Light Novels: Original");
 		
  //       if(adapter != null) adapter.notifyDataSetChanged();
