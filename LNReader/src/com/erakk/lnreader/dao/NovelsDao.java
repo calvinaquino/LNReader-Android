@@ -409,7 +409,15 @@ public class NovelsDao {
 		return list;
 	}
 
-	public PageModel getPageModel(PageModel page, ICallbackNotifier notifier) throws Exception {
+	/**
+	 * Get page model from db. If autoDownload = true, get the pageModel from internet if not exists.
+	 * @param page
+	 * @param notifier
+	 * @param autoDownload
+	 * @return
+	 * @throws Exception
+	 */
+	public PageModel getPageModel(PageModel page, ICallbackNotifier notifier, boolean autoDownload) throws Exception {
 		PageModel pageModel = null;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
@@ -419,12 +427,22 @@ public class NovelsDao {
 				db.close();
 			}
 		}
-		if (pageModel == null) {
+		if (pageModel == null && autoDownload) {
 			pageModel = getPageModelFromInternet(page, notifier);
 		}
 		return pageModel;
 	}
 	
+	/**
+	 * Get page model from db. Get the pageModel from internet if not exists.
+	 * @param page
+	 * @param notifier
+	 * @return
+	 * @throws Exception
+	 */
+	public PageModel getPageModel(PageModel page, ICallbackNotifier notifier) throws Exception {
+		return getPageModel(page, notifier, true);
+	}
 	
 	/**
 	 * Return pageModel, null if not exist.
@@ -507,7 +525,7 @@ public class NovelsDao {
 		}
 		return pageModel;
 	}
-	
+		
 	/*
 	 * NovelCollectionModel
 	 */
@@ -648,6 +666,9 @@ public class NovelsDao {
 	
 	/***
 	 * Bulk update page info through wiki API
+	 * - LastUpdateInfo.
+	 * - Redirected.
+	 * - Missing flag.
 	 * @param pageModels
 	 * @param notifier
 	 * @return

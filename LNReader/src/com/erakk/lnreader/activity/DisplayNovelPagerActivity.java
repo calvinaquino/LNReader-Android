@@ -28,6 +28,7 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
 	private boolean isInverted;
 	private Activity context;
 	LocalActivityManager lam;
+	private Activity currentActivity = null;
  
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,6 +79,7 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             public void onTabChanged(String tabId) {
             	setTabColor();
+            	currentActivity = lam.getActivity(tabId);
             }
         });
         
@@ -85,7 +87,6 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
         tabHost.setCurrentTabByTag(TEASER_SPEC);
         tabHost.setCurrentTabByTag(ORIGINAL_SPEC);
         tabHost.setCurrentTabByTag(MAIN_SPEC);
-        
     }
     
     @Override
@@ -138,7 +139,8 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
     
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-    	Activity activity = context;
+    	Activity activity = currentActivity;
+    	
 		switch (item.getItemId()) {
 		case R.id.menu_settings:
 			Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
