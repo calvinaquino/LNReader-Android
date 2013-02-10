@@ -108,10 +108,7 @@ public class TestDisplayNovelActivity extends SherlockFragmentActivity implement
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 
-	@Override
 	public void changeNextFragment(Bundle bundle) {
-		// TODO Auto-generated method stub
-		
 		Fragment novelDetailFrag = new DisplayLightNovelDetailsFragment();
 		bundle.putBoolean("show_list_child", true);
 		novelDetailFrag.setArguments(bundle);

@@ -276,17 +276,11 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         
         marginPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
         		{
-
-					@Override
-					public boolean onPreferenceChange(Preference preference,
-							Object newValue) {
-						// TODO Auto-generated method stub
-						
+					public boolean onPreferenceChange(Preference preference, Object newValue) {
 						String set = (String) newValue;
 						preference.setSummary("Increases the space between the text and the edge of the screen. \nCurrent value: " + set + "%");
 						return true;
-					}
-        			
+					}        			
         		});
     }
 
