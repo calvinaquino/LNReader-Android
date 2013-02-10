@@ -168,6 +168,21 @@ public class MainActivity extends SherlockActivity {
 		}
     }
     
+    // This button is only a testing button (REMOVE ON FINAL)
+    public void gotoTestRoom(View view) {
+    	Intent intent = new Intent(this, TestDisplayNovelActivity.class);
+    	intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
+    	startActivity(intent);
+    }
+    
+    // This button is only a testing button (REMOVE ON FINAL)
+    public void gotoTestRoom2(View view) {
+    	Intent intent = new Intent(this, TestDisplayNovelActivityTwo.class);
+    	intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
+    	startActivity(intent);
+    }
+    
+    
 //    public void openDownloads(View view) {
 //    	Intent intent = new Intent(this, DownloadListActivity.class);
 //    	startActivity(intent);
