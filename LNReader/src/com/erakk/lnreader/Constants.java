@@ -73,6 +73,7 @@ public class Constants {
 
 	@SuppressWarnings("deprecation")
 	public static final int NOTIFIER_ID = (int)(new Date().getTime() - new Date(2012, 1, 1).getTime());
+	public static final int CONSOLIDATED_NOTIFIER_ID = 20130210;
 
 	public static final String STATUS_TEASER = "teaser";
 	public static final String STATUS_STALLED = "stalled";

@@ -93,10 +93,7 @@ public class UpdateService extends Service {
 	    }
 	}
 	
-	@SuppressWarnings("deprecation")
 	public void sendNotification(ArrayList<PageModel> updatedChapters) {
-		int id = Constants.NOTIFIER_ID;
-		
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		
 		if(updatedChapters != null && updatedChapters.size() > 0) {
@@ -153,32 +150,10 @@ public class UpdateService extends Service {
 			}
 			
 			if(getConsolidateNotificationPref()) {
-				final int notifId = ++id;
-				Log.d(TAG, "set consolidated Notification");
-				Notification notification = getNotificationTemplate(true);
-				CharSequence contentTitle = "BakaReader EX Updates";
-				String contentText = "Found";
-				if(updateCount > 0) {
-					contentText += " " + updateCount + " updated chapter(s)";
-				}
-				if(newCount > 0) {
-					if(updateCount > 0) contentText += " and ";
-					contentText += " " + newCount + " new chapter(s)";
-				}
-				if(newNovel > 0) {
-					if(updateCount > 0 || newCount > 0) contentText += " and ";
-					contentText += " " + newNovel + " new novel(s)";
-				}				
-				contentText += ".";
-				
-				Intent notificationIntent = new Intent(this, UpdateHistoryActivity.class);
-				int pendingFlag = PendingIntent.FLAG_CANCEL_CURRENT;
-				PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, pendingFlag);
-
-				notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
-				mNotificationManager.notify(notifId, notification);
+				createConsolidatedNotification(mNotificationManager, updateCount, newCount, newNovel);
 			}
 			else {
+				int id = Constants.NOTIFIER_ID;
 				boolean first = true;
 				for (UpdateInfoModel updateInfoModel : updatesInfo) {
 					final int notifId = ++id;
@@ -195,6 +170,33 @@ public class UpdateService extends Service {
 		updateStatus("OK");
     	Toast.makeText(getApplicationContext(), "Update Service completed", Toast.LENGTH_SHORT).show();
     	LNReaderApplication.getInstance().updateDownload(TAG, 100, "Update Service completed");
+	}
+
+	@SuppressWarnings("deprecation")
+	public void createConsolidatedNotification(NotificationManager mNotificationManager, int updateCount, int newCount, int newNovel) {
+		Log.d(TAG, "set consolidated Notification");
+		Notification notification = getNotificationTemplate(true);
+		CharSequence contentTitle = "BakaReader EX Updates";
+		String contentText = "Found";
+		if(updateCount > 0) {
+			contentText += " " + updateCount + " updated chapter(s)";
+		}
+		if(newCount > 0) {
+			if(updateCount > 0) contentText += " and ";
+			contentText += " " + newCount + " new chapter(s)";
+		}
+		if(newNovel > 0) {
+			if(updateCount > 0 || newCount > 0) contentText += " and ";
+			contentText += " " + newNovel + " new novel(s)";
+		}				
+		contentText += ".";
+		
+		Intent notificationIntent = new Intent(this, UpdateHistoryActivity.class);
+		int pendingFlag = PendingIntent.FLAG_CANCEL_CURRENT;
+		PendingIntent contentIntent = PendingIntent.getActivity(this, Constants.CONSOLIDATED_NOTIFIER_ID, notificationIntent, pendingFlag);
+
+		notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
+		mNotificationManager.notify(Constants.CONSOLIDATED_NOTIFIER_ID, notification);
 	}
 	
 	@SuppressWarnings("deprecation")

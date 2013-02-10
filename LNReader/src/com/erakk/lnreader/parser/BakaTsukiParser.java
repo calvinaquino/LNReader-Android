@@ -136,14 +136,22 @@ public class BakaTsukiParser {
 				PageModel page = new PageModel();
 				String tempPage = link.attr("href").replace("/project/index.php?title=","")
 						                           .replace(Constants.BASE_URL, "");
+				int anchorIndex = tempPage.indexOf("#");
+				if(anchorIndex > -1) {
+					tempPage = tempPage.substring(0, anchorIndex);
+				}
+				int paramIndex = tempPage.indexOf("?");
+				if(paramIndex > -1) {
+					tempPage = tempPage.substring(0, paramIndex);
+				}
 				page.setPage(tempPage);
 				page.setType(PageModel.TYPE_NOVEL);
 				page.setTitle(link.text());
 				
 				page.setLastUpdate(new Date(0)); // set to min value if never open
 				try {
-					//always get the page date
-					PageModel temp = NovelsDao.getInstance().getPageModel(page, null);
+					//get the saved data if available
+					PageModel temp = NovelsDao.getInstance().getPageModel(page, null, false);
 					if(temp != null) {
 						page.setLastUpdate(temp.getLastUpdate());
 						page.setWatched(temp.isWatched());
@@ -161,6 +169,16 @@ public class BakaTsukiParser {
 				++order;
 			}
 		}
+		
+		if(result != null && result.size() > 0) {
+			// get updated novel list info
+			try {
+				result = NovelsDao.getInstance().getUpdateInfo(result, null);
+			} catch (Exception e) {
+				Log.e(TAG, "Failed to get updated novel info", e);
+			}
+		}
+		
 		return result;
 	}	
 	
