@@ -106,10 +106,7 @@ public class TestDisplayNovelActivityTwo extends SherlockFragmentActivity implem
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 
-	@Override
 	public void changeNextFragment(Bundle bundle) {
-		// TODO Auto-generated method stub
-		
 		Intent intent = new Intent(this, TestDisplayNovelDetailsActivity.class);
 		intent.putExtras(bundle);
 		

@@ -95,7 +95,6 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 		}
 	}
 
-	@Override
 	public void updateProgress(String id, int current, int total, String message) {
 		// TODO Auto-generated method stub
 		double cur = (double)current;
@@ -104,13 +103,11 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 		LNReaderApplication.getInstance().updateDownload(id, (int)result, message);
 	}
 
-	@Override
 	public boolean downloadListSetup(String id, String toastText, int type) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	@Override
 	public void toggleProgressBar(boolean show) {
 		// TODO Auto-generated method stub
 		if(show) {
@@ -123,14 +120,12 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 		}
 	}
 
-	@Override
 	public void setMessageDialog(ICallbackEventData message) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@SuppressLint("NewApi")
-	@Override
 	public void getResult(AsyncTaskResult<?> result) {
 		// TODO Auto-generated method stub
 		Exception e = result.getError();
