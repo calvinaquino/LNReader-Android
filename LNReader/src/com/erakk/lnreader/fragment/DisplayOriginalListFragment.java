@@ -140,9 +140,6 @@ public class DisplayOriginalListFragment extends SherlockListFragment implements
 		super.onStop();
 	}
 	
-
-	
-
 	public void refreshList() {
 		/*
 		 * Implement code to refresh novel list

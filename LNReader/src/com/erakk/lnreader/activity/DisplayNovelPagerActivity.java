@@ -26,7 +26,6 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
     private static final String ORIGINAL_SPEC = "Original";
     static TabHost tabHost;
 	private boolean isInverted;
-	private Activity context;
 	LocalActivityManager lam;
 	private Activity currentActivity = null;
  
@@ -43,8 +42,6 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
             UIHelper.SetActionBarDisplayHomeAsUp(this, false);
             setContentView(R.layout.activity_display_novel_pager_fix);
 		} 
-        
-        context = this;
         tabHost = (TabHost) findViewById(android.R.id.tabhost);
         lam = new LocalActivityManager(this,false);
         lam.dispatchCreate(savedInstanceState);
@@ -91,14 +88,12 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
     
     @Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
 		lam.dispatchPause(isFinishing());
 	}
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		lam.dispatchResume();
 	}
