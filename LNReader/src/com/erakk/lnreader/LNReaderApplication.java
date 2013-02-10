@@ -13,12 +13,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.CountDownTimer;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -309,5 +311,11 @@ public class LNReaderApplication extends Application {
 			cssCache.put(styleId, contents.toString());
 		}
 		return cssCache.get(styleId);
-	}	
+	}
+	
+	public void resetFirstRun() {
+		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
+	    edit.remove(Constants.PREF_FIRST_RUN);
+	    edit.commit();
+	}
 }

@@ -302,6 +302,13 @@ public class BakaTsukiParser {
 		}
 		else isPending = false;
 		
+		// Teaser => parent = Category:Teasers
+		if(page.getParent().equalsIgnoreCase("Category:Teasers")) {
+			isTeaser = true;
+			Log.i(TAG, "Novel is Teaser Project: " + page.getPage());
+		}
+		else isTeaser = false;
+		
 		// update the status
 		ArrayList<String> statuses = new ArrayList<String>();
 		if(isTeaser) statuses.add(Constants.STATUS_TEASER);

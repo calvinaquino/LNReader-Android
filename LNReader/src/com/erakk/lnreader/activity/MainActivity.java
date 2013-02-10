@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -20,7 +21,6 @@ import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
-
 
 public class MainActivity extends SherlockActivity {
 	private static final String TAG = MainActivity.class.toString();
@@ -52,7 +52,7 @@ public class MainActivity extends SherlockActivity {
 				}
 			}).show();
         }
-        
+        Log.d(TAG, "Main created.");
     }
 
     @Override
@@ -205,12 +205,6 @@ public class MainActivity extends SherlockActivity {
 	private void setFirstRun() {
 		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
 	    edit.putBoolean(Constants.PREF_FIRST_RUN, false);
-	    edit.commit();
-	}
-	
-	private void resetFirstRun() {
-		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
-	    edit.remove(Constants.PREF_FIRST_RUN);
 	    edit.commit();
 	}
 }
