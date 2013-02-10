@@ -125,7 +125,31 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.erakk.lnreader.activity.MainActivity" />
         </activity>
-
+        <activity
+            android:name="com.erakk.lnreader.activity.TestDisplayNovelActivity"
+            android:label="Test"
+            android:parentActivityName="com.erakk.lnreader.activity.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.erakk.lnreader.activity.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.erakk.lnreader.activity.TestDisplayNovelActivityTwo"
+            android:label="Test2"
+            android:parentActivityName="com.erakk.lnreader.activity.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.erakk.lnreader.activity.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.erakk.lnreader.activity.TestDisplayNovelDetailsActivity"
+            android:label="Test2 Details"
+            android:parentActivityName="com.erakk.lnreader.activity.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.erakk.lnreader.activity.MainActivity" />
+        </activity>
+        
         <service
             android:name="com.erakk.lnreader.service.UpdateService"
             android:icon="@drawable/ic_launcher"
