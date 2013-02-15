@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -349,23 +350,16 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
     		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
         	startActivity(bookmarkIntent);
 			return true;    
-		case R.id.menu_downloads:
+		case R.id.menu_downloads_list:
     		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
         	startActivity(downloadsItent);;
 			return true;
-//		case R.id.menu_go_top:
-//			webView.pageUp(true);
-//			return true; 
-//		case R.id.menu_go_bottom:
-//			webView.pageDown(true);
-//			return true; 
 		case android.R.id.home:
-//			if(tocMenu != null) tocMenu.show();
-//			else finish();
 			finish();
 			return true;
+		default:
+			return super.onOptionsItemSelected(item);
 		}
-		return super.onOptionsItemSelected(item);
 	}
 	
 	@Override
@@ -802,12 +796,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
     }
 
 	public void updateProgress(String id,int current, int total, String messString) {
-		// TODO Auto-generated method stub
-		
+		Log.d(TAG, "Progress of " + id + ": " + messString + " ("+ current + "/" + total + ")");
 	}
 
 	public boolean downloadListSetup(String id, String toastText, int type) {
-		// TODO Auto-generated method stub
+		Log.d(TAG, "Setup of " + id + ": " + toastText + " (type: " + type + ")");
 		return false;
 	}
 	
@@ -844,7 +837,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		StringBuilder css = new StringBuilder();
 		
 		if(getUseCustomCSS()){
-			String cssPath = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_CUSTOM_CSS_PATH, "/mnt/sdcard/custom.css");
+			String cssPath = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_CUSTOM_CSS_PATH, Environment.getExternalStorageDirectory().getPath() + "/custom.css");
 			if(!Util.isStringNullOrEmpty(cssPath)) {
 				File cssFile = new File(cssPath);
 				if (cssFile.exists()) {

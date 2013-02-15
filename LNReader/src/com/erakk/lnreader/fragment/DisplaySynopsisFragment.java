@@ -49,10 +49,7 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
     
     
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		UIHelper.SetActionBarDisplayHomeAsUp(getSherlockActivity(), true);
 		View view = inflater.inflate(R.layout.activity_display_synopsis, container, false);
 		
@@ -96,7 +93,6 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 	}
 
 	public void updateProgress(String id, int current, int total, String message) {
-		// TODO Auto-generated method stub
 		double cur = (double)current;
 		double tot = (double)total;
 		double result = (cur/tot)*100;
@@ -104,12 +100,10 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 	}
 
 	public boolean downloadListSetup(String id, String toastText, int type) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public void toggleProgressBar(boolean show) {
-		// TODO Auto-generated method stub
 		if(show) {
 			dialog = ProgressDialog.show(getSherlockActivity(), "Novel Details", "Loading. Please wait...", true);
 			dialog.getWindow().setGravity(Gravity.CENTER);
@@ -121,13 +115,10 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 	}
 
 	public void setMessageDialog(ICallbackEventData message) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@SuppressLint("NewApi")
 	public void getResult(AsyncTaskResult<?> result) {
-		// TODO Auto-generated method stub
 		Exception e = result.getError();
 		
 		if(e == null) {
@@ -231,7 +222,5 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 	
 	private boolean getStrechCoverPreference(){
     	return PreferenceManager.getDefaultSharedPreferences(getSherlockActivity()).getBoolean(Constants.PREF_STRETCH_COVER, false);
-	}
-      
-  
+	}      
 }

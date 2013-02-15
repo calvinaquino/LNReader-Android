@@ -7,8 +7,8 @@
         android:title="@string/invert_colors" />
     <item android:id="@+id/menu_bookmarks"
         android:orderInCategory="98"
-        android:title="Bookmarks" />
-    <item android:id="@+id/menu_downloads"
+        android:title="@string/bookmarks" />
+    <item android:id="@+id/menu_downloads_list"
         android:orderInCategory="99"
-        android:title="Download List" />
+        android:title="@string/download_list" />
 </menu>

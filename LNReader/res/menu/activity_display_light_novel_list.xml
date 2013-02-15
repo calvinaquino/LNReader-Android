@@ -4,20 +4,20 @@
         android:title="@string/menu_settings" />
     <item android:id="@+id/menu_refresh_novel_list"
         android:orderInCategory="3" 
-        android:title="Refresh" />
+        android:title="@string/novel_list_refresh" />
     <item android:id="@+id/invert_colors"
         android:orderInCategory="97"
         android:title="@string/invert_colors" />
     <item android:id="@+id/menu_bookmarks"
         android:orderInCategory="98"
-        android:title="Bookmarks" />
-    <item android:id="@+id/menu_downloads"
+        android:title="@string/bookmarks" />
+    <item android:id="@+id/menu_downloads_list"
         android:orderInCategory="99"
-        android:title="Download List" />
+        android:title="@string/download_list" />
     <item android:id="@+id/menu_manual_add"
         android:orderInCategory="2" 
-        android:title="Manual Add"></item>
+        android:title="@string/novel_list_manual_add"></item>
     <item android:id="@+id/menu_download_all_info"
         android:orderInCategory="1" 
-        android:title="Download All Info"></item>
+        android:title="@string/novel_list_download_all"></item>
 </menu>

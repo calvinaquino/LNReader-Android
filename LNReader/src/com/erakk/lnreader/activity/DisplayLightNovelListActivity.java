@@ -162,15 +162,16 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
     		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
         	startActivity(bookmarkIntent);
 			return true;    
-		case R.id.menu_downloads:
+		case R.id.menu_downloads_list:
     		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
         	startActivity(downloadsItent);;
 			return true; 
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;
-		}
-		return super.onOptionsItemSelected(item);
+		default:
+			return super.onOptionsItemSelected(item);
+		}		
 	}
 
 	public void refreshList() {
@@ -189,7 +190,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 
 	public void manualAdd() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		alert.setTitle("Add Novel");
+		alert.setTitle("Add Novel (Main)");
 		//alert.setMessage("Message");
 		LayoutInflater factory = LayoutInflater.from(this);
 		View inputView = factory.inflate(R.layout.layout_add_new_novel, null);

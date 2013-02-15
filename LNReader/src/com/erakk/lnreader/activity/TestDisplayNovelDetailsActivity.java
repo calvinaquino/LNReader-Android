@@ -73,7 +73,7 @@ public class TestDisplayNovelDetailsActivity extends SherlockFragmentActivity {
     		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
         	startActivity(bookmarkIntent);
 			return true;    
-		case R.id.menu_downloads:
+		case R.id.menu_downloads_list:
     		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
         	startActivity(downloadsItent);;
 			return true; 

@@ -6,7 +6,7 @@
 
     <EditText
         android:id="@+id/page"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="Page" >
@@ -16,7 +16,7 @@
 
     <EditText
         android:id="@+id/title"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/page"
         android:ems="10"

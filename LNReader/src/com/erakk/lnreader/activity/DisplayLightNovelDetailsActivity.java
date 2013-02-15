@@ -202,15 +202,16 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			touchedForDownload = "Volumes";
 			executeDownloadTask(notDownloadedChapters, true);
 			return true;
-		case R.id.menu_downloads:
+		case R.id.menu_downloads_list:
     		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
         	startActivity(downloadsItent);;
 			return true; 
         case android.R.id.home:
         	super.onBackPressed();
             return true;
+        default:
+            return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
     
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {

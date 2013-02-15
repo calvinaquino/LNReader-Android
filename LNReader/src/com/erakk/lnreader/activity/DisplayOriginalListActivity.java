@@ -134,15 +134,16 @@ public class DisplayOriginalListActivity extends SherlockListActivity implements
 		case R.id.menu_download_all_info:			
 			downloadAllNovelInfo();
 			return true;    
-		case R.id.menu_downloads:
+		case R.id.menu_downloads_list:
     		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
         	startActivity(downloadsItent);;
 			return true; 
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;
+		default:
+			return super.onOptionsItemSelected(item);
 		}
-		return super.onOptionsItemSelected(item);
 	}
 
 	public void refreshList() {
@@ -160,7 +161,7 @@ public class DisplayOriginalListActivity extends SherlockListActivity implements
 	
 	public void manualAdd() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		alert.setTitle("Add Novel");
+		alert.setTitle("Add Novel (Original)");
 		//alert.setMessage("Message");
 		LayoutInflater factory = LayoutInflater.from(this);
 		View inputView = factory.inflate(R.layout.layout_add_new_novel, null);

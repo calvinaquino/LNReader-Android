@@ -52,5 +52,31 @@
 			\n
 			\nFinally, Have Fun! :D
 			\nthelastguardian \- May 26, 2008</string>
+    
+    <string name="content_refresh">Refresh Content</string>
+    
+    <string name="content_previous">Previous</string>
+    
+    <string name="content_next">Next</string>
+    
+    <string name="content_toc">Jump To</string>
+    
+    <string name="content_search">Search</string>
+    
+    <string name="content_bookmark">Bookmarks on Chapter</string>
+    
+    <string name="bookmarks">Bookmarks</string>
+    
+    <string name="download_list">Download List</string>
+    
+    <string name="details_refresh">Refresh</string>
+    
+    <string name="details_download_all">Download All Chapters</string>
+    
+    <string name="novel_list_refresh">Refresh</string>
+    
+    <string name="novel_list_manual_add">Manual Add</string>
+    
+    <string name="novel_list_download_all">Download All Info</string>
 
 </resources>
