@@ -153,7 +153,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 	}    
     
 	@Override
-	public boolean onOptionsItemSelected( com.actionbarsherlock.view.MenuItem item) {
+	public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
 		Log.d(TAG, "menu Option called.");
 		switch (item.getItemId()) {
 	    	case R.id.menu_refresh_chapter_list:
@@ -199,6 +199,9 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 
 	@Override
 	public boolean onContextItemSelected(android.view.MenuItem item) {
+		if(!(item.getMenuInfo() instanceof ExpandableListView.ExpandableListContextMenuInfo)) return super.onContextItemSelected(item);
+		Log.d(TAG, "Context menu called");
+		
     	ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
     	// unpacking
     	int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);

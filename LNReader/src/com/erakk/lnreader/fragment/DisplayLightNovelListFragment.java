@@ -185,6 +185,8 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 	
 	@Override
 	public boolean onContextItemSelected(android.view.MenuItem item) {
+		if(!(item.getMenuInfo() instanceof AdapterContextMenuInfo)) return super.onContextItemSelected(item);
+		Log.d(TAG, "Context menu called");
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		switch(item.getItemId()) {
 			case R.id.add_to_watch:			
