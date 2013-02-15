@@ -48,7 +48,7 @@ import com.erakk.lnreader.task.LoadOriginalsTask;
  * Copy from: NovelsActivity.java
  */
 
-public class DisplayOriginalListActivity extends SherlockListActivity implements IAsyncTaskOwner{
+public class DisplayOriginalListActivity extends SherlockListActivity implements IAsyncTaskOwner, INovelListHelper{
 	private static final String TAG = DisplayOriginalListActivity.class.toString();
 	private ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	private PageModelAdapter adapter;
@@ -131,7 +131,7 @@ public class DisplayOriginalListActivity extends SherlockListActivity implements
 		case R.id.menu_manual_add:			
 			manualAdd();
 			return true;
-		case R.id.menu_download_all:			
+		case R.id.menu_download_all_info:			
 			downloadAllNovelInfo();
 			return true;    
 		case R.id.menu_downloads:
@@ -158,7 +158,7 @@ public class DisplayOriginalListActivity extends SherlockListActivity implements
 		executeDownloadTask(listItems);
 	}
 	
-	private void manualAdd() {
+	public void manualAdd() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setTitle("Add Novel");
 		//alert.setMessage("Message");

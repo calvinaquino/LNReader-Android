@@ -48,7 +48,7 @@ import com.erakk.lnreader.task.LoadNovelsTask;
  * Copy from: NovelsActivity.java
  */
 
-public class DisplayLightNovelListActivity extends SherlockListActivity implements IAsyncTaskOwner{
+public class DisplayLightNovelListActivity extends SherlockListActivity implements IAsyncTaskOwner, INovelListHelper{
 	private static final String TAG = DisplayLightNovelListActivity.class.toString();
 	private ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	private PageModelAdapter adapter;
@@ -155,7 +155,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 		case R.id.menu_manual_add:			
 			manualAdd();
 			return true;
-		case R.id.menu_download_all:			
+		case R.id.menu_download_all_info:			
 			downloadAllNovelInfo();
 			return true;
 		case R.id.menu_bookmarks:

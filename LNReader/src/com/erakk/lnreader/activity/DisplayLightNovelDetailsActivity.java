@@ -184,7 +184,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
     		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
         	startActivity(bookmarkIntent);
 			return true;    
-		case R.id.menu_download_all:
+		case R.id.menu_details_download_all:
 			/*
 			 * Download all chapters
 			 */

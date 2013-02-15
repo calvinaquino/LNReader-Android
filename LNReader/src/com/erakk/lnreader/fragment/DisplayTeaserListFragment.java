@@ -30,9 +30,11 @@ import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.activity.DisplayLightNovelDetailsActivity;
+import com.erakk.lnreader.activity.INovelListHelper;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.NovelCollectionModel;
@@ -47,7 +49,7 @@ import com.erakk.lnreader.task.LoadTeasersTask;
  * Copy from: NovelsActivity.java
  */
 
-public class DisplayTeaserListFragment extends SherlockListFragment implements IAsyncTaskOwner{
+public class DisplayTeaserListFragment extends SherlockListFragment implements IAsyncTaskOwner, INovelListHelper{
 	private static final String TAG = DisplayTeaserListFragment.class.toString();
 	private ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	private PageModelAdapter adapter;
@@ -67,7 +69,6 @@ public class DisplayTeaserListFragment extends SherlockListFragment implements I
 
 	@Override
 	public void onAttach(Activity activity) {
-		// TODO Auto-generated method stub
 		super.onAttach(activity);
 		try {
 			mFragListener = (FragmentListener) activity;
@@ -78,10 +79,7 @@ public class DisplayTeaserListFragment extends SherlockListFragment implements I
 
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
 		View view = inflater.inflate(R.layout.activity_display_light_novel_list, container, false);
 		
 		loadingText = (TextView) view.findViewById(R.id.emptyList);
@@ -94,7 +92,6 @@ public class DisplayTeaserListFragment extends SherlockListFragment implements I
 
 	@Override
 	public void onStart() {
-		// TODO Auto-generated method stub
 		super.onStart();
 
 		updateContent(false);
@@ -107,6 +104,7 @@ public class DisplayTeaserListFragment extends SherlockListFragment implements I
 		// Get the item that was clicked
 		PageModel o = adapter.getItem(position);
 		String novel = o.toString();
+		
 		//Create new intent
 		Bundle bundle = new Bundle();
 		bundle.putString(Constants.EXTRA_NOVEL, novel);
@@ -132,8 +130,7 @@ public class DisplayTeaserListFragment extends SherlockListFragment implements I
 	
 	public void manualAdd() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(getSherlockActivity());
-		alert.setTitle("Add Novel");
-		//alert.setMessage("Message");
+		alert.setTitle("Add Novel (Teaser)");
 		LayoutInflater factory = LayoutInflater.from(getSherlockActivity());
 		View inputView = factory.inflate(R.layout.layout_add_new_novel, null);
 		final EditText inputName = (EditText) inputView.findViewById(R.id.page);
@@ -175,34 +172,40 @@ public class DisplayTeaserListFragment extends SherlockListFragment implements I
 
 	@Override
 	public boolean onContextItemSelected(android.view.MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		switch(item.getItemId()) {
-//		case R.id.add_to_watch:			
-//			/*
-//			 * Implement code to toggle watch of this novel
-//			 */
-//	        CheckBox checkBox = (CheckBox) findViewById(R.id.novel_is_watched);
-//	        if (checkBox.isChecked()) {
-//	        	checkBox.setChecked(false);
-//	        }
-//	        else {
-//	        	checkBox.setChecked(true);
-//	        }
-//			return true;
-		case R.id.download_novel:			
-			/*
-			 * Implement code to download novel synopsis
-			 */
-			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-			if(info.position > -1) {
-				PageModel novel = listItems.get(info.position);
-				ArrayList<PageModel> novels = new ArrayList<PageModel>();
-				novels.add(novel);
-				touchedForDownload = novel.getTitle()+"'s information";
-				executeDownloadTask(novels);
-			}
-			return true;
-		default:
-			return super.onContextItemSelected(item);
+			case R.id.add_to_watch:			
+				/*
+				 * Implement code to toggle watch of this novel
+				 */
+				if(info.position > -1) {
+					PageModel novel = listItems.get(info.position);
+			        if (novel.isWatched()) {
+			        	novel.setWatched(false);
+			        	Toast.makeText(getSherlockActivity(), "Removed from watch list: " + novel.getTitle(),	Toast.LENGTH_SHORT).show();
+			        }
+			        else {
+			        	novel.setWatched(true);
+			        	Toast.makeText(getSherlockActivity(), "Added to watch list: " + novel.getTitle(),	Toast.LENGTH_SHORT).show();
+			        }
+			        NovelsDao.getInstance(getSherlockActivity()).updatePageModel(novel);
+			        adapter.notifyDataSetChanged();
+				}
+				return true;
+			case R.id.download_novel:			
+				/*
+				 * Implement code to download novel synopsis
+				 */
+				if(info.position > -1) {
+					PageModel novel = listItems.get(info.position);
+					ArrayList<PageModel> novels = new ArrayList<PageModel>();
+					novels.add(novel);
+					touchedForDownload = novel.getTitle()+"'s information";
+					executeDownloadTask(novels);
+				}
+				return true;
+			default:
+				return super.onContextItemSelected(item);
 		}
 	}
 	

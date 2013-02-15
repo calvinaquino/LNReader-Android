@@ -28,7 +28,7 @@
     <item android:id="@+id/menu_bookmarks" 
         android:orderInCategory="98"
         android:title="Bookmarks"></item>
-    <item android:id="@+id/menu_downloads"
+    <item android:id="@+id/menu_content_downloads"
         android:orderInCategory="99"
         android:title="Download List" />
 </menu>

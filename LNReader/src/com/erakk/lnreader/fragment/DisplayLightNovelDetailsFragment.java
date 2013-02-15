@@ -21,7 +21,6 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -66,29 +65,23 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
     
 	private ProgressDialog dialog;
 	private TextView txtLoading;
-
 	
-	String touchedForDownload;
+	private String touchedForDownload;
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		UIHelper.SetActionBarDisplayHomeAsUp(getSherlockActivity(), true);		
 		View view = inflater.inflate(R.layout.activity_display_light_novel_details, container, false);
 		
         //Get intent and message
         page = new PageModel();
         page.setPage(getArguments().getString(Constants.EXTRA_PAGE));
-        //page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
         
         try {
 			page = NovelsDao.getInstance(getSherlockActivity()).getPageModel(page, null);
@@ -97,8 +90,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		}
         
         executeTask(page, false);
-        
-        
+                
         txtLoading = (TextView) view.findViewById(R.id.txtLoading);
         
         // setup listener
@@ -118,8 +110,8 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
     	
         getSherlockActivity().setTitle(page.getTitle());
         
-        //bookModelAdapter.notifyDataSetChanged();
-		
+        setHasOptionsMenu(true);
+        
 		return view;
 	}
 
@@ -150,61 +142,46 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		}
 	}
 	
-    
 	public void onResume(){
 		super.onResume();
 		Log.d(TAG, "OnResume: " + task.getStatus().toString());
 	}
 	
-    public void onStop(){
-    	// check running task
-    	// disable canceling, so it can continue to show the status
-//    	if(task != null && !(task.getStatus() == Status.FINISHED)) {
-//    		task.cancel(true);
-//    	}
-//    	if(downloadTask != null && !(downloadTask.getStatus() == Status.FINISHED)) {
-//    		downloadTask.cancel(true);
-//    	}
-    	super.onStop();
-    }
-    
     @Override
-	public void onCreateOptionsMenu(Menu menu,
-			com.actionbarsherlock.view.MenuInflater inflater) {
-		// TODO Auto-generated method stub
-		super.onCreateOptionsMenu(menu, inflater);
-		menu.add(0, 0, Menu.FIRST, "Download All \nChapters").setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+	public void onCreateOptionsMenu(Menu menu, com.actionbarsherlock.view.MenuInflater inflater) {
+		inflater.inflate(R.menu.fragment_display_light_novel_details, menu);
 	}    
     
 	@Override
-	public boolean onOptionsItemSelected(
-			com.actionbarsherlock.view.MenuItem item) {
-		// TODO Auto-generated method stub
+	public boolean onOptionsItemSelected( com.actionbarsherlock.view.MenuItem item) {
+		Log.d(TAG, "menu Option called.");
 		switch (item.getItemId()) {
-    	case R.id.menu_refresh_novel_list:
-    		Log.d(TAG,"Refreshing Details");
-    		executeTask(page, true);
-			Toast.makeText(getSherlockActivity(), "Refreshing", Toast.LENGTH_SHORT).show();
-		case 0:
-			/*
-			 * Download all chapters
-			 */
-			ArrayList<PageModel> availableChapters = novelCol.getFlattedChapterList();
-			ArrayList<PageModel> notDownloadedChapters = new ArrayList<PageModel>();
-			for (PageModel pageModel : availableChapters) {
-				if(pageModel.isMissing() || pageModel.isExternal()) continue;					
-				else if(!pageModel.isDownloaded()  												// add to list if not downloaded 
-						|| (pageModel.isDownloaded() 
-					        && NovelsDao.getInstance(getSherlockActivity()).isContentUpdated(pageModel))) // or the update available.
-				{
-					notDownloadedChapters.add(pageModel);
+	    	case R.id.menu_refresh_chapter_list:
+	    		Log.d(TAG,"Refreshing Details");
+	    		executeTask(page, true);
+				Toast.makeText(getSherlockActivity(), "Refreshing Details...", Toast.LENGTH_SHORT).show();
+				return true;
+			case R.id.menu_details_download_all:
+				/*
+				 * Download all chapters
+				 */
+				ArrayList<PageModel> availableChapters = novelCol.getFlattedChapterList();
+				ArrayList<PageModel> notDownloadedChapters = new ArrayList<PageModel>();
+				for (PageModel pageModel : availableChapters) {
+					if(pageModel.isMissing() || pageModel.isExternal()) continue;					
+					else if(!pageModel.isDownloaded()  												// add to list if not downloaded 
+							|| (pageModel.isDownloaded() 
+						        && NovelsDao.getInstance(getSherlockActivity()).isContentUpdated(pageModel))) // or the update available.
+					{
+						notDownloadedChapters.add(pageModel);
+					}
 				}
-			}
-			touchedForDownload = "Volumes";
-			executeDownloadTask(notDownloadedChapters, true);
-			return true;
-        }
-		return super.onOptionsItemSelected(item);
+				touchedForDownload = "Volumes";
+				executeDownloadTask(notDownloadedChapters, true);
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+        } 
 	}
 
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -532,13 +509,11 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 
 		txtLoading.setVisibility(View.GONE);
 	}
-	
-	
+		
 	private boolean getDownloadTouchPreference(){
     	return PreferenceManager.getDefaultSharedPreferences(getSherlockActivity()).getBoolean(Constants.PREF_DOWNLOAD_TOUCH, false);
 	}
 	
-
 	private boolean getStrechCoverPreference(){
     	return PreferenceManager.getDefaultSharedPreferences(getSherlockActivity()).getBoolean(Constants.PREF_STRETCH_COVER, false);
 	}

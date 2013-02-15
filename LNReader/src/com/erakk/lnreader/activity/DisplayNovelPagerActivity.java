@@ -141,42 +141,21 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
 			Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
 			startActivity(launchNewIntent);
 			return true;
-		case R.id.menu_refresh_novel_list:			
-			if(activity instanceof DisplayLightNovelListActivity) {
-				((DisplayLightNovelListActivity)activity).refreshList();								
-			}
-			else if(activity instanceof DisplayTeaserListActivity) {
-				((DisplayTeaserListActivity)activity).refreshList();
-			}
-			else if(activity instanceof DisplayOriginalListActivity) {
-				((DisplayOriginalListActivity)activity).refreshList();
-			}
+		case R.id.menu_refresh_novel_list:
+			if(activity instanceof INovelListHelper)
+				((INovelListHelper)activity).refreshList();
 			return true;
 		case R.id.invert_colors:			
 			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);
 			return true;
-		case R.id.menu_manual_add:			
-			if(activity instanceof DisplayLightNovelListActivity) {
-				((DisplayLightNovelListActivity)activity).manualAdd();								
-			}
-			else if(activity instanceof DisplayTeaserListActivity) {
-				((DisplayTeaserListActivity)activity).refreshList();
-			}
-			else if(activity instanceof DisplayOriginalListActivity) {
-				((DisplayOriginalListActivity)activity).refreshList();
-			}
+		case R.id.menu_manual_add:
+			if(activity instanceof INovelListHelper)
+				((INovelListHelper)activity).manualAdd();
 			return true;
-		case R.id.menu_download_all:
-			if(activity instanceof DisplayLightNovelListActivity) {
-				((DisplayLightNovelListActivity)activity).downloadAllNovelInfo();								
-			}
-			else if(activity instanceof DisplayTeaserListActivity) {
-				((DisplayTeaserListActivity)activity).downloadAllNovelInfo();
-			}
-			else if(activity instanceof DisplayOriginalListActivity) {
-				((DisplayOriginalListActivity)activity).downloadAllNovelInfo();
-			}
+		case R.id.menu_download_all_info:
+			if(activity instanceof INovelListHelper)
+				((INovelListHelper)activity).downloadAllNovelInfo();
 			return true;
 		case R.id.menu_bookmarks:
     		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);

@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_refresh_novel_list"
+        android:orderInCategory="3" 
+        android:title="Refresh" />
+    <item android:id="@+id/menu_manual_add"
+        android:orderInCategory="2" 
+        android:title="Manual Add" 
+        android:showAsAction="ifRoom"></item>
+    <item android:id="@+id/menu_download_all_info"
+        android:orderInCategory="1" 
+        android:title="Download All Info" 
+        android:showAsAction="ifRoom"></item>
+</menu>
