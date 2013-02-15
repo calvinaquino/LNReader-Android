@@ -25,7 +25,6 @@ public class TestDisplayNovelActivityTwo extends SherlockFragmentActivity implem
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(null);
         UIHelper.SetTheme(this, R.layout.fragactivity_framework);
         UIHelper.SetActionBarDisplayHomeAsUp(this, true);
@@ -46,25 +45,6 @@ public class TestDisplayNovelActivityTwo extends SherlockFragmentActivity implem
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.fragactivity_display_novel_list, menu);
 		return true;
-	}
-	
-	@Override
-	protected void onStop() {
-		// cancel running task
-		// disable cancel so the task can run in background
-//		if(task != null) {
-//			if(!(task.getStatus() == Status.FINISHED)) {
-//				task.cancel(true);
-//				Log.d(TAG, "Stopping running task.");
-//			}
-//		}
-//		if(downloadTask != null) {
-//			if(!(downloadTask.getStatus() == Status.FINISHED)) {
-//				downloadTask.cancel(true);
-//				Log.d(TAG, "Stopping running download task.");
-//			}
-//		}
-		super.onStop();
 	}
 	
 	@Override
@@ -98,8 +78,9 @@ public class TestDisplayNovelActivityTwo extends SherlockFragmentActivity implem
 			case android.R.id.home:
 				super.onBackPressed();
 				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 		}
-		return super.onOptionsItemSelected(item);
 	}
 
 	private boolean getColorPreferences(){
@@ -113,5 +94,4 @@ public class TestDisplayNovelActivityTwo extends SherlockFragmentActivity implem
 		startActivity(intent);
 		overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
 	}
-
 }

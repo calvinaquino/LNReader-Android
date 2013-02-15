@@ -2,12 +2,11 @@ package com.erakk.lnreader.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.fragment.DisplayLightNovelDetailsFragment;
@@ -17,15 +16,12 @@ public class TestDisplayNovelDetailsActivity extends SherlockFragmentActivity {
 
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		
+	protected void onCreate(Bundle savedInstanceState) {		
 		super.onCreate(null);	// This is to destroy the savedInstanceState so that the fragments don't get created twice
         UIHelper.SetTheme(this, R.layout.fragactivity_framework);
         UIHelper.SetActionBarDisplayHomeAsUp(this, true);
         setContentView(R.layout.fragactivity_framework);
 		
-        
         Bundle fromPevIntent = getIntent().getExtras();
         
         if(findViewById(R.id.rightFragment) != null) {	
@@ -49,47 +45,18 @@ public class TestDisplayNovelDetailsActivity extends SherlockFragmentActivity {
         	getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame, list).disallowAddToBackStack().commit();
         }
 	}
-
-
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.fragactivity_display_novel_list, menu);
 		return true;
 	}
 	
-
-	@Override
-	protected void onStop() {
-		// cancel running task
-		// disable cancel so the task can run in background
-//		if(task != null) {
-//			if(!(task.getStatus() == Status.FINISHED)) {
-//				task.cancel(true);
-//				Log.d(TAG, "Stopping running task.");
-//			}
-//		}
-//		if(downloadTask != null) {
-//			if(!(downloadTask.getStatus() == Status.FINISHED)) {
-//				downloadTask.cancel(true);
-//				Log.d(TAG, "Stopping running download task.");
-//			}
-//		}
-		super.onStop();
-	}
-	
 	@Override
 	public void finish() {
-		// TODO Auto-generated method stub
 		super.finish();
 		overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
 	}
-
-	@Override
-    protected void onRestart() {
-        super.onRestart();
-        //if(adapter != null) adapter.notifyDataSetChanged();
-    }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -113,8 +80,8 @@ public class TestDisplayNovelDetailsActivity extends SherlockFragmentActivity {
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;
-		}
-		return super.onOptionsItemSelected(item);
+		default:
+			return super.onOptionsItemSelected(item);
+		}		
 	}
-
 }
