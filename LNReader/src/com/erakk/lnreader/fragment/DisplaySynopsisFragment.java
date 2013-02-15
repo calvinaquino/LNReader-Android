@@ -66,9 +66,10 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 			page = NovelsDao.getInstance(getSherlockActivity()).getPageModel(page, null);
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting Page Model for " + page.getPage(), e);
-		}                
+		}
+        
         executeTask(page, false);
-
+        
 		return view;
 	}
     
@@ -226,8 +227,6 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
 			Toast.makeText(getSherlockActivity(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
-		
-
 	}
 	
 	private boolean getStrechCoverPreference(){

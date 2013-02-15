@@ -78,6 +78,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 		}
 	}
 
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {

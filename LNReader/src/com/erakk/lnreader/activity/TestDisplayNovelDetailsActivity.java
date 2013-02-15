@@ -15,21 +15,20 @@ import com.erakk.lnreader.fragment.DisplaySynopsisFragment;
 
 public class TestDisplayNovelDetailsActivity extends SherlockFragmentActivity {
 
-	private boolean isInverted;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState);
+		
+		super.onCreate(null);	// This is to destroy the savedInstanceState so that the fragments don't get created twice
         UIHelper.SetTheme(this, R.layout.fragactivity_framework);
         UIHelper.SetActionBarDisplayHomeAsUp(this, true);
         setContentView(R.layout.fragactivity_framework);
 		
-        isInverted = getColorPreferences();
         
         Bundle fromPevIntent = getIntent().getExtras();
-              
-        if(findViewById(R.id.rightFragment) != null) {
+        
+        if(findViewById(R.id.rightFragment) != null) {	
         	fromPevIntent.putBoolean("show_list_child", false);
         	
         	Fragment synopsis_panel = new DisplaySynopsisFragment();
@@ -47,16 +46,19 @@ public class TestDisplayNovelDetailsActivity extends SherlockFragmentActivity {
         	Fragment list = new DisplayLightNovelDetailsFragment();
         	list.setArguments(fromPevIntent);
         	
-        	getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame, list).commit();
+        	getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame, list).disallowAddToBackStack().commit();
         }
 	}
-	
+
+
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
+		getSupportMenuInflater().inflate(R.menu.fragactivity_display_novel_list, menu);
 		return true;
 	}
 	
+
 	@Override
 	protected void onStop() {
 		// cancel running task
@@ -86,9 +88,6 @@ public class TestDisplayNovelDetailsActivity extends SherlockFragmentActivity {
 	@Override
     protected void onRestart() {
         super.onRestart();
-        if(isInverted != getColorPreferences()) {
-        	UIHelper.Recreate(this);
-        }
         //if(adapter != null) adapter.notifyDataSetChanged();
     }
 
@@ -116,10 +115,6 @@ public class TestDisplayNovelDetailsActivity extends SherlockFragmentActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	private boolean getColorPreferences(){
-    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 
 }
