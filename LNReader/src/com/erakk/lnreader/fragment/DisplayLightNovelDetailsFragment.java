@@ -34,7 +34,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
+<<<<<<< HEAD
 import com.actionbarsherlock.view.Menu;
+=======
+>>>>>>> upstream/master
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
