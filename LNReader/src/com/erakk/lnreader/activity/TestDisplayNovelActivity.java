@@ -28,7 +28,7 @@ public class TestDisplayNovelActivity extends SherlockFragmentActivity implement
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState);
+		super.onCreate(null);
         UIHelper.SetTheme(this, R.layout.fragactivity_framework);
         UIHelper.SetActionBarDisplayHomeAsUp(this, true);
         setContentView(R.layout.fragactivity_framework);
@@ -46,7 +46,7 @@ public class TestDisplayNovelActivity extends SherlockFragmentActivity implement
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
+		getSupportMenuInflater().inflate(R.menu.fragactivity_display_novel_list, menu);
 		return true;
 	}
 	

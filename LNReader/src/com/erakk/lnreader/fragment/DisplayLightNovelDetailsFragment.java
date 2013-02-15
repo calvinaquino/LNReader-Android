@@ -21,6 +21,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -33,6 +34,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
@@ -69,10 +71,18 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 	String touchedForDownload;
     
 	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+	}
+
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-        UIHelper.SetActionBarDisplayHomeAsUp(getSherlockActivity(), true);		
+		
+		UIHelper.SetActionBarDisplayHomeAsUp(getSherlockActivity(), true);		
 		View view = inflater.inflate(R.layout.activity_display_light_novel_details, container, false);
 		
         //Get intent and message
@@ -84,9 +94,11 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			page = NovelsDao.getInstance(getSherlockActivity()).getPageModel(page, null);
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting Page Model for " + page.getPage(), e);
-		}                
+		}
+        
         executeTask(page, false);
-       
+        
+        
         txtLoading = (TextView) view.findViewById(R.id.txtLoading);
         
         // setup listener
@@ -156,56 +168,46 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
     	super.onStop();
     }
     
-
-//	@Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//    	switch (item.getItemId()) {
-//    	case R.id.menu_settings:
-//    		Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
-//    		startActivity(launchNewIntent);
-//    		return true;
-//    	case R.id.menu_refresh_chapter_list:			
-//    		executeTask(page, true);
-//			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
-//			return true;
-//		case R.id.invert_colors:			
-//			UIHelper.ToggleColorPref(this);
-//			UIHelper.Recreate(this);
-//			return true;
-//		case R.id.menu_bookmarks:
-//    		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
-//        	startActivity(bookmarkIntent);
-//			return true;    
-//		case R.id.menu_download_all:
-//			/*
-//			 * Download all chapters
-//			 */
-//			ArrayList<PageModel> availableChapters = novelCol.getFlattedChapterList();
-//			ArrayList<PageModel> notDownloadedChapters = new ArrayList<PageModel>();
-//			for (PageModel pageModel : availableChapters) {
-//				if(pageModel.isMissing() || pageModel.isExternal()) continue;					
-//				else if(!pageModel.isDownloaded()  												// add to list if not downloaded 
-//						|| (pageModel.isDownloaded() 
-//					        && NovelsDao.getInstance(this).isContentUpdated(pageModel))) // or the update available.
-//				{
-//					notDownloadedChapters.add(pageModel);
-//				}
-//			}
-//			touchedForDownload = "Volumes";
-//			executeDownloadTask(notDownloadedChapters, true);
-//			return true;
-//		case R.id.menu_downloads:
-//    		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
-//        	startActivity(downloadsItent);;
-//			return true; 
-//        case android.R.id.home:
-//        	super.onBackPressed();
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+    @Override
+	public void onCreateOptionsMenu(Menu menu,
+			com.actionbarsherlock.view.MenuInflater inflater) {
+		// TODO Auto-generated method stub
+		super.onCreateOptionsMenu(menu, inflater);
+		menu.add(0, 0, Menu.FIRST, "Download All \nChapters").setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+	}    
     
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+	@Override
+	public boolean onOptionsItemSelected(
+			com.actionbarsherlock.view.MenuItem item) {
+		// TODO Auto-generated method stub
+		switch (item.getItemId()) {
+    	case R.id.menu_refresh_novel_list:
+    		Log.d(TAG,"Refreshing Details");
+    		executeTask(page, true);
+			Toast.makeText(getSherlockActivity(), "Refreshing", Toast.LENGTH_SHORT).show();
+		case 0:
+			/*
+			 * Download all chapters
+			 */
+			ArrayList<PageModel> availableChapters = novelCol.getFlattedChapterList();
+			ArrayList<PageModel> notDownloadedChapters = new ArrayList<PageModel>();
+			for (PageModel pageModel : availableChapters) {
+				if(pageModel.isMissing() || pageModel.isExternal()) continue;					
+				else if(!pageModel.isDownloaded()  												// add to list if not downloaded 
+						|| (pageModel.isDownloaded() 
+					        && NovelsDao.getInstance(getSherlockActivity()).isContentUpdated(pageModel))) // or the update available.
+				{
+					notDownloadedChapters.add(pageModel);
+				}
+			}
+			touchedForDownload = "Volumes";
+			executeDownloadTask(notDownloadedChapters, true);
+			return true;
+        }
+		return super.onOptionsItemSelected(item);
+	}
+
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
     	super.onCreateContextMenu(menu, v, menuInfo);
     	ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 	
