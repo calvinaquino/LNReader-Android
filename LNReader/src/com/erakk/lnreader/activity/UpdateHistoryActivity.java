@@ -21,6 +21,7 @@ import com.erakk.lnreader.adapter.UpdateInfoModelAdapter;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.UpdateInfoModel;
 import com.erakk.lnreader.model.UpdateType;
+import com.erakk.lnreader.service.UpdateService;
 
 public class UpdateHistoryActivity extends SherlockActivity {
 	private static final String TAG = UpdateHistoryActivity.class.toString();
@@ -79,7 +80,14 @@ public class UpdateHistoryActivity extends SherlockActivity {
         		updateContent();
     			return true; 
             case android.R.id.home:
-    			super.onBackPressed();
+        		Intent intent = getIntent();
+        		String caller = intent.getStringExtra(Constants.EXTRA_CALLER_ACTIVITY);
+        		if(caller.equalsIgnoreCase(UpdateService.class.toString())) {
+        			Intent mainIntent = new Intent(this, MainActivity.class);
+        			startActivity(mainIntent);
+        			finish();
+        		}
+        		else super.onBackPressed();
                 return true;
         }
         return super.onOptionsItemSelected(item);

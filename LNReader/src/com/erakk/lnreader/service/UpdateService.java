@@ -192,6 +192,7 @@ public class UpdateService extends Service {
 		contentText += ".";
 		
 		Intent notificationIntent = new Intent(this, UpdateHistoryActivity.class);
+		notificationIntent.putExtra(Constants.EXTRA_CALLER_ACTIVITY, UpdateService.class.toString());
 		int pendingFlag = PendingIntent.FLAG_CANCEL_CURRENT;
 		PendingIntent contentIntent = PendingIntent.getActivity(this, Constants.CONSOLIDATED_NOTIFIER_ID, notificationIntent, pendingFlag);
 
