@@ -28,6 +28,7 @@ import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.DBHelper;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.service.MyScheduleReceiver;
 
 public class DisplaySettingsActivity extends SherlockPreferenceActivity implements ICallbackNotifier{
@@ -136,7 +137,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         updatesInterval.setSummary("Define how often updates will be verified (" + updateIntervalArray[updatesIntervalValue] + ")");
         updatesInterval.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				int updatesIntervalInt = Integer.parseInt(newValue.toString());	
+				int updatesIntervalInt = Util.tryParseInt(newValue.toString(), 0);	
 				MyScheduleReceiver.reschedule(updatesIntervalInt);
 				updatesInterval.setSummary("Define how often updates will be verified (" + updateIntervalArray[updatesIntervalInt] + ")");
                 return true;
@@ -184,8 +185,8 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         int scrollingSizeValue = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5);
         scrollingSize.setSummary("Scrolling size for volumer rocker (" + scrollingSizeValue + ")");
         scrollingSize.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				int scrollingSizeValue = Integer.parseInt(newValue.toString());	
+			public boolean onPreferenceChange(Preference preference, Object newValue) {							
+				int scrollingSizeValue =  Util.tryParseInt(newValue.toString(), 5);
 				scrollingSize.setSummary("Scrolling size for volumer rocker (" + scrollingSizeValue + ")");
                 return true;
 			}

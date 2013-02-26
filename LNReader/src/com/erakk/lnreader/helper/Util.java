@@ -134,4 +134,13 @@ public class Util {
 	public static String sanitizeFilename(String filename) {
 		return filename.replaceAll("[\\|\\\\?*<\\\":>+\\[\\]']", "_");		
 	}
+	
+	public static int tryParseInt(String input, int def) {
+		try{
+			return Integer.parseInt(input);
+		}
+		catch(NumberFormatException ex) {
+			return def;
+		}
+	}
 }
