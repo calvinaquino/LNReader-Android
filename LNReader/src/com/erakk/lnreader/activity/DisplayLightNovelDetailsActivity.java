@@ -188,19 +188,21 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			/*
 			 * Download all chapters
 			 */
-			ArrayList<PageModel> availableChapters = novelCol.getFlattedChapterList();
-			ArrayList<PageModel> notDownloadedChapters = new ArrayList<PageModel>();
-			for (PageModel pageModel : availableChapters) {
-				if(pageModel.isMissing() || pageModel.isExternal()) continue;					
-				else if(!pageModel.isDownloaded()  												// add to list if not downloaded 
-						|| (pageModel.isDownloaded() 
-					        && NovelsDao.getInstance(this).isContentUpdated(pageModel))) // or the update available.
-				{
-					notDownloadedChapters.add(pageModel);
+			if(novelCol != null) {
+				ArrayList<PageModel> availableChapters = novelCol.getFlattedChapterList();
+				ArrayList<PageModel> notDownloadedChapters = new ArrayList<PageModel>();
+				for (PageModel pageModel : availableChapters) {
+					if(pageModel.isMissing() || pageModel.isExternal()) continue;					
+					else if(!pageModel.isDownloaded()  										 // add to list if not downloaded 
+							|| (pageModel.isDownloaded() 
+						        && NovelsDao.getInstance(this).isContentUpdated(pageModel))) // or the update available.
+					{
+						notDownloadedChapters.add(pageModel);
+					}
 				}
+				touchedForDownload = "Volumes";
+				executeDownloadTask(notDownloadedChapters, true);
 			}
-			touchedForDownload = "Volumes";
-			executeDownloadTask(notDownloadedChapters, true);
 			return true;
 		case R.id.menu_downloads_list:
     		Intent downloadsItent = new Intent(this, DownloadListActivity.class);

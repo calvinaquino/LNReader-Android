@@ -145,6 +145,8 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 	}
 
 	public void getResult(AsyncTaskResult<?> result) {
+		if(result == null) return;
+		
 		Exception e = result.getError();
 		if(e == null) {
 			ImageModel imageModel = (ImageModel) result.getResult();
