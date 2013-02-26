@@ -1,5 +1,4 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-	<!-- For android before honeycomb -->
     <style name="AppTheme" parent="Theme.Sherlock.Light.DarkActionBar" >
         <item name="android:divider">@drawable/divider</item>
    		<item name="android:dividerHeight">1dp</item>
