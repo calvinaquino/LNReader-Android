@@ -1118,26 +1118,38 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * To avoid android.database.sqlite.SQLiteException: unable to close due to unfinalised statements
 	 */
 	private Cursor rawQuery(SQLiteDatabase db, String sql, String[] values){
-		if(!db.isOpen()) 
-			db = getReadableDatabase();	
-		return db.rawQuery(sql, values);
+		Object lock = new Object();
+		synchronized (lock) {
+			if(!db.isOpen()) 
+				db = getReadableDatabase();	
+			return db.rawQuery(sql, values);
+		}
 	}
 	
 	private int update(SQLiteDatabase db, String table, ContentValues cv, String whereClause, String[] whereParams){
-		if (!db.isOpen())
-			db = getWritableDatabase();
-		return db.update(table, cv, whereClause, whereParams);
+		Object lock = new Object();
+		synchronized (lock) {
+			if (!db.isOpen())
+				db = getWritableDatabase();
+			return db.update(table, cv, whereClause, whereParams);
+		}
 	}
 	
 	private long insertOrThrow(SQLiteDatabase db, String table, String nullColumnHack, ContentValues cv){
-		if (!db.isOpen())
-			db = getWritableDatabase();
-		return db.insertOrThrow(table, nullColumnHack, cv);
+		Object lock = new Object();
+		synchronized (lock) {
+			if (!db.isOpen())
+				db = getWritableDatabase();
+			return db.insertOrThrow(table, nullColumnHack, cv);
+		}
 	}
 	
 	private int delete(SQLiteDatabase db, String table, String whereClause, String[] whereParams) {
-		if (!db.isOpen())
-			db = getWritableDatabase();
-		return db.delete(table, whereClause, whereParams);
+		Object lock = new Object();
+		synchronized (lock) {
+			if (!db.isOpen())
+				db = getWritableDatabase();
+			return db.delete(table, whereClause, whereParams);
+		}
 	}
 }
