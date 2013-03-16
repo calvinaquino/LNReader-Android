@@ -78,6 +78,12 @@ public class UpdateHistoryActivity extends SherlockActivity {
         	case R.id.menu_clear_all:
         		NovelsDao.getInstance(this).deleteAllUpdateHistory();
         		updateContent();
+    			return true;
+        	case R.id.menu_clear_selected:
+        		for (UpdateInfoModel updateInfo : updateList) {
+					if(updateInfo.isSelected()) NovelsDao.getInstance().deleteUpdateHistory(updateInfo);
+				}
+        		updateContent();
     			return true; 
             case android.R.id.home:
         		Intent intent = getIntent();

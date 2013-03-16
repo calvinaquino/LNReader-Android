@@ -11,6 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.erakk.lnreader.R;
@@ -91,6 +94,19 @@ public class UpdateInfoModelAdapter  extends ArrayAdapter<UpdateInfoModel> {
 			holder.txtUpdateDate.setText("Update:" +  Util.formatDateForDisplay(page.getUpdateDate()));
 		}
 		
+		holder.chkSelected = (CheckBox)row.findViewById(R.id.chk_selection);
+		if(holder.chkSelected != null) {
+			//holder.txtUpdateDate.setText("Update:" +  Util.formatDateForDisplay(page.getUpdateDate()));
+			holder.chkSelected.setSelected(page.isSelected());
+			
+			holder.chkSelected.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					page.setSelected(isChecked);
+				}
+			});
+		}
+		
 		row.setTag(holder);
 		return row;
 	}
@@ -100,6 +116,7 @@ public class UpdateInfoModelAdapter  extends ArrayAdapter<UpdateInfoModel> {
 		TextView txtUpdateType;
 		TextView txtUpdateTitle;
 		TextView txtUpdateDate;
+		CheckBox chkSelected;
 	}
 
 	public void setResourceId (int id) {

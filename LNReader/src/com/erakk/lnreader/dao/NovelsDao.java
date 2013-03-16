@@ -1076,6 +1076,13 @@ public class NovelsDao {
 		}
 	}
 	
+	public void deleteUpdateHistory(UpdateInfoModel updateInfo) {
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			dbh.deleteUpdateHistory(db, updateInfo);
+		}
+	}
+	
 	public void insertUpdateHistory(UpdateInfoModel update) {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();

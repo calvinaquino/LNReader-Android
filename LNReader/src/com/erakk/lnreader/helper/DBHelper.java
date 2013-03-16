@@ -1103,6 +1103,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		Log.d(TAG, "Recreate " + TABLE_UPDATE_HISTORY);
 	}
 	
+	public int deleteUpdateHistory(SQLiteDatabase db, UpdateInfoModel updateInfo) {
+		Log.d(TAG, "Deleting UpdateInfoModel id: " + updateInfo.getId());
+		return delete(db, TABLE_UPDATE_HISTORY, COLUMN_ID + " = ? "
+				 , new String[] {updateInfo.getId() + ""});
+	}
+	
 	private UpdateInfoModel cursorToUpdateInfoModel(Cursor cursor) {
 		UpdateInfoModel update = new UpdateInfoModel();
 		update.setId(cursor.getInt(0));

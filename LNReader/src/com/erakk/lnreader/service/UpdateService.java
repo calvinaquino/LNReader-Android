@@ -100,7 +100,7 @@ public class UpdateService extends Service {
 			Log.d(TAG, "sendNotification");
 			
 			// remove previous update history.
-			NovelsDao.getInstance(this).deleteAllUpdateHistory();
+			//NovelsDao.getInstance(this).deleteAllUpdateHistory();
 			
 			// create UpdateInfoModel list
 			int updateCount = 0;

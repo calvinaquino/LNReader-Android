@@ -12,6 +12,8 @@ public class UpdateInfoModel {
 	private String updatePage;
 	private PageModel updatePageModel;
 	
+	private boolean isSelected;
+	
 	public int getId() {
 		return id;
 	}
@@ -47,6 +49,12 @@ public class UpdateInfoModel {
 	}
 	public void setUpdatePageModel(PageModel updatePageModel) {
 		this.updatePageModel = updatePageModel;
+	}
+	public boolean isSelected() {
+		return isSelected;
+	}
+	public void setSelected(boolean isSelected) {
+		this.isSelected = isSelected;
 	}
 	
 }

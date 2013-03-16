@@ -6,5 +6,6 @@
         android:showAsAction="never"
         android:title="@string/menu_settings"/>
     <item android:id="@+id/menu_clear_all" android:title="Clear All"></item>
+    <item android:id="@+id/menu_clear_selected" android:title="Clear Selected"></item>
 
 </menu>
