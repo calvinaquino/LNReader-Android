@@ -37,7 +37,7 @@
     <PreferenceCategory
         android:key="general_category"
         android:title="General Preferences" >
-        <CheckBoxPreference
+        <ListPreference android:entries="@array/uiSelection" android:title="UI Selection" android:key="ui_selection" android:entryValues="@array/uiSelectionValues" android:defaultValue="0"/><CheckBoxPreference
             android:defaultValue="true"
             android:key="invert_colors"
             android:summary="Changes the font color with the background color"
@@ -77,6 +77,7 @@
             android:key="strech_detail_image"
             android:summary="Makes the cover for the novel fit the screen (with insets) instead of it's original size."
             android:title="Resize Cover" />
+        
     </PreferenceCategory>
     <PreferenceCategory
         android:key="reading_category"

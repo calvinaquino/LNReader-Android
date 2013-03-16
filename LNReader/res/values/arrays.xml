@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    
+<resources>    
     <string-array name="updateInterval">
         <item name="0">Never</item>
         <item name="1">Every 15 minutes</item>
@@ -8,8 +7,7 @@
         <item name="3">Every hour</item>
         <item name="4">Every 12 hours</item>
         <item name="5">Every day</item>
-    </string-array>
-     
+    </string-array>     
     <string-array name="updateIntervalValues">
         <item name="0">0</item>
         <item name="1">1</item>
@@ -18,5 +16,14 @@
         <item name="4">4</item>
         <item name="5">5</item>
     </string-array>
-    
+    <string-array name="uiSelection">
+        <item name="0">Default UI</item>
+        <item name="1">Tablet 1</item>
+        <item name="2">Tablet 2</item>
+    </string-array>
+    <string-array name="uiSelectionValues">
+        <item name="0">0</item>
+        <item name="1">1</item>
+        <item name="2">2</item>
+    </string-array>    
 </resources>

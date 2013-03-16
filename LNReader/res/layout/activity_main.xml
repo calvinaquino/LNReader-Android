@@ -62,38 +62,7 @@
 	            android:background="@drawable/button"	            
 	            android:textStyle="bold"
 	            android:textSize="22sp"
-   	            android:text="@string/jump_last_read" />
-	        
-	        <Button
-	            android:id="@+id/button7"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-   	            android:layout_gravity="center"
-	            android:layout_marginTop="40dp"
-	            android:layout_marginBottom="40dp"
-	            android:minHeight="66dp"
-	            android:minWidth="165dp"
-   	            android:onClick="gotoTestRoom"
-	            android:background="@drawable/button"	            
-	            android:textStyle="bold"
-	            android:textSize="22sp"
-   	            android:text="Test" />
-	        
-	        <Button
-	            android:id="@+id/button8"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-   	            android:layout_gravity="center"
-	            android:layout_marginTop="40dp"
-	            android:layout_marginBottom="40dp"
-	            android:minHeight="66dp"
-	            android:minWidth="165dp"
-   	            android:onClick="gotoTestRoom2"
-	            android:background="@drawable/button"	            
-	            android:textStyle="bold"
-	            android:textSize="22sp"
-   	            android:text="Test 2" />
-            
+   	            android:text="@string/jump_last_read" />	        
 	    </LinearLayout>
 	    
 	    <View 
