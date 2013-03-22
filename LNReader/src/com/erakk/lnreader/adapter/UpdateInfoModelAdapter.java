@@ -1,12 +1,17 @@
 package com.erakk.lnreader.adapter;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +21,8 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
+import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.UpdateInfoModel;
@@ -25,12 +32,41 @@ public class UpdateInfoModelAdapter  extends ArrayAdapter<UpdateInfoModel> {
 	//private static final String TAG = PageModelAdapter.class.toString();
 	private Context context;
 	private int layoutResourceId;
+	private Date now;
+	long repeatTime = 0;	
 	public List<UpdateInfoModel> data;
+	
 	public UpdateInfoModelAdapter(Context context, int resourceId, List<UpdateInfoModel> objects) {
 		super(context, resourceId, objects);
 		this.layoutResourceId = resourceId;
 		this.context = context;
 		this.data = objects;
+		
+		now = new Date();
+		
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext());
+		String updatesIntervalStr = preferences.getString(Constants.PREF_UPDATE_INTERVAL, "0");
+		int updatesInterval = Integer.parseInt(updatesIntervalStr);
+		
+		switch (updatesInterval) {
+			case 1:
+				repeatTime = AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+				break;
+			case 2:
+				repeatTime = AlarmManager.INTERVAL_HALF_HOUR;
+				break;
+			case 3:
+				repeatTime = AlarmManager.INTERVAL_HOUR;
+				break;
+			case 4:
+				repeatTime = AlarmManager.INTERVAL_HALF_DAY;
+				break;
+			case 5:
+				repeatTime = AlarmManager.INTERVAL_DAY;
+				break;
+			default:
+				break;
+		}
 	}
 	
 	public void setLayout(int resourceId) {
@@ -55,6 +91,10 @@ public class UpdateInfoModelAdapter  extends ArrayAdapter<UpdateInfoModel> {
 		UpdateInfoModelHolder holder = null;
 
 		final UpdateInfoModel page = data.get(position);
+		boolean freshData = false;
+		if(now.getTime() - page.getUpdateDate().getTime() <= repeatTime ) {
+			freshData = true;
+		}
 		
 		LayoutInflater inflater = ((Activity)context).getLayoutInflater();
 		row = inflater.inflate(layoutResourceId, parent, false);
@@ -81,12 +121,14 @@ public class UpdateInfoModelAdapter  extends ArrayAdapter<UpdateInfoModel> {
 				default:
 					holder.txtUpdateType.setText("Unknown!");
 					break;
-			}			
+			}
+			if(freshData) holder.txtUpdateType.setTypeface(null, Typeface.BOLD);
 		}
 		
 		holder.txtUpdateTitle = (TextView)row.findViewById(R.id.update_chapter);
 		if(holder.txtUpdateTitle != null) {
 			holder.txtUpdateTitle.setText(page.getUpdateTitle());
+			if(freshData) holder.txtUpdateTitle.setTypeface(null, Typeface.BOLD);
 		}
 		
 		holder.txtUpdateDate = (TextView)row.findViewById(R.id.update_date);

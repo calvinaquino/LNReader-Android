@@ -1084,7 +1084,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		ArrayList<UpdateInfoModel> updates = new ArrayList<UpdateInfoModel>();
 		
 		Cursor cursor = rawQuery(db, "select * from " + TABLE_UPDATE_HISTORY
-				                   + " order by " + COLUMN_LAST_UPDATE
+				                   + " order by " + COLUMN_LAST_UPDATE + " desc "
 				                   + ", " + COLUMN_PAGE, null);
 		cursor.moveToFirst();
 	    while (!cursor.isAfterLast()) {
