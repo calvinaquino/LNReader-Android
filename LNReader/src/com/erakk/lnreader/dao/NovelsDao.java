@@ -200,11 +200,12 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try{
-				watchedNovel = dbh.selectAllByColumn(db, DBHelper.COLUMN_IS_WATCHED + " = ? and (" 
-			                                           + DBHelper.COLUMN_PARENT + " = ? or "
-			                                           + DBHelper.COLUMN_PARENT + " = ? )"
-			                                       , new String[] { "1", "Main_Page", "Category:Teasers" }
-												   , DBHelper.COLUMN_TITLE );
+//				watchedNovel = dbh.selectAllByColumn(db, DBHelper.COLUMN_IS_WATCHED + " = ? and (" 
+//			                                           + DBHelper.COLUMN_PARENT + " = ? or "
+//			                                           + DBHelper.COLUMN_PARENT + " = ? )"
+//			                                       , new String[] { "1", "Main_Page", "Category:Teasers" }
+//												   , DBHelper.COLUMN_TITLE );
+				watchedNovel = dbh.getAllWatchedNovel(db, true);
 			}finally{
 				db.close();
 			}			
@@ -1059,6 +1060,13 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			return dbh.isContentUpdated(db, page);
+		}
+	}
+	
+	public int isNovelUpdated(PageModel page) {
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			return dbh.isNovelUpdated(db, page);
 		}
 	}
 	

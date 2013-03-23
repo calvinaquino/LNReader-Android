@@ -37,6 +37,8 @@ public class PageModel{
 	
 	private String redirectedTo;
 	
+	private int updateCount;
+	
 	// not saved to db
 	private boolean isUpdated = false;
 
@@ -223,5 +225,11 @@ public class PageModel{
 	}
 	public void setExternal(boolean isExternal) {
 		this.isExternal = isExternal;
-	}	
+	}
+	public int getUpdateCount() {
+		return updateCount;
+	}
+	public void setUpdateCount(int updateCount) {
+		this.updateCount = updateCount;
+	}
 }

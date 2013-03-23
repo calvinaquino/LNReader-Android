@@ -438,23 +438,19 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 			if(Util.isInstanceOf((ArrayList<?>)result.getResult(), PageModel.class)) {
 				@SuppressWarnings("unchecked")
 				ArrayList<PageModel> list = (ArrayList<PageModel>) result.getResult();
-				Log.d("WatchList", "result ok");
 				if(list != null) {
-					Log.d("WatchList", "result not empty");
-					//if (refreshOnly) {
-						adapter.clear();
-					//	refreshOnly = false;
-					//}
+					adapter.clear();
 					adapter.addAll(list);
 					toggleProgressBar(false);
 					
 					// Show message if watch list is empty
-					if (list.size() == 0 && onlyWatched) {
-
-						Log.d("WatchList", "result set message empty");
-						TextView tv = (TextView) findViewById(R.id.emptyList);
-						tv.setVisibility(TextView.VISIBLE);
-						tv.setText("Watch List is empty.");
+					if(onlyWatched) {
+						if (list.size() == 0) {
+							Log.d("WatchList", "result set message empty");
+							TextView tv = (TextView) findViewById(R.id.emptyList);
+							tv.setVisibility(TextView.VISIBLE);
+							tv.setText("Watch List is empty.");
+						}
 					}
 				}
 			}

@@ -17,11 +17,13 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.PageModel;
@@ -38,6 +40,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		this.layoutResourceId = resourceId;
 		this.context = context;
 		this.data = objects;
+		Log.d(TAG, "created with " + objects.size() + " items");
 	}
 
 	public void setLayout(int resourceId) {
@@ -87,6 +90,17 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			}
 			if(page.isMissing()) holder.txtNovel.setTextColor(Constants.COLOR_MISSING);
 			if(page.isExternal()) holder.txtNovel.setTextColor(Constants.COLOR_EXTERNAL);
+			
+			ImageView ivHasUpdates = (ImageView) row.findViewById(R.id.novel_has_updates);
+			if(ivHasUpdates != null) {
+				if(page.getUpdateCount() > 0) {
+					ivHasUpdates.setVisibility(View.VISIBLE);
+					UIHelper.setColorFilter(ivHasUpdates);					
+				}
+				else {
+					ivHasUpdates.setVisibility(View.GONE);
+				}
+			}
 		}
 		
 		holder.txtLastUpdate = (TextView)row.findViewById(R.id.novel_last_update);
@@ -119,19 +133,21 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 				}
 			});
 		}
-
+		
 		row.setTag(holder);
 		return row;
 	}	
 
+// somehow if enabled, will trigger the db 2x (first load and after load)  
 	@Override
 	public void notifyDataSetChanged() {
 		if(!isAdding) {
 			// refresh the data
-			Log.d(TAG, "Refreshing data");
+			Log.d(TAG, "Refreshing data: " + data.size() + " items");
 			for(int i = 0; i< data.size();++i) {
 				try {
 					PageModel temp = NovelsDao.getInstance(context).getPageModel(data.get(i), null);
+					temp.setUpdateCount(data.get(i).getUpdateCount());
 					data.set(i, temp);
 				} catch (Exception e) {
 					Log.e(TAG, "Error when refreshing PageModel: " + data.get(i).getPage(), e);

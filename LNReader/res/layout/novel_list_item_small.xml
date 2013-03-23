@@ -40,6 +40,14 @@
 
     </LinearLayout>
     
+    <ImageView
+	    android:id="@+id/novel_has_updates"
+	    android:layout_width="wrap_content"
+	    android:layout_height="match_parent"
+	    android:scaleType="center"
+	    android:src="@drawable/ic_update_avaliable"
+	    android:padding="8dp" 
+	    android:visibility="gone"/>
     <CheckBox
         android:layout_gravity="right|center_vertical"
         android:id="@+id/novel_is_watched"

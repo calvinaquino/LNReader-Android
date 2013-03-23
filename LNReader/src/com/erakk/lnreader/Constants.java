@@ -89,4 +89,6 @@ public class Constants {
 	public static final int COLOR_MISSING = Color.parseColor("#ff0000");
 	public static final int COLOR_EXTERNAL = Color.parseColor("#3333ff");
 	
+	public static final String ROOT_NOVEL = "Main_Page";
+	
 }
