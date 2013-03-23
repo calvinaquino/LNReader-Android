@@ -1,7 +1,6 @@
 package com.erakk.lnreader.adapter;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
@@ -75,8 +74,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		ivFinishedReading.setScaleType(ImageView.ScaleType.CENTER);
 		ivFinishedReading.setPadding(padding, padding, padding, padding);
 		ivFinishedReading.setLayoutParams(params);
-		
-		
+				
 		ImageView ivExternal = new ImageView(context);
 		ivExternal.setImageResource(R.drawable.ic_is_external);
 		ivExternal.setScaleType(ImageView.ScaleType.CENTER);
@@ -108,21 +106,19 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		if(child.isExternal()) {
 			container.addView(ivExternal);
 			UIHelper.setColorFilter(ivExternal);
-
 		}
 
 		//Log.d("getChildView", "Downloaded " + child.getTitle() + " id " + child.getId() + " : " + child.isDownloaded() );
 		if(ivIsDownloaded != null && ivHasUpdates != null) {
 			if(child.isDownloaded()) {
 				if(NovelsDao.getInstance().isContentUpdated(child)) {
-					container.addView(ivHasUpdates);			
+					container.addView(ivHasUpdates);
 				}
 				container.addView(ivIsDownloaded);
 			}
 			UIHelper.setColorFilter(ivIsDownloaded);
 			UIHelper.setColorFilter(ivHasUpdates);
-		}
-		
+		}		
 		
 		TextView tvLastUpdate = (TextView) view.findViewById(R.id.novel_last_update);
 		if(tvLastUpdate != null){
@@ -204,15 +200,36 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		TextView tv = (TextView) view.findViewById(R.id.novel_volume);
 		tv.setText(group.getTitle());
 		
+		ViewGroup container = (ViewGroup) view.findViewById(R.id.novel_volume_container);
+		
+		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+		int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics()); // Converts 8dp into px
+		
+		ImageView ivHasUpdates = new ImageView(context);
+		ivHasUpdates.setImageResource(R.drawable.ic_update_avaliable);
+		ivHasUpdates.setScaleType(ImageView.ScaleType.CENTER);
+		ivHasUpdates.setPadding(padding, padding, padding, padding);
+		ivHasUpdates.setLayoutParams(params);
+		
+		ArrayList<PageModel> chapterList = group.getChapterCollection();
+		// check if any chapter has updates
+		for (PageModel pageModel : chapterList) {
+			if(NovelsDao.getInstance().isContentUpdated(pageModel)) {
+				container.addView(ivHasUpdates);
+				UIHelper.setColorFilter(ivHasUpdates);
+				break;
+			}
+		}
+		
 		// check if all chapter is read
 		boolean readAll = true;
-		for(Iterator<PageModel> iPage = group.getChapterCollection().iterator(); iPage.hasNext();) {
-			PageModel page = iPage.next();
-			if(!page.isFinishedRead()) {
+		for (PageModel pageModel : chapterList) {
+			if(!pageModel.isFinishedRead()) {
 				readAll = false;
 				break;
 			}
 		}
+		
 		if(readAll) {
 			tv.setTextColor(Constants.COLOR_READ);
 		}
