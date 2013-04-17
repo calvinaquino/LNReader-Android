@@ -36,7 +36,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	private boolean isInverted;
 	private ProgressDialog dialog = null;
 	Context context;
-	
+
 	/**************************************************************
 	 *	The onPreferenceTreeClick method's sole purpose is to deal with the known Android
 	 *	bug that doesn't custom theme the child preference screen
@@ -52,7 +52,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	        	if (((PreferenceScreen)preference).getDialog()!=null)
 	        		((PreferenceScreen)preference).getDialog().getWindow().getDecorView().setBackgroundDrawable(this.getWindow().getDecorView().getBackground().getConstantState().newDrawable());
     	return false;
-		
+
 	}
 
 
@@ -62,13 +62,13 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		context = this;
 		UIHelper.SetTheme(this, null);
 		super.onCreate(savedInstanceState);
-		UIHelper.SetActionBarDisplayHomeAsUp(this, true);   	
+		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
         //This man is deprecated but but we may want to be able to run on older API
         addPreferencesFromResource(R.xml.preferences);
-        
+
         // Screen Orientation
-        Preference lockHorizontal = (Preference)  findPreference(Constants.PREF_LOCK_HORIZONTAL);
+        Preference lockHorizontal = findPreference(Constants.PREF_LOCK_HORIZONTAL);
         lockHorizontal.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
         		if(p.getSharedPreferences().getBoolean(Constants.PREF_LOCK_HORIZONTAL, false)){
@@ -76,30 +76,30 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         		}
         		else {
         			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-        		}        		
+        		}
         		return true;
             }
         });
-        
+
         // Invert Color
-        Preference invertColors = (Preference)  findPreference(Constants.PREF_INVERT_COLOR);
+        Preference invertColors = findPreference(Constants.PREF_INVERT_COLOR);
         invertColors.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
             	recreateUI();
                 return true;
             }
         });
-        
-        
-        Preference clearDatabase = (Preference)  findPreference("clear_database");
+
+
+        Preference clearDatabase = findPreference("clear_database");
         clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
-            	clearDB();            	
+            	clearDB();
         		return true;
             }
         });
-        
-        Preference backupDatabase = (Preference)  findPreference("backup_database");
+
+        Preference backupDatabase = findPreference("backup_database");
         backupDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
             	try {
@@ -110,8 +110,8 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         		return true;
             }
         });
-        
-        Preference restoreDatabase = (Preference)  findPreference("restore_database");
+
+        Preference restoreDatabase = findPreference("restore_database");
         restoreDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
             	try {
@@ -122,30 +122,30 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         		return true;
             }
         });
-        
-        Preference clearImages = (Preference)  findPreference("clear_image_cache");
+
+        Preference clearImages = findPreference("clear_image_cache");
         clearImages.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
         		clearImages();
                 return true;
             }
         });
-        
-        final Preference updatesInterval = (Preference)  findPreference(Constants.PREF_UPDATE_INTERVAL);
+
+        final Preference updatesInterval = findPreference(Constants.PREF_UPDATE_INTERVAL);
         final String[] updateIntervalArray = getResources().getStringArray(R.array.updateInterval);
         int updatesIntervalValue = UIHelper.GetIntFromPreferences(Constants.PREF_UPDATE_INTERVAL, 0);
         updatesInterval.setSummary("Define how often updates will be verified (" + updateIntervalArray[updatesIntervalValue] + ")");
         updatesInterval.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				int updatesIntervalInt = Util.tryParseInt(newValue.toString(), 0);	
+				int updatesIntervalInt = Util.tryParseInt(newValue.toString(), 0);
 				MyScheduleReceiver.reschedule(updatesIntervalInt);
 				updatesInterval.setSummary("Define how often updates will be verified (" + updateIntervalArray[updatesIntervalInt] + ")");
                 return true;
 			}
 		});
-        
-        Preference runUpdates = (Preference) findPreference(Constants.PREF_RUN_UPDATES);
-        runUpdates.setSummary("Last Run: " + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES, "None") + 
+
+        Preference runUpdates = findPreference(Constants.PREF_RUN_UPDATES);
+        runUpdates.setSummary("Last Run: " + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES, "None") +
         					  "\nStatus: " + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES_STATUS, "Unknown"));
         runUpdates.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
@@ -154,20 +154,32 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
             }
         });
 
-        Preference appVersion = (Preference) findPreference("app_version");
+        Preference appVersion = findPreference("app_version");
+        String version = "N/A";
         try {
-			appVersion.setSummary(getPackageManager().getPackageInfo(getPackageName(), 0).versionName);
-		} catch (NameNotFoundException e) {
-			appVersion.setSummary("N/A");
-		}
-        
-        Preference defaultSaveLocation = (Preference) findPreference("save_location");
+        	version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName + " (" + getPackageManager().getPackageInfo(getPackageName(), 0).versionCode + ")";
+		} catch (NameNotFoundException e) { }
+        appVersion.setSummary(version);
+
+        final Preference uiMode = findPreference("ui_selection");
+        final String[] uiSelectionArray = getResources().getStringArray(R.array.uiSelection);
+        int uiSelectionValue = UIHelper.GetIntFromPreferences(Constants.PREF_UI_SELECTION, 0);
+        uiMode.setSummary("Selected Mode: " + uiSelectionArray[uiSelectionValue]);
+        uiMode.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				int uiSelectionValue = Util.tryParseInt(newValue.toString(), 0);
+		        uiMode.setSummary("Selected Mode: " + uiSelectionArray[uiSelectionValue]);
+		        return true;
+			}
+		});
+
+        Preference defaultSaveLocation = findPreference("save_location");
         defaultSaveLocation.setSummary("Downloaded images saved to: " + Constants.IMAGE_ROOT);
-        
-        Preference defaultDbLocation = (Preference) findPreference("db_location");
+
+        Preference defaultDbLocation = findPreference("db_location");
         defaultDbLocation.setSummary("Novel Database saved to: " + DBHelper.getDbPath(this));
-                        
-        Preference tos = (Preference) findPreference("tos");
+
+        Preference tos = findPreference("tos");
         tos.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
 				try {
@@ -176,24 +188,24 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			        startActivity(intent);
 				} catch (Exception e) {
 					Log.e(TAG, "Cannot get copyright page.", e);
-				}				
+				}
 				return false;
 			}
 		});
-        
-        final Preference scrollingSize = (Preference)  findPreference(Constants.PREF_SCROLL_SIZE);
+
+        final Preference scrollingSize = findPreference(Constants.PREF_SCROLL_SIZE);
         int scrollingSizeValue = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5);
         scrollingSize.setSummary("Scrolling size for volumer rocker (" + scrollingSizeValue + ")");
         scrollingSize.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			public boolean onPreferenceChange(Preference preference, Object newValue) {							
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int scrollingSizeValue =  Util.tryParseInt(newValue.toString(), 5);
 				scrollingSize.setSummary("Scrolling size for volumer rocker (" + scrollingSizeValue + ")");
                 return true;
 			}
 		});
-        
+
         LNReaderApplication.getInstance().setUpdateServiceListener(this);
-		isInverted = getColorPreferences();        
+		isInverted = getColorPreferences();
 
         /************************************************************
          *  CSS Layout Behaviours
@@ -201,18 +213,18 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
          *  2. When about to use user's css sheet, display a warning/message (NOT IMPLEMENTED)
          *  3. When linespace/margin is changed, update the summary text to reflect current value
          ***************************************************************/
-        
-        final Preference user_cssPref = (Preference) findPreference(Constants.PREF_USE_CUSTOM_CSS);
-        final Preference lineSpacePref = (Preference) findPreference(Constants.PREF_LINESPACING);
-        final Preference justifyPref = (Preference) findPreference(Constants.PREF_FORCE_JUSTIFIED);
-        final Preference customCssPathPref = (Preference) findPreference(Constants.PREF_CUSTOM_CSS_PATH);
-        final Preference marginPref = (Preference) findPreference(Constants.PREF_MARGINS);
-        
+
+        final Preference user_cssPref = findPreference(Constants.PREF_USE_CUSTOM_CSS);
+        final Preference lineSpacePref = findPreference(Constants.PREF_LINESPACING);
+        final Preference justifyPref = findPreference(Constants.PREF_FORCE_JUSTIFIED);
+        final Preference customCssPathPref = findPreference(Constants.PREF_CUSTOM_CSS_PATH);
+        final Preference marginPref = findPreference(Constants.PREF_MARGINS);
+
         // Retrieve inital values stored
         Boolean currUserCSS = getPreferenceScreen().getSharedPreferences().getBoolean(Constants.PREF_USE_CUSTOM_CSS, false);
         String currLineSpacing = getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_LINESPACING, "150");
         String currMargin = getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_MARGINS, "5");
-        
+
         // Behaviour 1 (Activity first loaded)
         if(currUserCSS){
         	marginPref.setEnabled(false);
@@ -223,20 +235,20 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         	marginPref.setEnabled(true);
         	lineSpacePref.setEnabled(true);
         	justifyPref.setEnabled(true);
-        	customCssPathPref.setEnabled(false);       	
+        	customCssPathPref.setEnabled(false);
         }
-        
+
         // Behaviour 3 (Activity first loaded)
         lineSpacePref.setSummary("Increases the space between lines. The greater the number, the more padding it has. \nCurrent value: " + currLineSpacing + "%");
         marginPref.setSummary("Increases the space between the text and the edge of the screen. \nCurrent value: " + currMargin + "%");
-        
+
         //Behaviour 1 (Updated Preference)
         user_cssPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
         	{
 
 				public boolean onPreferenceChange(Preference preference, Object newValue) {
 						Boolean set = (Boolean) newValue;
-						
+
 						if(set){
 							marginPref.setEnabled(false);
 				        	lineSpacePref.setEnabled(false);
@@ -253,12 +265,12 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				}
         	}
         );
-        
+
 
         String customCssPath = customCssPathPref.getSharedPreferences().getString(Constants.PREF_CUSTOM_CSS_PATH, "/mnt/sdcard/custom.css");
         customCssPathPref.setSummary("Path: " + customCssPath);
         customCssPathPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-			
+
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				customCssPathPref.setSummary("Path: " + newValue.toString());
 				return true;
@@ -274,18 +286,18 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				}
         	}
         );
-        
+
         marginPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
         		{
 					public boolean onPreferenceChange(Preference preference, Object newValue) {
 						String set = (String) newValue;
 						preference.setSummary("Increases the space between the text and the edge of the screen. \nCurrent value: " + set + "%");
 						return true;
-					}        			
+					}
         		});
     }
 
-	
+
 	private void clearImages() {
 		UIHelper.createYesNoDialog(this, "Do you want to clear the Image Cache?", "Clear Image Cache", new OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
@@ -309,7 +321,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			}
 		}).show();
 	}
-	
+
 	private void copyDB(boolean makeBackup) throws IOException {
 		dialog = ProgressDialog.show(this, "Database Manager", "Creating Database backup...", true, true);
 		String filePath = NovelsDao.getInstance(getApplicationContext()).copyDB(getApplicationContext(),makeBackup);
@@ -328,10 +340,10 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	@SuppressWarnings("deprecation")
 	private void runUpdate() {
 		LNReaderApplication.getInstance().runUpdateService(true, this);
-		Preference runUpdates = (Preference) findPreference(Constants.PREF_RUN_UPDATES);
+		Preference runUpdates = findPreference(Constants.PREF_RUN_UPDATES);
 		runUpdates.setSummary("Running...");
 	}
-	
+
 	@Override
     protected void onRestart() {
         super.onRestart();
@@ -339,13 +351,13 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         	UIHelper.Recreate(this);
         }
     }
-	
+
 	@Override
 	protected void onStop(){
 		super.onStop();
 		LNReaderApplication.getInstance().setUpdateServiceListener(null);
 	}
-	
+
 	private void DeleteRecursive(File fileOrDirectory) {
 		// Skip Database
 		if(fileOrDirectory.getAbsolutePath() == DBHelper.getDbPath(this)) return;
@@ -353,29 +365,29 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			Log.d(TAG, "Skippin DB!");
 			return;
 		}
-		
+
 	    if (fileOrDirectory.isDirectory())
 	    	Log.d(TAG, "Deleting Dir: " + fileOrDirectory.getAbsolutePath());
 	    	File[] fileList = fileOrDirectory.listFiles();
 	    	if(fileList == null || fileList.length == 0) return;
-	    	
+
 	        for (File child : fileList)
 	            DeleteRecursive(child);
-	    
+
 	    boolean result = fileOrDirectory.delete();
 	    if(!result) Log.e(TAG, "Failed to delete: " + fileOrDirectory.getAbsolutePath());
 	}
 
 	@SuppressWarnings("deprecation")
 	public void onCallback(ICallbackEventData message) {
-		Preference runUpdates = (Preference) findPreference(Constants.PREF_RUN_UPDATES);
+		Preference runUpdates = findPreference(Constants.PREF_RUN_UPDATES);
 		runUpdates.setSummary("Status: " + message.getMessage());
 	}
-	
+
 	private void recreateUI() {
 		UIHelper.Recreate(this);
 	}
-	
+
 	private boolean getColorPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
