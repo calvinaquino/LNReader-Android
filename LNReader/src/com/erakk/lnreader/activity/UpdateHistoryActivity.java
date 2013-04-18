@@ -28,7 +28,7 @@ public class UpdateHistoryActivity extends SherlockActivity {
 	ArrayList<UpdateInfoModel> updateList;
 	ListView updateListView;
 	UpdateInfoModelAdapter adapter;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -45,36 +45,36 @@ public class UpdateHistoryActivity extends SherlockActivity {
 		});
 		updateContent();
 	}
-	
+
 	private void openChapter(UpdateInfoModel item) {
 		Intent intent = null;
 		if(item.getUpdateType() == UpdateType.NewNovel) {
 			intent = new Intent(getApplicationContext(), DisplayLightNovelDetailsActivity.class);
 			intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
 		}
-		else if (item.getUpdateType() == UpdateType.New || 
+		else if (item.getUpdateType() == UpdateType.New ||
 				 item.getUpdateType() == UpdateType.Updated ||
 				 item.getUpdateType() == UpdateType.UpdateTos ) {
 			intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
 	        intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
 		}
-		
+
 		if(intent != null) startActivity(intent);
 	}
-	
+
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.activity_update_history, menu);
         return true;
     }
-	
+
 	@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         	case R.id.menu_settings:
         		Intent settingsIntent = new Intent(this, DisplaySettingsActivity.class);
             	startActivity(settingsIntent);
-    			return true; 
+    			return true;
         	case R.id.menu_clear_all:
         		NovelsDao.getInstance(this).deleteAllUpdateHistory();
         		updateContent();
@@ -84,11 +84,11 @@ public class UpdateHistoryActivity extends SherlockActivity {
 					if(updateInfo.isSelected()) NovelsDao.getInstance().deleteUpdateHistory(updateInfo);
 				}
         		updateContent();
-    			return true; 
+    			return true;
             case android.R.id.home:
         		Intent intent = getIntent();
         		String caller = intent.getStringExtra(Constants.EXTRA_CALLER_ACTIVITY);
-        		if(caller.equalsIgnoreCase(UpdateService.class.toString())) {
+        		if(caller!= null && caller.equalsIgnoreCase(UpdateService.class.toString())) {
         			Intent mainIntent = new Intent(this, MainActivity.class);
         			startActivity(mainIntent);
         			finish();
@@ -98,14 +98,14 @@ public class UpdateHistoryActivity extends SherlockActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-	
+
 	public void updateContent () {
 		try {
 			updateList = NovelsDao.getInstance(this).getAllUpdateHistory();
 			int resourceId = R.layout.update_list_item;
 			adapter = new UpdateInfoModelAdapter(this, resourceId, updateList);
 			updateListView.setAdapter(adapter);
-			
+
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
 			Toast.makeText(this, "Error when updating: " + e.getMessage(), Toast.LENGTH_LONG).show();
