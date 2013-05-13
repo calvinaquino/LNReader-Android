@@ -843,14 +843,12 @@ public class NovelsDao {
 		if(doc != null) {
 			// download all attached images
 			DownloadFileTask task = new DownloadFileTask(notifier);
-			for (Iterator<ImageModel> i = content.getImages().iterator(); i.hasNext();) {
-				ImageModel image = i.next();
-				
+			for (ImageModel image : content.getImages()) {				
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData("Start downloading: " + image.getUrl()));
 				}
 				image = task.downloadImage(image.getUrl());
-				// TODO: need to save image to db? mostly thumbnail only
+				// TODO: need to save image to db? mostly thumbnail only				
 			}
 			
 			// download linked big images
@@ -858,8 +856,12 @@ public class NovelsDao {
 			if(isDownloadBigImage) {
 				Document imageDoc = Jsoup.parse(content.getContent());
 				ArrayList<String> images = BakaTsukiParser.parseImagesFromContentPage(imageDoc);
-				for (String image : images) {
-					getImageModelFromInternet(image, notifier);
+				for (String imageUrl : images) {
+					//ImageModel bigImage = getImageModelFromInternet(image, notifier);
+					ImageModel bigImage = new ImageModel();
+					bigImage.setBigImage(true);
+					bigImage.setName(imageUrl);
+					bigImage = getImageModel(bigImage, notifier);					
 				}
 			}
 		
@@ -914,21 +916,21 @@ public class NovelsDao {
 
 	/**
 	 * Get image from db, if not exist will try to download from internet
-	 * @param page
+	 * @param image
 	 * @param notifier
 	 * @return
 	 * @throws Exception
 	 */
-	public ImageModel getImageModel(String page, ICallbackNotifier notifier) throws Exception {
-		ImageModel image = null;
+	public ImageModel getImageModel(ImageModel image, ICallbackNotifier notifier) throws Exception {
+		if(image == null) throw new Exception("Empty Image!");
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try{
-				image = dbh.getImage(db, page);
+				image = dbh.getImage(db, image);
 	
 				if (image == null) {
-					Log.d(TAG, "Image not found, might need to check by referer: " + page);
-					image = dbh.getImageByReferer(db, page);
+					Log.d(TAG, "Image not found, might need to check by referer: " + image.getName() + ", referer: " + image.getReferer());
+					image = dbh.getImageByReferer(db, image);
 				}
 			}
 			finally{
@@ -936,23 +938,22 @@ public class NovelsDao {
 			}
 		}
 		if (image == null) {
-			Log.d(TAG, "Image not found, getting data from internet: " + page);
-			image = getImageModelFromInternet(page, notifier);
+			Log.d(TAG, "Image not found, getting data from internet: " + image.getName());
+			image = getImageModelFromInternet(image, notifier);
 		}
 		return image;
 	}
 
 	/**
-	 * Get image from internet
+	 * Get image from internet from File:xxx
 	 * @param page
 	 * @param notifier
 	 * @return
 	 * @throws Exception
 	 */
-	public ImageModel getImageModelFromInternet(String page, ICallbackNotifier notifier) throws Exception {
+	public ImageModel getImageModelFromInternet(ImageModel image, ICallbackNotifier notifier) throws Exception {
 		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
-		ImageModel image = null;
-		String url = page;
+		String url = image.getName();
 		if (!url.startsWith("http"))
 			url = Constants.BASE_URL + url;
 		
@@ -971,7 +972,7 @@ public class NovelsDao {
 				
 				DownloadFileTask downloader = new DownloadFileTask(notifier);
 				image = downloader.downloadImage(image.getUrl());
-				image.setReferer(page);
+				image.setReferer(image.getName());
 
 				synchronized (dbh) {
 					// save to db and get the saved value
