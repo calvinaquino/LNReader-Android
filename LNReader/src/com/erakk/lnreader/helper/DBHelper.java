@@ -973,7 +973,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public ImageModel getImageByReferer(SQLiteDatabase db, ImageModel image) {
 		return getImageByReferer(db, image.getReferer());
 	}
-	
+
 	public ImageModel getImageByReferer(SQLiteDatabase db, String url) {
 		//Log.d(TAG, "Selecting Image by Referer: " + url);
 		ImageModel image = null;
@@ -983,7 +983,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
 				image = cursorToImage(cursor);
-				//Log.d(TAG, "Found: " + image.getName() + " id: " + image.getId());
+				Log.d(TAG, "Found by Ref: " + image.getReferer() + " name: " + image.getName() + " id: " + image.getId());
 				break;
 			}
 		} finally{
@@ -996,11 +996,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		return image;
 	}
 
-	
+
 	public ImageModel getImage(SQLiteDatabase db, ImageModel image) {
 		return getImage(db, image.getName());
 	}
-	
+
 	public ImageModel getImage(SQLiteDatabase db, String name) {
 		//Log.d(TAG, "Selecting Image: " + name);
 		ImageModel image = null;
@@ -1036,7 +1036,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		image.setReferer(cursor.getString(4));
 		image.setLastUpdate(new Date(cursor.getInt(5)*1000));
 		image.setLastCheck(new Date(cursor.getInt(6)*1000));
-		
+
 		image.setBigImage(cursor.getInt(7) == 1 ? true : false);
 		return image;
 	}
