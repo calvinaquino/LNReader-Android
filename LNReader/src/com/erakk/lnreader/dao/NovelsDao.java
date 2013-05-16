@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.erakk.lnreader.dao;
 
@@ -7,7 +7,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
@@ -36,7 +35,7 @@ import com.erakk.lnreader.parser.BakaTsukiParser;
 
 /**
  * @author Nandaka
- * 
+ *
  */
 public class NovelsDao {
 	private static final String TAG = NovelsDao.class.toString();
@@ -52,7 +51,7 @@ public class NovelsDao {
 		}
 		return instance;
 	}
-	
+
 	public static NovelsDao getInstance() {
 		synchronized (lock){
 			if(instance == null) {
@@ -61,7 +60,7 @@ public class NovelsDao {
 		}
 		return instance;
 	}
-	
+
 	private NovelsDao(Context context) {
 		if (dbh == null) {
 			dbh = new DBHelper(context);
@@ -78,7 +77,7 @@ public class NovelsDao {
 			}
 		}
 	}
-	
+
 	public String copyDB(Context context, boolean makeBackup) throws IOException {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
@@ -96,7 +95,7 @@ public class NovelsDao {
 		ArrayList<PageModel> list = null;
 		PageModel page = null;
 		SQLiteDatabase db = null;
-		
+
 		// check if main page exist
 		synchronized (dbh) {
 			try{
@@ -131,7 +130,7 @@ public class NovelsDao {
 			notifier.onCallback(new CallbackEventData("Downloading Main Novels list..."));
 		}
 		// get last updated main page revision from internet
-		
+
 		PageModel mainPage = new PageModel();
 		mainPage.setPage("Main_Page");
 		mainPage.setTitle("Main Novels");
@@ -147,25 +146,25 @@ public class NovelsDao {
 				//db.beginTransaction();
 				mainPage = dbh.insertOrUpdatePageModel(db, mainPage, false);
 				Log.d(TAG, "Updated Main_Page");
-	
+
 				// now get the novel list
 				list = new ArrayList<PageModel>();
-				
+
 				String url = Constants.BASE_URL + "/project";
 				int retry = 0;
 				while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 					try{
 						Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
 						Document doc = response.parse();
-			
+
 						list = BakaTsukiParser.ParseNovelList(doc);
 						Log.d(TAG, "Found from internet: " + list.size() + " Novels");
-			
+
 						// saved to db and get saved value
 						list = dbh.insertAllNovel(db, list);
-						
+
 						//db.setTransactionSuccessful();
-						
+
 						if (notifier != null) {
 							notifier.onCallback(new CallbackEventData("Found: " + list.size() + " novels."));
 						}
@@ -194,13 +193,13 @@ public class NovelsDao {
 		}
 		return list;
 	}
-	
+
 	public ArrayList<PageModel> getWatchedNovel() {
 		ArrayList<PageModel> watchedNovel = null;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try{
-//				watchedNovel = dbh.selectAllByColumn(db, DBHelper.COLUMN_IS_WATCHED + " = ? and (" 
+//				watchedNovel = dbh.selectAllByColumn(db, DBHelper.COLUMN_IS_WATCHED + " = ? and ("
 //			                                           + DBHelper.COLUMN_PARENT + " = ? or "
 //			                                           + DBHelper.COLUMN_PARENT + " = ? )"
 //			                                       , new String[] { "1", "Main_Page", "Category:Teasers" }
@@ -208,7 +207,7 @@ public class NovelsDao {
 				watchedNovel = dbh.getAllWatchedNovel(db, true);
 			}finally{
 				db.close();
-			}			
+			}
 		}
 		return watchedNovel;
 	}
@@ -226,7 +225,7 @@ public class NovelsDao {
 				db.close();
 			}
 		}
-		
+
 		if(page == null) {
 			return getTeaserFromInternet(notifier);
 		} else {
@@ -241,30 +240,30 @@ public class NovelsDao {
 			}
 			Log.d(TAG, "Found: " + list.size());
 		}
-		
+
 		return list;
 	}
-	
+
 	public ArrayList<PageModel> getTeaserFromInternet(ICallbackNotifier notifier) throws Exception {
 		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
 		if (notifier != null) {
 			notifier.onCallback(new CallbackEventData("Downloading Teaser Novels list..."));
 		}
-		
+
 		// parse Category:Teasers information
 		PageModel teaserPage = new PageModel();
 		teaserPage.setPage("Category:Teasers");
 		teaserPage.setTitle("Teasers");
 		teaserPage = getPageModel(teaserPage, notifier);
 		teaserPage.setType(PageModel.TYPE_OTHER);
-		
+
 		// update page model
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			teaserPage = dbh.insertOrUpdatePageModel(db, teaserPage, true);
 			Log.d(TAG, "Updated Category:Teasers");
 		}
-		
+
 		// get teaser list
 		ArrayList<PageModel> list = null;
 		String url = Constants.BASE_URL + "/project/index.php?title=Category:Teasers";
@@ -273,10 +272,10 @@ public class NovelsDao {
 			try{
 				Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
-				
+
 				list = BakaTsukiParser.ParseTeaserList(doc);
 				Log.d(TAG, "Found from internet: " + list.size() + " Teaser");
-				
+
 				if (notifier != null) {
 					notifier.onCallback(new CallbackEventData("Found: " + list.size() + " teaser."));
 				}
@@ -298,19 +297,19 @@ public class NovelsDao {
 				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 			}
 		}
-		
+
 		// save teaser list
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			for (PageModel pageModel : list) {
 				pageModel = dbh.insertOrUpdatePageModel(db, pageModel, true);
 				Log.d(TAG, "Updated teaser: " + pageModel.getPage());
-			}			
+			}
 		}
-		
+
 		return list;
 	}
-	
+
 	// Originals, copied from teaser
 	public ArrayList<PageModel> getOriginal(ICallbackNotifier notifier, boolean alphOrder) throws Exception {
 		SQLiteDatabase db = null;
@@ -325,7 +324,7 @@ public class NovelsDao {
 				db.close();
 			}
 		}
-		
+
 		if(page == null) {
 			return getOriginalFromInternet(notifier);
 		} else {
@@ -340,30 +339,30 @@ public class NovelsDao {
 			}
 			Log.d(TAG, "Found: " + list.size());
 		}
-		
+
 		return list;
 	}
-	
+
 	public ArrayList<PageModel> getOriginalFromInternet(ICallbackNotifier notifier) throws Exception {
 		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
 		if (notifier != null) {
 			notifier.onCallback(new CallbackEventData("Downloading Original Novels list..."));
 		}
-		
+
 		// parse Category:Teasers information
 		PageModel teaserPage = new PageModel();
 		teaserPage.setPage("Category:Original");
 		teaserPage.setTitle("Original Novels");
 		teaserPage = getPageModel(teaserPage, notifier);
 		teaserPage.setType(PageModel.TYPE_OTHER);
-		
+
 		// update page model
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			teaserPage = dbh.insertOrUpdatePageModel(db, teaserPage, true);
 			Log.d(TAG, "Updated Category:Original");
 		}
-		
+
 		// get teaser list
 		ArrayList<PageModel> list = null;
 		String url = Constants.BASE_URL + "/project/index.php?title=Category:Original";
@@ -372,10 +371,10 @@ public class NovelsDao {
 			try{
 				Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
-				
+
 				list = BakaTsukiParser.ParseOriginalList(doc);
 				Log.d(TAG, "Found from internet: " + list.size() + " Teaser");
-				
+
 				if (notifier != null) {
 					notifier.onCallback(new CallbackEventData("Found: " + list.size() + " original."));
 				}
@@ -397,16 +396,16 @@ public class NovelsDao {
 				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 			}
 		}
-		
+
 		// save teaser list
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			for (PageModel pageModel : list) {
 				pageModel = dbh.insertOrUpdatePageModel(db, pageModel, true);
 				Log.d(TAG, "Updated original: " + pageModel.getPage());
-			}			
+			}
 		}
-		
+
 		return list;
 	}
 
@@ -433,7 +432,7 @@ public class NovelsDao {
 		}
 		return pageModel;
 	}
-	
+
 	/**
 	 * Get page model from db. Get the pageModel from internet if not exists.
 	 * @param page
@@ -444,7 +443,7 @@ public class NovelsDao {
 	public PageModel getPageModel(PageModel page, ICallbackNotifier notifier) throws Exception {
 		return getPageModel(page, notifier, true);
 	}
-	
+
 	/**
 	 * Return pageModel, null if not exist.
 	 * @param page
@@ -462,14 +461,14 @@ public class NovelsDao {
 				db.close();
 			}
 		}
-		
+
 		return pageModel;
 	}
 
 	public PageModel getPageModelFromInternet(PageModel page, ICallbackNotifier notifier) throws Exception {
 		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
 		Log.d(TAG, "PageModel = " + page.getPage());
-		
+
 		int retry = 0;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
@@ -482,7 +481,7 @@ public class NovelsDao {
 				PageModel pageModel = BakaTsukiParser.parsePageAPI(page, response.parse(), fullUrl);
 				pageModel.setFinishedRead(page.isFinishedRead());
 				pageModel.setWatched(page.isWatched());
-				
+
 				synchronized (dbh) {
 					// save to db and get saved value
 					SQLiteDatabase db = dbh.getWritableDatabase();
@@ -526,7 +525,7 @@ public class NovelsDao {
 		}
 		return pageModel;
 	}
-		
+
 	/*
 	 * NovelCollectionModel
 	 */
@@ -552,7 +551,7 @@ public class NovelsDao {
 		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
 		Log.d(TAG, "Getting Novel Details from internet: " + page.getPage());
 		NovelCollectionModel novel = null;
-		
+
 		int retry = 0;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
@@ -580,12 +579,12 @@ public class NovelsDao {
 				Log.d(TAG, message, eof);
 				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 			}
-			
+
 			// Novel details' Page Model
 			if(novel != null){
 				// comment out because have teaser now...
 				// page.setParent("Main_Page"); // insurance
-				
+
 				// get the last update time from internet
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData("Getting novel information for: " + page.getPage()));
@@ -613,7 +612,7 @@ public class NovelsDao {
 						db.close();
 					}
 				}
-					
+
 				synchronized (dbh) {
 					// insert to DB and get saved value
 					SQLiteDatabase db = dbh.getWritableDatabase();
@@ -627,18 +626,18 @@ public class NovelsDao {
 						db.close();
 					}
 				}
-				
+
 				// update info for each chapters
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData("Getting chapters information for: " + page.getPage()));
 				}
-				
+
 				ArrayList<PageModel> chapters = getUpdateInfo(novel.getFlattedChapterList(), notifier);
 				for (PageModel pageModel : chapters) {
 					pageModel = updatePageModel(pageModel);
 				}
-				
-				
+
+
 				// download cover image
 				if (novel.getCoverUrl() != null) {
 					if(notifier != null) {
@@ -664,7 +663,7 @@ public class NovelsDao {
 		pageModels = getUpdateInfo(pageModels, notifier);
 		return pageModels.get(0);
 	}
-	
+
 	/***
 	 * Bulk update page info through wiki API
 	 * - LastUpdateInfo.
@@ -687,7 +686,7 @@ public class NovelsDao {
 			//checkedPageModel.add(pageModels.get(i));
 			//Log.d("parser", "pageModels.get(i).getPage(): " + pageModels.get(i).getPage());
 			//++i;
-			
+
 			while(i < pageModels.size() && apiPageCount < 50) {
 				if(pageModels.get(i).isExternal()) {
 					++i;
@@ -731,7 +730,7 @@ public class NovelsDao {
 				}
 			}
 		}
-		
+
 		return resultPageModel;
 	}
 
@@ -750,7 +749,7 @@ public class NovelsDao {
 			}
 		}
 	}
-	
+
 
 	public void deletePage(PageModel page) {
 		synchronized (dbh) {
@@ -767,7 +766,7 @@ public class NovelsDao {
 			}
 		}
 	}
-	
+
 	public ArrayList<PageModel> getChapterCollection(String page, String title, BookModel book) {
 		synchronized (dbh) {
 			// get from db
@@ -780,7 +779,7 @@ public class NovelsDao {
 			}
 		}
 	}
-	
+
 	/*
 	 * NovelContentModel
 	 */
@@ -809,9 +808,9 @@ public class NovelsDao {
 
 	public NovelContentModel getNovelContentFromInternet(PageModel page, ICallbackNotifier notifier) throws Exception {
 		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
-		
+
 		String oldTitle = page.getTitle();
-		
+
 		NovelContentModel content = new NovelContentModel();
 		int retry = 0;
 		Document doc = null;
@@ -843,28 +842,31 @@ public class NovelsDao {
 		if(doc != null) {
 			// download all attached images
 			DownloadFileTask task = new DownloadFileTask(notifier);
-			for (Iterator<ImageModel> i = content.getImages().iterator(); i.hasNext();) {
-				ImageModel image = i.next();
-				
+			for (ImageModel image : content.getImages()) {
 				if(notifier != null) {
 					notifier.onCallback(new CallbackEventData("Start downloading: " + image.getUrl()));
 				}
 				image = task.downloadImage(image.getUrl());
 				// TODO: need to save image to db? mostly thumbnail only
 			}
-			
+
 			// download linked big images
 			boolean isDownloadBigImage = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance()).getBoolean(Constants.PREF_DOWLOAD_BIG_IMAGE, false);
 			if(isDownloadBigImage) {
 				Document imageDoc = Jsoup.parse(content.getContent());
 				ArrayList<String> images = BakaTsukiParser.parseImagesFromContentPage(imageDoc);
-				for (String image : images) {
-					getImageModelFromInternet(image, notifier);
+				for (String imageUrl : images) {
+					//ImageModel bigImage = getImageModelFromInternet(image, notifier);
+					ImageModel bigImage = new ImageModel();
+					bigImage.setBigImage(true);
+					bigImage.setName(imageUrl);
+					bigImage.setReferer(imageUrl);
+					bigImage = getImageModel(bigImage, notifier);
 				}
 			}
-		
+
 			// get last updated info
-			
+
 			PageModel contentPageModelTemp = getPageModelFromInternet(content.getPageModel(), notifier);
 			if(contentPageModelTemp != null) {
 				// overwrite the old title
@@ -874,9 +876,9 @@ public class NovelsDao {
 				content.getPageModel().setLastCheck(new Date());
 				content.setLastUpdate(contentPageModelTemp.getLastUpdate());
 				content.setLastCheck(new Date());
-			}		
+			}
 			// page model will be also saved in insertNovelContent()
-	
+
 			synchronized (dbh) {
 				// save to DB, and get the saved value
 				SQLiteDatabase db = dbh.getWritableDatabase();
@@ -914,64 +916,65 @@ public class NovelsDao {
 
 	/**
 	 * Get image from db, if not exist will try to download from internet
-	 * @param page
+	 * @param image
 	 * @param notifier
 	 * @return
 	 * @throws Exception
 	 */
-	public ImageModel getImageModel(String page, ICallbackNotifier notifier) throws Exception {
-		ImageModel image = null;
+	public ImageModel getImageModel(ImageModel image, ICallbackNotifier notifier) throws Exception {
+		if(image == null || image.getName() == null) throw new Exception("Empty Image!");
+		ImageModel imageTemp = null;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try{
-				image = dbh.getImage(db, page);
-	
-				if (image == null) {
-					Log.d(TAG, "Image not found, might need to check by referer: " + page);
-					image = dbh.getImageByReferer(db, page);
+				imageTemp = dbh.getImage(db, image);
+
+				if (imageTemp == null) {
+					if(image.getReferer() == null) image.setReferer(image.getName());
+					Log.d(TAG, "Image not found, might need to check by referer: " + image.getName() + ", referer: " + image.getReferer());
+					imageTemp = dbh.getImageByReferer(db, image);
 				}
 			}
 			finally{
 				db.close();
 			}
 		}
-		if (image == null) {
-			Log.d(TAG, "Image not found, getting data from internet: " + page);
-			image = getImageModelFromInternet(page, notifier);
+		if (imageTemp == null) {
+			Log.d(TAG, "Image not found, getting data from internet: " + image.getName());
+			imageTemp = getImageModelFromInternet(image, notifier);
 		}
-		return image;
+		return imageTemp;
 	}
 
 	/**
-	 * Get image from internet
+	 * Get image from internet from File:xxx
 	 * @param page
 	 * @param notifier
 	 * @return
 	 * @throws Exception
 	 */
-	public ImageModel getImageModelFromInternet(String page, ICallbackNotifier notifier) throws Exception {
+	public ImageModel getImageModelFromInternet(ImageModel image, ICallbackNotifier notifier) throws Exception {
 		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
-		ImageModel image = null;
-		String url = page;
+		String url = image.getName();
 		if (!url.startsWith("http"))
 			url = Constants.BASE_URL + url;
-		
+
 		if(notifier != null) {
 			notifier.onCallback(new CallbackEventData("Parsing File Page: " + url));
 		}
-		
+
 		int retry = 0;
 		while(retry < Constants.IMAGE_DOWNLOAD_RETRY) {
 			try{
 				Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
-				
+
 				// only return the full  image url
 				image = BakaTsukiParser.parseImagePage(doc);
-				
+
 				DownloadFileTask downloader = new DownloadFileTask(notifier);
 				image = downloader.downloadImage(image.getUrl());
-				image.setReferer(page);
+				image.setReferer(url);
 
 				synchronized (dbh) {
 					// save to db and get the saved value
@@ -999,14 +1002,14 @@ public class NovelsDao {
 				}
 				Log.d(TAG, message, eof);
 				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
-			}	
-		}		
+			}
+		}
 		return image;
 	}
 
 	public ArrayList<PageModel> doSearch(String searchStr, boolean isNovelOnly) {
 		if(searchStr == null || searchStr.length() < 3 ) return null;
-		
+
 		ArrayList<PageModel> result;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
@@ -1023,7 +1026,7 @@ public class NovelsDao {
 		}
 		return result;
 	}
-	
+
 	public ArrayList<BookmarkModel> getBookmarks(PageModel novel) {
 		ArrayList<BookmarkModel> bookmarks = new ArrayList<BookmarkModel>();
 		synchronized (dbh) {
@@ -1032,14 +1035,14 @@ public class NovelsDao {
 		}
 		return bookmarks;
 	}
-	
+
 	public int addBookmark(BookmarkModel bookmark) {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			return dbh.insertBookmark(db, bookmark);
 		}
 	}
-	
+
 	public int deleteBookmark(BookmarkModel bookmark) {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
@@ -1055,49 +1058,49 @@ public class NovelsDao {
 		}
 		return bookmarks;
 	}
-	
+
 	public boolean isContentUpdated(PageModel page) {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			return dbh.isContentUpdated(db, page);
 		}
 	}
-	
+
 	public int isNovelUpdated(PageModel page) {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			return dbh.isNovelUpdated(db, page);
 		}
 	}
-	
+
 	public ArrayList<UpdateInfoModel> getAllUpdateHistory() {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			return dbh.getAllUpdateHistory(db);
 		}
 	}
-	
+
 	public void deleteAllUpdateHistory() {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			dbh.deleteAllUpdateHistory(db);
 		}
 	}
-	
+
 	public void deleteUpdateHistory(UpdateInfoModel updateInfo) {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			dbh.deleteUpdateHistory(db, updateInfo);
 		}
 	}
-	
+
 	public void insertUpdateHistory(UpdateInfoModel update) {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			dbh.insertUpdateHistory(db, update);
 		}
 	}
-	
+
 //	public void temp() {
 //		synchronized (dbh) {
 //			SQLiteDatabase db = dbh.getWritableDatabase();

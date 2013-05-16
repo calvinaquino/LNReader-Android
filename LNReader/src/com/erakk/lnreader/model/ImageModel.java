@@ -12,6 +12,7 @@ public class ImageModel {
 	private Date lastCheck;
 	
 	private String referer;
+	private boolean isBigImage;
 	
 	public int getId() {
 		return id;
@@ -54,6 +55,12 @@ public class ImageModel {
 	}
 	public void setReferer(String referer) {
 		this.referer = referer;
+	}
+	public boolean isBigImage() {
+		return isBigImage;
+	}
+	public void setBigImage(boolean isBigImage) {
+		this.isBigImage = isBigImage;
 	}
 	public String toString(){
 		return name;

@@ -39,13 +39,15 @@ public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTa
 	
 	@Override
 	protected AsyncTaskResult<ImageModel> doInBackground(String... params) {
-		this.url = params[0];			
+		this.url = params[0];
+		ImageModel image = new ImageModel();
+		image.setName(url);
 		try{
 			if(refresh) {
-				return new AsyncTaskResult<ImageModel>(NovelsDao.getInstance().getImageModelFromInternet(url, this));
+				return new AsyncTaskResult<ImageModel>(NovelsDao.getInstance().getImageModelFromInternet(image, this));
 			}
 			else {
-				return new AsyncTaskResult<ImageModel>(NovelsDao.getInstance().getImageModel(url, this));
+				return new AsyncTaskResult<ImageModel>(NovelsDao.getInstance().getImageModel(image, this));
 			}
 		} catch (Exception e) {
 			return new AsyncTaskResult<ImageModel>(e);

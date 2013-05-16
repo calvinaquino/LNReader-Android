@@ -46,10 +46,11 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_IS_EXTERNAL = "is_external";
 
 	public static final String TABLE_IMAGE = "images";
-	public static final String COLUMN_IMAGE = "name";
+	public static final String COLUMN_IMAGE_NAME = "name";
 	public static final String COLUMN_FILEPATH = "filepath";
 	public static final String COLUMN_URL = "url";
 	public static final String COLUMN_REFERER = "referer";
+	public static final String COLUMN_IS_BIG_IMAGE = "is_big_image";
 
 	public static final String TABLE_NOVEL_DETAILS = "novel_details";
 	public static final String COLUMN_SYNOPSIS = "synopsis";
@@ -72,7 +73,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_UPDATE_TYPE = "update_type";
 
 	public static final String DATABASE_NAME = "pages.db";
-	public static final int DATABASE_VERSION = 24;
+	public static final int DATABASE_VERSION = 25;
 
 	// Database creation SQL statement
 	private static final String DATABASE_CREATE_PAGES = "create table if not exists "
@@ -89,22 +90,23 @@ public class DBHelper extends SQLiteOpenHelper {
 			  				 + COLUMN_ORDER + " integer, "							// 10
 			  				 + COLUMN_STATUS + " text, "							// 11
 			  				 + COLUMN_IS_MISSING + " boolean, "						// 11
-			  				 + COLUMN_IS_EXTERNAL + " boolean );";					// 13
+			  				 + COLUMN_IS_EXTERNAL + " boolean);";					// 13
 
 	private static final String DATABASE_CREATE_IMAGES = "create table if not exists "
-		      + TABLE_IMAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-				 				  + COLUMN_IMAGE + " text unique not null, "
-				  				  + COLUMN_FILEPATH + " text not null, "
-				  				  + COLUMN_URL + " text not null, "
-				  				  + COLUMN_REFERER + " text, "
-				  				  + COLUMN_LAST_UPDATE + " integer, "
-				  				  + COLUMN_LAST_CHECK + " integer);";
+		      + TABLE_IMAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
+				 				  + COLUMN_IMAGE_NAME + " text unique not null, "			// 1
+				  				  + COLUMN_FILEPATH + " text not null, "				// 2
+				  				  + COLUMN_URL + " text not null, "						// 3
+				  				  + COLUMN_REFERER + " text, "							// 4
+				  				  + COLUMN_LAST_UPDATE + " integer, "					// 5
+				  				  + COLUMN_LAST_CHECK + " integer, "					// 6
+				  				  + COLUMN_IS_BIG_IMAGE + " boolean);";					// 7
 
 	private static final String DATABASE_CREATE_NOVEL_DETAILS = "create table if not exists "
 		      + TABLE_NOVEL_DETAILS + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
 				 				  + COLUMN_PAGE + " text unique not null, "
 				  				  + COLUMN_SYNOPSIS + " text not null, "
-				  				  + COLUMN_IMAGE + " text not null, "
+				  				  + COLUMN_IMAGE_NAME + " text not null, "
 				  				  + COLUMN_LAST_UPDATE + " integer, "
 				  				  + COLUMN_LAST_CHECK + " integer);";
 
@@ -217,6 +219,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		if(oldVersion == 23) {
 			db.execSQL(DATABASE_CREATE_UPDATE_HISTORY);
 			oldVersion = 24;
+		}
+		if(oldVersion == 24) {
+			db.execSQL("ALTER TABLE " + TABLE_IMAGE + " ADD COLUMN " + COLUMN_IS_BIG_IMAGE + " boolean" );
+			oldVersion = 25;
 		}
 	}
 
@@ -701,7 +707,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_PAGE, novelDetails.getPage());
 		cv.put(COLUMN_SYNOPSIS, novelDetails.getSynopsis());
-		cv.put(COLUMN_IMAGE, novelDetails.getCover());
+		cv.put(COLUMN_IMAGE_NAME, novelDetails.getCover());
 		cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 
 		// check if exist
@@ -939,10 +945,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		ImageModel temp = getImage(db, image.getName());
 
 		ContentValues cv = new ContentValues();
-		cv.put(COLUMN_IMAGE, image.getName());
+		cv.put(COLUMN_IMAGE_NAME, image.getName());
 		cv.put(COLUMN_FILEPATH, image.getPath());
 		cv.put(COLUMN_URL, image.getUrl().toString());
 		cv.put(COLUMN_REFERER, image.getReferer());
+		cv.put(COLUMN_IS_BIG_IMAGE, image.isBigImage());
 		if(temp == null) {
 			cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
 			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
@@ -963,6 +970,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		return image;
 	}
 
+	public ImageModel getImageByReferer(SQLiteDatabase db, ImageModel image) {
+		return getImageByReferer(db, image.getReferer());
+	}
+
 	public ImageModel getImageByReferer(SQLiteDatabase db, String url) {
 		//Log.d(TAG, "Selecting Image by Referer: " + url);
 		ImageModel image = null;
@@ -972,7 +983,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
 				image = cursorToImage(cursor);
-				//Log.d(TAG, "Found: " + image.getName() + " id: " + image.getId());
+				Log.d(TAG, "Found by Ref: " + image.getReferer() + " name: " + image.getName() + " id: " + image.getId());
 				break;
 			}
 		} finally{
@@ -985,11 +996,16 @@ public class DBHelper extends SQLiteOpenHelper {
 		return image;
 	}
 
+
+	public ImageModel getImage(SQLiteDatabase db, ImageModel image) {
+		return getImage(db, image.getName());
+	}
+
 	public ImageModel getImage(SQLiteDatabase db, String name) {
 		//Log.d(TAG, "Selecting Image: " + name);
 		ImageModel image = null;
 
-		Cursor cursor = rawQuery(db, "select * from " + TABLE_IMAGE + " where " + COLUMN_IMAGE + " = ? ", new String[] {name});
+		Cursor cursor = rawQuery(db, "select * from " + TABLE_IMAGE + " where " + COLUMN_IMAGE_NAME + " = ? ", new String[] {name});
 		try {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
@@ -1020,6 +1036,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		image.setReferer(cursor.getString(4));
 		image.setLastUpdate(new Date(cursor.getInt(5)*1000));
 		image.setLastCheck(new Date(cursor.getInt(6)*1000));
+
+		image.setBigImage(cursor.getInt(7) == 1 ? true : false);
 		return image;
 	}
 
