@@ -1,14 +1,19 @@
 package com.erakk.lnreader.activity;
 
+import java.util.Locale;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -37,6 +42,8 @@ public class MainActivity extends SherlockActivity {
 		UIHelper.SetActionBarDisplayHomeAsUp(this, false);
 		isInverted = getColorPreferences();
 		setIconColor();
+		setLanguage();
+
 
 		if (isFirstRun()) {
 			// Show copyrights
@@ -104,6 +111,23 @@ public class MainActivity extends SherlockActivity {
 		}
 	}
 
+	public void setLanguage(){
+		/* Set starting language */
+		Integer languageSelectionValue = Integer.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LANGUAGE, "0"));
+		String lang = "";
+		/* Add system locale / your values folder name here */
+		if (languageSelectionValue == 0) lang = "en";
+		if (languageSelectionValue == 1) lang = "in";
+		/* Changing configuration to user's choice */
+		Locale myLocale = new Locale(lang);
+		Resources res = getResources();
+		DisplayMetrics dm = res.getDisplayMetrics();
+        Configuration conf = res.getConfiguration();
+        conf.locale = myLocale;
+        /* update resources */
+        res.updateConfiguration(conf, dm);
+	}
+	
 	public void openNovelListNoTab(View view) {
 		Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
 		intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);

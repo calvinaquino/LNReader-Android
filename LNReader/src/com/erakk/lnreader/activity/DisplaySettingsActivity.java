@@ -2,7 +2,9 @@ package com.erakk.lnreader.activity;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,16 +12,20 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
+import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
@@ -35,6 +41,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	private static final String TAG = DisplaySettingsActivity.class.toString();
 	private boolean isInverted;
 	private ProgressDialog dialog = null;
+	
 	Context context;
 
 	/**************************************************************
@@ -56,6 +63,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	}
 
 
+	@SuppressLint("SdCardPath")
 	@SuppressWarnings("deprecation")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,7 +97,39 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
                 return true;
             }
         });
-
+        
+        /* A section to change Application Language
+         * 
+         *  @freedomofkeima
+         */
+        final Preference changeLanguages = findPreference(Constants.PREF_LANGUAGE);
+        final String[] languageSelectionArray = getResources().getStringArray(R.array.languageSelection);
+        int languageSelectionValue = UIHelper.GetIntFromPreferences(Constants.PREF_LANGUAGE, 0);
+        changeLanguages.setSummary(getResources().getString(R.string.selected_mode) + languageSelectionArray[languageSelectionValue]);
+ 
+        changeLanguages.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				int languageSelectionValue = Util.tryParseInt(newValue.toString(), 0);
+				changeLanguages.setSummary(getResources().getString(R.string.selected_mode) + languageSelectionArray[languageSelectionValue]);
+				/* Change language here */
+				String lang = "";
+				/* Add system locale / your values folder name here */
+				if (languageSelectionValue == 0) lang = "en";
+				if (languageSelectionValue == 1) lang = "in";
+				/* Changing configuration to user's choice */
+				Locale myLocale = new Locale(lang);
+				Resources res = context.getResources();
+				DisplayMetrics dm = res.getDisplayMetrics();
+		        Configuration conf = res.getConfiguration();
+		        conf.locale = myLocale;
+		        /* update resources */
+		        res.updateConfiguration(conf, dm);
+		        recreateUI();
+		        return true;
+			}
+		});
+        
+        /* End of language section */
 
         Preference clearDatabase = findPreference("clear_database");
         clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -134,19 +174,19 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         final Preference updatesInterval = findPreference(Constants.PREF_UPDATE_INTERVAL);
         final String[] updateIntervalArray = getResources().getStringArray(R.array.updateInterval);
         int updatesIntervalValue = UIHelper.GetIntFromPreferences(Constants.PREF_UPDATE_INTERVAL, 0);
-        updatesInterval.setSummary("Define how often updates will be verified (" + updateIntervalArray[updatesIntervalValue] + ")");
+        updatesInterval.setSummary(getResources().getString(R.string.update_interval_summary) + updateIntervalArray[updatesIntervalValue] + ")");
         updatesInterval.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int updatesIntervalInt = Util.tryParseInt(newValue.toString(), 0);
 				MyScheduleReceiver.reschedule(updatesIntervalInt);
-				updatesInterval.setSummary("Define how often updates will be verified (" + updateIntervalArray[updatesIntervalInt] + ")");
+				updatesInterval.setSummary(getResources().getString(R.string.update_interval_summary) + updateIntervalArray[updatesIntervalInt] + ")");
                 return true;
 			}
 		});
 
         Preference runUpdates = findPreference(Constants.PREF_RUN_UPDATES);
-        runUpdates.setSummary("Last Run: " + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES, "None") +
-        					  "\nStatus: " + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES_STATUS, "Unknown"));
+        runUpdates.setSummary(getResources().getString(R.string.last_run) + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES, getResources().getString(R.string.none)) +
+        					  "\nStatus: " + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES_STATUS, getResources().getString(R.string.unknown)));
         runUpdates.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
             	runUpdate();
@@ -164,30 +204,30 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         final Preference uiMode = findPreference("ui_selection");
         final String[] uiSelectionArray = getResources().getStringArray(R.array.uiSelection);
         int uiSelectionValue = UIHelper.GetIntFromPreferences(Constants.PREF_UI_SELECTION, 0);
-        uiMode.setSummary("Selected Mode: " + uiSelectionArray[uiSelectionValue]);
+        uiMode.setSummary(getResources().getString(R.string.selected_mode) + uiSelectionArray[uiSelectionValue]);
         uiMode.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int uiSelectionValue = Util.tryParseInt(newValue.toString(), 0);
-		        uiMode.setSummary("Selected Mode: " + uiSelectionArray[uiSelectionValue]);
+		        uiMode.setSummary(getResources().getString(R.string.selected_mode) + uiSelectionArray[uiSelectionValue]);
 		        return true;
 			}
 		});
 
         Preference defaultSaveLocation = findPreference("save_location");
-        defaultSaveLocation.setSummary("Downloaded images saved to: " + Constants.IMAGE_ROOT);
+        defaultSaveLocation.setSummary(getResources().getString(R.string.download_image_to) + Constants.IMAGE_ROOT);
 
         Preference defaultDbLocation = findPreference("db_location");
-        defaultDbLocation.setSummary("Novel Database saved to: " + DBHelper.getDbPath(this));
+        defaultDbLocation.setSummary(getResources().getString(R.string.novel_database_to) + DBHelper.getDbPath(this));
 
         Preference tos = findPreference("tos");
         tos.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			public boolean onPreferenceClick(Preference preference) {
 				try {
 					Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
-			        intent.putExtra(Constants.EXTRA_PAGE, "Baka-Tsuki:Copyrights");
+			        intent.putExtra(Constants.EXTRA_PAGE, getResources().getString(R.string.copyright));
 			        startActivity(intent);
 				} catch (Exception e) {
-					Log.e(TAG, "Cannot get copyright page.", e);
+					Log.e(TAG, getResources().getString(R.string.not_copyright), e);
 				}
 				return false;
 			}
@@ -195,11 +235,11 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
         final Preference scrollingSize = findPreference(Constants.PREF_SCROLL_SIZE);
         int scrollingSizeValue = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5);
-        scrollingSize.setSummary("Scrolling size for volumer rocker (" + scrollingSizeValue + ")");
+        scrollingSize.setSummary(getResources().getString(R.string.scroll_size_summary2) + scrollingSizeValue + ")");
         scrollingSize.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int scrollingSizeValue =  Util.tryParseInt(newValue.toString(), 5);
-				scrollingSize.setSummary("Scrolling size for volumer rocker (" + scrollingSizeValue + ")");
+				scrollingSize.setSummary(getResources().getString(R.string.scroll_size_summary2) + scrollingSizeValue + ")");
                 return true;
 			}
 		});
@@ -239,8 +279,8 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         }
 
         // Behaviour 3 (Activity first loaded)
-        lineSpacePref.setSummary("Increases the space between lines. The greater the number, the more padding it has. \nCurrent value: " + currLineSpacing + "%");
-        marginPref.setSummary("Increases the space between the text and the edge of the screen. \nCurrent value: " + currMargin + "%");
+        lineSpacePref.setSummary( getResources().getString(R.string.line_spacing_summary2) + " \n" + getResources().getString(R.string.current_value) + ": " + currLineSpacing + "%");
+        marginPref.setSummary( getResources().getString(R.string.margin_summary2) + " \n" + getResources().getString(R.string.current_value) + ": " + currMargin + "%");
 
         //Behaviour 1 (Updated Preference)
         user_cssPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener()
@@ -281,7 +321,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         	{
 				public boolean onPreferenceChange(Preference preference, Object newValue) {
 						String set = (String) newValue;
-						preference.setSummary("Increases the space between lines. The greater the number, the more padding it has. Current value " + set + "%");
+						preference.setSummary(getResources().getString(R.string.line_spacing_summary2) + " \n" + getResources().getString(R.string.current_value) + ": " + set + "%");
 					return true;
 				}
         	}
@@ -291,7 +331,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         		{
 					public boolean onPreferenceChange(Preference preference, Object newValue) {
 						String set = (String) newValue;
-						preference.setSummary("Increases the space between the text and the edge of the screen. \nCurrent value: " + set + "%");
+						preference.setSummary(getResources().getString(R.string.margin_summary2) + " \n" + getResources().getString(R.string.current_value) + ": " + set + "%");
 						return true;
 					}
         		});
@@ -299,7 +339,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 
 	private void clearImages() {
-		UIHelper.createYesNoDialog(this, "Do you want to clear the Image Cache?", "Clear Image Cache", new OnClickListener() {
+		UIHelper.createYesNoDialog(this, getResources().getString(R.string.clear_image_question), getResources().getString(R.string.clear_image_question2) , new OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				if(which == DialogInterface.BUTTON_POSITIVE) {
 					Toast.makeText(getApplicationContext(), "Clearing Images...", Toast.LENGTH_SHORT).show();
@@ -311,22 +351,22 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	}
 
 	private void clearDB() {
-		UIHelper.createYesNoDialog(this, "Do you want to clear the DB?", "Clear DB", new OnClickListener() {
+		UIHelper.createYesNoDialog(this, getResources().getString(R.string.clear_db_question), getResources().getString(R.string.clear_db_question2), new OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				if(which == DialogInterface.BUTTON_POSITIVE) {
-					Toast.makeText(getApplicationContext(), "Clearing Database...", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), getResources().getString(R.string.clear_database), Toast.LENGTH_SHORT).show();
 					NovelsDao.getInstance(getApplicationContext()).deleteDB();
-					Toast.makeText(getApplicationContext(), "Database cleared!", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), getResources().getString(R.string.database_cleared), Toast.LENGTH_SHORT).show();
 				}
 			}
 		}).show();
 	}
 
 	private void copyDB(boolean makeBackup) throws IOException {
-		dialog = ProgressDialog.show(this, "Database Manager", "Creating Database backup...", true, true);
+		dialog = ProgressDialog.show(this, getResources().getString(R.string.database_manager), getResources().getString(R.string.database_backup_create) , true, true);
 		String filePath = NovelsDao.getInstance(getApplicationContext()).copyDB(getApplicationContext(),makeBackup);
 		if (filePath == "null") {
-			Toast.makeText(getApplicationContext(), "Could not find a backup database.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(),getResources().getString(R.string.database_not_found), Toast.LENGTH_SHORT).show();
 		}
 		else {
 			if (makeBackup)
@@ -341,7 +381,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	private void runUpdate() {
 		LNReaderApplication.getInstance().runUpdateService(true, this);
 		Preference runUpdates = findPreference(Constants.PREF_RUN_UPDATES);
-		runUpdates.setSummary("Running...");
+		runUpdates.setSummary(getResources().getString(R.string.running));
 	}
 
 	@Override
@@ -390,5 +430,15 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 	private boolean getColorPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			super.onBackPressed();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }
