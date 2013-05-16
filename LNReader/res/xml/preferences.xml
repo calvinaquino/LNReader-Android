@@ -8,210 +8,212 @@
             android:entries="@array/updateInterval"
             android:entryValues="@array/updateIntervalValues"
             android:key="updates_interval"
-            android:summary="Define how often updates will be verified"
-            android:title="Updates interval" />
+            android:summary="@string/update_interval_summary"
+            android:title="@string/update_interval_title" />
         <Preference
             android:key="run_update"
-            android:title="Tap to force Run Update" />
+            android:title="@string/run_update_text" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="update_use_sound"
-            android:summary="Ring if there is new chapters update."
-            android:title="Use Ringer" />
+            android:summary="@string/use_sound_summary"
+            android:title="@string/use_sound_title" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="update_use_vibration"
-            android:summary="Vibrate if there is new chapters update."
-            android:title="Use Vibration" />
+            android:summary="@string/use_vibration_summary"
+            android:title="@string/use_vibration_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="persist_notification"
-            android:summary="Keep the update notification after click."
-            android:title="Persist Notifications" />
+            android:summary="@string/persist_notification_summary"
+            android:title="@string/persist_notification_title" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="consolidate_notification"
-            android:title="Consolidate Notification" 
-            android:summary="Consolidate the notification into single notification which launch Update History."/>
+            android:title="@string/consolidate_notification_title" 
+            android:summary="@string/consolidate_notification_summary"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="general_category"
-        android:title="General Preferences" >
-        <ListPreference android:entries="@array/uiSelection" android:title="UI Selection" android:key="ui_selection" android:entryValues="@array/uiSelectionValues" android:defaultValue="0"/><CheckBoxPreference
+        android:title="@string/general_preference" >
+        <ListPreference android:entries="@array/uiSelection" android:title="@string/UI_selection_title" android:key="ui_selection" android:entryValues="@array/uiSelectionValues" android:defaultValue="0"/>
+        <ListPreference android:entries="@array/languageSelection" android:title="@string/language_selection" android:key="language_selection" android:entryValues="@array/languageSelectionValues" android:defaultValue="0"/>
+        <CheckBoxPreference
             android:defaultValue="true"
             android:key="invert_colors"
-            android:summary="Changes the font color with the background color"
-            android:title="Invert Colors" />
+            android:summary="@string/invert_color_summary"
+            android:title="@string/invert_color_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="lock_horizontal"
-            android:summary="Enters horizontal orientation and locks the orientation"
-            android:title="Lock for Horizontal" />
+            android:summary="@string/lock_horizontal_summary"
+            android:title="@string/lock_horizontal_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="auto_download_chapter"
-            android:summary="Automatically adds a chapter to the download list when touched, if it hasn&apos;t been downloaded yet."
-            android:title="Touch for Download" />
+            android:summary="@string/auto_download_chapter_summary"
+            android:title="@string/auto_download_chapter_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="alphabet_order"
-            android:summary="Novel list is always ordered by alphabet."
-            android:title="Alphabetical Order" />
+            android:summary="@string/alphabet_order_summary"
+            android:title="@string/alphabet_order_title" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="show_missing"
-            android:summary="Show missing chapter (marked with red color)."
-            android:title="Show Missing Chapters" />
+            android:summary="@string/show_missing_summary"
+            android:title="@string/show_missing_title" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="show_external"
-            android:summary="Show external chapter (marked with blue color/&gt; icon)."
-            android:title="Show External Chapters" />
+            android:summary="@string/show_external_summary"
+            android:title="@string/show_external_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="use_internal_webview"
-            android:summary="Handle external link with internally, rather than using browser."
-            android:title="Use Internal WebView" />
+            android:summary="@string/use_internal_webview_summary"
+            android:title="@string/use_internal_webview_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="strech_detail_image"
-            android:summary="Makes the cover for the novel fit the screen (with insets) instead of it's original size."
-            android:title="Resize Cover" />
+            android:summary="@string/strech_detail_image_summary"
+            android:title="@string/strech_detail_image_title" />
         
     </PreferenceCategory>
     <PreferenceCategory
         android:key="reading_category"
-        android:title="Reading Layout" >
+        android:title="@string/reading_layout" >
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="show_images"
-            android:summary="Controls if images are displayed or not (for performance)."
-            android:title="Show Images" />
+            android:summary="@string/show_images_summary"
+            android:title="@string/show_images_title" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="enable_zoom"
-            android:summary="Enable zoom in novel contents."
-            android:title="Enable Zoom" />
+            android:summary="@string/enable_zoom_summary"
+            android:title="@string/enable_zoom_title" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="show_zoom_control"
-            android:summary="Show zoom button in the novel contents, doesn&apos;t affect the zooming function."
-            android:title="Show Zoom Control" />
+            android:summary="@string/show_zoom_control_summary"
+            android:title="@string/show_zoom_control_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="enable_webview_buttons"
-            android:summary="Enable dynamic buttons while scrolling the chapter"
-            android:title="Dynamic Buttons" />
+            android:summary="@string/show_webview_summary"
+            android:title="@string/show_webview_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="keep_awake"
-            android:summary="Keeps the screen on when on chapter screen."
-            android:title="Keep Awake" />
+            android:summary="@string/keep_awake_summary"
+            android:title="@string/keep_awake_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="use_volume_to_scroll"
-            android:summary="Use volumer rocker for scrolling when for novel contents."
-            android:title="Use Volume Rocker for Scrolling" />
+            android:summary="@string/use_volume_to_scroll_summary"
+            android:title="@string/use_volume_to_scroll_title" />
         <EditTextPreference
             android:defaultValue="5"
             android:dependency="use_volume_to_scroll"
             android:key="scroll_size"
-            android:summary="Scrolling size for volumer rocker."
-            android:title="Scrolling Size" />
+            android:summary="@string/scroll_size_summary"
+            android:title="@string/scroll_size_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:dependency="use_volume_to_scroll"
             android:key="invert_scroll"
-            android:summary="Invert scrolling direction for volumer rocker."
-            android:title="Invert Scroll Direction" />
+            android:summary="@string/invert_scroll_summary"
+            android:title="@string/invert_scroll_title" />
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="fullscreen"
-            android:summary="Use fullscreen when reading."
-            android:title="Use Fullscreen" />
+            android:summary="@string/fullscreen_summary"
+            android:title="@string/fullscreen_title" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="enable_bookmark"
-            android:summary="Enable bookmark feature when reading."
-            android:title="Enable Bookmark" />
+            android:summary="@string/enable_bookmark_summary"
+            android:title="@string/enable_bookmark_title" />
         <PreferenceScreen 
-            android:title="CSS Layouts">
+            android:title="@string/css_layout_title">
 	        <CheckBoxPreference 
-				android:title="Use Custom CSS" 
-				android:summary="Use custom CSS for reading. Reload chapter to take effect (including changing the css path)." 
+				android:title="@string/custom_css_title" 
+				android:summary="@string/custom_css_summary" 
 				android:key="use_custom_css" 
 				android:defaultValue="false"/>
 			<EditTextPreference 
-				android:summary="Path to Custom CSS to be used for reading." 
-				android:title="Custom CSS Path" 
+				android:summary="@string/custom_css_path_summary" 
+				android:title="@string/custom_css_path_title" 
 				android:key="custom_css_path" 
 				android:dependency="use_custom_css" 
 				android:defaultValue="/mnt/sdcard/custom.css"/>  
 			<CheckBoxPreference
 	            android:defaultValue="false"
 	            android:key="force_justified"
-	            android:summary="Force justified text for novel content. Reload the chapter to take effect."
-	            android:title="Force Justified" />
+	            android:summary="@string/force_justified_summary"
+	            android:title="@string/force_justified_title" />
 	        <EditTextPreference 
 	            android:key="line_spacing" 
 	            android:inputType="number"
-	            android:title="Line Spacing" 
-	            android:summary="Increases the space between lines. The greater the number, the more padding it has. Reload the chapter to take effect." 
+	            android:title="@string/line_spacing_title" 
+	            android:summary="@string/line_spacing_summary" 
 	            android:defaultValue="150" 
-	            android:negativeButtonText="Cancel" 
-	            android:positiveButtonText="Set" 
-	            android:dialogMessage="Please enter the desired number of your line spacing in percentage. (Default is 150%)" 
-	            android:dialogTitle="Line Spacing"/>
+	            android:negativeButtonText="@string/cancel" 
+	            android:positiveButtonText="@string/set" 
+	            android:dialogMessage="@string/line_spacing_dialog_content" 
+	            android:dialogTitle="@string/line_spacing_dialog_title"/>
 	        <EditTextPreference 
-	            android:dialogTitle="Margins" 
-	            android:dialogMessage="Please enter the desired margin in percentage of screen space. Don't forget that this affects the left and right margin. (Default is 5%)" 
-	            android:positiveButtonText="Set" 
-	            android:negativeButtonText="Cancel" 
+	            android:dialogTitle="@string/margin_title" 
+	            android:dialogMessage="@string/margin_dialog" 
+	            android:positiveButtonText="@string/set" 
+	            android:negativeButtonText="@string/cancel" 
 	            android:key="margin_space" 
-	            android:title="Margins" 
-	            android:summary="Increases the space from the text and the edge of the screen. Reload the chapter to take affect." 
+	            android:title="@string/margin_title" 
+	            android:summary="@string/margin_summary" 
 	            android:defaultValue="5"
 	            android:inputType="number"/>
 		</PreferenceScreen>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="storage_category"
-        android:title="Storage" >
+        android:title="@string/storage" >
         <Preference
             android:key="clear_database"
-            android:summary="Erases the light novel database."
-            android:title="Clear Novel Database" />
+            android:summary="@string/clear_database_summary"
+            android:title="@string/clear_database_title" />
         <Preference
             android:key="backup_database"
-            android:summary="Creates a backup of the light novel database at the root of the device's internal storage."
-            android:title="Create Novel Database Backup" />
+            android:summary="@string/backup_database_summary"
+            android:title="@string/backup_database_title" />
         <Preference
             android:key="restore_database"
-            android:summary="Restores a light novel database backup previouslly created from the root of the device's internal storage."
-            android:title="Restore Novel Database Backup" />
+            android:summary="@string/restore_database_summary"
+            android:title="@string/restore_database_title" />
         <Preference
             android:key="clear_image_cache"
-            android:summary="Clears cached images"
-            android:title="Clear Image Cache" />
+            android:summary="@string/clear_cache_summary"
+            android:title="@string/clear_cache_title" />
         <Preference
             android:key="save_location"
-            android:title="Image Save Location" />
+            android:title="@string/save_location_title" />
         <Preference
             android:key="db_location"
-            android:title="Database Save Location" />
+            android:title="@string/db_location_title" />
         <CheckBoxPreference
             android:key="download_big_image"
-            android:summary="Download linked full resolution image. *Will* take a lot of space."
-            android:title="Download Full-Res Image" />
+            android:summary="@string/download_big_image_summary"
+            android:title="@string/download_big_image_title" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="application_info"
-        android:title="Application Info" >
+        android:title="@string/application_info" >
         <Preference
             android:key="tos"
-            android:title="Baka-Tsuki:Copyrights" />
+            android:title="@string/copyright" />
         <Preference
             android:key="app_version"
-            android:title="Version" />
+            android:title="@string/version" />
     </PreferenceCategory>
 </PreferenceScreen>
