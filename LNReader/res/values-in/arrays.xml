@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>    
     <string-array name="updateInterval">
-        <item name="0">Never</item>
-        <item name="1">Every 15 minutes</item>
-        <item name="2">Every 30 minutes</item>
-        <item name="3">Every hour</item>
-        <item name="4">Every 12 hours</item>
-        <item name="5">Every day</item>
+        <item name="0">Tidak Pernah</item>
+        <item name="1">Setiap 15 menit</item>
+        <item name="2">Setiap 30 menit</item>
+        <item name="3">Setiap jam</item>
+        <item name="4">Setiap 12 jam</item>
+        <item name="5">Setiap hari</item>
     </string-array>     
     <string-array name="updateIntervalValues">
         <item name="0">0</item>
@@ -17,7 +17,7 @@
         <item name="5">5</item>
     </string-array>
     <string-array name="uiSelection">
-        <item name="0">Default UI</item>
+        <item name="0">UI Awal</item>
         <item name="1">Tablet 1</item>
         <item name="2">Tablet 2</item>
     </string-array>
@@ -28,7 +28,7 @@
     </string-array>
 
      <string-array name="languageSelection">
-        <item name="0">English</item>
+        <item name="0">Inggris</item>
         <item name="1">Bahasa Indonesia</item>
     </string-array>
     

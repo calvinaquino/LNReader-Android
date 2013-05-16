@@ -69,7 +69,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
     	// check running task
     	if(task != null){
     		if(!(task.getStatus() == Status.FINISHED)) {
-    			Toast.makeText(this, "Canceling task: " + task.toString(), Toast.LENGTH_SHORT).show();
+    			Toast.makeText(this, "Cancel Task: " + task.toString(), Toast.LENGTH_SHORT).show();
     			task.cancel(true);    			
     		}
     	}
