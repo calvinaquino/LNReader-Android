@@ -118,8 +118,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
     			goTop.setVisibility(ImageButton.GONE);  
             }
         };
-		
-		
+		//Android Studio Config Commit Test
 	}
 	
 	protected void onStart() {
