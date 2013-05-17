@@ -1,5 +1,7 @@
 package com.erakk.lnreader;
 
+import java.util.Locale;
+
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -8,6 +10,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -215,5 +219,28 @@ public class UIHelper {
 			targetIv.setColorFilter(Constants.COLOR_UNREAD_DARK, Mode.SRC_ATOP);
 		}		
 		return targetIv;
+	}
+	
+	public static void setLanguage(Context activity, int langIdx) {
+		String lang = "en";
+		
+		/* Add system locale / your values folder name here */
+		if      (langIdx == 0) lang = "en";
+		else if (langIdx == 1) lang = "in";
+		
+		/* Changing configuration to user's choice */
+		Locale myLocale = new Locale(lang);
+		Resources res = activity.getResources();
+		DisplayMetrics dm = res.getDisplayMetrics();
+        Configuration conf = res.getConfiguration();
+        conf.locale = myLocale;
+        /* update resources */
+        res.updateConfiguration(conf, dm);
+	}
+	
+	public static void setLanguage(Context activity) {
+		/* Set starting language */
+		int langIdx = GetIntFromPreferences(Constants.PREF_LANGUAGE, 0);
+		setLanguage(activity, langIdx);
 	}
 }
