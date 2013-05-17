@@ -99,7 +99,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         final Preference changeLanguages = findPreference(Constants.PREF_LANGUAGE);
         final String[] languageSelectionArray = getResources().getStringArray(R.array.languageSelection);
         int languageSelectionValue = UIHelper.GetIntFromPreferences(Constants.PREF_LANGUAGE, 0);
-        changeLanguages.setSummary(getResources().getString(R.string.selected_mode) + languageSelectionArray[languageSelectionValue]);
+        changeLanguages.setSummary(String.format(getResources().getString(R.string.selected_language), languageSelectionArray[languageSelectionValue]));
  
         changeLanguages.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -155,19 +155,21 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         final Preference updatesInterval = findPreference(Constants.PREF_UPDATE_INTERVAL);
         final String[] updateIntervalArray = getResources().getStringArray(R.array.updateInterval);
         int updatesIntervalValue = UIHelper.GetIntFromPreferences(Constants.PREF_UPDATE_INTERVAL, 0);
-        updatesInterval.setSummary(getResources().getString(R.string.update_interval_summary) + updateIntervalArray[updatesIntervalValue] + ")");
+        updatesInterval.setSummary(String.format(getResources().getString(R.string.update_interval_summary), updateIntervalArray[updatesIntervalValue]));
         updatesInterval.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int updatesIntervalInt = Util.tryParseInt(newValue.toString(), 0);
 				MyScheduleReceiver.reschedule(updatesIntervalInt);
-				updatesInterval.setSummary(getResources().getString(R.string.update_interval_summary) + updateIntervalArray[updatesIntervalInt] + ")");
+				updatesInterval.setSummary(String.format(getResources().getString(R.string.update_interval_summary), updateIntervalArray[updatesIntervalInt]));
                 return true;
 			}
 		});
 
         Preference runUpdates = findPreference(Constants.PREF_RUN_UPDATES);
-        runUpdates.setSummary(getResources().getString(R.string.last_run) + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES, getResources().getString(R.string.none)) +
-        					  "\nStatus: " + runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES_STATUS, getResources().getString(R.string.unknown)));
+        runUpdates.setSummary(String.format(getResources().getString(R.string.last_run)
+        					, runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES, getResources().getString(R.string.none))
+        					, runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES_STATUS, getResources().getString(R.string.unknown))
+        					));
         runUpdates.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
             	runUpdate();
@@ -185,20 +187,20 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         final Preference uiMode = findPreference("ui_selection");
         final String[] uiSelectionArray = getResources().getStringArray(R.array.uiSelection);
         int uiSelectionValue = UIHelper.GetIntFromPreferences(Constants.PREF_UI_SELECTION, 0);
-        uiMode.setSummary(getResources().getString(R.string.selected_mode) + uiSelectionArray[uiSelectionValue]);
+        uiMode.setSummary(String.format(getResources().getString(R.string.selected_mode), uiSelectionArray[uiSelectionValue]));
         uiMode.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int uiSelectionValue = Util.tryParseInt(newValue.toString(), 0);
-		        uiMode.setSummary(getResources().getString(R.string.selected_mode) + uiSelectionArray[uiSelectionValue]);
+		        uiMode.setSummary(String.format(getResources().getString(R.string.selected_mode),uiSelectionArray[uiSelectionValue]));
 		        return true;
 			}
 		});
 
         Preference defaultSaveLocation = findPreference("save_location");
-        defaultSaveLocation.setSummary(getResources().getString(R.string.download_image_to) + Constants.IMAGE_ROOT);
+        defaultSaveLocation.setSummary(String.format(getResources().getString(R.string.download_image_to), Constants.IMAGE_ROOT));
 
         Preference defaultDbLocation = findPreference("db_location");
-        defaultDbLocation.setSummary(getResources().getString(R.string.novel_database_to) + DBHelper.getDbPath(this));
+        defaultDbLocation.setSummary(String.format(getResources().getString(R.string.novel_database_to), DBHelper.getDbPath(this)));
 
         Preference tos = findPreference("tos");
         tos.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -216,11 +218,11 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
         final Preference scrollingSize = findPreference(Constants.PREF_SCROLL_SIZE);
         int scrollingSizeValue = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5);
-        scrollingSize.setSummary(getResources().getString(R.string.scroll_size_summary2) + scrollingSizeValue + ")");
+        scrollingSize.setSummary(String.format(getResources().getString(R.string.scroll_size_summary2), scrollingSizeValue));
         scrollingSize.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int scrollingSizeValue =  Util.tryParseInt(newValue.toString(), 5);
-				scrollingSize.setSummary(getResources().getString(R.string.scroll_size_summary2) + scrollingSizeValue + ")");
+				scrollingSize.setSummary(String.format(getResources().getString(R.string.scroll_size_summary2), scrollingSizeValue));
                 return true;
 			}
 		});
