@@ -58,228 +58,117 @@
 			\nthelastguardian \- May 26, 2008</string>
     
     <string name="content_refresh">Refresh Content</string>
-    
     <string name="content_previous">Previous</string>
-    
     <string name="content_next">Next</string>
-    
     <string name="content_toc">Jump To</string>
-    
     <string name="content_search">Search</string>
-    
     <string name="content_bookmark">Bookmarks on Chapter</string>
-    
     <string name="bookmarks">Bookmarks</string>
-    
     <string name="download_list">Download List</string>
-    
     <string name="details_refresh">Refresh</string>
-    
     <string name="details_download_all">Download All Chapters</string>
-    
     <string name="novel_list_refresh">Refresh</string>
-    
     <string name="novel_list_manual_add">Manual Add</string>
-    
     <string name="novel_list_download_all">Download All Info</string>
-    
-    <string name="update_interval_summary">Define how often updates will be verified (</string>
-    
+    <string name="update_interval_summary">Define how often updates will be verified: %1$s</string>
     <string name="update_interval_title">Updates interval</string>
-    
-    <string name="selected_mode">Selected Mode: </string>
-    
-    <string name="last_run">Last Run: </string>
-    
+    <string name="selected_mode">Selected mode: %1$s</string>
+    <string name="selected_language">Selected language: %1$s</string>
+    <string name="last_run">Last Run: %1$s\nStatus: %2$s</string>
     <string name="none">None</string>
-    
     <string name="unknown">Unknown</string>
-    
-    <string name="download_image_to">Downloaded images saved to: </string>
-    
-    <string name="novel_database_to">Novel Database saved to: </string>
-    
+    <string name="download_image_to">Downloaded images saved to: %1$s</string>
+    <string name="novel_database_to">Novel Database saved to: %1$s</string>
     <string name="copyright">Baka-Tsuki:Copyrights</string>
-    
     <string name ="not_copyright">Cannot get copyright page.</string>
-    
     <string name ="run_update_text">Tap to force Run Update</string>
-    
     <string name ="use_sound_summary">Ring if there is new chapters update.</string>
-    
     <string name ="use_sound_title">Use Ringer</string>
-    
     <string name ="use_vibration_summary">Vibrate if there is new chapters update.</string>
-    
     <string name ="use_vibration_title">Use Vibration</string>
-    
     <string name="persist_notification_summary">Keep the update notification after click.</string>
-    
     <string name="persist_notification_title">Persist Notifications</string>
-    
     <string name="consolidate_notification_summary">Consolidate the notification into single notification which launch Update History.</string>
-    
     <string name="consolidate_notification_title">Consolidate Notification</string>
-    
     <string name="general_preference">General Preferences</string>
-    
     <string name="UI_selection_title">UI Selection</string>
-    
     <string name="invert_color_summary">Changes the font color with the background color</string>
-    
     <string name="invert_color_title">Invert Colors</string>
-    
     <string name="lock_horizontal_summary">Enters horizontal orientation and locks the orientation</string>
-    
     <string name="lock_horizontal_title">Lock for Horizontal</string>
-    
     <string name="auto_download_chapter_summary">Automatically adds a chapter to the download list when touched, if it hasn\'t been downloaded yet.</string>
-    
-    <string name="auto_download_chapter_title">Touch for Download</string>  
-    
+    <string name="auto_download_chapter_title">Touch for Download</string>
     <string name="alphabet_order_summary">Novel list is always ordered by alphabet.</string>
-    
     <string name="alphabet_order_title">Alphabetical Order</string>
-    
     <string name="show_missing_summary">Show missing chapter (marked with red color).</string>
-    
     <string name="show_missing_title">Show Missing Chapters</string>
-    
     <string name="show_external_summary">Show external chapter (marked with blue color icon).</string>
-    
     <string name="show_external_title">Show External Chapters</string>
-    
     <string name="use_internal_webview_summary">Handle external link with internally, rather than using browser.</string>
-    
     <string name="use_internal_webview_title">Use Internal WebView</string>
-    
     <string name="strech_detail_image_summary">Makes the cover for the novel fit the screen (with insets) instead of it\'s original size.</string>
-    
     <string name="strech_detail_image_title">Resize Cover</string>
-    
     <string name="reading_layout">Reading Layout</string>
-    
     <string name="show_images_summary">Controls if images are displayed or not (for performance).</string>
-    
     <string name="show_images_title">Show Images</string>
-    
     <string name="enable_zoom_summary">Enable zoom in novel contents.</string>
-    
     <string name="enable_zoom_title">Enable Zoom</string>
-    
     <string name="show_zoom_control_summary">Show zoom button in the novel contents, doesn\'t affect the zooming function.</string>
-    
     <string name="show_zoom_control_title">Show Zoom Control</string>
-    
     <string name="show_webview_summary">Enable dynamic buttons while scrolling the chapter.</string>
-    
     <string name="show_webview_title">Dynamic Buttons</string>
-    
     <string name="keep_awake_summary">Keeps the screen on when on chapter screen.</string>
-    
     <string name="keep_awake_title">Keep Awake</string>
-    
     <string name="use_volume_to_scroll_summary">Use volume rocker for scrolling when for novel contents.</string>
-    
     <string name="use_volume_to_scroll_title">Use Volume Rocker for Scrolling</string>
-    
     <string name="scroll_size_summary">Scrolling size for volumer rocker.</string>
-    
-    <string name="scroll_size_summary2">Scrolling size for volume rocker (</string>
-    
+    <string name="scroll_size_summary2">Scrolling size for volume rocker (%1$s)</string>
     <string name="scroll_size_title">Scrolling Size</string>
-    
     <string name="invert_scroll_summary">Invert scrolling direction for volumer rocker.</string>
-    
     <string name="invert_scroll_title">Invert Scroll Direction</string>
-    
     <string name="fullscreen_summary">Use fullscreen when reading.</string>
-    
     <string name="fullscreen_title">Use Fullscreen</string>
-    
     <string name="enable_bookmark_summary">Enable bookmark feature when reading.</string>
-    
     <string name="enable_bookmark_title">Enable Bookmark</string>
-    
     <string name="css_layout_title">CSS Layouts</string>
-    
     <string name="custom_css_title">Use Custom CSS</string>
-    
-    <string name="custom_css_summary">Use custom CSS for reading. Reload chapter to take effect (including changing the css path).</string>
-    
+    <string name="custom_css_summary">Use custom CSS for reading. Reload chapter to take effect (including changing the css path).</string>   
     <string name="custom_css_path_title">Custom CSS Path</string>
-    
     <string name="custom_css_path_summary">Path to Custom CSS to be used for reading.</string>
-    
     <string name="force_justified_title">Force Justified</string>
-    
     <string name="force_justified_summary">Force justified text for novel content. Reload the chapter to take effect.</string>
-    
     <string name="line_spacing_title">Line Spacing</string>
-    
     <string name="line_spacing_summary">Increases the space between lines. The greater the number, the more padding it has. Reload the chapter to take effect.</string>
-    
     <string name="line_spacing_dialog_content">Please enter the desired number of your line spacing in percentage. (Default is 150%)</string>
-    
     <string name="line_spacing_dialog_title">Line Spacing</string>
-    
     <string name="line_spacing_summary2">Increases the space between lines. The greater the number, the more padding it has.</string>
-    
     <string name="margin_title">Margins</string>
-    
     <string name="margin_summary">Increases the space from the text and the edge of the screen. Reload the chapter to take affect.</string>
-    
     <string name="margin_dialog">Please enter the desired margin in percentage of screen space. Don\'t forget that this affects the left and right margin. (Default is 5%)</string>
-    
     <string name="margin_summary2">Increases the space between the text and the edge of the screen.</string>
-    
     <string name="storage">Storage</string>
-    
     <string name="clear_database_summary">Erases the light novel database.</string>
-    
     <string name="clear_database_title">Clear Novel Database</string>
-    
     <string name="backup_database_summary">Creates a backup of the light novel database at the root of the device\'s internal storage.</string>
-    
     <string name="backup_database_title">Create Novel Database Backup</string>
-    
     <string name="restore_database_summary">Restores a light novel database backup previously created from the root of the device\'s internal storage.</string>
-    
     <string name="restore_database_title">Restore Novel Database Backup</string>
-    
     <string name="clear_cache_summary">Clears cached images</string>
-    
     <string name="clear_cache_title">Clear Image Cache</string>
-    
     <string name="save_location_title">Image Save Location</string>
-    
     <string name="db_location_title">Database Save Location</string>
-    
     <string name="download_big_image_summary">Download linked full resolution image. *Will* take a lot of space.</string>
-    
     <string name="download_big_image_title">Download Full-Res Image</string>
-    
     <string name="application_info">Application Info</string>
-    
     <string name="version">Version</string>
-    
     <string name="clear_image_question">Do you want to clear the Image Cache?</string>
-    
     <string name="clear_image_question2">Clear Image Cache</string>
-    
     <string name="clear_db_question">Do you want to clear the DB?</string>
-    
-    <string name="clear_db_question2">Clear DB</string>    
-    
+    <string name="clear_db_question2">Clear DB</string>
     <string name="clear_database">Clearing Database...</string>
-    
     <string name="database_cleared">Database cleared!</string>
-    
     <string name="running">Running...</string>
-    
     <string name="database_manager">Database Manager</string>
-    
     <string name="database_backup_create">Creating Database backup...</string>
-    
     <string name="database_not_found">Could not find a backup database.</string>
 </resources>

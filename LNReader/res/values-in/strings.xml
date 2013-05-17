@@ -58,228 +58,117 @@
 			\nthelastguardian \- May 26, 2008</string>
     
     <string name="content_refresh">Refresh Konten</string>
-    
     <string name="content_previous">Sebelumnya</string>
-    
     <string name="content_next">Selanjutnya</string>
-    
     <string name="content_toc">Maju ke</string>
-    
     <string name="content_search">Cari</string>
-    
     <string name="content_bookmark">Bookmark pada Bab</string>
-    
     <string name="bookmarks">Bookmark</string>
-    
     <string name="download_list">Daftar Unduhan</string>
-    
     <string name="details_refresh">Refresh</string>
-    
     <string name="details_download_all">Unduh Semua Bab</string>
-    
     <string name="novel_list_refresh">Refresh</string>
-    
     <string name="novel_list_manual_add">Menambahkan Manual</string>
-    
     <string name="novel_list_download_all">Unduh Semua Informasi</string>
-    
-    <string name="update_interval_summary">Menentukan frekuensi verifikasi pembaharuan (</string>
-    
+    <string name="update_interval_summary">Menentukan frekuensi verifikasi pembaharuan (%1$s)</string>
     <string name="update_interval_title">Interval pembaharuan</string>
-    
-    <string name="selected_mode">Mode yang dipilih: </string>
-    
-    <string name="last_run">Proses terakhir: </string>
-    
+    <string name="selected_mode">Bahasa yang dipilih: %1$s</string>
+    <string name="selected_language">Mode yang dipilih: %1$s</string>
+    <string name="last_run">Proses terakhir: %1$s\nStatus: %2$s</string>
     <string name="none">Tidak pernah</string>
-    
     <string name="unknown">Tidak terdefinisi</string>
-    
-    <string name="download_image_to">Gambar disimpan di: </string>
-    
-    <string name="novel_database_to">Basis Data Novel disimpan di: </string>
-    
+    <string name="download_image_to">Gambar disimpan di: %1$s</string>
+    <string name="novel_database_to">Basis Data Novel disimpan di: %1$s</string>
     <string name="copyright">Baka-Tsuki:Hak Cipta</string>
-    
     <string name ="not_copyright">Tidak dapat mengakses halaman Hak Cipta.</string>
-    
     <string name ="run_update_text">Tekan untuk memperbaharui</string>
-    
     <string name ="use_sound_summary">Berdering jika terdapat pembaharuan bab baru.</string>
-    
     <string name ="use_sound_title">Gunakan Pendering</string>
-    
     <string name ="use_vibration_summary">Bergetar jika terdapat pembaharuan bab baru.</string>
-    
     <string name ="use_vibration_title">Gunakan Penggetar</string>
-    
     <string name="persist_notification_summary">Simpan notifikasi pembaharuan setelah diklik.</string>
-    
     <string name="persist_notification_title">Simpan Notifikasi</string>
-    
     <string name="consolidate_notification_summary">Gabungkan notifikasi menjadi satu notifikasi ketika History diperbaharui.</string>
-    
     <string name="consolidate_notification_title">Gabungkan Notifikasi</string>
-    
     <string name="general_preference">Preferensi Umum</string>
-    
     <string name="UI_selection_title">Pilihan Antarmuka Pengguna</string>
-    
     <string name="invert_color_summary">Menukar warna tulisan dengan warna latar</string>
-    
     <string name="invert_color_title">Balikkan Warna</string>
-    
     <string name="lock_horizontal_summary">Menggunakan orientasi horizontal</string>
-    
     <string name="lock_horizontal_title">Kunci Orientasi Horizontal</string>
-    
     <string name="auto_download_chapter_summary">Menambahkan bab ke daftar unduhan secara otomatis ketika diklik, jika bab tersebut belum diunduh.</string>
-    
     <string name="auto_download_chapter_title">Sentuh untuh Mengunduh</string>
-    
     <string name="alphabet_order_summary">Daftar novel selalu terurut abjad.</string>
-    
     <string name="alphabet_order_title">Terurut Abjad</string>
-    
     <string name="show_missing_summary">Tampilkan bab yang hilang(ditandai dengan warna merah).</string>
-    
     <string name="show_missing_title">Tampilkan Bab Hilang</string>
-    
     <string name="show_external_summary">Tampilkan bab eksternal(ditandai dengan warna biru).</string>
-    
     <string name="show_external_title">Tampilkan Bab Eksternal</string>
-    
     <string name="use_internal_webview_summary">Menangani surel eksternal menggunakan aplikasi ini, tanpa menggunakan browser.</string>
-    
     <string name="use_internal_webview_title">Tampilan Web Internal</string>
-    
     <string name="strech_detail_image_summary">Membuat ukuran sampul untuk novel menyesuaikan ukuran layar.</string>
-    
     <string name="strech_detail_image_title">Mengganti Ukuran Sampul</string>
-    
     <string name="reading_layout">Tampilan Bacaan</string>
-    
     <string name="show_images_summary">Setelan untuk mengatur apakah gambar akan ditampilkan atau tidak (untuk performansi).</string>
-    
     <string name="show_images_title">Tampilkan Gambar</string>
-    
     <string name="enable_zoom_summary">Mengaktifkan zoom dalam mode pembacaan novel.</string>
-    
     <string name="enable_zoom_title">Aktifkan Zoom</string>
-    
     <string name="show_zoom_control_summary">Menampilkan tombol zoom dalam mode pembacaan novel, tidak mempengaruhi fungsi zoom.</string>
-    
     <string name="show_zoom_control_title">Tampilkan Kontrol Zoom</string>
-    
     <string name="show_webview_summary">Mengaktifkan tombol dinamik ketika membaca bab-bab novel.</string>
-    
-    <string name="show_webview_title">Tombol Dinamik</string>
- 
+    <string name="show_webview_title">Tombol Dinamik</string> 
     <string name="keep_awake_summary">Menyalakan layar selama membaca bab-bab novel.</string>
-    
     <string name="keep_awake_title">Tetap Menyala</string>
-    
     <string name="use_volume_to_scroll_summary">Menggunakan volume rocker untuk menggeser ketika membaca isi novel.</string>
-    
     <string name="use_volume_to_scroll_title">Volume Rocker untuk Menggeser</string>
-    
     <string name="scroll_size_summary">Ukuran scrolling untuk volume rocker.</string>
-    
-    <string name="scroll_size_summary2">Ukuran scrolling untuk volume rocker (</string>
-    
+    <string name="scroll_size_summary2">Ukuran scrolling untuk volume rocker (%1$s)</string>
     <string name="scroll_size_title">Ukuran Scrolling</string>
-    
     <string name="invert_scroll_summary">Membalikkan arah geser untuk volume rocker.</string>
-    
     <string name="invert_scroll_title">Membalikkan Arah Geser</string>
-    
     <string name="fullscreen_summary">Menggunakan tampilan penuh untuk membaca.</string>
-    
     <string name="fullscreen_title">Tampilan Penuh</string>
-    
     <string name="enable_bookmark_summary">Mengaktifkan bookmark ketika membaca.</string>
-    
     <string name="enable_bookmark_title">Aktifkan Bookmark</string>
-    
     <string name="css_layout_title">Tampilan CSS</string>
-    
     <string name="custom_css_title">Menggunakan CSS Custom</string>
-    
     <string name="custom_css_summary">Menggunakan CSS custom untuk membaca. Buka ulang bab agar efek terimplementasi (termasuk mengganti lokasi penyimpanan css).</string>
-    
     <string name="custom_css_path_title">Lokasi CSS Custom</string>
-    
     <string name="custom_css_path_summary">Alamat yang digunakan untuk CSS Custom yang akan digunakan untuk membaca.</string>
-    
     <string name="force_justified_title">Perataan Tengah</string>
-    
     <string name="force_justified_summary">Perataan tengah untuk teks novel. Buka ulang bab agar efek terimplementasi.</string>
-    
     <string name="line_spacing_title">Ukuran Spasi</string>
-    
     <string name="line_spacing_summary">Menambahkan jarak antar baris. Semakin besar angka, semakin besar jarak yang dihasilkan. Buka ulang bab agar efek terimplementasi.</string>
-    
     <string name="line_spacing_dialog_content">Masukkan angka yang anda inginkan untuk jarak antar baris dalam persentanse. (Preferensi awal 150%)</string>
-    
     <string name="line_spacing_dialog_title">Ukuran Spasi</string>
-    
     <string name="line_spacing_summary2">Menambahkan jarak antar baris. Semakin besar angka, semakin besar jarak yang dihasilkan.</string>
-    
     <string name="margin_title">Garis Tepi</string>
-    
     <string name="margin_summary">Menambahkan jarak antar teks dengan batas tepi layar. Buka ulang bab agar efek terimplementasi.</string>
-    
     <string name="margin_dialog">Masukkan angka yang anda inginkan untuk jarak antar teks dengan batas tepi layar. Preferensi ini untuk mengatur batas kiri dan kanan layar. (Preferensi awal 5%)</string>
-    
-    <string name="margin_summary2">Menambahkan jarak antar teks dengan batas tepi layar.</string>
-   
+    <string name="margin_summary2">Menambahkan jarak antar teks dengan batas tepi layar.</string>   
     <string name="storage">Penyimpanan</string>
-    
     <string name="clear_database_summary">Menghapus semua daftar light novel.</string>
-    
     <string name="clear_database_title">Menghapus Semua Novel</string>
-    
     <string name="backup_database_summary">Membuat backup dari light novel pada root media penyimpanan internal devais.</string>
-    
     <string name="backup_database_title">Membuat Backup Light Novel</string>
-    
     <string name="restore_database_summary">Kembali ke backup dari light novel yang telah dibuat pada root media penyimpanan internal devais.</string>
-    
     <string name="restore_database_title">Mengembalikan Backup Light Novel</string>
-    
     <string name="clear_cache_summary">Menghapus cache gambar-gambar</string>
-    
     <string name="clear_cache_title">Menghapus Cache Gambar</string>
-    
     <string name="save_location_title">Lokasi Penyimpanan Gambar</string>
-    
     <string name="db_location_title">Lokasi Penyimpanan Basis Data</string>
-    
     <string name="download_big_image_summary">Mengunduh gambar dengan resolusi 100%. *Akan* berukuran besar.</string>
-    
     <string name="download_big_image_title">Mengunduh Gambar 100%</string>
-    
     <string name="application_info">Info Aplikasi</string>
-    
     <string name="version">Versi</string>
-    
     <string name="clear_image_question">Apakah anda ingin menghapus cache gambar?</string>
-    
     <string name="clear_image_question2">Hapus Cache Gambar</string>
-    
     <string name="clear_db_question">Apakah anda ingin menghapus basis data?</string>
-    
     <string name="clear_db_question2">Hapus Basis Data</string>   
-    
     <string name="clear_database">Membersihkan Basis Data...</string>
-    
     <string name="database_cleared">Basis Data telah dihapus!</string>
-    
     <string name="running">Sedang diproses...</string>
-    
     <string name="database_manager">Pengelola Basis Data</string>
-    
     <string name="database_backup_create">Membuat backup basis data...</string>
-    
     <string name="database_not_found">Tidak dapat menemukan backup basis data.</string>
 </resources>
