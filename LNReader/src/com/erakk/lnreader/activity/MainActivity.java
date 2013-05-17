@@ -41,12 +41,12 @@ public class MainActivity extends SherlockActivity {
 		if (isFirstRun()) {
 			// Show copyrights
 
-			new AlertDialog.Builder(this).setTitle("Terms of Use").setMessage("Before using this application, keep in mind that we, the developers of BakaTsuki EX, are not responsible for the content displayed by the application in any way. Therefore, you must read and agree to the TLG Translation Common Agreement of Baka-Tsuki.org:\n\n" + getString(R.string.bakatsuki_copyrights) + "\n\nBy clicking \"I Agree\" below, you confirm that you have read the TLG Translation Common Agreement in it's entirety.").setPositiveButton("I Agree", new OnClickListener() {
+			new AlertDialog.Builder(this).setTitle(getResources().getString(R.string.terms_of_use)).setMessage(getResources().getString(R.string.bakatsuki_message) + getString(R.string.bakatsuki_copyrights) + "\n\nBy clicking \"I Agree\" below, you confirm that you have read the TLG Translation Common Agreement in it's entirety.").setPositiveButton(getResources().getString(R.string.agree), new OnClickListener() {
 
 				public void onClick(DialogInterface dialog, int which) {
 					setFirstRun();
 				}
-			}).setNegativeButton("Exit App", new OnClickListener() {
+			}).setNegativeButton(getResources().getString(R.string.disagree), new OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					finish();
 				}
@@ -160,7 +160,7 @@ public class MainActivity extends SherlockActivity {
 			intent.putExtra(Constants.EXTRA_PAGE, lastReadPage);
 			startActivity(intent);
 		} else {
-			Toast.makeText(this, "You have no novel to resume reading.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getResources().getString(R.string.no_last_novel), Toast.LENGTH_SHORT).show();
 		}
 	}
 	private void setIconColor() {

@@ -310,7 +310,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 						jumpTo(prev);
 					}
 					else {
-						Toast.makeText(getApplicationContext(), "First available chapter.", Toast.LENGTH_SHORT).show();
+						Toast.makeText(getApplicationContext(), getResources().getString(R.string.first_available_chapter), Toast.LENGTH_SHORT).show();
 					}
 				} catch (Exception e) {
 					Log.e(TAG, "Cannot get previous chapter.", e);
@@ -329,7 +329,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 						jumpTo(next);
 					}
 					else {
-						Toast.makeText(getApplicationContext(), "Last available chapter.", Toast.LENGTH_SHORT).show();
+						Toast.makeText(getApplicationContext(), getResources().getString(R.string.last_available_chapter), Toast.LENGTH_SHORT).show();
 					}
 				} catch (Exception e) {
 					Log.e(TAG, "Cannot get next chapter.", e);
@@ -451,7 +451,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
 				startActivity(browserIntent);
 			}catch(Exception ex) {
-				String message = "Error when parsing url: " + page.getPage();
+				String message = getResources().getString(R.string.error_parsing_url) + ": " + page.getPage();
 				Log.e(TAG, message , ex);
 				Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 			}
@@ -480,7 +480,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 					}
 					jumpAdapter = new PageModelAdapter(this, resourceId, chapters);
 					AlertDialog.Builder builder = new AlertDialog.Builder(this);
-					builder.setTitle("Jump To");
+					builder.setTitle(getResources().getString(R.string.content_toc));
 					builder.setAdapter(jumpAdapter, new OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
 							PageModel page = jumpAdapter.getItem(which);
@@ -504,7 +504,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				}
 				bookmarkAdapter = new BookmarkModelAdapter(this, resourceId, content.getBookmarks(), content.getPageModel());
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle("Bookmarks");
+				builder.setTitle(getResources().getString(R.string.bookmarks));
 				builder.setAdapter(bookmarkAdapter, new OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						BookmarkModel bookmark = bookmarkAdapter.getItem(which);
@@ -519,6 +519,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public void setLastReadState() {
 		if(content!= null) {
 			// save last position and zoom
@@ -571,7 +572,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 					task.execute(new PageModel[] {pageModel});
 			}
 			else {
-				webView.loadData("<p style='background: black; color: white;'>Background task still loading...</p>", "text/html", "utf-8");
+				webView.loadData("<p style='background: black; color: white;'>" + getResources().getString(R.string.background_task_load)  +"</p>", "text/html", "utf-8");
 				LoadNovelContentTask tempTask = (LoadNovelContentTask) LNReaderApplication.getInstance().getTask(key);
 				if(tempTask != null) {
 					task = tempTask;
@@ -601,7 +602,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			PageModel pageModel = content.getPageModel();
 			
 			if(content.getLastUpdate().getTime() != pageModel.getLastUpdate().getTime())
-				Toast.makeText(getApplicationContext(), "Content might be updated: " + content.getLastUpdate().toString() + " != " + pageModel.getLastUpdate().toString(), Toast.LENGTH_LONG).show();
+				Toast.makeText(getApplicationContext(), getResources().getString(R.string.content_may_updated) + ": " + content.getLastUpdate().toString() + " != " + pageModel.getLastUpdate().toString(), Toast.LENGTH_LONG).show();
 			
 			// load the contents here
 			final WebView wv = (WebView) findViewById(R.id.webView1);
@@ -716,7 +717,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	public void toggleProgressBar(boolean show) {
 		synchronized (this) {
 			if(show) {
-				dialog = ProgressDialog.show(this, "Novel Content", "Loading. Please wait...", true);
+				dialog = ProgressDialog.show(this, getResources().getString(R.string.title_activity_display_novel_content), "Loading. Please wait...", true);
 				dialog.getWindow().setGravity(Gravity.CENTER);
 				dialog.setCanceledOnTouchOutside(true);
 				dialog.setOnCancelListener(new OnCancelListener() {
@@ -865,7 +866,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 						Log.e(TAG, "Error when reading Custom CSS: " + cssPath, e);
 					}
 				} else {
-					Toast.makeText(getApplicationContext(), "CSS Layout does not exists at the assigned path. Using default.", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), getResources().getString(R.string.css_layout_not_exist), Toast.LENGTH_SHORT).show();
 				}
 			}
 		}

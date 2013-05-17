@@ -113,7 +113,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
 				startActivity(browserIntent);
 			}catch(Exception ex) {
-				String message = "Error when parsing url: " + chapter.getPage();
+				String message =  getResources().getString(R.string.error_parsing_url) + ": " + chapter.getPage();
 				Log.e(TAG, message , ex);
 				Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 			}
@@ -269,7 +269,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			 * Implement code to clear this volume cache
 			 */
 			BookModel bookDel = novelCol.getBookCollections().get(groupPosition);
-			Toast.makeText(this, "Clear this Volume: " + bookDel.getTitle(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getResources().getString(R.string.clear_this_volume) + ": " + bookDel.getTitle(), Toast.LENGTH_SHORT).show();
 			dao.deleteBooks(bookDel);
 			novelCol.getBookCollections().remove(groupPosition);
 			bookModelAdapter.notifyDataSetChanged();
@@ -279,7 +279,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			/*
 			 * Implement code to mark entire volume as read
 			 */			
-			Toast.makeText(this, "Mark Volume as Read",	Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getResources().getString(R.string.mark_volume_read), Toast.LENGTH_SHORT).show();
 			BookModel book2 = novelCol.getBookCollections().get(groupPosition);
 			for(Iterator<PageModel> iPage = book2.getChapterCollection().iterator(); iPage.hasNext();) {
 				PageModel page = iPage.next();
@@ -306,7 +306,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			 * Implement code to clear this chapter cache
 			 */
 			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
-			Toast.makeText(this, "Clear this Chapter: " + chapter.getTitle(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getResources().getString(R.string.clear_this_chapter) + ": " + chapter.getTitle(), Toast.LENGTH_SHORT).show();
 			dao.deletePage(chapter);
 			novelCol.getBookCollections().get(groupPosition).getChapterCollection().remove(chapter);
 			bookModelAdapter.notifyDataSetChanged();
@@ -331,7 +331,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel, boolean willRefresh) {
 		task = new LoadNovelDetailsTask(willRefresh, this);
-		String key = TAG + ":LoadChapter:" + pageModel.getPage();
+		String key = TAG + getResources().getString(R.string.load_chapter) + pageModel.getPage();
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		
 		if(isAdded) {
@@ -355,9 +355,9 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 	private void executeDownloadTask(ArrayList<PageModel> chapters, boolean isAll) {
 		if(page != null) {
 			downloadTask = new DownloadNovelContentTask((PageModel[]) chapters.toArray(new PageModel[chapters.size()]), this);
-			String key = TAG + ":DownloadChapters:" + page.getPage();
+			String key = TAG + getResources().getString(R.string.download_chapter) + page.getPage();
 			if(isAll) {
-				key = TAG + ":DownloadChaptersAll:" + page.getPage();
+				key = TAG + getResources().getString(R.string.download_all_chapter) + page.getPage();
 			}
 			boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 			
@@ -384,10 +384,10 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		if (type == 0) {
 			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
 				exists = true;
-				Toast.makeText(this, "Download already on queue.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getResources().getString(R.string.download_on_queue), Toast.LENGTH_SHORT).show();
 			}
 			else {
-				Toast.makeText(this,"Downloading " + name + ".", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getResources().getString(R.string.downloading) + name + ".", Toast.LENGTH_SHORT).show();
 				LNReaderApplication.getInstance().addDownload(id, name);
 			}
 		}
@@ -410,7 +410,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 	
 	public void toggleProgressBar(boolean show) {
 		if(show) {
-			dialog = ProgressDialog.show(this, "Novel Details", "Loading. Please wait...", true);
+			dialog = ProgressDialog.show(this, getResources().getString(R.string.title_activity_display_novel_content), "Loading. Please wait...", true);
 			dialog.getWindow().setGravity(Gravity.CENTER);
 			dialog.setCanceledOnTouchOutside(true);
 			dialog.setOnCancelListener(new OnCancelListener() {
@@ -472,16 +472,16 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 						textViewSynopsis.setTextSize(16); 
 						String title = page.getTitle();
 						if(page.isTeaser()) {
-							title += " (Teaser Project)";
+							title += " (" + getResources().getString(R.string.teaser_project) + ")";
 						}
 						if(page.isStalled()) {
-							title += "\nStatus: Project Stalled";
+							title += "\nStatus: " +  getResources().getString(R.string.project_stalled);
 						}
 						if(page.isAbandoned()) {
-							title += "\nStatus: Project Abandoned";
+							title += "\nStatus: " +  getResources().getString(R.string.project_abandonded);
 						}
 						if(page.isPending()) {
-							title += "\nStatus: Project Pending Authorization";
+							title += "\nStatus: " +  getResources().getString(R.string.project_pending_authorization);
 						}
 												
 						textViewTitle.setText(title);
@@ -493,10 +493,10 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 								if(isChecked){
-									Toast.makeText(getApplicationContext(), "Added to watch list: " + page.getTitle(),	Toast.LENGTH_SHORT).show();
+									Toast.makeText(getApplicationContext(), getResources().getString(R.string.added_to_watchlist) + ": " + page.getTitle(),	Toast.LENGTH_SHORT).show();
 								}
 								else {
-									Toast.makeText(getApplicationContext(), "Removed from watch list: " + page.getTitle(),	Toast.LENGTH_SHORT).show();
+									Toast.makeText(getApplicationContext(), getResources().getString(R.string.removed_from_watchlist) + ": " + page.getTitle(),	Toast.LENGTH_SHORT).show();
 								}
 								// update the db!
 								page.setWatched(isChecked);

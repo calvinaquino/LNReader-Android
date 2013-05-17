@@ -79,10 +79,10 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 		updateContent(false, onlyWatched);
 		
 		if(onlyWatched){
-			setTitle("Watched Light Novels");
+			setTitle(getResources().getString(R.string.watched_light_novels));
 		}
 		else {
-			setTitle("Light Novels");
+			setTitle(getResources().getString(R.string.light_novels));
 		}
 		registerForContextMenu(getListView());
 		isInverted = getColorPreferences();
@@ -190,7 +190,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 
 	public void manualAdd() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		alert.setTitle("Add Novel (Main)");
+		alert.setTitle(getResources().getString(R.string.add_novel_main));
 		//alert.setMessage("Message");
 		LayoutInflater factory = LayoutInflater.from(this);
 		View inputView = factory.inflate(R.layout.layout_add_new_novel, null);
@@ -204,7 +204,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 				}
 			}
 		});
-		alert.setNegativeButton("Cancel", null);
+		alert.setNegativeButton(getResources().getString(R.string.cancel), null);
 		alert.show();
 	}
 	
@@ -242,11 +242,11 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 				PageModel novel = listItems.get(info.position);
 		        if (novel.isWatched()) {
 		        	novel.setWatched(false);
-		        	Toast.makeText(this, "Removed from watch list: " + novel.getTitle(),	Toast.LENGTH_SHORT).show();
+		        	Toast.makeText(this,  getResources().getString(R.string.removed_from_watchlist) + ": " + novel.getTitle(),	Toast.LENGTH_SHORT).show();
 		        }
 		        else {
 		        	novel.setWatched(true);
-		        	Toast.makeText(this, "Added to watch list: " + novel.getTitle(),	Toast.LENGTH_SHORT).show();
+		        	Toast.makeText(this, getResources().getString(R.string.added_to_watchlist) + ": " + novel.getTitle(),	Toast.LENGTH_SHORT).show();
 		        }
 		        NovelsDao.getInstance(this).updatePageModel(novel);
 		        adapter.notifyDataSetChanged();
@@ -298,7 +298,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 			setListAdapter(adapter);
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
-			Toast.makeText(this, "Error when updating: " + e.getMessage(), Toast.LENGTH_LONG).show();
+			Toast.makeText(this, getResources().getString(R.string.error_update) + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
 	
@@ -331,10 +331,10 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 		if (type == 0) {
 			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
 				exists = true;
-				Toast.makeText(this, "Download already on queue.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getResources().getString(R.string.download_on_queue), Toast.LENGTH_SHORT).show();
 			}
 			else {
-				Toast.makeText(this,"Downloading "+name+".", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this,getResources().getString(R.string.downloading)+name+".", Toast.LENGTH_SHORT).show();
 				LNReaderApplication.getInstance().addDownload(id, name);
 			}
 		}

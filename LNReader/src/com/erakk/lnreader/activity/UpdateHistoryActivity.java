@@ -108,7 +108,7 @@ public class UpdateHistoryActivity extends SherlockActivity {
 
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
-			Toast.makeText(this, "Error when updating: " + e.getMessage(), Toast.LENGTH_LONG).show();
+			Toast.makeText(this, getResources().getString(R.string.error_update) + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
 }

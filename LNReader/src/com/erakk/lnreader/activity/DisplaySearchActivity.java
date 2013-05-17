@@ -45,7 +45,7 @@ public class DisplaySearchActivity extends SherlockActivity{
 		UIHelper.SetTheme(this, R.layout.activity_search);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 		
-		setTitle("Search");
+		setTitle(getResources().getString(R.string.search));
 		isInverted = getColorPreferences();
 		
 		final EditText search = (EditText) findViewById(R.id.searchText);

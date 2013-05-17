@@ -29,7 +29,7 @@ public class DisplayBookmarkActivity extends SherlockListActivity  {
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 		
 		isInverted = getColorPreferences();
-		setTitle("Bookmarks");
+		setTitle(getResources().getString(R.string.bookmarks));
 		getBookmarks();
 	}
 

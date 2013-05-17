@@ -39,7 +39,9 @@
     <string name="current_value">Current Value</string>
     <string name="set">Set</string>
     <string name="cancel">Cancel</string>
+    <string name="cancel_task">Cancel Task: </string>
     
+    <string name="bakatsuki_message">Before using this application, keep in mind that we, the developers of BakaTsuki EX, are not responsible for the content displayed by the application in any way. Therefore, you must read and agree to the TLG Translation Common Agreement of Baka-Tsuki.org:\n\n</string>
     <string name="bakatsuki_copyrights">\nTLG Translation Common Agreement v.0.4.1
 			\n0) \"Wiki\" is defined as the site \"Baka\-Tsuki\" running on any variation of wiki-like content management package, as defined by The American Heritage® Dictionary of the English Language, Fourth Edition. Houghton Mifflin Company, 2004.
 			\na) \"Work\" is defined as any material from the product/service their respective copyright holders hold including, but not limited to, scripts(translated and original), dialogue, illustrations, screenshots, animation, clips, sound, etc. When the word \"translated\" is used before (a), (a) becomes \"translated and/or raw script\". b1) \"You\", \"your\" are defined as a copyright holder of the works as defined in (a) . b2) \"You\", \"your\" are defined as the submitter of the translated works as defined in (a) . b3) \"You\", \"your\" are defined as the viewer of the works as defined in (a) . b4) \"we\" is defined as the owner of this wiki AND the translators of the works as defined in (a) . c) \"I\", \"me\", \"my\" are defined as the owner of this wiki. d) \"licenced\" is defined as global and/or English publishing rights.
@@ -73,7 +75,7 @@
     <string name="update_interval_summary">Define how often updates will be verified: %1$s</string>
     <string name="update_interval_title">Updates interval</string>
     <string name="selected_mode">Selected mode: %1$s</string>
-    <string name="selected_language">Selected language: %1$s</string>
+    <string name="selected_language">Selected language: %1$s.\nRestart application for maximum results.</string>
     <string name="last_run">Last Run: %1$s\nStatus: %2$s</string>
     <string name="none">None</string>
     <string name="unknown">Unknown</string>
@@ -171,4 +173,33 @@
     <string name="database_manager">Database Manager</string>
     <string name="database_backup_create">Creating Database backup...</string>
     <string name="database_not_found">Could not find a backup database.</string>
+    <string name="display_image">Display Image</string>
+    <string name="loading_image">Loading Image...</string>
+    <string name="first_available_chapter">First available chapter.</string>
+    <string name="last_available_chapter">Last available chapter.</string>
+    <string name="error_parsing_url">Error when parsing url</string>
+    <string name="background_task_load">Background task still loading...</string>
+    <string name="content_may_updated">Content might be updated</string>
+    <string name="css_layout_not_exist">CSS Layout does not exists at the assigned path. Using default.</string>
+    <string name="clear_this_volume">Clear this Volume</string>
+    <string name="mark_volume_read">Mark Volume as Read</string>
+    <string name="clear_this_chapter">Clear this Chapter</string>
+    <string name="load_chapter">:LoadChapter:</string>
+    <string name="download_chapter">:DownloadChapters:</string>
+    <string name="download_all_chapter">:DownloadChaptersAll:</string>
+    <string name="download_on_queue">Download already on queue.</string>
+    <string name="downloading">Downloading </string>
+    <string name="teaser_project">Teaser Project</string>
+    <string name="project_stalled">Project Stalled</string>
+    <string name="project_abandonded">Project Abandonded</string>
+    <string name="project_pending_authorization">Project Pending Authorization</string>
+    <string name="added_to_watchlist">Added to watch list</string>
+    <string name="removed_from_watchlist">Removed from watch list</string>
+    <string name="error_update">Error when updating</string>
+    <string name="no_last_novel">You have no novel to resume reading.</string>
+    <string name="terms_of_use">Terms of Use</string>
+    <string name="agree">I Agree</string>
+    <string name="disagree">Exit App</string>
+    <string name="watched_light_novels">Watched Light Novels</string>
+    <string name="add_novel_main">Add Novel (Main)</string>
 </resources>

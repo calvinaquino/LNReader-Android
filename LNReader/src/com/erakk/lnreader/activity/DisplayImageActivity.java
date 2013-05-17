@@ -69,7 +69,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
     	// check running task
     	if(task != null){
     		if(!(task.getStatus() == Status.FINISHED)) {
-    			Toast.makeText(this, "Cancel Task: " + task.toString(), Toast.LENGTH_SHORT).show();
+    			Toast.makeText(this, getResources().getString(R.string.cancel_task) + task.toString(), Toast.LENGTH_SHORT).show();
     			task.cancel(true);    			
     		}
     	}
@@ -109,7 +109,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
     
     public void toggleProgressBar(boolean show) {
 		if(show) {
-			dialog = ProgressDialog.show(this, "Display Image", "Loading Image...", false);
+			dialog = ProgressDialog.show(this, getResources().getString(R.string.display_image), getResources().getString(R.string.loading_image), false);
 			dialog.getWindow().setGravity(Gravity.CENTER);
 			dialog.setCanceledOnTouchOutside(true);
 		}

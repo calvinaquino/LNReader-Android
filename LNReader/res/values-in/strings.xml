@@ -39,7 +39,9 @@
     <string name="current_value">Nilai saat ini</string>
     <string name="set">Pilih</string>
     <string name="cancel">Batal</string>
+    <string name="cancel_task">Batalkan Proses: </string>
     
+    <string name="bakatsuki_message">Before using this application, keep in mind that we, the developers of BakaTsuki EX, are not responsible for the content displayed by the application in any way. Therefore, you must read and agree to the TLG Translation Common Agreement of Baka-Tsuki.org:\n\n</string>
     <string name="bakatsuki_copyrights">\nTLG Translation Common Agreement v.0.4.1
 			\n0) \"Wiki\" is defined as the site \"Baka\-Tsuki\" running on any variation of wiki-like content management package, as defined by The American Heritage® Dictionary of the English Language, Fourth Edition. Houghton Mifflin Company, 2004.
 			\na) \"Work\" is defined as any material from the product/service their respective copyright holders hold including, but not limited to, scripts(translated and original), dialogue, illustrations, screenshots, animation, clips, sound, etc. When the word \"translated\" is used before (a), (a) becomes \"translated and/or raw script\". b1) \"You\", \"your\" are defined as a copyright holder of the works as defined in (a) . b2) \"You\", \"your\" are defined as the submitter of the translated works as defined in (a) . b3) \"You\", \"your\" are defined as the viewer of the works as defined in (a) . b4) \"we\" is defined as the owner of this wiki AND the translators of the works as defined in (a) . c) \"I\", \"me\", \"my\" are defined as the owner of this wiki. d) \"licenced\" is defined as global and/or English publishing rights.
@@ -73,7 +75,7 @@
     <string name="update_interval_summary">Menentukan frekuensi verifikasi pembaharuan (%1$s)</string>
     <string name="update_interval_title">Interval pembaharuan</string>
     <string name="selected_mode">Bahasa yang dipilih: %1$s</string>
-    <string name="selected_language">Mode yang dipilih: %1$s</string>
+    <string name="selected_language">Mode yang dipilih: %1$s.\nBuka ulang aplikasi untuk hasil maksimal.</string>
     <string name="last_run">Proses terakhir: %1$s\nStatus: %2$s</string>
     <string name="none">Tidak pernah</string>
     <string name="unknown">Tidak terdefinisi</string>
@@ -171,4 +173,33 @@
     <string name="database_manager">Pengelola Basis Data</string>
     <string name="database_backup_create">Membuat backup basis data...</string>
     <string name="database_not_found">Tidak dapat menemukan backup basis data.</string>
+    <string name="display_image">Tampilkan Gambar</string>
+    <string name="loading_image">Mengunduh Gambar...</string>
+    <string name="first_available_chapter">Bab yang pertama kali tersedia.</string>
+    <string name="last_available_chapter">Bab terakhir yang tersedia.</string>
+    <string name="error_parsing_url">Gagal dalam memproses url</string>
+    <string name="background_task_load">Sedang dalam pemrosesan...</string>
+    <string name="content_may_updated">Isi mungkin telah diperbaharui</string>
+    <string name="css_layout_not_exist">Tampilan CSS tidak ditemukan. Menggunakan preferensi bawaan.</string>
+    <string name="clear_this_volume">Hapus jilid ini</string>
+    <string name="mark_volume_read">Tandai jilid telah dibaca</string>
+    <string name="clear_this_chapter">Hapus bab ini</string>
+    <string name="load_chapter">:Buka Bab:</string>
+    <string name="download_chapter">:Unduh Bab:</string>
+    <string name="download_all_chapter">:Unduh Semua Bab:</string>
+    <string name="download_on_queue">Unduhan sudah dalam antrian.</string>
+    <string name="downloading">Mengunduh </string>
+    <string name="teaser_project">Proyek Teaser</string>
+    <string name="project_stalled">Proyek Terhenti</string>
+    <string name="project_abandonded">Proyek Ditinggalkan</string>
+    <string name="project_pending_authorization">Proyek Menunggu Authorisasi</string>
+    <string name="added_to_watchlist">Ditambahkan kedalam daftar favorit</string>
+    <string name="removed_from_watchlist">Dikeluarkan dari daftar favorit</string>
+    <string name="error_update">Gagal diperbaharui</string>    
+    <string name="no_last_novel">Anda tidak memiliki novel untuk dibaca ulang.</string>
+    <string name="terms_of_use">Syarat dan Ketentuan</string>
+    <string name="agree">Saya Setuju</string>
+    <string name="disagree">Keluar App</string>
+    <string name="watched_light_novels">Light Novel Favorit</string>
+    <string name="add_novel_main">Tambahkan Novel (Utama)</string>
 </resources>

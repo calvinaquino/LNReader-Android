@@ -416,10 +416,10 @@ public class DisplayOriginalListActivity extends SherlockListActivity implements
 		if (type == 0) {
 			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
 				exists = true;
-				Toast.makeText(this, "Download already on queue.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getResources().getString(R.string.download_on_queue), Toast.LENGTH_SHORT).show();
 			}
 			else {
-				Toast.makeText(this,"Downloading "+name+".", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getResources().getString(R.string.downloading)+name+".", Toast.LENGTH_SHORT).show();
 				LNReaderApplication.getInstance().addDownload(id, name);
 			}
 		}
