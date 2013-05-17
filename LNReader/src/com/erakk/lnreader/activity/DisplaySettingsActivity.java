@@ -2,7 +2,6 @@ package com.erakk.lnreader.activity;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Locale;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -12,15 +11,12 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -50,9 +46,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	 *****************************************************************/
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
-			Preference preference) {
-		// TODO Auto-generated method stub
+	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
 		super.onPreferenceTreeClick(preferenceScreen, preference);
     	if (preference!=null)
 	    	if (preference instanceof PreferenceScreen)
@@ -110,20 +104,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         changeLanguages.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int languageSelectionValue = Util.tryParseInt(newValue.toString(), 0);
-				changeLanguages.setSummary(getResources().getString(R.string.selected_mode) + languageSelectionArray[languageSelectionValue]);
-				/* Change language here */
-				String lang = "";
-				/* Add system locale / your values folder name here */
-				if (languageSelectionValue == 0) lang = "en";
-				if (languageSelectionValue == 1) lang = "in";
-				/* Changing configuration to user's choice */
-				Locale myLocale = new Locale(lang);
-				Resources res = context.getResources();
-				DisplayMetrics dm = res.getDisplayMetrics();
-		        Configuration conf = res.getConfiguration();
-		        conf.locale = myLocale;
-		        /* update resources */
-		        res.updateConfiguration(conf, dm);
+				UIHelper.setLanguage(context, languageSelectionValue);
 		        recreateUI();
 		        return true;
 			}
