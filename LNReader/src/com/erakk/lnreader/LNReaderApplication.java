@@ -41,9 +41,9 @@ public class LNReaderApplication extends Application {
 	private static LNReaderApplication instance;
 	private static Hashtable<String, AsyncTask<?, ?, ?>> runningTasks;
 	private static ArrayList<DownloadModel> downloadList;
-	
+
 	private static Object lock = new Object();
-	
+
 	@Override
 	public void onCreate()
 	{
@@ -53,15 +53,15 @@ public class LNReaderApplication extends Application {
 		// are bound to the application process.
 		initSingletons();
 		instance = this;
-		
+
 		doBindService();
 		Log.d(TAG, "Application created.");
 	}
-	
+
 	public static LNReaderApplication getInstance() {
 		return instance;
 	}
-	
+
 	protected void initSingletons()
 	{
 		if(novelsDao == null) novelsDao = NovelsDao.getInstance(this);
@@ -69,19 +69,19 @@ public class LNReaderApplication extends Application {
 		if(runningTasks == null) runningTasks = new Hashtable<String, AsyncTask<?, ?, ?>>();
 		if(downloadList == null) downloadList = new ArrayList<DownloadModel>();
 	}
-	
+
 	/*
 	 * AsyncTask listing method
 	 */
 	public static Hashtable<String, AsyncTask<?, ?, ?>> getTaskList() {
 		return runningTasks;
 	}
-	
+
 	public AsyncTask<?, ?, ?> getTask(String key) {
 		return runningTasks.get(key);
 	}
-	
-	
+
+
 	public boolean addTask(String key, AsyncTask<?, ?, ?> task) {
 		synchronized (lock) {
 			if(runningTasks.containsKey(key)) {
@@ -92,7 +92,7 @@ public class LNReaderApplication extends Application {
 			return true;
 		}
 	}
-	
+
 	public boolean removeTask(String key) {
 		synchronized (lock) {
 			if(!runningTasks.containsKey(key)) return false;
@@ -108,7 +108,7 @@ public class LNReaderApplication extends Application {
 	    }
 	    return false;
 	}
-	
+
 	/*
 	 * DownloadActivity method
 	 */
@@ -120,7 +120,7 @@ public class LNReaderApplication extends Application {
 			return downloadList.size();
 		}
 	}
-	
+
 	public void removeDownload(String id){
 		synchronized (lock) {
 			for (int i=0;i<downloadList.size();i++) {
@@ -132,7 +132,7 @@ public class LNReaderApplication extends Application {
 		if (DownloadListActivity.getInstance() != null)
 			DownloadListActivity.getInstance().updateContent();
 	}
-	
+
 	public String getDownloadDescription(String id){
 		String name = "";
 		for (int i=0;i<downloadList.size();i++) {
@@ -142,7 +142,7 @@ public class LNReaderApplication extends Application {
 		}
 		return name;
 	}
-	
+
 	public boolean checkIfDownloadExists(String name) {
 		synchronized (lock) {
 			boolean exists = false;
@@ -154,13 +154,13 @@ public class LNReaderApplication extends Application {
 			return exists;
 		}
 	}
-	
+
 	public ArrayList<DownloadModel> getDownloadList() {
 		return downloadList;
 	}
-	
+
 //	public void updateDownload(String id, Integer progress){
-//		
+//
 //		for (int i=0;i<downloadList.size();i++) {
 //			if (downloadList.get(i).getDownloadId() == id) {
 //				downloadList.get(i).setDownloadProgress(progress);
@@ -169,15 +169,15 @@ public class LNReaderApplication extends Application {
 //		if (DownloadListActivity.getInstance() != null)
 //			DownloadListActivity.getInstance().updateContent();
 //	}
-	
-	
+
+
 	public void updateDownload(String id, Integer progress, String message){
-		
+
 		/*
 		 * Although this may seem an attempt at a fake incremental download bar
 		 * its actually a progressbar smoother.
 		 */
-		
+
 		int index = 0;
 		Integer oldProgress;
 		final Integer Increment;
@@ -191,14 +191,14 @@ public class LNReaderApplication extends Application {
 		}
 		final int idx = index;
 
-		// Download status message 
+		// Download status message
 		if (downloadList.get(idx) != null) {
 			downloadList.get(idx).setDownloadMessage(message);
 		}
 		if (DownloadListActivity.getInstance() != null) {
 			DownloadListActivity.getInstance().updateContent();
 		}
-		
+
 		oldProgress = downloadList.get(index).getDownloadProgress();
 		tempIncrease = (progress-oldProgress);
 		if (tempIncrease < smoothTime/tickTime) {
@@ -207,9 +207,10 @@ public class LNReaderApplication extends Application {
 		}
 		else
 			tempIncrease/=(smoothTime/tickTime);
-		
+
 		Increment = tempIncrease;
 		new CountDownTimer(smoothTime, tickTime) {
+			@Override
 			public void onTick(long millisUntilFinished) {
 				if(downloadList.size() > idx) {
 					DownloadModel temp = downloadList.get(idx);
@@ -222,15 +223,16 @@ public class LNReaderApplication extends Application {
 				}
 			}
 
+			@Override
 			public void onFinish() {
 			}
 		}.start();
 	}
-	
+
 	/*
 	 * UpdateService method
 	 */
-	private ServiceConnection mConnection = new ServiceConnection() {
+	private final ServiceConnection mConnection = new ServiceConnection() {
 
 	    public void onServiceConnected(ComponentName className, IBinder binder) {
 	    	service = ((UpdateService.MyBinder) binder).getService();
@@ -243,18 +245,18 @@ public class LNReaderApplication extends Application {
 			Log.d(UpdateService.TAG, "onServiceDisconnected");
 	   	}
 	};
-	
+
 	private void doBindService() {
 	    bindService(new Intent(this, UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
 		Log.d(UpdateService.TAG, "doBindService");
 	}
-	
+
 	public void setUpdateServiceListener(ICallbackNotifier notifier){
 		if(service != null){
 			service.notifier = notifier;
 		}
 	}
-	
+
 	public void runUpdateService(boolean force, ICallbackNotifier notifier) {
 		if(service == null){
 			doBindService();
@@ -266,14 +268,14 @@ public class LNReaderApplication extends Application {
 			service.notifier = notifier;
 			service.onStartCommand(null, BIND_AUTO_CREATE, (int)(new Date().getTime()/1000));
 	}
-	
+
 	@Override
 	public void onLowMemory () {
-		
+
 		/*
 		 * java.lang.IllegalArgumentException
 		 * in android.app.LoadedApk.forgetServiceDispatcher
-		 * 
+		 *
 		 * probable crash: service is not checked if it exists after onLowMemory.
 		 * Technically fixed. needs checking.
 		 */
@@ -281,9 +283,9 @@ public class LNReaderApplication extends Application {
 			Log.w(TAG, "Low Memory, unbind service...");
 			unbindService(mConnection);
 		}
-		super.onLowMemory();		
+		super.onLowMemory();
 	}
-	
+
 	/*
 	 * CSS caching method.
 	 * Also used for caching javascript.
@@ -312,10 +314,16 @@ public class LNReaderApplication extends Application {
 		}
 		return cssCache.get(styleId);
 	}
-	
+
 	public void resetFirstRun() {
 		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
 	    edit.remove(Constants.PREF_FIRST_RUN);
 	    edit.commit();
+	}
+
+	public void restartApplication() {
+		Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage( getBaseContext().getPackageName() );
+		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(i);
 	}
 }

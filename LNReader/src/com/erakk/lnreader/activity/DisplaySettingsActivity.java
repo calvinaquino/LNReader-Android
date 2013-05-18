@@ -37,7 +37,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	private static final String TAG = DisplaySettingsActivity.class.toString();
 	private boolean isInverted;
 	private ProgressDialog dialog = null;
-	
+
 	Context context;
 
 	/**************************************************************
@@ -91,25 +91,26 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
                 return true;
             }
         });
-        
+
         /* A section to change Application Language
-         * 
+         *
          *  @freedomofkeima
          */
         final Preference changeLanguages = findPreference(Constants.PREF_LANGUAGE);
         final String[] languageSelectionArray = getResources().getStringArray(R.array.languageSelection);
         int languageSelectionValue = UIHelper.GetIntFromPreferences(Constants.PREF_LANGUAGE, 0);
         changeLanguages.setSummary(String.format(getResources().getString(R.string.selected_language), languageSelectionArray[languageSelectionValue]));
- 
+
         changeLanguages.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int languageSelectionValue = Util.tryParseInt(newValue.toString(), 0);
 				UIHelper.setLanguage(context, languageSelectionValue);
-		        recreateUI();
+		        //recreateUI();
+				LNReaderApplication.getInstance().restartApplication();
 		        return true;
 			}
 		});
-        
+
         /* End of language section */
 
         Preference clearDatabase = findPreference("clear_database");
@@ -414,7 +415,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	private boolean getColorPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {

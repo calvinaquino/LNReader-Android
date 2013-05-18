@@ -17,6 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;
@@ -27,6 +28,8 @@ import android.widget.ImageView;
  */
 public class UIHelper {
 
+	private static final String TAG = UIHelper.class.toString();
+
 	private static void CheckScreenRotation(Activity activity)
 	{
 		if(PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_LOCK_HORIZONTAL, false)) {
@@ -36,7 +39,7 @@ public class UIHelper {
     		activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     	}
 	}
-	
+
 	/**
 	 * Set action bar behaviour, only for API Level 11 and up.
 	 * @param activity target activity
@@ -51,7 +54,7 @@ public class UIHelper {
 		CheckScreenRotation(activity);
 		CheckKeepAwake(activity);
 	}
-	
+
 	/**
 	 * Recreate the activity
 	 * @param activity target activity
@@ -67,14 +70,14 @@ public class UIHelper {
 		CheckScreenRotation(activity);
 		CheckKeepAwake(activity);
 	}
-	
+
 	/**
 	 * Set up the application theme based on Preferences:Constants.PREF_INVERT_COLOR
 	 * @param activity target activity
 	 * @param layoutId layout to use
 	 */
 	public static void SetTheme(Activity activity, Integer layoutId) {
-    	if(PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, true)) {    		
+    	if(PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
     		activity.setTheme(R.style.AppTheme2);
     	}
     	else {
@@ -82,18 +85,18 @@ public class UIHelper {
     	}
     	if(layoutId != null) {
     		activity.setContentView(layoutId);
-    	}    	
+    	}
 	}
-	
+
 	public static boolean CheckKeepAwake(Activity activity) {
 		boolean keep = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_KEEP_AWAKE, false);
 		if (keep) {
 			activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		}
 		return keep;
-		
+
 	}
-	
+
 	/**
 	 * Check whether the screen width is less than 600dp
 	 * @param activity target activity
@@ -109,7 +112,7 @@ public class UIHelper {
 		}
 		return false;
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public static int getScreenHeight(Activity activity) {
 		DisplayMetrics metrics = new DisplayMetrics();
@@ -117,7 +120,7 @@ public class UIHelper {
 		Display display = activity.getWindowManager().getDefaultDisplay();
 		return display.getWidth();
 	}
-	
+
 	@SuppressLint("NewApi")
 	public static void ToggleFullscreen(Activity activity, boolean fullscreen) {
 		if(fullscreen) {
@@ -128,7 +131,7 @@ public class UIHelper {
 			else {
 				activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			}
-			
+
 			//activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 			//						  WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -139,7 +142,7 @@ public class UIHelper {
 			activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 	    }
 	}
-	
+
 	@SuppressLint("NewApi")
 	public static void ToggleActionBar(Activity activity, boolean show) {
 		if(!show) {
@@ -152,12 +155,12 @@ public class UIHelper {
 			}
 		}
 	}
-	
+
 	/**
 	 * Toggle the Preferences:Constants.PREF_INVERT_COLOR
 	 * @param activity target activity
 	 */
-	public static void ToggleColorPref(Activity activity) { 
+	public static void ToggleColorPref(Activity activity) {
     	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(activity);
     	SharedPreferences.Editor editor = sharedPrefs.edit();
     	if (sharedPrefs.getBoolean(Constants.PREF_INVERT_COLOR, true)) {
@@ -168,7 +171,7 @@ public class UIHelper {
     	}
     	editor.commit();
     }
-	
+
 	public static int GetIntFromPreferences(String key, int defaultValue) {
 		String value = PreferenceManager.getDefaultSharedPreferences(
 				LNReaderApplication.getInstance().getApplicationContext())
@@ -179,7 +182,7 @@ public class UIHelper {
 			return defaultValue;
 		}
 	}
-	
+
 	/**
 	 * Create Yes/No Alert Dialog
 	 * @param context
@@ -189,14 +192,14 @@ public class UIHelper {
 	 * @return
 	 */
 	public static AlertDialog createYesNoDialog(Context context, String message, String caption, DialogInterface.OnClickListener listener) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(context);		
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
 		builder.setMessage(message);
 		builder.setTitle(caption);
 		builder.setPositiveButton("Yes", listener);
 		builder.setNegativeButton("No", listener);
 		return builder.create();
 	}
-	
+
 	/**
 	 * Change the color of image in ImageView, works nicely with single coloured images.
 	 * @param targetIv
@@ -210,26 +213,27 @@ public class UIHelper {
 		}
 		return targetIv;
 	}
-	
+
 	public static Drawable setColorFilter(Drawable targetIv) {
 		if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
 			targetIv.setColorFilter(Constants.COLOR_UNREAD, Mode.SRC_ATOP);
 		}
 		else {
 			targetIv.setColorFilter(Constants.COLOR_UNREAD_DARK, Mode.SRC_ATOP);
-		}		
+		}
 		return targetIv;
 	}
-	
+
 	public static void setLanguage(Context activity, int langIdx) {
 		String lang = "en";
-		
+
 		/* Add system locale / your values folder name here */
 		if      (langIdx == 0) lang = "en";
 		else if (langIdx == 1) lang = "in";
-		
+
 		/* Changing configuration to user's choice */
 		Locale myLocale = new Locale(lang);
+		Log.d(TAG, "Locale: " + lang);
 		Resources res = activity.getResources();
 		DisplayMetrics dm = res.getDisplayMetrics();
         Configuration conf = res.getConfiguration();
@@ -237,7 +241,7 @@ public class UIHelper {
         /* update resources */
         res.updateConfiguration(conf, dm);
 	}
-	
+
 	public static void setLanguage(Context activity) {
 		/* Set starting language */
 		int langIdx = GetIntFromPreferences(Constants.PREF_LANGUAGE, 0);

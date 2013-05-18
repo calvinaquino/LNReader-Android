@@ -28,6 +28,8 @@ public class MainActivity extends SherlockActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		UIHelper.setLanguage(this);
+
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			UIHelper.SetTheme(this, R.layout.activity_main);
 		else {
@@ -36,11 +38,9 @@ public class MainActivity extends SherlockActivity {
 		UIHelper.SetActionBarDisplayHomeAsUp(this, false);
 		isInverted = getColorPreferences();
 		setIconColor();
-		UIHelper.setLanguage(this);
 
 		if (isFirstRun()) {
 			// Show copyrights
-
 			new AlertDialog.Builder(this).setTitle(getResources().getString(R.string.terms_of_use)).setMessage(getResources().getString(R.string.bakatsuki_message) + getString(R.string.bakatsuki_copyrights) + "\n\nBy clicking \"I Agree\" below, you confirm that you have read the TLG Translation Common Agreement in it's entirety.").setPositiveButton(getResources().getString(R.string.agree), new OnClickListener() {
 
 				public void onClick(DialogInterface dialog, int which) {
