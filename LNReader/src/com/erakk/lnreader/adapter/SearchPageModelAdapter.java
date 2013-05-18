@@ -17,6 +17,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.PageModel;
 
 public class SearchPageModelAdapter extends PageModelAdapter {
@@ -71,12 +72,12 @@ public class SearchPageModelAdapter extends PageModelAdapter {
 		
 		holder.txtLastUpdate = (TextView)row.findViewById(R.id.novel_last_update);
 		if(holder.txtLastUpdate != null) {
-			holder.txtLastUpdate.setText("Last Update: " + page.getLastUpdate().toString());
+			holder.txtLastUpdate.setText(context.getResources().getString(R.string.last_update) + ": " + Util.formatDateForDisplay(page.getLastUpdate()));
 		}
 		
 		holder.txtLastCheck = (TextView)row.findViewById(R.id.novel_last_check);
 		if(holder.txtLastCheck != null) {
-			holder.txtLastCheck.setText("Last Check: " + page.getLastCheck().toString());
+			holder.txtLastCheck.setText(context.getResources().getString(R.string.last_check) + ": " + Util.formatDateForDisplay(page.getLastCheck()));
 		}
 		
 		holder.chkIsWatched = (CheckBox)row.findViewById(R.id.novel_is_watched);

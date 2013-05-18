@@ -105,12 +105,12 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		
 		holder.txtLastUpdate = (TextView)row.findViewById(R.id.novel_last_update);
 		if(holder.txtLastUpdate != null) {
-			holder.txtLastUpdate.setText("Last Update: " + Util.formatDateForDisplay(page.getLastUpdate()));
+			holder.txtLastUpdate.setText(context.getResources().getString(R.string.last_update) + ": " + Util.formatDateForDisplay(page.getLastUpdate()));
 		}
 		
 		holder.txtLastCheck = (TextView)row.findViewById(R.id.novel_last_check);
 		if(holder.txtLastCheck != null) {
-			holder.txtLastCheck.setText("Last Check: " + Util.formatDateForDisplay(page.getLastCheck()));
+			holder.txtLastCheck.setText(context.getResources().getString(R.string.last_check) + ": " + Util.formatDateForDisplay(page.getLastCheck()));
 		}
 		
 		holder.chkIsWatched = (CheckBox)row.findViewById(R.id.novel_is_watched);
