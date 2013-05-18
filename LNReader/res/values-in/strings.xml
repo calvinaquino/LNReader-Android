@@ -183,10 +183,7 @@
     <string name="css_layout_not_exist">Tampilan CSS tidak ditemukan. Menggunakan preferensi bawaan.</string>
     <string name="clear_this_volume">Hapus jilid ini</string>
     <string name="mark_volume_read">Tandai jilid telah dibaca</string>
-    <string name="clear_this_chapter">Hapus bab ini</string>
-    <string name="load_chapter">:Buka Bab:</string>
-    <string name="download_chapter">:Unduh Bab:</string>
-    <string name="download_all_chapter">:Unduh Semua Bab:</string>
+    <string name="clear_this_chapter">Hapus bab ini</string>  
     <string name="download_on_queue">Unduhan sudah dalam antrian.</string>
     <string name="downloading">Mengunduh </string>
     <string name="teaser_project">Proyek Teaser</string>

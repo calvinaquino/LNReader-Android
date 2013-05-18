@@ -92,4 +92,9 @@ public class Constants {
 	
 	public static final String ROOT_NOVEL = "Main_Page";
 	
+	/* Section of Task Key */
+	public static final String KEY_LOAD_CHAPTER = ":LoadChapter:";
+	public static final String KEY_DOWNLOAD_CHAPTER = ":DownloadChapters:";
+	public static final String KEY_DOWNLOAD_ALL_CHAPTER = ":DownloadChaptersAll:";
+	
 }

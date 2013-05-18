@@ -331,7 +331,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel, boolean willRefresh) {
 		task = new LoadNovelDetailsTask(willRefresh, this);
-		String key = TAG + getResources().getString(R.string.load_chapter) + pageModel.getPage();
+		String key = TAG + Constants.KEY_LOAD_CHAPTER + pageModel.getPage();
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		
 		if(isAdded) {
@@ -355,9 +355,9 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 	private void executeDownloadTask(ArrayList<PageModel> chapters, boolean isAll) {
 		if(page != null) {
 			downloadTask = new DownloadNovelContentTask((PageModel[]) chapters.toArray(new PageModel[chapters.size()]), this);
-			String key = TAG + getResources().getString(R.string.download_chapter) + page.getPage();
+			String key = TAG + Constants.KEY_DOWNLOAD_CHAPTER + page.getPage();
 			if(isAll) {
-				key = TAG + getResources().getString(R.string.download_all_chapter) + page.getPage();
+				key = TAG + Constants.KEY_DOWNLOAD_ALL_CHAPTER + page.getPage();
 			}
 			boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 			

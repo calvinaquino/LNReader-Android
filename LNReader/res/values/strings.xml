@@ -183,10 +183,7 @@
     <string name="css_layout_not_exist">CSS Layout does not exists at the assigned path. Using default.</string>
     <string name="clear_this_volume">Clear this Volume</string>
     <string name="mark_volume_read">Mark Volume as Read</string>
-    <string name="clear_this_chapter">Clear this Chapter</string>
-    <string name="load_chapter">:LoadChapter:</string>
-    <string name="download_chapter">:DownloadChapters:</string>
-    <string name="download_all_chapter">:DownloadChaptersAll:</string>
+    <string name="clear_this_chapter">Clear this Chapter</string>    
     <string name="download_on_queue">Download already on queue.</string>
     <string name="downloading">Downloading </string>
     <string name="teaser_project">Teaser Project</string>
