@@ -34,12 +34,12 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
         super.onCreate(savedInstanceState);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
             UIHelper.SetTheme(this, R.layout.activity_display_novel_pager);
-            UIHelper.SetActionBarDisplayHomeAsUp(this, false);
+            UIHelper.SetActionBarDisplayHomeAsUp(this, true);
             setContentView(R.layout.activity_display_novel_pager);
         }
 		else{
             UIHelper.SetTheme(this, R.layout.activity_display_novel_pager_fix);
-            UIHelper.SetActionBarDisplayHomeAsUp(this, false);
+            UIHelper.SetActionBarDisplayHomeAsUp(this, true);
             setContentView(R.layout.activity_display_novel_pager_fix);
 		} 
         tabHost = (TabHost) findViewById(android.R.id.tabhost);

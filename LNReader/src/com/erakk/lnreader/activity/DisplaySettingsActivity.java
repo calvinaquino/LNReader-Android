@@ -105,7 +105,6 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int languageSelectionValue = Util.tryParseInt(newValue.toString(), 0);
 				UIHelper.setLanguage(context, languageSelectionValue);
-		        //recreateUI();
 				LNReaderApplication.getInstance().restartApplication();
 		        return true;
 			}

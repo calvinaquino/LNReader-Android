@@ -199,4 +199,6 @@
     <string name="disagree">Keluar App</string>
     <string name="watched_light_novels">Light Novel Favorit</string>
     <string name="add_novel_main">Tambahkan Novel (Utama)</string>
+    <string name="last_update">Pembaharuan Terakhir</string>
+    <string name="last_check">Pengecekan Terakhir</string>
 </resources>
