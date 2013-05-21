@@ -24,6 +24,7 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
     private static final String MAIN_SPEC = "Main";
     private static final String TEASER_SPEC = "Teaser";
     private static final String ORIGINAL_SPEC = "Original";
+    private static final String BAHASA_SPEC = "Bahasa Indonesia";
     static TabHost tabHost;
 	private boolean isInverted;
 	LocalActivityManager lam;
@@ -66,11 +67,18 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
         thirdSpec.setIndicator(ORIGINAL_SPEC);
         Intent thirdIntent = new Intent(this, DisplayOriginalListActivity.class);
         thirdSpec.setContent(thirdIntent);
+        
+        // Fourth Tab - Alternative Language (Bahasa Indonesia Section Test)
+        TabSpec fourthSpec = tabHost.newTabSpec(BAHASA_SPEC);
+        fourthSpec.setIndicator(BAHASA_SPEC);
+        Intent fourthIntent = new Intent(this, DisplayBahasaNovelListActivity.class);
+        fourthSpec.setContent(fourthIntent);
  
         // Adding all TabSpec to TabHost
         tabHost.addTab(firstSpec); // Adding First tab
         tabHost.addTab(secondSpec); // Adding Second tab
-        tabHost.addTab(thirdSpec);
+        tabHost.addTab(thirdSpec); // Adding third tab
+        tabHost.addTab(fourthSpec); // Adding fourth tab
         setTabColor();
         
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
@@ -84,6 +92,7 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
         tabHost.setCurrentTabByTag(TEASER_SPEC);
         tabHost.setCurrentTabByTag(ORIGINAL_SPEC);
         tabHost.setCurrentTabByTag(MAIN_SPEC);
+        tabHost.setCurrentTabByTag(BAHASA_SPEC);
     }
     
     @Override

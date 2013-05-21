@@ -83,6 +83,7 @@ public class Constants {
 	public static final String STATUS_ABANDONED = "abandoned";
 	public static final String STATUS_PENDING = "pending";
 	public static final String STATUS_ORIGINAL = "original";
+	public static final String STATUS_BAHASA_INDONESIA ="indonesian";
 
 	public static final int COLOR_READ = Color.parseColor("#888888");
 	public static final int COLOR_UNREAD = Color.parseColor("#dddddd");
