@@ -68,10 +68,11 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
         Intent thirdIntent = new Intent(this, DisplayOriginalListActivity.class);
         thirdSpec.setContent(thirdIntent);
         
-        // Fourth Tab - Alternative Language (Bahasa Indonesia Section Test)
+        // Fourth Tab - Alternative Language (Section Test)
         TabSpec fourthSpec = tabHost.newTabSpec(BAHASA_SPEC);
         fourthSpec.setIndicator(BAHASA_SPEC);
-        Intent fourthIntent = new Intent(this, DisplayBahasaNovelListActivity.class);
+        Intent fourthIntent = new Intent(this, DisplayAlternativeNovelListActivity.class);
+        fourthIntent.putExtra("LANG", Constants.LANG_BAHASA_INDONESIA);
         fourthSpec.setContent(fourthIntent);
  
         // Adding all TabSpec to TabHost

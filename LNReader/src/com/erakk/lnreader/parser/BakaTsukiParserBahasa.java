@@ -142,6 +142,7 @@ public class BakaTsukiParserBahasa {
 				String tempPage = link.attr("href").replace("/project/index.php?title=","")
                         .replace(Constants.BASE_URL, "");
 				page.setPage(tempPage);
+				page.setLanguage(Constants.LANG_BAHASA_INDONESIA);
 				page.setType(PageModel.TYPE_NOVEL);
 				page.setTitle(link.text());
 				page.setStatus(Constants.STATUS_BAHASA_INDONESIA);
@@ -442,6 +443,7 @@ public class BakaTsukiParserBahasa {
 		p.setType(PageModel.TYPE_CONTENT);
 		p.setOrder(chapterOrder);
 		p.setLastUpdate(new Date(0));
+		p.setLanguage(Constants.LANG_BAHASA_INDONESIA);
 
 		//External link
 		if(link.className().contains("external text")) {

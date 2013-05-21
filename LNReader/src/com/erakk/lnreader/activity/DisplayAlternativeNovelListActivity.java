@@ -41,7 +41,7 @@ import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.task.AddNovelTask;
 import com.erakk.lnreader.task.DownloadNovelDetailsTask;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
-import com.erakk.lnreader.task.LoadBahasaTask;
+import com.erakk.lnreader.task.LoadAlternativeTask;
 
 /*
  * Author of Original File: Nandaka
@@ -49,14 +49,15 @@ import com.erakk.lnreader.task.LoadBahasaTask;
  * 
  */
 
-public class DisplayBahasaNovelListActivity extends SherlockListActivity implements IAsyncTaskOwner, INovelListHelper{
-	private static final String TAG = DisplayBahasaNovelListActivity.class.toString();
+public class DisplayAlternativeNovelListActivity extends SherlockListActivity implements IAsyncTaskOwner, INovelListHelper{
+	private static final String TAG = DisplayAlternativeNovelListActivity.class.toString();
 	private ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	private PageModelAdapter adapter;
-	private LoadBahasaTask task = null;
+	private LoadAlternativeTask task = null;
 	private DownloadNovelDetailsTask downloadTask = null;
 	private AddNovelTask addTask = null;
 	private boolean isInverted;
+	private String language = null;
 	String touchedForDownload;
 	
 	private TextView loadingText;
@@ -71,10 +72,14 @@ public class DisplayBahasaNovelListActivity extends SherlockListActivity impleme
 		loadingText = (TextView)findViewById(R.id.emptyList);
 		loadingBar = (ProgressBar)findViewById(R.id.empttListProgress);
 		
+		/* Get Extra */
+		Intent intent = getIntent();
+		language = intent.getStringExtra("LANG");
+		
 		registerForContextMenu(getListView());
 		updateContent(false);
 		
-		setTitle("Light Novels: Bahasa Indonesia");
+		setTitle("Light Novels: " + language);
 		isInverted = getColorPreferences();
 	}
 
@@ -91,7 +96,7 @@ public class DisplayBahasaNovelListActivity extends SherlockListActivity impleme
 		intent.putExtra(Constants.EXTRA_TITLE, o.getTitle());
 		intent.putExtra(Constants.EXTRA_ONLY_WATCHED, getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false));
 		startActivity(intent);
-		Log.d("DisplayLightNovelsActivity", o.getPage() + " (" + o.getTitle() + ")");
+		Log.d("DisplayAlternativeNovelListActivity", o.getPage() + " (" + o.getTitle() + ")");
 	}
 
 	@Override
@@ -152,13 +157,13 @@ public class DisplayBahasaNovelListActivity extends SherlockListActivity impleme
 	}
 	
 	public void downloadAllNovelInfo() {
-		touchedForDownload = "Bahasa Indonesia Light Novels information";
+		if (language.equals(Constants.LANG_BAHASA_INDONESIA)) touchedForDownload = "Bahasa Indonesia Light Novels information";
 		executeDownloadTask(listItems);
 	}
 	
 	public void manualAdd() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		alert.setTitle("Add Novel (Bahasa Indonesia)");
+		if (language.equals(Constants.LANG_BAHASA_INDONESIA)) alert.setTitle("Add Novel (Bahasa Indonesia)");
 		//alert.setMessage("Message");
 		LayoutInflater factory = LayoutInflater.from(this);
 		View inputView = factory.inflate(R.layout.layout_add_new_novel, null);
@@ -184,8 +189,10 @@ public class DisplayBahasaNovelListActivity extends SherlockListActivity impleme
 			temp.setPage(novel);
 			temp.setTitle(title);
 			temp.setType(PageModel.TYPE_NOVEL);
-			temp.setParent("Category:Indonesian");
-			temp.setStatus(Constants.STATUS_BAHASA_INDONESIA);
+			if (language.equals(Constants.LANG_BAHASA_INDONESIA)){
+				temp.setParent("Category:Indonesian");
+				temp.setStatus(Constants.STATUS_BAHASA_INDONESIA);	
+			}
 			executeAddTask(temp);
 		}
 		else {
@@ -255,8 +262,9 @@ public class DisplayBahasaNovelListActivity extends SherlockListActivity impleme
 	
 	@SuppressLint("NewApi")
 	private void executeTask(boolean isRefresh, boolean alphOrder) {
-		task = new LoadBahasaTask(this, isRefresh, alphOrder);
-		String key = TAG + ":Category:Indonesian";
+		task = new LoadAlternativeTask(this, isRefresh, alphOrder, language);
+		String key = null;
+		if (language.equals(Constants.LANG_BAHASA_INDONESIA)) key = TAG + ":Category:Indonesian";
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if(isAdded) {
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -266,7 +274,7 @@ public class DisplayBahasaNovelListActivity extends SherlockListActivity impleme
 		}
 		else {
 			Log.i(TAG, "Continue execute task: " + key);
-			LoadBahasaTask tempTask = (LoadBahasaTask) LNReaderApplication.getInstance().getTask(key);
+			LoadAlternativeTask tempTask = (LoadAlternativeTask) LNReaderApplication.getInstance().getTask(key);
 			if(tempTask != null) {
 				task = tempTask;
 				task.owner = this;
@@ -278,9 +286,9 @@ public class DisplayBahasaNovelListActivity extends SherlockListActivity impleme
 	@SuppressLint("NewApi")
 	private void executeDownloadTask(ArrayList<PageModel> novels) {
 		downloadTask = new DownloadNovelDetailsTask(this);
-		String key = DisplayBahasaNovelListActivity.TAG + ":" + novels.get(0).getPage();
+		String key = DisplayAlternativeNovelListActivity.TAG + ":" + novels.get(0).getPage();
 		if(novels.size() > 1) {
-			key = DisplayBahasaNovelListActivity.TAG + ":All_Indonesian";
+			if (language.equals(Constants.LANG_BAHASA_INDONESIA)) key = DisplayAlternativeNovelListActivity.TAG + ":All_Indonesian";
 		}
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if(isAdded) {
@@ -323,14 +331,6 @@ public class DisplayBahasaNovelListActivity extends SherlockListActivity impleme
 	}
 	
 	public void toggleProgressBar(boolean show) {
-//		if(show) {
-//			dialog = ProgressDialog.show(this, "Bahasa Indonesia List", "Loading. Please wait...", true);
-//			dialog.getWindow().setGravity(Gravity.CENTER);
-//			dialog.setCanceledOnTouchOutside(true);
-//		}
-//		else {
-//			dialog.dismiss();
-//		}
 		if(show) {
 			loadingText.setText("Loading List, please wait...");
 			loadingText.setVisibility(TextView.VISIBLE);

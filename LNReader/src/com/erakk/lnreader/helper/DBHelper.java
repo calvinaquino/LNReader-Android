@@ -32,6 +32,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String TABLE_PAGE = "pages";
 	public static final String COLUMN_ID = "_id";
 	public static final String COLUMN_PAGE = "page";
+	public static final String COLUMN_LANGUAGE = "language";
 	public static final String COLUMN_LAST_UPDATE = "last_update";
 	public static final String COLUMN_LAST_CHECK = "last_check";
 	public static final String COLUMN_TITLE = "title";
@@ -79,18 +80,19 @@ public class DBHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_CREATE_PAGES = "create table if not exists "
 	      + TABLE_PAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
 							 + COLUMN_PAGE + " text unique not null, "				// 1
-			  				 + COLUMN_TITLE + " text not null, "					// 2
-			  				 + COLUMN_TYPE + " text, "								// 3
-			  				 + COLUMN_PARENT + " text, "							// 4
-			  				 + COLUMN_LAST_UPDATE + " integer, "					// 5
-			  				 + COLUMN_LAST_CHECK + " integer, "						// 6
-			  				 + COLUMN_IS_WATCHED + " boolean, "						// 7
-			  				 + COLUMN_IS_FINISHED_READ + " boolean, "				// 8
-			  				 + COLUMN_IS_DOWNLOADED + " boolean, "					// 9
-			  				 + COLUMN_ORDER + " integer, "							// 10
-			  				 + COLUMN_STATUS + " text, "							// 11
-			  				 + COLUMN_IS_MISSING + " boolean, "						// 11
-			  				 + COLUMN_IS_EXTERNAL + " boolean);";					// 13
+							 + COLUMN_LANGUAGE + " text not null, "                 // 2
+			  				 + COLUMN_TITLE + " text not null, "					// 3
+			  				 + COLUMN_TYPE + " text, "								// 4
+			  				 + COLUMN_PARENT + " text, "							// 5
+			  				 + COLUMN_LAST_UPDATE + " integer, "					// 6
+			  				 + COLUMN_LAST_CHECK + " integer, "						// 7
+			  				 + COLUMN_IS_WATCHED + " boolean, "						// 8
+			  				 + COLUMN_IS_FINISHED_READ + " boolean, "				// 9
+			  				 + COLUMN_IS_DOWNLOADED + " boolean, "					// 10
+			  				 + COLUMN_ORDER + " integer, "							// 11
+			  				 + COLUMN_STATUS + " text, "							// 12
+			  				 + COLUMN_IS_MISSING + " boolean, "						// 13
+			  				 + COLUMN_IS_EXTERNAL + " boolean);";					// 14
 
 	private static final String DATABASE_CREATE_IMAGES = "create table if not exists "
 		      + TABLE_IMAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
@@ -280,10 +282,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		return page;
 	}
 	
-	public PageModel getBahasaPage(SQLiteDatabase db) {
-		PageModel page = getPageModel(db, "Category:Indonesian");
+	public PageModel getAlternativePage(SQLiteDatabase db, String language) {
+		/* Return PageModel depends on language */
+		PageModel page = null;
+		if (language.equals(Constants.LANG_BAHASA_INDONESIA)) page = getPageModel(db, "Category:Indonesian");
 		return page;
-	}
+	} 
 
 	public ArrayList<PageModel> insertAllNovel(SQLiteDatabase db, ArrayList<PageModel> list) {
 		ArrayList<PageModel> updatedList = new ArrayList<PageModel>();
@@ -378,8 +382,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		String sql = null;
 		if(isNovelOnly) {
-			sql = "select * from " + TABLE_PAGE
-					+ " WHERE " + COLUMN_TYPE + " = '" + PageModel.TYPE_NOVEL + "' and ("
+			sql = "select * from " + TABLE_PAGE + " WHERE " 
+		            + COLUMN_TYPE + " = '" + PageModel.TYPE_NOVEL + "' AND "
+		            + COLUMN_LANGUAGE + " = 'English' AND ("
 					+ COLUMN_PAGE + " LIKE ? OR " + COLUMN_TITLE + " LIKE ? )"
 					+ " ORDER BY "
 					+ COLUMN_PARENT + ", "
@@ -389,8 +394,9 @@ public class DBHelper extends SQLiteOpenHelper {
 			Log.d(TAG, "Novel Only");
 		}
 		else {
-			sql = "select * from " + TABLE_PAGE + " where "
-					+ COLUMN_PAGE + " LIKE ? OR " + COLUMN_TITLE + " LIKE ? "
+			sql = "select * from " + TABLE_PAGE + " WHERE "
+		            + COLUMN_LANGUAGE + " = 'English' AND ("
+					+ COLUMN_PAGE + " LIKE ? OR " + COLUMN_TITLE + " LIKE ? )"
 					+ " ORDER BY CASE " + COLUMN_TYPE
 					+ "   WHEN '" + PageModel.TYPE_NOVEL   + "' THEN 1 "
 					+ "   WHEN '" + PageModel.TYPE_CONTENT + "' THEN 2 "
@@ -553,7 +559,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		return pages;
 	}
 
-	public ArrayList<PageModel> getAllBahasa(SQLiteDatabase db, boolean alphOrder) {
+	public ArrayList<PageModel> getAllAlternative(SQLiteDatabase db, boolean alphOrder, String language) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
 
 		String sql = "select * from " + TABLE_PAGE +
@@ -568,8 +574,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 " where " + COLUMN_PARENT + " = ? ";
 		if(alphOrder) sql += " ORDER BY " + COLUMN_TITLE;
 		else          sql += " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE;
-
-		Cursor cursor = rawQuery(db, sql, new String[] {"Category:Indonesian"});
+        Cursor cursor = null;
+        if (language.equals(Constants.LANG_BAHASA_INDONESIA)) cursor = rawQuery(db, sql, new String[] {"Category:Indonesian"});
 		try {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
@@ -664,6 +670,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_PAGE, page.getPage());
+		cv.put(COLUMN_LANGUAGE, page.getLanguage());
 		cv.put(COLUMN_TITLE, page.getTitle());
 		cv.put(COLUMN_ORDER, page.getOrder());
 		cv.put(COLUMN_PARENT, page.getParent());
@@ -713,21 +720,22 @@ public class DBHelper extends SQLiteOpenHelper {
 		PageModel page = new PageModel();
 		page.setId(cursor.getInt(0));
 		page.setPage(cursor.getString(1));
-		page.setTitle(cursor.getString(2));
-		page.setType(cursor.getString(3));
-		page.setParent(cursor.getString(4));
-		page.setLastUpdate(new Date(cursor.getLong(5)*1000));
-		page.setLastCheck(new Date(cursor.getLong(6)*1000));
-		page.setWatched(cursor.getInt(7) == 1 ? true : false);
-		page.setFinishedRead(cursor.getInt(8) == 1 ? true : false);
-		page.setDownloaded(cursor.getInt(9) == 1 ? true : false);
-		page.setOrder(cursor.getInt(10));
-		page.setStatus(cursor.getString(11));
-		page.setMissing(cursor.getInt(12) == 1 ? true : false);
-		page.setExternal(cursor.getInt(13) == 1 ? true : false);
+		page.setLanguage(cursor.getString(2));
+		page.setTitle(cursor.getString(3));
+		page.setType(cursor.getString(4));
+		page.setParent(cursor.getString(5));
+		page.setLastUpdate(new Date(cursor.getLong(6)*1000));
+		page.setLastCheck(new Date(cursor.getLong(7)*1000));
+		page.setWatched(cursor.getInt(8) == 1 ? true : false);
+		page.setFinishedRead(cursor.getInt(9) == 1 ? true : false);
+		page.setDownloaded(cursor.getInt(10) == 1 ? true : false);
+		page.setOrder(cursor.getInt(11));
+		page.setStatus(cursor.getString(12));
+		page.setMissing(cursor.getInt(13) == 1 ? true : false);
+		page.setExternal(cursor.getInt(14) == 1 ? true : false);
 
-		if(cursor.getColumnCount() > 14) {
-		  page.setUpdateCount(cursor.getInt(15));
+		if(cursor.getColumnCount() > 15) {
+		  page.setUpdateCount(cursor.getInt(16));
 		}
 	    return page;
 	}
@@ -794,6 +802,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				PageModel page = iPage.next();
 				ContentValues cv3 = new ContentValues();
 				cv3.put(COLUMN_PAGE, page.getPage());
+				cv3.put(COLUMN_LANGUAGE, page.getLanguage());
 				cv3.put(COLUMN_TITLE, page.getTitle());
 				cv3.put(COLUMN_TYPE, page.getType());
 				cv3.put(COLUMN_PARENT, page.getParent());

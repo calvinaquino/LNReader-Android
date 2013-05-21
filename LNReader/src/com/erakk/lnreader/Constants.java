@@ -98,4 +98,8 @@ public class Constants {
 	public static final String KEY_DOWNLOAD_CHAPTER = ":DownloadChapters:";
 	public static final String KEY_DOWNLOAD_ALL_CHAPTER = ":DownloadChaptersAll:";
 	
+	/* Section of Language */
+	public static final String LANG_ENGLISH = "English";
+	public static final String LANG_BAHASA_INDONESIA = "Bahasa Indonesia";
+	
 }

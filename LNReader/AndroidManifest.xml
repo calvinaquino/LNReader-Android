@@ -67,7 +67,7 @@
                 android:value="com.erakk.lnreader.activity.MainActivity" />
         </activity>
         <activity
-            android:name="com.erakk.lnreader.activity.DisplayBahasaNovelListActivity"
+            android:name="com.erakk.lnreader.activity.DisplayAlternativeNovelListActivity"
             android:label="@string/title_activity_display_light_novels" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -12,16 +12,18 @@ import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.PageModel;
 
-public class LoadBahasaTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskResult<ArrayList<PageModel>>>  implements ICallbackNotifier {
-	private static final String TAG = LoadBahasaTask.class.toString();
+public class LoadAlternativeTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskResult<ArrayList<PageModel>>>  implements ICallbackNotifier {
+	private static final String TAG = LoadAlternativeTask.class.toString();
 	private boolean refreshOnly = false;
 	private boolean alphOrder = false;
+	private String language = null;
 	public volatile IAsyncTaskOwner owner;
 	
-	public LoadBahasaTask(IAsyncTaskOwner owner, boolean refreshOnly, boolean alphOrder) {
+	public LoadAlternativeTask(IAsyncTaskOwner owner, boolean refreshOnly, boolean alphOrder, String language) {
 		this.refreshOnly = refreshOnly;
 		this.alphOrder = alphOrder;
 		this.owner = owner;
+		this.language = language;
 	}
 	
 	public void onCallback(ICallbackEventData message) {
@@ -39,15 +41,15 @@ public class LoadBahasaTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
 		// different thread from UI
 		try {			
 			if(refreshOnly) {
-				publishProgress(new CallbackEventData("Refreshing Bahasa Indonesia List"));
-				return new AsyncTaskResult<ArrayList<PageModel>>(NovelsDao.getInstance().getBahasaFromInternet(this));
+				publishProgress(new CallbackEventData("Refreshing " + language + " List"));
+				return new AsyncTaskResult<ArrayList<PageModel>>(NovelsDao.getInstance().getAlternativeFromInternet(this, language));
 			}
 			else {
-				publishProgress(new CallbackEventData("Loading Bahasa Indonesia List"));
-				return new AsyncTaskResult<ArrayList<PageModel>>(NovelsDao.getInstance().getBahasa(this, alphOrder));
+				publishProgress(new CallbackEventData("Loading " + language + " List"));
+				return new AsyncTaskResult<ArrayList<PageModel>>(NovelsDao.getInstance().getAlternative(this, alphOrder, language));
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "Error when getting Bahasa Indonesia list: " + e.getMessage(), e);
+			Log.e(TAG, "Error when getting " + language + " list: " + e.getMessage(), e);
 			return new AsyncTaskResult<ArrayList<PageModel>>(e);
 		}
 	}
