@@ -279,6 +279,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		PageModel page = getPageModel(db, "Category:Original");
 		return page;
 	}
+	
+	public PageModel getBahasaPage(SQLiteDatabase db) {
+		PageModel page = getPageModel(db, "Category:Indonesian");
+		return page;
+	}
 
 	public ArrayList<PageModel> insertAllNovel(SQLiteDatabase db, ArrayList<PageModel> list) {
 		ArrayList<PageModel> updatedList = new ArrayList<PageModel>();
@@ -548,6 +553,36 @@ public class DBHelper extends SQLiteOpenHelper {
 		return pages;
 	}
 
+	public ArrayList<PageModel> getAllBahasa(SQLiteDatabase db, boolean alphOrder) {
+		ArrayList<PageModel> pages = new ArrayList<PageModel>();
+
+		String sql = "select * from " + TABLE_PAGE +
+                " left join ( select " + COLUMN_PAGE + ", sum(UPDATESCOUNT) from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE +
+			     "            , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
+			     "                   then 1 else 0 end as UPDATESCOUNT " +
+			     "       from " + TABLE_NOVEL_DETAILS +
+			     "       join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE +
+			     "       join " + TABLE_PAGE       + " on " + TABLE_PAGE + "." + COLUMN_PARENT        + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE +
+			     "       join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE +
+			     " ) group by " + COLUMN_PAGE + ") r on " + TABLE_PAGE + "." + COLUMN_PAGE + " = r." + COLUMN_PAGE +
+                " where " + COLUMN_PARENT + " = ? ";
+		if(alphOrder) sql += " ORDER BY " + COLUMN_TITLE;
+		else          sql += " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE;
+
+		Cursor cursor = rawQuery(db, sql, new String[] {"Category:Indonesian"});
+		try {
+			cursor.moveToFirst();
+			while (!cursor.isAfterLast()) {
+				PageModel page = cursorToPageModel(cursor);
+				pages.add(page);
+				cursor.moveToNext();
+			}
+		} finally{
+			if(cursor != null) cursor.close();
+		}
+		return pages;
+	}	
+	
 	public ArrayList<PageModel> getAllWatchedNovel(SQLiteDatabase db, boolean alphOrder) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
 
@@ -560,7 +595,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			     "       join " + TABLE_PAGE       + " on " + TABLE_PAGE + "." + COLUMN_PARENT        + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE +
 			     "       join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE +
 			     " ) group by " + COLUMN_PAGE + ") r on " + TABLE_PAGE + "." + COLUMN_PAGE + " = r." + COLUMN_PAGE +
-                " where " + COLUMN_PARENT + " in ('" + Constants.ROOT_NOVEL + "', 'Category:Teasers', 'Category:Original') and  " + TABLE_PAGE + "." + COLUMN_IS_WATCHED + " = ? ";
+                " where " + COLUMN_PARENT + " in ('" + Constants.ROOT_NOVEL + "', 'Category:Teasers', 'Category:Original', 'Category:Indonesian') and  " + TABLE_PAGE + "." + COLUMN_IS_WATCHED + " = ? ";
 		if(alphOrder) sql += " ORDER BY " + COLUMN_TITLE;
 		else          sql += " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE;
 

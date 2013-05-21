@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.erakk.lnreader"
     android:installLocation="auto"
-    android:versionCode="20130516"
+    android:versionCode="20130521"
     android:versionName="1.1.2" >
 
     <uses-sdk
@@ -61,6 +61,13 @@
         </activity>
         <activity
             android:name="com.erakk.lnreader.activity.DisplayOriginalListActivity"
+            android:label="@string/title_activity_display_light_novels" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.erakk.lnreader.activity.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.erakk.lnreader.activity.DisplayBahasaNovelListActivity"
             android:label="@string/title_activity_display_light_novels" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

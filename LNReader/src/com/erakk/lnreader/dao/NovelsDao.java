@@ -32,6 +32,7 @@ import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.model.UpdateInfoModel;
 import com.erakk.lnreader.parser.BakaTsukiParser;
+import com.erakk.lnreader.parser.BakaTsukiParserBahasa;
 
 /**
  * @author Nandaka
@@ -397,12 +398,111 @@ public class NovelsDao {
 			}
 		}
 
-		// save teaser list
+		// save original list
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			for (PageModel pageModel : list) {
 				pageModel = dbh.insertOrUpdatePageModel(db, pageModel, true);
 				Log.d(TAG, "Updated original: " + pageModel.getPage());
+			}
+		}
+
+		return list;
+	}
+	
+	//Bahasa Indonesia, copied from Original
+	public ArrayList<PageModel> getBahasa(ICallbackNotifier notifier, boolean alphOrder) throws Exception {
+		SQLiteDatabase db = null;
+		PageModel page = null;
+		ArrayList<PageModel> list = null;
+		// check if main page exist
+		synchronized (dbh) {
+			try{
+				db = dbh.getReadableDatabase();
+				page = dbh.getBahasaPage(db);
+			}finally{
+				db.close();
+			}
+		}
+
+		if(page == null) {
+			return getBahasaFromInternet(notifier);
+		} else {
+			// get from db
+			synchronized (dbh) {
+				try{
+					db = dbh.getReadableDatabase();
+					list = dbh.getAllBahasa(db, alphOrder);
+				}finally{
+					db.close();
+				}
+			}
+			Log.d(TAG, "Found: " + list.size());
+		}
+
+		return list;
+	}
+
+	public ArrayList<PageModel> getBahasaFromInternet(ICallbackNotifier notifier) throws Exception {
+		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
+		if (notifier != null) {
+			notifier.onCallback(new CallbackEventData("Downloading Bahasa Indonesia Novels list..."));
+		}
+
+		// parse Category:Teasers information
+		PageModel teaserPage = new PageModel();
+		teaserPage.setPage("Category:Indonesian");
+		teaserPage.setTitle("Bahasa Indonesia Novels");
+		teaserPage = getPageModel(teaserPage, notifier);
+		teaserPage.setType(PageModel.TYPE_OTHER);
+
+		// update page model
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			teaserPage = dbh.insertOrUpdatePageModel(db, teaserPage, true);
+			Log.d(TAG, "Updated Category:Indonesian");
+		}
+
+		// get teaser list
+		ArrayList<PageModel> list = null;
+		String url = Constants.BASE_URL + "/project/index.php?title=Category:Indonesian";
+		int retry = 0;
+		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
+			try{
+				Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
+				Document doc = response.parse();
+
+				list = BakaTsukiParserBahasa.ParseBahasaList(doc);
+				Log.d(TAG, "Found from internet: " + list.size() + " Bahasa Indonesia Novel");
+
+				if (notifier != null) {
+					notifier.onCallback(new CallbackEventData("Found: " + list.size() + " Bahasa Indonesia."));
+				}
+				break;
+			}catch(EOFException eof) {
+				++retry;
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData("Retrying: Category:Indonesian (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
+				}
+				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
+			}
+			catch(IOException eof) {
+				++retry;
+				String message = "Retrying: Category:Indonesian (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData(message));
+				}
+				Log.d(TAG, message, eof);
+				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
+			}
+		}
+
+		// save teaser list
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			for (PageModel pageModel : list) {
+				pageModel = dbh.insertOrUpdatePageModel(db, pageModel, true);
+				Log.d(TAG, "Updated Bahasa Indonesia novel: " + pageModel.getPage());
 			}
 		}
 
@@ -562,7 +662,9 @@ public class NovelsDao {
 				String fullUrl = Constants.BASE_URL + "/project/index.php?action=render&title=" + encodedTitle;
 				Response response = Jsoup.connect(fullUrl).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
-				novel = BakaTsukiParser.ParseNovelDetails(doc, page);
+				/* Add your section of alternative language here */
+				if (page.getParent().equals("Category:Indonesian")) novel = BakaTsukiParserBahasa.ParseNovelDetails(doc, page);
+				else novel = BakaTsukiParser.ParseNovelDetails(doc, page);
 			}catch(EOFException eof) {
 				++retry;
 				if(notifier != null) {
