@@ -6,10 +6,13 @@
     <string name="light_novels">Light Novel</string>
     <string name="watch_list">Daftar Favorit</string>
     <string name="originals">Daftar Original</string>
+    <string name="alternative_language">Bahasa Lain</string>
     <string name="settings">Preferensi</string>
     <string name="title_activity_display_light_novels">Light Novel</string>
     <string name="title_activity_display_settings">Preferensi</string>
     <string name="title_activity_light_novel_chapters">Bab-bab Light Novel</string>
+    <string name="title_activity_display_alternative_novels">Novel Bahasa Lain</string>
+    <string name="title_activity_display_alternative_novel_pager">Daftar Novel Bahasa Lain</string>
     <string name="novel_title">judul</string>
     <string name="novel_cover">sampul</string>
     <string name="novel_synopsys"></string>

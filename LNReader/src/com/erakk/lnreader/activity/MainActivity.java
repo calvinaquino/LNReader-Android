@@ -163,6 +163,13 @@ public class MainActivity extends SherlockActivity {
 			Toast.makeText(this, getResources().getString(R.string.no_last_novel), Toast.LENGTH_SHORT).show();
 		}
 	}
+	
+	/* Open An activity to select alternative language */
+	public void openAlternativeNovelList(View view){
+		Intent intent = new Intent(this, DisplayAlternativeNovelPagerActivity.class);
+		startActivity(intent);	
+	}
+	
 	private void setIconColor() {
 		LinearLayout rightMenu = (LinearLayout) findViewById(R.id.menu_right);
 		int childCount = rightMenu.getChildCount();

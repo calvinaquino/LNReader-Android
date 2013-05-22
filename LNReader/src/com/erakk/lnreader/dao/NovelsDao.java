@@ -32,6 +32,7 @@ import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.model.UpdateInfoModel;
 import com.erakk.lnreader.parser.BakaTsukiParser;
+import com.erakk.lnreader.parser.BakaTsukiParserBahasa;
 
 /**
  * @author Nandaka
@@ -133,6 +134,7 @@ public class NovelsDao {
 
 		PageModel mainPage = new PageModel();
 		mainPage.setPage("Main_Page");
+		mainPage.setLanguage(Constants.LANG_ENGLISH);
 		mainPage.setTitle("Main Novels");
 		mainPage = getPageModel(mainPage, notifier);
 		mainPage.setType(PageModel.TYPE_OTHER);
@@ -253,6 +255,7 @@ public class NovelsDao {
 		// parse Category:Teasers information
 		PageModel teaserPage = new PageModel();
 		teaserPage.setPage("Category:Teasers");
+		teaserPage.setLanguage(Constants.LANG_ENGLISH);
 		teaserPage.setTitle("Teasers");
 		teaserPage = getPageModel(teaserPage, notifier);
 		teaserPage.setType(PageModel.TYPE_OTHER);
@@ -352,6 +355,7 @@ public class NovelsDao {
 		// parse Category:Teasers information
 		PageModel teaserPage = new PageModel();
 		teaserPage.setPage("Category:Original");
+		teaserPage.setLanguage(Constants.LANG_ENGLISH);
 		teaserPage.setTitle("Original Novels");
 		teaserPage = getPageModel(teaserPage, notifier);
 		teaserPage.setType(PageModel.TYPE_OTHER);
@@ -397,12 +401,116 @@ public class NovelsDao {
 			}
 		}
 
-		// save teaser list
+		// save original list
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			for (PageModel pageModel : list) {
 				pageModel = dbh.insertOrUpdatePageModel(db, pageModel, true);
 				Log.d(TAG, "Updated original: " + pageModel.getPage());
+			}
+		}
+
+		return list;
+	}
+	
+	//Alternative Language, copied from Original
+	public ArrayList<PageModel> getAlternative(ICallbackNotifier notifier, boolean alphOrder, String language) throws Exception {
+		SQLiteDatabase db = null;
+		PageModel page = null;
+		ArrayList<PageModel> list = null;
+		// check if main page exist
+		synchronized (dbh) {
+			try{
+				db = dbh.getReadableDatabase();
+				page = dbh.getAlternativePage(db, Constants.LANG_BAHASA_INDONESIA);
+			}finally{
+				db.close();
+			}
+		}
+
+		if(page == null) {
+			return getAlternativeFromInternet(notifier, language);
+		} else {
+			// get from db
+			synchronized (dbh) {
+				try{
+					db = dbh.getReadableDatabase();
+					list = dbh.getAllAlternative(db, alphOrder, Constants.LANG_BAHASA_INDONESIA);
+				}finally{
+					db.close();
+				}
+			}
+			Log.d(TAG, "Found: " + list.size());
+		}
+
+		return list;
+	}
+
+	@SuppressWarnings("null")
+	public ArrayList<PageModel> getAlternativeFromInternet(ICallbackNotifier notifier, String language) throws Exception {
+		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
+		if (notifier != null) {
+			notifier.onCallback(new CallbackEventData("Downloading " + language + " Novels list..."));
+		}
+
+		// parse Category:Teasers information
+		PageModel teaserPage = new PageModel();
+		if (language.equals(Constants.LANG_BAHASA_INDONESIA)){
+			teaserPage.setPage("Category:Indonesian");
+			teaserPage.setTitle("Bahasa Indonesia Novels");	
+			teaserPage.setLanguage(Constants.LANG_BAHASA_INDONESIA);
+		}
+		teaserPage = getPageModel(teaserPage, notifier);
+		teaserPage.setType(PageModel.TYPE_NOVEL);
+
+		// update page model
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			teaserPage = dbh.insertOrUpdatePageModel(db, teaserPage, true);
+			Log.d(TAG, "Updated " + language);
+		}
+
+		// get alternative list
+		ArrayList<PageModel> list = null;
+		String url = null;
+		if (language.equals(Constants.LANG_BAHASA_INDONESIA)) url = Constants.BASE_URL + "/project/index.php?title=Category:Indonesian";
+		int retry = 0;
+		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
+			try{
+				Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
+				Document doc = response.parse();
+
+				if (language.equals(Constants.LANG_BAHASA_INDONESIA)) list = BakaTsukiParserBahasa.ParseBahasaList(doc);
+				Log.d(TAG, "Found from internet: " + list.size() + " " + language + " Novel");
+
+				if (notifier != null) {
+					notifier.onCallback(new CallbackEventData("Found: " + list.size() + " " + language + " ."));
+				}
+				break;
+			}catch(EOFException eof) {
+				++retry;
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData("Retrying: Category:Indonesian (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
+				}
+				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
+			}
+			catch(IOException eof) {
+				++retry;
+				String message = "Retrying: "+ language +" (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
+				if(notifier != null) {
+					notifier.onCallback(new CallbackEventData(message));
+				}
+				Log.d(TAG, message, eof);
+				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
+			}
+		}
+
+		// save teaser list
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			for (PageModel pageModel : list) {
+				pageModel = dbh.insertOrUpdatePageModel(db, pageModel, true);
+				Log.d(TAG, "Updated " + Constants.LANG_BAHASA_INDONESIA + " novel: " + pageModel.getPage());
 			}
 		}
 
@@ -478,7 +586,9 @@ public class NovelsDao {
 				String encodedTitle = Util.UrlEncode(page.getPage());
 				String fullUrl = "http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=" + encodedTitle;
 				Response response = Jsoup.connect(fullUrl).timeout(Constants.TIMEOUT).execute();
-				PageModel pageModel = BakaTsukiParser.parsePageAPI(page, response.parse(), fullUrl);
+				PageModel pageModel = null;
+				if (page.getLanguage().equals(Constants.LANG_BAHASA_INDONESIA)) pageModel = BakaTsukiParserBahasa.parsePageAPI(page, response.parse(), fullUrl);
+				else pageModel = BakaTsukiParser.parsePageAPI(page, response.parse(), fullUrl);
 				pageModel.setFinishedRead(page.isFinishedRead());
 				pageModel.setWatched(page.isWatched());
 
@@ -562,7 +672,9 @@ public class NovelsDao {
 				String fullUrl = Constants.BASE_URL + "/project/index.php?action=render&title=" + encodedTitle;
 				Response response = Jsoup.connect(fullUrl).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
-				novel = BakaTsukiParser.ParseNovelDetails(doc, page);
+				/* Add your section of alternative language here, create own parser for each language for modularity reason */
+				if (page.getLanguage().equals(Constants.LANG_BAHASA_INDONESIA)) novel = BakaTsukiParserBahasa.ParseNovelDetails(doc, page);
+				else novel = BakaTsukiParser.ParseNovelDetails(doc, page);
 			}catch(EOFException eof) {
 				++retry;
 				if(notifier != null) {
