@@ -24,6 +24,7 @@ import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.DownloadFileTask;
 import com.erakk.lnreader.helper.Util;
+import com.erakk.lnreader.helper.db.BookmarkModelHelper;
 import com.erakk.lnreader.helper.db.ImageModelHelper;
 import com.erakk.lnreader.helper.db.PageModelHelper;
 import com.erakk.lnreader.model.BookModel;
@@ -1162,7 +1163,7 @@ public class NovelsDao {
 		ArrayList<BookmarkModel> bookmarks = new ArrayList<BookmarkModel>();
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
-			bookmarks = dbh.getBookmarks(db, novel);
+			bookmarks = BookmarkModelHelper.getBookmarks(db, novel);
 		}
 		return bookmarks;
 	}
@@ -1170,14 +1171,14 @@ public class NovelsDao {
 	public int addBookmark(BookmarkModel bookmark) {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			return dbh.insertBookmark(db, bookmark);
+			return BookmarkModelHelper.insertBookmark(db, bookmark);
 		}
 	}
 
 	public int deleteBookmark(BookmarkModel bookmark) {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			return dbh.deleteBookmark(db, bookmark);
+			return BookmarkModelHelper.deleteBookmark(db, bookmark);
 		}
 	}
 
@@ -1185,7 +1186,7 @@ public class NovelsDao {
 		ArrayList<BookmarkModel> bookmarks = new ArrayList<BookmarkModel>();
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
-			bookmarks = dbh.getAllBookmarks(db);
+			bookmarks = BookmarkModelHelper.getAllBookmarks(db);
 		}
 		return bookmarks;
 	}
