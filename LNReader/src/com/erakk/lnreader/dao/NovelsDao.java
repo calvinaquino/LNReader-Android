@@ -412,7 +412,7 @@ public class NovelsDao {
 
 		return list;
 	}
-	
+
 	//Alternative Language, copied from Original
 	public ArrayList<PageModel> getAlternative(ICallbackNotifier notifier, boolean alphOrder, String language) throws Exception {
 		SQLiteDatabase db = null;
@@ -457,7 +457,7 @@ public class NovelsDao {
 		PageModel teaserPage = new PageModel();
 		if (language.equals(Constants.LANG_BAHASA_INDONESIA)){
 			teaserPage.setPage("Category:Indonesian");
-			teaserPage.setTitle("Bahasa Indonesia Novels");	
+			teaserPage.setTitle("Bahasa Indonesia Novels");
 			teaserPage.setLanguage(Constants.LANG_BAHASA_INDONESIA);
 		}
 		teaserPage = getPageModel(teaserPage, notifier);
@@ -587,7 +587,8 @@ public class NovelsDao {
 				String fullUrl = "http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=" + encodedTitle;
 				Response response = Jsoup.connect(fullUrl).timeout(Constants.TIMEOUT).execute();
 				PageModel pageModel = null;
-				if (page.getLanguage().equals(Constants.LANG_BAHASA_INDONESIA)) pageModel = BakaTsukiParserBahasa.parsePageAPI(page, response.parse(), fullUrl);
+				String lang = page.getLanguage();
+				if (lang!= null && lang.equals(Constants.LANG_BAHASA_INDONESIA)) pageModel = BakaTsukiParserBahasa.parsePageAPI(page, response.parse(), fullUrl);
 				else pageModel = BakaTsukiParser.parsePageAPI(page, response.parse(), fullUrl);
 				pageModel.setFinishedRead(page.isFinishedRead());
 				pageModel.setWatched(page.isWatched());

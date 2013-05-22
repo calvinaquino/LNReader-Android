@@ -15,7 +15,7 @@ public class PageModel{
 	public static final String TYPE_CONTENT = "Content";
 	public static final String TYPE_TOS = "Copyrights";
 	private static final String TAG = PageModel.class.toString();
-	
+
 	private int id;
 	private String page;
 	private String language; /* Attribute for language marker */
@@ -35,11 +35,11 @@ public class PageModel{
 	private boolean isHighlighted = false;
 	private boolean isMissing = false;
 	private boolean isExternal = false;
-	
+
 	private String redirectedTo;
-	
+
 	private int updateCount;
-	
+
 	// not saved to db
 	private boolean isUpdated = false;
 
@@ -56,6 +56,7 @@ public class PageModel{
 		this.page = page;
 	}
 	public String getLanguage() {
+		if(language == null) language = Constants.LANG_ENGLISH;
 		return language;
 	}
 	public void setLanguage(String language){
@@ -146,7 +147,7 @@ public class PageModel{
 	public void setDownloaded(boolean isDownloaded) {
 		this.isDownloaded = isDownloaded;
 	}
-	
+
 	public BookModel getBook() {
 		if(this.getType() != null && this.getType().equals(TYPE_CONTENT)) {
 			if(this.book == null) {
@@ -159,11 +160,11 @@ public class PageModel{
 						if(tempBook.getTitle().equals(bookTitle)){
 							this.book = tempBook;
 							break;
-						}						
+						}
 					}
 				} catch (Exception e) {
 					Log.e(TAG, "Unable to get book for: " + getPage(), e);
-				}				
+				}
 			}
 			return this.book;
 		}
@@ -202,7 +203,7 @@ public class PageModel{
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	
+
 	public boolean isTeaser() {
 		if(status != null && status.length() > 0) {
 			return status.contains(Constants.STATUS_TEASER);
@@ -214,13 +215,13 @@ public class PageModel{
 			return status.contains(Constants.STATUS_STALLED);
 		}
 		return false;
-	}	
+	}
 	public boolean isAbandoned() {
 		if(status != null && status.length() > 0) {
 			return status.contains(Constants.STATUS_ABANDONED);
 		}
 		return false;
-	}	
+	}
 	public boolean isPending() {
 		if(status != null && status.length() > 0) {
 			return status.contains(Constants.STATUS_PENDING);
