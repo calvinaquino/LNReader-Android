@@ -43,6 +43,7 @@ public class BookModelHelper {
 	/*
 	 * Query Stuff
 	 */
+
 	public static BookModel getBookModel(SQLiteDatabase db, int id) {
 		BookModel book = null;
 		Cursor cursor = helper.rawQuery(db, "select * from " + DBHelper.TABLE_NOVEL_BOOK
@@ -101,6 +102,7 @@ public class BookModelHelper {
 	/*
 	 * Insert Stuff
 	 */
+
 	public static BookModel insertBookModel(SQLiteDatabase db, BookModel book) {
 		ContentValues cv2 = new ContentValues();
 		cv2.put(DBHelper.COLUMN_PAGE, book.getPage());
@@ -132,6 +134,7 @@ public class BookModelHelper {
 	/*
 	 * Delete Stuff
 	 */
+
 	public static void deleteBookModel(SQLiteDatabase db, BookModel book) {
 		int chaptersCount = 0;
 		ArrayList<PageModel> chapters = book.getChapterCollection();

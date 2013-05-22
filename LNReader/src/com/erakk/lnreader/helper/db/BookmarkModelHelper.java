@@ -38,6 +38,7 @@ public class BookmarkModelHelper {
 	/*
 	 * Query Stuff
 	 */
+
 	public static ArrayList<BookmarkModel> getAllBookmarks(SQLiteDatabase db) {
 		ArrayList<BookmarkModel> bookmarks = new ArrayList<BookmarkModel>();
 
@@ -99,6 +100,7 @@ public class BookmarkModelHelper {
 	/*
 	 * Insert Stuff
 	 */
+
 	public static int insertBookmark(SQLiteDatabase db, BookmarkModel bookmark) {
 		BookmarkModel tempBookmark = getBookmark(db, bookmark.getPage(), bookmark.getpIndex());
 
@@ -124,6 +126,7 @@ public class BookmarkModelHelper {
 	/*
 	 * Delete Stuff
 	 */
+
 	public static int deleteBookmark(SQLiteDatabase db,BookmarkModel bookmark) {
 		return helper.delete(db, DBHelper.TABLE_NOVEL_BOOKMARK, DBHelper.COLUMN_PAGE + " = ? and " + DBHelper.COLUMN_PARAGRAPH_INDEX + " = ? "
 				 , new String[] {bookmark.getPage(), "" + bookmark.getpIndex()});

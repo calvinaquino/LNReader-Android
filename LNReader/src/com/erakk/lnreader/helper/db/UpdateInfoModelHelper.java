@@ -39,6 +39,7 @@ public class UpdateInfoModelHelper {
 	/*
 	 * Query Stuff
 	 */
+
 	public static ArrayList<UpdateInfoModel> getAllUpdateHistory(SQLiteDatabase db) {
 		ArrayList<UpdateInfoModel> updates = new ArrayList<UpdateInfoModel>();
 
@@ -87,6 +88,7 @@ public class UpdateInfoModelHelper {
 	/*
 	 * Insert Stuff
 	 */
+
 	public static int insertUpdateHistory(SQLiteDatabase db, UpdateInfoModel update) {
 		UpdateInfoModel tempUpdate = getUpdateHistory(db, update);
 
@@ -103,9 +105,11 @@ public class UpdateInfoModelHelper {
 			return helper.update(db, DBHelper.TABLE_UPDATE_HISTORY, cv, DBHelper.COLUMN_ID + " = ? ", new String[] {"" + tempUpdate.getId()});
 		}
 	}
+
 	/*
 	 * Delete Stuff
 	 */
+
 	public static void deleteAllUpdateHistory(SQLiteDatabase db) {
 		db.execSQL("DROP TABLE IF EXISTS " + DBHelper.TABLE_UPDATE_HISTORY);
 		db.execSQL(DATABASE_CREATE_UPDATE_HISTORY);

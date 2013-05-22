@@ -48,6 +48,7 @@ public class NovelContentModelHelper {
 	/*
 	 * Query Stuff
 	 */
+
 	public static NovelContentModel getNovelContent(SQLiteDatabase db, String page) {
 		//Log.d(TAG, "Selecting Novel Content: " + page);
 		NovelContentModel content = null;
@@ -127,4 +128,16 @@ public class NovelContentModelHelper {
 	/*
 	 * Delete Stuff
 	 */
+
+	public static boolean deleteNovelContent(SQLiteDatabase db, NovelContentModel content) {
+		int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT, DBHelper.COLUMN_ID + " = ?", new String[]{"" + content.getId()});
+		Log.w(TAG, "NovelContent Deleted: " + result);
+		return result > 0 ? true : false;
+	}
+
+	public static boolean deleteNovelContent(SQLiteDatabase db, PageModel ref) {
+		int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT, DBHelper.COLUMN_PAGE + " = ?", new String[]{"" + ref.getPage()});
+		Log.w(TAG, "NovelContent Deleted: " + result);
+		return result > 0 ? true : false;
+	}
 }

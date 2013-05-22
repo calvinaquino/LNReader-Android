@@ -49,6 +49,7 @@ public class ImageModelHelper {
 	/*
 	 * Query Stuff
 	 */
+
 	public static ImageModel getImageByReferer(SQLiteDatabase db, ImageModel image) {
 		return getImageByReferer(db, image.getReferer());
 	}
@@ -103,9 +104,11 @@ public class ImageModelHelper {
 		}
 		return image;
 	}
+
 	/*
 	 * Insert Stuff
 	 */
+
 	public static ImageModel insertImage(SQLiteDatabase db, ImageModel image){
 		ImageModel temp = getImage(db, image.getName());
 
@@ -138,4 +141,5 @@ public class ImageModelHelper {
 	/*
 	 * Delete Stuff
 	 */
+	//TODO: only have bulk delete by dropping the table...
 }

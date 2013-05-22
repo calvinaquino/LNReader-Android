@@ -877,6 +877,10 @@ public class NovelsDao {
 			try{
 				BookModel tempBook = BookModelHelper.getBookModel(db, bookDel.getId());
 				if(tempBook != null) {
+					ArrayList<PageModel> chapters = tempBook.getChapterCollection();
+					for(PageModel chapter:chapters) {
+						NovelContentModelHelper.deleteNovelContent(db, chapter);
+					}
 					BookModelHelper.deleteBookModel(db, tempBook);
 				}
 			}
@@ -1044,6 +1048,20 @@ public class NovelsDao {
 			}
 		}
 		return content;
+	}
+
+	public boolean deleteNovelContent(PageModel ref) {
+		boolean result = false;
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			try{
+				result = NovelContentModelHelper.deleteNovelContent(db, ref);
+			}
+			finally{
+				db.close();
+			}
+		}
+		return result;
 	}
 
 	/*
