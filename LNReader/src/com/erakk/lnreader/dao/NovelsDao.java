@@ -26,6 +26,7 @@ import com.erakk.lnreader.helper.DownloadFileTask;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.helper.db.BookmarkModelHelper;
 import com.erakk.lnreader.helper.db.ImageModelHelper;
+import com.erakk.lnreader.helper.db.NovelContentModelHelper;
 import com.erakk.lnreader.helper.db.PageModelHelper;
 import com.erakk.lnreader.helper.db.UpdateInfoModelHelper;
 import com.erakk.lnreader.model.BookModel;
@@ -924,7 +925,7 @@ public class NovelsDao {
 			// get from db
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try{
-				content = dbh.getNovelContent(db, page.getPage());
+				content = NovelContentModelHelper.getNovelContent(db, page.getPage());
 			}
 			finally{
 				db.close();
@@ -1018,7 +1019,7 @@ public class NovelsDao {
 				try{
 					// TODO: somehow using transaction cause problem...
 					db.beginTransaction();
-					content = dbh.insertNovelContent(db, content);
+					content = NovelContentModelHelper.insertNovelContent(db, content);
 					db.setTransactionSuccessful();
 				}
 				finally{
@@ -1034,7 +1035,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			try{
-				content = dbh.insertNovelContent(db, content);
+				content = NovelContentModelHelper.insertNovelContent(db, content);
 			}
 			finally{
 				db.close();
