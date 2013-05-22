@@ -23,6 +23,7 @@ import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.DownloadFileTask;
+import com.erakk.lnreader.helper.PageModelHelper;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.BookmarkModel;
@@ -41,13 +42,16 @@ import com.erakk.lnreader.parser.BakaTsukiParserBahasa;
 public class NovelsDao {
 	private static final String TAG = NovelsDao.class.toString();
 	private static DBHelper dbh;
+	private static Context context;
 
 	private static NovelsDao instance;
 	private static Object lock = new Object();
+
 	public static NovelsDao getInstance(Context applicationContext) {
 		synchronized (lock){
 			if(instance == null) {
 				instance = new NovelsDao(applicationContext);
+				context = applicationContext;
 			}
 		}
 		return instance;
@@ -56,7 +60,13 @@ public class NovelsDao {
 	public static NovelsDao getInstance() {
 		synchronized (lock){
 			if(instance == null) {
-				throw new NullPointerException("NovelsDao is not Initialized!");
+				try{
+					instance = new NovelsDao(LNReaderApplication.getInstance().getApplicationContext());
+				}
+				catch(Exception ex) {
+					Log.e(TAG, "Failed to get context for NovelsDao", ex);
+					throw new NullPointerException("NovelsDao is not Initialized!");
+				}
 			}
 		}
 		return instance;
@@ -66,6 +76,13 @@ public class NovelsDao {
 		if (dbh == null) {
 			dbh = new DBHelper(context);
 		}
+	}
+
+	public DBHelper getDBHelper() {
+		if (dbh == null) {
+			dbh = new DBHelper(context);
+		}
+		return dbh;
 	}
 
 	public void deleteDB() {
@@ -101,7 +118,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			try{
 				db = dbh.getReadableDatabase();
-				page = dbh.getMainPage(db);
+				page = PageModelHelper.getMainPage(db);
 			}finally{
 				db.close();
 			}
@@ -146,7 +163,7 @@ public class NovelsDao {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			try{
 				//db.beginTransaction();
-				mainPage = dbh.insertOrUpdatePageModel(db, mainPage, false);
+				mainPage = PageModelHelper.insertOrUpdatePageModel(db, mainPage, false);
 				Log.d(TAG, "Updated Main_Page");
 
 				// now get the novel list
@@ -163,7 +180,7 @@ public class NovelsDao {
 						Log.d(TAG, "Found from internet: " + list.size() + " Novels");
 
 						// saved to db and get saved value
-						list = dbh.insertAllNovel(db, list);
+						list = PageModelHelper.insertAllNovel(db, list);
 
 						//db.setTransactionSuccessful();
 
@@ -222,7 +239,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			try{
 				db = dbh.getReadableDatabase();
-				page = dbh.getTeaserPage(db);
+				page = PageModelHelper.getTeaserPage(db);
 			}finally{
 				db.close();
 			}
@@ -263,7 +280,7 @@ public class NovelsDao {
 		// update page model
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			teaserPage = dbh.insertOrUpdatePageModel(db, teaserPage, true);
+			teaserPage = PageModelHelper.insertOrUpdatePageModel(db, teaserPage, true);
 			Log.d(TAG, "Updated Category:Teasers");
 		}
 
@@ -305,7 +322,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			for (PageModel pageModel : list) {
-				pageModel = dbh.insertOrUpdatePageModel(db, pageModel, true);
+				pageModel = PageModelHelper.insertOrUpdatePageModel(db, pageModel, true);
 				Log.d(TAG, "Updated teaser: " + pageModel.getPage());
 			}
 		}
@@ -322,7 +339,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			try{
 				db = dbh.getReadableDatabase();
-				page = dbh.getOriginalPage(db);
+				page = PageModelHelper.getOriginalPage(db);
 			}finally{
 				db.close();
 			}
@@ -363,7 +380,7 @@ public class NovelsDao {
 		// update page model
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			teaserPage = dbh.insertOrUpdatePageModel(db, teaserPage, true);
+			teaserPage = PageModelHelper.insertOrUpdatePageModel(db, teaserPage, true);
 			Log.d(TAG, "Updated Category:Original");
 		}
 
@@ -405,7 +422,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			for (PageModel pageModel : list) {
-				pageModel = dbh.insertOrUpdatePageModel(db, pageModel, true);
+				pageModel = PageModelHelper.insertOrUpdatePageModel(db, pageModel, true);
 				Log.d(TAG, "Updated original: " + pageModel.getPage());
 			}
 		}
@@ -422,7 +439,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			try{
 				db = dbh.getReadableDatabase();
-				page = dbh.getAlternativePage(db, Constants.LANG_BAHASA_INDONESIA);
+				page = PageModelHelper.getAlternativePage(db, Constants.LANG_BAHASA_INDONESIA);
 			}finally{
 				db.close();
 			}
@@ -466,7 +483,7 @@ public class NovelsDao {
 		// update page model
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			teaserPage = dbh.insertOrUpdatePageModel(db, teaserPage, true);
+			teaserPage = PageModelHelper.insertOrUpdatePageModel(db, teaserPage, true);
 			Log.d(TAG, "Updated " + language);
 		}
 
@@ -509,7 +526,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			for (PageModel pageModel : list) {
-				pageModel = dbh.insertOrUpdatePageModel(db, pageModel, true);
+				pageModel = PageModelHelper.insertOrUpdatePageModel(db, pageModel, true);
 				Log.d(TAG, "Updated " + Constants.LANG_BAHASA_INDONESIA + " novel: " + pageModel.getPage());
 			}
 		}
@@ -530,7 +547,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try{
-				pageModel = dbh.getPageModel(db, page.getPage());
+				pageModel = PageModelHelper.getPageModel(db, page.getPage());
 			}finally{
 				db.close();
 			}
@@ -564,7 +581,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try{
-				pageModel = dbh.getPageModel(db, page.getPage());
+				pageModel = PageModelHelper.getPageModel(db, page.getPage());
 			}finally{
 				db.close();
 			}
@@ -597,7 +614,7 @@ public class NovelsDao {
 					// save to db and get saved value
 					SQLiteDatabase db = dbh.getWritableDatabase();
 					try{
-						pageModel = dbh.insertOrUpdatePageModel(db, pageModel, false);
+						pageModel = PageModelHelper.insertOrUpdatePageModel(db, pageModel, false);
 					}finally{
 						db.close();
 					}
@@ -628,7 +645,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			try{
-				pageModel = dbh.insertOrUpdatePageModel(db, page, false);
+				pageModel = PageModelHelper.insertOrUpdatePageModel(db, page, false);
 			}
 			finally{
 				db.close();
@@ -719,7 +736,7 @@ public class NovelsDao {
 				synchronized (dbh) {
 					SQLiteDatabase db = dbh.getWritableDatabase();
 					try{
-						page = dbh.insertOrUpdatePageModel(db, page, true);
+						page = PageModelHelper.insertOrUpdatePageModel(db, page, true);
 					}
 					finally{
 						db.close();
@@ -869,9 +886,9 @@ public class NovelsDao {
 			// get from db
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try{
-				PageModel tempPage = dbh.getPageModel(db, page.getId());
+				PageModel tempPage = PageModelHelper.getPageModel(db, page.getId());
 				if(tempPage != null) {
-					dbh.deletePageModel(db, tempPage);
+					PageModelHelper.deletePageModel(db, tempPage);
 				}
 			}
 			finally{
