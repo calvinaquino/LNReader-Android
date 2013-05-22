@@ -27,6 +27,7 @@ import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.helper.db.BookModelHelper;
 import com.erakk.lnreader.helper.db.BookmarkModelHelper;
 import com.erakk.lnreader.helper.db.ImageModelHelper;
+import com.erakk.lnreader.helper.db.NovelCollectionModelHelper;
 import com.erakk.lnreader.helper.db.NovelContentModelHelper;
 import com.erakk.lnreader.helper.db.PageModelHelper;
 import com.erakk.lnreader.helper.db.UpdateInfoModelHelper;
@@ -668,7 +669,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try{
-				novel = dbh.getNovelDetails(db, page.getPage());
+				novel = NovelCollectionModelHelper.getNovelDetails(db, page.getPage());
 			}
 			finally{
 				db.close();
@@ -753,7 +754,7 @@ public class NovelsDao {
 					SQLiteDatabase db = dbh.getWritableDatabase();
 					try{
 						db.beginTransaction();
-						novel = dbh.insertNovelDetails(db, novel);
+						novel = NovelCollectionModelHelper.insertNovelDetails(db, novel);
 						db.setTransactionSuccessful();
 					}
 					finally{
@@ -907,7 +908,7 @@ public class NovelsDao {
 			// get from db
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try{
-				return dbh.getChapterCollection(db, page + Constants.NOVEL_BOOK_DIVIDER + title, book);
+				return NovelCollectionModelHelper.getChapterCollection(db, page + Constants.NOVEL_BOOK_DIVIDER + title, book);
 			}
 			finally{
 				db.close();
@@ -1157,7 +1158,7 @@ public class NovelsDao {
 		boolean result = false;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			result = dbh.deleteNovel(db, novel);
+			result = NovelCollectionModelHelper.deleteNovel(db, novel);
 		}
 		return result;
 	}
