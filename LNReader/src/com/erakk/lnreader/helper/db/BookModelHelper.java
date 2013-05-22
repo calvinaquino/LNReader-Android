@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -100,6 +101,33 @@ public class BookModelHelper {
 	/*
 	 * Insert Stuff
 	 */
+	public static BookModel insertBookModel(SQLiteDatabase db, BookModel book) {
+		ContentValues cv2 = new ContentValues();
+		cv2.put(DBHelper.COLUMN_PAGE, book.getPage());
+		cv2.put(DBHelper.COLUMN_TITLE , book.getTitle());
+		cv2.put(DBHelper.COLUMN_ORDER , book.getOrder());
+		cv2.put(DBHelper.COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
+
+		BookModel tempBook = BookModelHelper.getBookModel(db, book.getId());
+		if(tempBook == null) tempBook = BookModelHelper.getBookModel(db, book.getPage(), book.getTitle());
+		if(tempBook == null) {
+			//Log.d(TAG, "Inserting Novel Book: " + novelDetails.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
+			if(book.getLastUpdate() == null)
+				cv2.put(DBHelper.COLUMN_LAST_UPDATE, 0);
+			else
+				cv2.put(DBHelper.COLUMN_LAST_UPDATE, "" + (int) (book.getLastUpdate().getTime() / 1000));
+			helper.insertOrThrow(db, DBHelper.TABLE_NOVEL_BOOK, null, cv2);
+		}
+		else {
+			//Log.d(TAG, "Updating Novel Book: " + tempBook.getPage() + Constants.NOVEL_BOOK_DIVIDER + tempBook.getTitle() + " id: " + tempBook.getId());
+			cv2.put(DBHelper.COLUMN_LAST_UPDATE, "" + (int) (tempBook.getLastUpdate().getTime() / 1000));
+			helper.update(db, DBHelper.TABLE_NOVEL_BOOK, cv2, DBHelper.COLUMN_ID + " = ?", new String[] {"" + tempBook.getId()});
+		}
+
+		book = getBookModel(db, book.getPage(), book.getTitle());
+
+		return book;
+	}
 
 	/*
 	 * Delete Stuff

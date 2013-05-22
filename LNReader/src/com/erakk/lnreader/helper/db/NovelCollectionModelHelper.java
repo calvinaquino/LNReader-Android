@@ -138,61 +138,17 @@ public class NovelCollectionModelHelper {
 		}
 
 		// insert book
-		for(Iterator<BookModel> iBooks = novelDetails.getBookCollections().iterator(); iBooks.hasNext();){
-			BookModel book = iBooks.next();
-			ContentValues cv2 = new ContentValues();
-			cv2.put(DBHelper.COLUMN_PAGE, novelDetails.getPage());
-			cv2.put(DBHelper.COLUMN_TITLE , book.getTitle());
-			cv2.put(DBHelper.COLUMN_ORDER , book.getOrder());
-			cv2.put(DBHelper.COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
-
-			BookModel tempBook = BookModelHelper.getBookModel(db, book.getId());
-			if(tempBook == null) tempBook = BookModelHelper.getBookModel(db, novelDetails.getPage(), book.getTitle());
-			if(tempBook == null) {
-				//Log.d(TAG, "Inserting Novel Book: " + novelDetails.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
-				if(novelDetails.getLastUpdate() == null)
-					cv2.put(DBHelper.COLUMN_LAST_UPDATE, 0);
-				else
-					cv2.put(DBHelper.COLUMN_LAST_UPDATE, "" + (int) (novelDetails.getLastUpdate().getTime() / 1000));
-				helper.insertOrThrow(db, DBHelper.TABLE_NOVEL_BOOK, null, cv2);
-			}
-			else {
-				//Log.d(TAG, "Updating Novel Book: " + tempBook.getPage() + Constants.NOVEL_BOOK_DIVIDER + tempBook.getTitle() + " id: " + tempBook.getId());
-				cv2.put(DBHelper.COLUMN_LAST_UPDATE, "" + (int) (tempBook.getLastUpdate().getTime() / 1000));
-				helper.update(db, DBHelper.TABLE_NOVEL_BOOK, cv2, DBHelper.COLUMN_ID + " = ?", new String[] {"" + tempBook.getId()});
-			}
+		for(BookModel book : novelDetails.getBookCollections()){
+			book.setPage(novelDetails.getPage());
+			book.setLastUpdate(novelDetails.getLastUpdate());
+			book = BookModelHelper.insertBookModel(db, book);
 		}
 
 		// insert chapter
 		for(Iterator<BookModel> iBooks = novelDetails.getBookCollections().iterator(); iBooks.hasNext();){
 			BookModel book = iBooks.next();
-			for(Iterator<PageModel> iPage = book.getChapterCollection().iterator(); iPage.hasNext();) {
-				PageModel page = iPage.next();
-				ContentValues cv3 = new ContentValues();
-				cv3.put(DBHelper.COLUMN_PAGE, page.getPage());
-				cv3.put(DBHelper.COLUMN_LANGUAGE, page.getLanguage());
-				cv3.put(DBHelper.COLUMN_TITLE, page.getTitle());
-				cv3.put(DBHelper.COLUMN_TYPE, page.getType());
-				cv3.put(DBHelper.COLUMN_PARENT, page.getParent());
-				cv3.put(DBHelper.COLUMN_ORDER, page.getOrder());
-				cv3.put(DBHelper.COLUMN_IS_EXTERNAL, page.isExternal());
-				cv3.put(DBHelper.COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
-				cv3.put(DBHelper.COLUMN_IS_WATCHED, false);
-
-				PageModel tempPage = PageModelHelper.getPageModel(db, page.getPage());
-				if(tempPage == null) {
-					//Log.d(TAG, "Inserting Novel Chapter: " + page.getPage());
-					if(page.getLastUpdate() == null)
-						cv3.put(DBHelper.COLUMN_LAST_UPDATE, 0);
-					else
-						cv3.put(DBHelper.COLUMN_LAST_UPDATE, "" + (int) (page.getLastUpdate().getTime() / 1000));
-					helper.insertOrThrow(db, DBHelper.TABLE_PAGE, null, cv3);
-				}
-				else {
-					cv3.put(DBHelper.COLUMN_LAST_UPDATE, "" + (int) (tempPage.getLastUpdate().getTime() / 1000));
-					//Log.d(TAG, "Updating Novel Chapter: " + page.getPage() + " id: " +tempPage.getId());
-					helper.update(db, DBHelper.TABLE_PAGE, cv3, DBHelper.COLUMN_ID + " = ?", new String[] {"" + tempPage.getId()});
-				}
+			for(PageModel page : book.getChapterCollection()) {
+				PageModelHelper.insertOrUpdatePageModel(db, page, false);
 			}
 		}
 
