@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.erakk.lnreader"
     android:installLocation="auto"
-    android:versionCode="20130516"
+    android:versionCode="20130521"
     android:versionName="1.1.2" >
 
     <uses-sdk
@@ -67,6 +67,13 @@
                 android:value="com.erakk.lnreader.activity.MainActivity" />
         </activity>
         <activity
+            android:name="com.erakk.lnreader.activity.DisplayAlternativeNovelListActivity"
+            android:label="@string/title_activity_display_alternative_novels" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.erakk.lnreader.activity.MainActivity" />
+        </activity>
+        <activity
             android:name="com.erakk.lnreader.activity.DisplayLightNovelDetailsActivity"
             android:label="@string/title_activity_light_novel_chapters" >
             <meta-data
@@ -113,6 +120,14 @@
         <activity
             android:name="com.erakk.lnreader.activity.DisplayNovelPagerActivity"
             android:label="@string/title_activity_display_novel_pager"
+            android:parentActivityName="com.erakk.lnreader.activity.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.erakk.lnreader.activity.MainActivity" />
+        </activity>
+         <activity
+            android:name="com.erakk.lnreader.activity.DisplayAlternativeNovelPagerActivity"
+            android:label="@string/title_activity_display_alternative_novel_pager"
             android:parentActivityName="com.erakk.lnreader.activity.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

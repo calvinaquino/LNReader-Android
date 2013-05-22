@@ -18,6 +18,7 @@ public class PageModel{
 	
 	private int id;
 	private String page;
+	private String language; /* Attribute for language marker */
 	private String title;
 	private String type;
 	private Date lastUpdate;
@@ -53,6 +54,12 @@ public class PageModel{
 	}
 	public void setPage(String page) {
 		this.page = page;
+	}
+	public String getLanguage() {
+		return language;
+	}
+	public void setLanguage(String language){
+		this.language = language;
 	}
 	public String getTitle() {
 		return title;

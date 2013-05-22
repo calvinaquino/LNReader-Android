@@ -150,6 +150,7 @@ public class BakaTsukiParser {
 					tempPage = tempPage.substring(0, paramIndex);
 				}
 				page.setPage(tempPage);
+				page.setLanguage(Constants.LANG_ENGLISH);
 				page.setType(PageModel.TYPE_NOVEL);
 				page.setTitle(link.text());
 
@@ -208,6 +209,7 @@ public class BakaTsukiParser {
 				String tempPage = link.attr("href").replace("/project/index.php?title=","")
                         .replace(Constants.BASE_URL, "");
 				page.setPage(tempPage);
+				page.setLanguage(Constants.LANG_ENGLISH);
 				page.setType(PageModel.TYPE_NOVEL);
 				page.setTitle(link.text());
 				page.setStatus(Constants.STATUS_TEASER);
@@ -241,6 +243,7 @@ public class BakaTsukiParser {
 				String tempPage = link.attr("href").replace("/project/index.php?title=","")
                         .replace(Constants.BASE_URL, "");
 				page.setPage(tempPage);
+				page.setLanguage(Constants.LANG_ENGLISH);
 				page.setType(PageModel.TYPE_NOVEL);
 				page.setTitle(link.text());
 				page.setStatus(Constants.STATUS_ORIGINAL);
@@ -536,6 +539,7 @@ public class BakaTsukiParser {
 		p.setType(PageModel.TYPE_CONTENT);
 		p.setOrder(chapterOrder);
 		p.setLastUpdate(new Date(0));
+		p.setLanguage(Constants.LANG_ENGLISH);
 
 		//External link
 		if(link.className().contains("external text")) {
