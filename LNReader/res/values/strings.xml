@@ -6,10 +6,13 @@
     <string name="light_novels">Light Novels</string>
     <string name="watch_list">Watch List</string>
     <string name="originals">Originals List</string>
+    <string name="alternative_language">Alt. Language</string>
     <string name="settings">Settings</string>
     <string name="title_activity_display_light_novels">Light Novels</string>
     <string name="title_activity_display_settings">Settings</string>
     <string name="title_activity_light_novel_chapters">Light Novel Chapters</string>
+    <string name="title_activity_display_alternative_novels">Alternative Language Novels</string>
+    <string name="title_activity_display_alternative_novel_pager">Alternative Language Lists</string>
     <string name="novel_title">title</string>
     <string name="novel_cover">cover</string>
     <string name="novel_synopsys"></string>

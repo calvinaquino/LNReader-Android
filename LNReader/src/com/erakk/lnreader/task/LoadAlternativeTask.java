@@ -12,6 +12,10 @@ import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.PageModel;
 
+/*
+ * Modified by : freedomofkeima
+ */
+
 public class LoadAlternativeTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskResult<ArrayList<PageModel>>>  implements ICallbackNotifier {
 	private static final String TAG = LoadAlternativeTask.class.toString();
 	private boolean refreshOnly = false;

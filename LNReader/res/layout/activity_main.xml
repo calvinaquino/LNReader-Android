@@ -26,13 +26,13 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
    	            android:layout_gravity="center"
-	            android:layout_marginTop="40dp"
+	            android:layout_marginTop="10dp"
 	            android:minHeight="66dp"
 	            android:minWidth="165dp"
 	            android:onClick="openNovelList"
 	            android:background="@drawable/button"	            
 	            android:textStyle="bold"
-	            android:textSize="22sp"
+	            android:textSize="20sp"
 	            android:text="@string/light_novels" />
 	
    	        <Button
@@ -40,13 +40,13 @@
    	            android:layout_width="wrap_content"
    	            android:layout_height="wrap_content"
    	            android:layout_gravity="center"
-	            android:layout_marginTop="40dp"
+	            android:layout_marginTop="35dp"
    	            android:minHeight="66dp"
    	            android:minWidth="165dp"
 	            android:onClick="openWatchList"
 	            android:background="@drawable/button"	            
 	            android:textStyle="bold"
-	            android:textSize="22sp"
+	            android:textSize="20sp"
 	            android:text="@string/watch_list" />
 	            
 	        <Button
@@ -54,15 +54,29 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
    	            android:layout_gravity="center"
-	            android:layout_marginTop="40dp"
-	            android:layout_marginBottom="40dp"
+	            android:layout_marginTop="35dp"
 	            android:minHeight="66dp"
 	            android:minWidth="165dp"
    	            android:onClick="jumpLastRead"
 	            android:background="@drawable/button"	            
 	            android:textStyle="bold"
-	            android:textSize="22sp"
-   	            android:text="@string/jump_last_read" />	        
+	            android:textSize="20sp"
+   	            android:text="@string/jump_last_read" />	  
+   	            
+	        <Button
+	            android:id="@+id/button7"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+   	            android:layout_gravity="center"
+	            android:layout_marginTop="35dp"
+	            android:layout_marginBottom="30dp"
+	            android:minHeight="66dp"
+	            android:minWidth="165dp"
+	            android:onClick="openAlternativeNovelList"
+	            android:background="@drawable/button"	            
+	            android:textStyle="bold"
+	            android:textSize="20sp"
+   	            android:text="@string/alternative_language" />		        
 	    </LinearLayout>
 	    
 	    <View 

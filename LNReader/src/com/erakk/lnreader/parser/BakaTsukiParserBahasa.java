@@ -33,7 +33,7 @@ import com.erakk.lnreader.model.PageModel;
 
 /**
  * @author freedomofkeima
- * Copied from: BakaTsukiParser by Nandaka
+ * Modified from: BakaTsukiParser by Nandaka
  *
  */
 public class BakaTsukiParserBahasa {
