@@ -27,6 +27,7 @@ import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.helper.db.BookmarkModelHelper;
 import com.erakk.lnreader.helper.db.ImageModelHelper;
 import com.erakk.lnreader.helper.db.PageModelHelper;
+import com.erakk.lnreader.helper.db.UpdateInfoModelHelper;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.BookmarkModel;
 import com.erakk.lnreader.model.ImageModel;
@@ -1208,28 +1209,28 @@ public class NovelsDao {
 	public ArrayList<UpdateInfoModel> getAllUpdateHistory() {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
-			return dbh.getAllUpdateHistory(db);
+			return UpdateInfoModelHelper.getAllUpdateHistory(db);
 		}
 	}
 
 	public void deleteAllUpdateHistory() {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			dbh.deleteAllUpdateHistory(db);
+			UpdateInfoModelHelper.deleteAllUpdateHistory(db);
 		}
 	}
 
 	public void deleteUpdateHistory(UpdateInfoModel updateInfo) {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			dbh.deleteUpdateHistory(db, updateInfo);
+			UpdateInfoModelHelper.deleteUpdateHistory(db, updateInfo);
 		}
 	}
 
 	public void insertUpdateHistory(UpdateInfoModel update) {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			dbh.insertUpdateHistory(db, update);
+			UpdateInfoModelHelper.insertUpdateHistory(db, update);
 		}
 	}
 

@@ -19,12 +19,11 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.helper.db.BookmarkModelHelper;
 import com.erakk.lnreader.helper.db.ImageModelHelper;
 import com.erakk.lnreader.helper.db.PageModelHelper;
+import com.erakk.lnreader.helper.db.UpdateInfoModelHelper;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
-import com.erakk.lnreader.model.UpdateInfoModel;
-import com.erakk.lnreader.model.UpdateType;
 
 public class DBHelper extends SQLiteOpenHelper {
 	public static final String TAG = DBHelper.class.toString();
@@ -105,15 +104,6 @@ public class DBHelper extends SQLiteOpenHelper {
 				  				    + COLUMN_LAST_UPDATE + " integer, "							// 6
 				  				    + COLUMN_LAST_CHECK + " integer);";							// 7
 
-
-
-	private static final String DATABASE_CREATE_UPDATE_HISTORY = "create table if not exists "
-			  + TABLE_UPDATE_HISTORY + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
-			  						+ COLUMN_PAGE + " text not null, "							// 1
-			  						+ COLUMN_UPDATE_TITLE + " text not null, "					// 2
-			  						+ COLUMN_UPDATE_TYPE + " integer not null, "				// 3
-			  						+ COLUMN_LAST_UPDATE + " integer);";						// 4
-
 	// Use /files/database to standarize with newer android.
 	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files/databases";
 
@@ -144,7 +134,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		 db.execSQL(DATABASE_CREATE_NOVEL_BOOKS);
 		 db.execSQL(DATABASE_CREATE_NOVEL_CONTENT);
 		 db.execSQL(BookmarkModelHelper.DATABASE_CREATE_NOVEL_BOOKMARK);
-		 db.execSQL(DATABASE_CREATE_UPDATE_HISTORY);
+		 db.execSQL(UpdateInfoModelHelper.DATABASE_CREATE_UPDATE_HISTORY);
 	}
 
 	@Override
@@ -188,7 +178,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			oldVersion = 23;
 		}
 		if(oldVersion == 23) {
-			db.execSQL(DATABASE_CREATE_UPDATE_HISTORY);
+			db.execSQL(UpdateInfoModelHelper.DATABASE_CREATE_UPDATE_HISTORY);
 			oldVersion = 24;
 		}
 		if(oldVersion == 24) {
@@ -833,90 +823,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		content.setLastUpdate(new Date(cursor.getLong(6)*1000));
 		content.setLastCheck(new Date(cursor.getLong(7)*1000));
 		return content;
-	}
-
-	public UpdateInfoModel getUpdateHistory(SQLiteDatabase db, UpdateInfoModel update) {
-		UpdateInfoModel result = null;
-
-		Cursor cursor = rawQuery(db, "select * from " + TABLE_UPDATE_HISTORY + " where " + COLUMN_PAGE + " = ? "
-				                   , new String[] {update.getUpdatePage()});
-		try {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				result = cursorToUpdateInfoModel(cursor);
-				break;
-			}
-		} finally{
-			if(cursor != null) cursor.close();
-		}
-
-		return result;
-	}
-
-	public int insertUpdateHistory(SQLiteDatabase db, UpdateInfoModel update) {
-		UpdateInfoModel tempUpdate = getUpdateHistory(db, update);
-
-		ContentValues cv = new ContentValues();
-		cv.put(COLUMN_PAGE, update.getUpdatePage());
-		cv.put(COLUMN_UPDATE_TITLE, update.getUpdateTitle());
-		cv.put(COLUMN_UPDATE_TYPE, update.getUpdateType().ordinal());
-		cv.put(COLUMN_LAST_UPDATE, (int) (update.getUpdateDate().getTime() / 1000));
-
-		if(tempUpdate == null) {
-			return (int) insertOrThrow(db, TABLE_UPDATE_HISTORY, null, cv);
-		}
-		else {
-			return update(db, TABLE_UPDATE_HISTORY, cv, COLUMN_ID + " = ? ", new String[] {"" + tempUpdate.getId()});
-		}
-	}
-
-	public ArrayList<UpdateInfoModel> getAllUpdateHistory(SQLiteDatabase db) {
-		ArrayList<UpdateInfoModel> updates = new ArrayList<UpdateInfoModel>();
-
-		Cursor cursor = rawQuery(db, "select * from " + TABLE_UPDATE_HISTORY
-				                   + " order by case "
-				                   + "   when " + COLUMN_UPDATE_TYPE + " = " + UpdateType.UpdateTos.ordinal() + " then 0 "
-				                   + "   when " + COLUMN_UPDATE_TYPE + " = " + UpdateType.NewNovel.ordinal() + " then 1 "
-				                   + "   when " + COLUMN_UPDATE_TYPE + " = " + UpdateType.New.ordinal() + " then 2 "
-				                   + "   when " + COLUMN_UPDATE_TYPE + " = " + UpdateType.Updated.ordinal() + " then 3 "
-				                   + "   else 4 end "
-				                   + ", " + COLUMN_LAST_UPDATE + " desc "
-				                   + ", " + COLUMN_PAGE, null);
-		try {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				UpdateInfoModel update = cursorToUpdateInfoModel(cursor);
-				updates.add(update);
-				cursor.moveToNext();
-			}
-		} finally{
-			if(cursor != null) cursor.close();
-		}
-
-		return updates;
-	}
-
-	public void deleteAllUpdateHistory(SQLiteDatabase db) {
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_UPDATE_HISTORY);
-		db.execSQL(DATABASE_CREATE_UPDATE_HISTORY);
-		Log.d(TAG, "Recreate " + TABLE_UPDATE_HISTORY);
-	}
-
-	public int deleteUpdateHistory(SQLiteDatabase db, UpdateInfoModel updateInfo) {
-		Log.d(TAG, "Deleting UpdateInfoModel id: " + updateInfo.getId());
-		return delete(db, TABLE_UPDATE_HISTORY, COLUMN_ID + " = ? "
-				 , new String[] {updateInfo.getId() + ""});
-	}
-
-	private UpdateInfoModel cursorToUpdateInfoModel(Cursor cursor) {
-		UpdateInfoModel update = new UpdateInfoModel();
-		update.setId(cursor.getInt(0));
-		update.setUpdatePage(cursor.getString(1));
-		update.setUpdateTitle(cursor.getString(2));
-		int type = cursor.getInt(3);
-		update.setUpdateType(UpdateType.values()[type]);
-		update.setUpdateDate(new Date(cursor.getLong(4)*1000));
-		return update;
 	}
 
 	/*
