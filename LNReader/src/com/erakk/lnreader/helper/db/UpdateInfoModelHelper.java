@@ -17,6 +17,7 @@ public class UpdateInfoModelHelper {
 	private static final String TAG = UpdateInfoModelHelper.class.toString();
 	private static DBHelper helper = NovelsDao.getInstance().getDBHelper();
 
+	// New column should be appended as the last column
 	public static final String DATABASE_CREATE_UPDATE_HISTORY = "create table if not exists "
 			  + DBHelper.TABLE_UPDATE_HISTORY + "(" + DBHelper.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
 			  						+ DBHelper.COLUMN_PAGE + " text not null, "							// 1

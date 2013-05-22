@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.helper.db.BookModelHelper;
 import com.erakk.lnreader.helper.db.BookmarkModelHelper;
 import com.erakk.lnreader.helper.db.ImageModelHelper;
 import com.erakk.lnreader.helper.db.NovelContentModelHelper;
@@ -85,15 +86,6 @@ public class DBHelper extends SQLiteOpenHelper {
 				  				  + COLUMN_LAST_UPDATE + " integer, "
 				  				  + COLUMN_LAST_CHECK + " integer);";
 
-	// COLUMN_PAGE is not unique because being used for reference to the novel page.
-	private static final String DATABASE_CREATE_NOVEL_BOOKS = "create table if not exists "
-		      + TABLE_NOVEL_BOOK + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
-				 				  + COLUMN_PAGE + " text not null, "						// 1
-				  				  + COLUMN_TITLE + " text not null, "						// 2
-				  				  + COLUMN_LAST_UPDATE + " integer, "						// 3
-				  				  + COLUMN_LAST_CHECK + " integer, "						// 4
-				  				  + COLUMN_ORDER + " integer);";							// 5
-
 	// Use /files/database to standarize with newer android.
 	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files/databases";
 
@@ -121,7 +113,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		 db.execSQL(PageModelHelper.DATABASE_CREATE_PAGES);
 		 db.execSQL(ImageModelHelper.DATABASE_CREATE_IMAGES);
 		 db.execSQL(DATABASE_CREATE_NOVEL_DETAILS);
-		 db.execSQL(DATABASE_CREATE_NOVEL_BOOKS);
+		 db.execSQL(BookModelHelper.DATABASE_CREATE_NOVEL_BOOKS);
 		 db.execSQL(NovelContentModelHelper.DATABASE_CREATE_NOVEL_CONTENT);
 		 db.execSQL(BookmarkModelHelper.DATABASE_CREATE_NOVEL_BOOKMARK);
 		 db.execSQL(UpdateInfoModelHelper.DATABASE_CREATE_UPDATE_HISTORY);
@@ -318,7 +310,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			if(details != null) {
 				ArrayList<BookModel> books = details.getBookCollections();
 				for (BookModel bookModel : books) {
-					deleteBookModel(db, bookModel);
+					BookModelHelper.deleteBookModel(db, bookModel);
 				}
 				deleteNovelDetails(db, details);
 			}
@@ -524,8 +516,8 @@ public class DBHelper extends SQLiteOpenHelper {
 			cv2.put(COLUMN_ORDER , book.getOrder());
 			cv2.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 
-			BookModel tempBook = getBookModel(db, book.getId());
-			if(tempBook == null) tempBook = getBookModel(db, novelDetails.getPage(), book.getTitle());
+			BookModel tempBook = BookModelHelper.getBookModel(db, book.getId());
+			if(tempBook == null) tempBook = BookModelHelper.getBookModel(db, novelDetails.getPage(), book.getTitle());
 			if(tempBook == null) {
 				//Log.d(TAG, "Inserting Novel Book: " + novelDetails.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
 				if(novelDetails.getLastUpdate() == null)
@@ -597,71 +589,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	    return novelDetails;
 	}
 
-	public BookModel getBookModel(SQLiteDatabase db, int id) {
-		BookModel book = null;
-		Cursor cursor = rawQuery(db, "select * from " + TABLE_NOVEL_BOOK + " where " + COLUMN_ID + " = ? ", new String[] {"" + id});
-		try {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				book = cursorToBookModel(cursor);
-				//Log.d(TAG, "Found: " + book.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
-				break;
-			}
-		} finally{
-			if(cursor != null) cursor.close();
-		}
-	    return book;
-	}
-
-	public BookModel getBookModel(SQLiteDatabase db, String page, String title) {
-		BookModel book = null;
-		Cursor cursor = rawQuery(db, "select * from " + TABLE_NOVEL_BOOK + " where " + COLUMN_PAGE + " = ? and " + COLUMN_TITLE + " = ?", new String[] {page, title});
-		try {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				book = cursorToBookModel(cursor);
-				//Log.d(TAG, "Found: " + book.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle());
-				break;
-			}
-		} finally{
-			if(cursor != null) cursor.close();
-		}
-	    return book;
-	}
-
-	public void deleteBookModel(SQLiteDatabase db, BookModel book) {
-		int chaptersCount = 0;
-		ArrayList<PageModel> chapters = book.getChapterCollection();
-		if(chapters != null && chapters.size() > 0) {
-			for(Iterator<PageModel> i = chapters.iterator(); i.hasNext();) {
-				PageModel page = i.next();
-				chaptersCount += delete(db, TABLE_PAGE, COLUMN_ID + " = ? ", new String[] {"" + page.getId()});
-			}
-			Log.w(TAG, "Deleted PageModel: " + chaptersCount);
-		}
-		int bookCount = delete(db, TABLE_NOVEL_BOOK, COLUMN_ID + " = ? ", new String[] { "" + book.getId() });
-		Log.w(TAG, "Deleted BookModel: " + bookCount);
-	}
-
-	public ArrayList<BookModel> getBookCollectionOnly(SQLiteDatabase db, String page, NovelCollectionModel novelDetails) {
-		// get the books
-	    ArrayList<BookModel> bookCollection = new ArrayList<BookModel>();
-	    Cursor cursor = rawQuery(db, "select * from " + TABLE_NOVEL_BOOK + " where " + COLUMN_PAGE + " = ? order by " + COLUMN_ORDER, new String[] {page});
-		try {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				BookModel book = cursorToBookModel(cursor);
-				book.setParent(novelDetails);
-				bookCollection.add(book);
-				//Log.d(TAG, "Found: " + book.toString());
-				cursor.moveToNext();
-			}
-		} finally{
-			if(cursor != null) cursor.close();
-		}
-		return bookCollection;
-	}
-
 	public ArrayList<PageModel> getChapterCollection(SQLiteDatabase db, String parent, BookModel book) {
 		ArrayList<PageModel> chapters = new ArrayList<PageModel>();
 		Cursor cursor = rawQuery(db, "select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ? order by " + COLUMN_ORDER, new String[] {parent});
@@ -688,7 +615,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	    	novelDetails.setPageModel(PageModelHelper.getPageModel(db, page));
 
 		    // get the books
-		    ArrayList<BookModel> bookCollection = getBookCollectionOnly(db, page, novelDetails);
+		    ArrayList<BookModel> bookCollection = BookModelHelper.getBookCollectionOnly(db, page, novelDetails);
 			// get the chapters
 			for(Iterator<BookModel> iBook = bookCollection.iterator(); iBook.hasNext();) {
 				BookModel book = iBook.next();
@@ -703,17 +630,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		//Log.d(TAG, "Complete Selecting Novel Details: " + page);
 		return novelDetails;
-	}
-
-	private BookModel cursorToBookModel(Cursor cursor) {
-		BookModel book = new BookModel();
-		book.setId(cursor.getInt(0));
-		book.setPage(cursor.getString(1));
-		book.setTitle(cursor.getString(2));
-		book.setLastUpdate(new Date(cursor.getInt(3)*1000));
-		book.setLastCheck(new Date(cursor.getInt(4)*1000));
-		book.setOrder(cursor.getInt(5));
-		return book;
 	}
 
 	private NovelCollectionModel cursorToNovelCollection(Cursor cursor) {

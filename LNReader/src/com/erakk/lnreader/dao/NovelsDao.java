@@ -24,6 +24,7 @@ import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.DownloadFileTask;
 import com.erakk.lnreader.helper.Util;
+import com.erakk.lnreader.helper.db.BookModelHelper;
 import com.erakk.lnreader.helper.db.BookmarkModelHelper;
 import com.erakk.lnreader.helper.db.ImageModelHelper;
 import com.erakk.lnreader.helper.db.NovelContentModelHelper;
@@ -873,9 +874,9 @@ public class NovelsDao {
 			// get from db
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try{
-				BookModel tempBook = dbh.getBookModel(db, bookDel.getId());
+				BookModel tempBook = BookModelHelper.getBookModel(db, bookDel.getId());
 				if(tempBook != null) {
-					dbh.deleteBookModel(db, tempBook);
+					BookModelHelper.deleteBookModel(db, tempBook);
 				}
 			}
 			finally{
