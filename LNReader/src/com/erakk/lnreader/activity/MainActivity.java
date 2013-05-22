@@ -1,6 +1,7 @@
 package com.erakk.lnreader.activity;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -24,6 +26,7 @@ import com.erakk.lnreader.UIHelper;
 public class MainActivity extends SherlockActivity {
 	private static final String TAG = MainActivity.class.toString();
 	private boolean isInverted;
+	private Context ctx = this;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -166,8 +169,51 @@ public class MainActivity extends SherlockActivity {
 	
 	/* Open An activity to select alternative language */
 	public void openAlternativeNovelList(View view){
-		Intent intent = new Intent(this, DisplayAlternativeNovelPagerActivity.class);
-		startActivity(intent);	
+		selectAlternativeLanguage();
+	}
+	
+	/**
+	 * Create a dialog for alternative language selection
+	 */
+	
+	public void selectAlternativeLanguage(){
+		/* Build an AlertDialog */
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
+		/* Title for AlertDialog */
+		alertDialogBuilder.setTitle(getResources().getString(R.string.alternative_language));
+		/* Giving out language selection */
+		final String[] langSelection = new String[2]; //Number of Language + 1
+		langSelection[0] = getResources().getString(R.string.all);
+		langSelection[1] = Constants.LANG_BAHASA_INDONESIA;		
+		
+		alertDialogBuilder.setSingleChoiceItems(langSelection, 0, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int items) {
+	            ListView lv = ((AlertDialog)dialog).getListView();
+	            Integer selected = items;
+	            lv.setTag(selected);
+		        }
+		    });
+		
+		alertDialogBuilder.setCancelable(false);
+		alertDialogBuilder.setNegativeButton(getResources().getString(R.string.choose),new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				Intent intent = new Intent(ctx, DisplayAlternativeNovelPagerActivity.class);
+				/* Get selection */
+				ListView lv = ((AlertDialog)dialog).getListView();
+				intent.putExtra("LANG_VALUE",(Integer)lv.getTag());
+				/* Go to next Activity */
+				startActivity(intent);	
+			}
+		  });
+		alertDialogBuilder.setPositiveButton(getResources().getString(R.string.cancel),new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				dialog.dismiss();
+			}
+		  });
+		
+		/* create alert dialog */
+		AlertDialog alertDialog = alertDialogBuilder.create();
+		alertDialog.show();
 	}
 	
 	private void setIconColor() {
