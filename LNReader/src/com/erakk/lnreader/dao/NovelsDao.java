@@ -23,8 +23,9 @@ import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.DownloadFileTask;
-import com.erakk.lnreader.helper.PageModelHelper;
 import com.erakk.lnreader.helper.Util;
+import com.erakk.lnreader.helper.db.ImageModelHelper;
+import com.erakk.lnreader.helper.db.PageModelHelper;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.BookmarkModel;
 import com.erakk.lnreader.model.ImageModel;
@@ -1057,12 +1058,12 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try{
-				imageTemp = dbh.getImage(db, image);
+				imageTemp = ImageModelHelper.getImage(db, image);
 
 				if (imageTemp == null) {
 					if(image.getReferer() == null) image.setReferer(image.getName());
 					Log.d(TAG, "Image not found, might need to check by referer: " + image.getName() + ", referer: " + image.getReferer());
-					imageTemp = dbh.getImageByReferer(db, image);
+					imageTemp = ImageModelHelper.getImageByReferer(db, image);
 				}
 			}
 			finally{
@@ -1110,7 +1111,7 @@ public class NovelsDao {
 					// save to db and get the saved value
 					SQLiteDatabase db = dbh.getWritableDatabase();
 					try{
-						image = dbh.insertImage(db, image);
+						image = ImageModelHelper.insertImage(db, image);
 					}
 					finally{
 						db.close();

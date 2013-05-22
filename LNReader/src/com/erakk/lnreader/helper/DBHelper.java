@@ -3,8 +3,6 @@ package com.erakk.lnreader.helper;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -18,9 +16,10 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.helper.db.ImageModelHelper;
+import com.erakk.lnreader.helper.db.PageModelHelper;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.BookmarkModel;
-import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
@@ -78,15 +77,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	// Database creation SQL statement
 	// New column should be appended as the last column
-	private static final String DATABASE_CREATE_IMAGES = "create table if not exists "
-		      + TABLE_IMAGE + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
-				 				  + COLUMN_IMAGE_NAME + " text unique not null, "		// 1
-				  				  + COLUMN_FILEPATH + " text not null, "				// 2
-				  				  + COLUMN_URL + " text not null, "						// 3
-				  				  + COLUMN_REFERER + " text, "							// 4
-				  				  + COLUMN_LAST_UPDATE + " integer, "					// 5
-				  				  + COLUMN_LAST_CHECK + " integer, "					// 6
-				  				  + COLUMN_IS_BIG_IMAGE + " boolean);";					// 7
 
 	private static final String DATABASE_CREATE_NOVEL_DETAILS = "create table if not exists "
 		      + TABLE_NOVEL_DETAILS + "(" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -154,7 +144,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		 db.execSQL(PageModelHelper.DATABASE_CREATE_PAGES);
-		 db.execSQL(DATABASE_CREATE_IMAGES);
+		 db.execSQL(ImageModelHelper.DATABASE_CREATE_IMAGES);
 		 db.execSQL(DATABASE_CREATE_NOVEL_DETAILS);
 		 db.execSQL(DATABASE_CREATE_NOVEL_BOOKS);
 		 db.execSQL(DATABASE_CREATE_NOVEL_CONTENT);
@@ -760,110 +750,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		novelDetails.setLastUpdate(new Date(cursor.getInt(4)*1000));
 		novelDetails.setLastCheck(new Date(cursor.getInt(5)*1000));
 		return novelDetails;
-	}
-
-	/*
-	 * ImageModel
-	 * No Nested Object
-	 */
-	public ImageModel insertImage(SQLiteDatabase db, ImageModel image){
-		ImageModel temp = getImage(db, image.getName());
-
-		ContentValues cv = new ContentValues();
-		cv.put(COLUMN_IMAGE_NAME, image.getName());
-		cv.put(COLUMN_FILEPATH, image.getPath());
-		cv.put(COLUMN_URL, image.getUrl().toString());
-		cv.put(COLUMN_REFERER, image.getReferer());
-		cv.put(COLUMN_IS_BIG_IMAGE, image.isBigImage());
-		if(temp == null) {
-			cv.put(COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
-			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
-			insertOrThrow(db, TABLE_IMAGE, null, cv);
-			Log.i(TAG, "Complete Insert Images: " + image.getName() + " Ref: " +  image.getReferer());
-		}
-		else {
-			cv.put(COLUMN_LAST_UPDATE, "" + (int) (temp.getLastUpdate().getTime() / 1000));
-			cv.put(COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
-			update(db, TABLE_IMAGE, cv, COLUMN_ID + " = ?", new String[] {"" + temp.getId()});
-			Log.i(TAG, "Complete Update Images: " + image.getName() + " Ref: " +  image.getReferer());
-		}
-		// get updated data
-		image = getImage(db, image.getName());
-
-		//Log.d(TAG, "Complete Insert Images: " + image.getName() + " id: " + image.getId());
-
-		return image;
-	}
-
-	public ImageModel getImageByReferer(SQLiteDatabase db, ImageModel image) {
-		return getImageByReferer(db, image.getReferer());
-	}
-
-	public ImageModel getImageByReferer(SQLiteDatabase db, String url) {
-		//Log.d(TAG, "Selecting Image by Referer: " + url);
-		ImageModel image = null;
-
-		Cursor cursor = rawQuery(db, "select * from " + TABLE_IMAGE + " where " + COLUMN_REFERER + " = ? ", new String[] {url});
-		try {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				image = cursorToImage(cursor);
-				Log.d(TAG, "Found by Ref: " + image.getReferer() + " name: " + image.getName() + " id: " + image.getId());
-				break;
-			}
-		} finally{
-			if(cursor != null) cursor.close();
-		}
-
-		if(image == null) {
-			Log.w(TAG, "Not Found Image by Referer: " + url);
-		}
-		return image;
-	}
-
-
-	public ImageModel getImage(SQLiteDatabase db, ImageModel image) {
-		return getImage(db, image.getName());
-	}
-
-	public ImageModel getImage(SQLiteDatabase db, String name) {
-		//Log.d(TAG, "Selecting Image: " + name);
-		ImageModel image = null;
-
-		Cursor cursor = rawQuery(db, "select * from " + TABLE_IMAGE + " where " + COLUMN_IMAGE_NAME + " = ? ", new String[] {name});
-		try {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				image = cursorToImage(cursor);
-				//Log.d(TAG, "Found: " + image.getName() + " id: " + image.getId());
-				break;
-			}
-		} finally{
-			if(cursor != null) cursor.close();
-		}
-
-		if(image == null) {
-			Log.w(TAG, "Not Found Image: " + name);
-		}
-		return image;
-	}
-
-	private ImageModel cursorToImage(Cursor cursor) {
-		ImageModel image = new ImageModel();
-		image.setId(cursor.getInt(0));
-		image.setName(cursor.getString(1));
-		image.setPath(cursor.getString(2));
-		try {
-			image.setUrl(new URL(cursor.getString(3)));
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		image.setReferer(cursor.getString(4));
-		image.setLastUpdate(new Date(cursor.getInt(5)*1000));
-		image.setLastCheck(new Date(cursor.getInt(6)*1000));
-
-		image.setBigImage(cursor.getInt(7) == 1 ? true : false);
-		return image;
 	}
 
 	/*

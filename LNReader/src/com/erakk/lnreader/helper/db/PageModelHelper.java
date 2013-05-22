@@ -1,4 +1,4 @@
-package com.erakk.lnreader.helper;
+package com.erakk.lnreader.helper.db;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.model.PageModel;
 
 public class PageModelHelper {
@@ -19,22 +20,22 @@ public class PageModelHelper {
 	private static DBHelper helper = NovelsDao.getInstance().getDBHelper();
 
 	// New column should be appended as the last column
-		public static final String DATABASE_CREATE_PAGES = "create table if not exists "
-		      + DBHelper.TABLE_PAGE + "(" + DBHelper.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
-										 + DBHelper.COLUMN_PAGE + " text unique not null, "				// 1
-						  				 + DBHelper.COLUMN_TITLE + " text not null, "					// 2
-						  				 + DBHelper.COLUMN_TYPE + " text, "								// 3
-						  				 + DBHelper.COLUMN_PARENT + " text, "							// 4
-						  				 + DBHelper.COLUMN_LAST_UPDATE + " integer, "					// 5
-						  				 + DBHelper.COLUMN_LAST_CHECK + " integer, "					// 6
-						  				 + DBHelper.COLUMN_IS_WATCHED + " boolean, "					// 7
-						  				 + DBHelper.COLUMN_IS_FINISHED_READ + " boolean, "				// 8
-						  				 + DBHelper.COLUMN_IS_DOWNLOADED + " boolean, "					// 9
-						  				 + DBHelper.COLUMN_ORDER + " integer, "							// 10
-						  				 + DBHelper.COLUMN_STATUS + " text, "							// 11
-						  				 + DBHelper.COLUMN_IS_MISSING + " boolean, "					// 12
-						  				 + DBHelper.COLUMN_IS_EXTERNAL + " boolean, "					// 13
-										 + DBHelper.COLUMN_LANGUAGE + " text not null default '" + Constants.LANG_ENGLISH+ "');";                // 14
+	public static final String DATABASE_CREATE_PAGES = "create table if not exists "
+	      + DBHelper.TABLE_PAGE + "(" + DBHelper.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
+									 + DBHelper.COLUMN_PAGE + " text unique not null, "				// 1
+					  				 + DBHelper.COLUMN_TITLE + " text not null, "					// 2
+					  				 + DBHelper.COLUMN_TYPE + " text, "								// 3
+					  				 + DBHelper.COLUMN_PARENT + " text, "							// 4
+					  				 + DBHelper.COLUMN_LAST_UPDATE + " integer, "					// 5
+					  				 + DBHelper.COLUMN_LAST_CHECK + " integer, "					// 6
+					  				 + DBHelper.COLUMN_IS_WATCHED + " boolean, "					// 7
+					  				 + DBHelper.COLUMN_IS_FINISHED_READ + " boolean, "				// 8
+					  				 + DBHelper.COLUMN_IS_DOWNLOADED + " boolean, "					// 9
+					  				 + DBHelper.COLUMN_ORDER + " integer, "							// 10
+					  				 + DBHelper.COLUMN_STATUS + " text, "							// 11
+					  				 + DBHelper.COLUMN_IS_MISSING + " boolean, "					// 12
+					  				 + DBHelper.COLUMN_IS_EXTERNAL + " boolean, "					// 13
+									 + DBHelper.COLUMN_LANGUAGE + " text not null default '" + Constants.LANG_ENGLISH+ "');";                // 14
 
 	public static PageModel cursorToPageModel(Cursor cursor) {
 		PageModel page = new PageModel();
