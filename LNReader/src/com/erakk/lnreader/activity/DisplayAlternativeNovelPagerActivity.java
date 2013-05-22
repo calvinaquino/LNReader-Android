@@ -1,5 +1,7 @@
 package com.erakk.lnreader.activity;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.LocalActivityManager;
 import android.content.Intent;
@@ -23,9 +25,7 @@ import com.erakk.lnreader.UIHelper;
 
 @SuppressWarnings("deprecation")
 public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
-    // TabSpec Names
-	
-    private static final String BAHASA_SPEC = "Bahasa Indonesia";
+    
     static TabHost tabHost;
 	private boolean isInverted;
 	LocalActivityManager lam;
@@ -50,26 +50,58 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
         tabHost.setup(lam);
         isInverted = getColorPreferences();
         
-        // First Tab - Alternative Language (Section Test for Bahasa Indonesia)
-        TabSpec firstSpec = tabHost.newTabSpec(BAHASA_SPEC);
-        firstSpec.setIndicator(BAHASA_SPEC);
-        Intent firstIntent = new Intent(this, DisplayAlternativeNovelListActivity.class);
-        firstIntent.putExtra("LANG", Constants.LANG_BAHASA_INDONESIA);
-        firstSpec.setContent(firstIntent);
- 
-        // Adding all TabSpec to TabHost
-        tabHost.addTab(firstSpec); // Adding First tab
-        setTabColor();
-        
+        Integer selection = getIntent().getIntExtra("LANG_VALUE", 0);
+    	String tabSpec = null;
+    	
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             public void onTabChanged(String tabId) {
             	setTabColor();
             	currentActivity = lam.getActivity(tabId);
             }
         });
+    	
+        // Alternative Language tab
+        if (selection != 0){
+        	/* If one language is being chosen - Statically add Tabs */
+        	/* All language choices are defined here */
+        	if (selection == 1) tabSpec = Constants.LANG_BAHASA_INDONESIA;
+        	
+            TabSpec firstSpec = tabHost.newTabSpec(tabSpec);
+            firstSpec.setIndicator(tabSpec);
+            Intent firstIntent = new Intent(this, DisplayAlternativeNovelListActivity.class);
+            firstIntent.putExtra("LANG", tabSpec);
+            firstSpec.setContent(firstIntent);
+     
+            // Adding all TabSpec to TabHost
+            tabHost.addTab(firstSpec); // Adding First tab        	
+            
+            //Cheap preload list hack.
+            tabHost.setCurrentTabByTag(tabSpec);
+        } else {
+        	/* If All is being chosen - Dynamically add Tabs */
+        	ArrayList<String> Choice = new ArrayList<String>();
+       
+        	Choice.add(Constants.LANG_BAHASA_INDONESIA);
+        	
+        	TabSpec[] allSpec = new TabSpec[Choice.size()]; 
+        	for (int i = 0; i < Choice.size(); i++){
+                allSpec[i] = tabHost.newTabSpec(Choice.get(i));
+                allSpec[i].setIndicator(Choice.get(i));
+                Intent firstIntent = new Intent(this, DisplayAlternativeNovelListActivity.class);
+                firstIntent.putExtra("LANG", Choice.get(i));
+                allSpec[i].setContent(firstIntent);
+         
+                // Adding all TabSpec to TabHost
+                tabHost.addTab(allSpec[i]);  	
+                
+                //Cheap preload list hack.
+                tabHost.setCurrentTabByTag(Choice.get(i));       		
+        	}	
+        }
         
-        //Cheap preload list hack.
-        tabHost.setCurrentTabByTag(BAHASA_SPEC);
+        //Tab color
+        setTabColor();
+        
     }
     
     @Override

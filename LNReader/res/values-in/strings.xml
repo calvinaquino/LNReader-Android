@@ -7,6 +7,8 @@
     <string name="watch_list">Daftar Favorit</string>
     <string name="originals">Daftar Original</string>
     <string name="alternative_language">Bahasa Lain</string>
+    <string name="choose">Pilih</string>
+    <string name="all">Semua</string>
     <string name="settings">Preferensi</string>
     <string name="title_activity_display_light_novels">Light Novel</string>
     <string name="title_activity_display_settings">Preferensi</string>
