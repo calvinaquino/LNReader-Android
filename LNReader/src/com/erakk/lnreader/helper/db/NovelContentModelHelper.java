@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.DBHelper;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
@@ -130,14 +131,20 @@ public class NovelContentModelHelper {
 	 */
 
 	public static boolean deleteNovelContent(SQLiteDatabase db, NovelContentModel content) {
-		int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT, DBHelper.COLUMN_ID + " = ?", new String[]{"" + content.getId()});
-		Log.w(TAG, "NovelContent Deleted: " + result);
-		return result > 0 ? true : false;
+		if(content != null && content.getId() > 0) {
+			int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT, DBHelper.COLUMN_ID + " = ?", new String[]{"" + content.getId()});
+			Log.w(TAG, "NovelContent Deleted: " + result);
+			return result > 0 ? true : false;
+		}
+		return false;
 	}
 
 	public static boolean deleteNovelContent(SQLiteDatabase db, PageModel ref) {
-		int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT, DBHelper.COLUMN_PAGE + " = ?", new String[]{"" + ref.getPage()});
-		Log.w(TAG, "NovelContent Deleted: " + result);
-		return result > 0 ? true : false;
+		if(ref != null && !Util.isStringNullOrEmpty(ref.getPage())) {
+			int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT, DBHelper.COLUMN_PAGE + " = ?", new String[]{"" + ref.getPage()});
+			Log.w(TAG, "NovelContent Deleted: " + result);
+			return result > 0 ? true : false;
+		}
+		return false;
 	}
 }

@@ -213,7 +213,6 @@ public class PageModelHelper {
 		cv.put(DBHelper.COLUMN_TYPE, page.getType());
 		cv.put(DBHelper.COLUMN_IS_WATCHED, page.isWatched());
 		cv.put(DBHelper.COLUMN_IS_FINISHED_READ, page.isFinishedRead());
-		cv.put(DBHelper.COLUMN_IS_DOWNLOADED, page.isDownloaded());
 		if(updateStatus) cv.put(DBHelper.COLUMN_STATUS, page.getStatus());
 		cv.put(DBHelper.COLUMN_IS_MISSING, page.isMissing());
 		cv.put(DBHelper.COLUMN_IS_EXTERNAL, page.isExternal());
@@ -229,6 +228,8 @@ public class PageModelHelper {
 			else
 				cv.put(DBHelper.COLUMN_LAST_CHECK, "" + (int) (page.getLastCheck().getTime() / 1000));
 
+			cv.put(DBHelper.COLUMN_IS_DOWNLOADED, page.isDownloaded());
+
 			long id = helper.insertOrThrow(db, DBHelper.TABLE_PAGE, null, cv);
 			Log.i(TAG, "Page Model Inserted, New Id: " + id);
 		}
@@ -242,6 +243,8 @@ public class PageModelHelper {
 				cv.put(DBHelper.COLUMN_LAST_CHECK, "" + (int) (temp.getLastCheck().getTime() / 1000));
 			else
 				cv.put(DBHelper.COLUMN_LAST_CHECK, "" + (int) (page.getLastCheck().getTime() / 1000));
+
+			cv.put(DBHelper.COLUMN_IS_DOWNLOADED, temp.isDownloaded());
 
 			int result = helper.update(db, DBHelper.TABLE_PAGE, cv, DBHelper.COLUMN_ID + " = ?", new String[] {"" + temp.getId()});
 			Log.i(TAG, "Page Model: " + page.getPage() + " Updated, Affected Row: " + result);
