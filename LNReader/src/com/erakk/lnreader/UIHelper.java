@@ -247,4 +247,15 @@ public class UIHelper {
 		int langIdx = GetIntFromPreferences(Constants.PREF_LANGUAGE, 0);
 		setLanguage(activity, langIdx);
 	}
+	
+	public static void setAlternativeLanguagePreferences(Context activity, String lang, boolean val) {
+		/* Set Alternative Language Novels preferences */
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(
+				LNReaderApplication.getInstance().getApplicationContext());
+
+		//write
+		SharedPreferences.Editor editor = sharedPref.edit();
+		editor.putBoolean(lang, val);
+		editor.commit(); // save change
+	}
 }

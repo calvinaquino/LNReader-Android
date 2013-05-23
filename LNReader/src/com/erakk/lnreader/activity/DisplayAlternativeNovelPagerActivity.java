@@ -16,6 +16,7 @@ import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 
@@ -49,9 +50,9 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
         lam.dispatchCreate(savedInstanceState);
         tabHost.setup(lam);
         isInverted = getColorPreferences();
-        
-        Integer selection = getIntent().getIntExtra("LANG_VALUE", 0);
-    	String tabSpec = null;
+    	
+    	final String [] selection = { Constants.LANG_BAHASA_INDONESIA };  //Append another languages here
+    	int numberOfChoice = 1; //Number of Alternative Languages
     	
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             public void onTabChanged(String tabId) {
@@ -59,29 +60,16 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
             	currentActivity = lam.getActivity(tabId);
             }
         });
-    	
-        // Alternative Language tab
-        if (selection != 0){
-        	/* If one language is being chosen - Statically add Tabs */
-        	/* All language choices are defined here */
-        	if (selection == 1) tabSpec = Constants.LANG_BAHASA_INDONESIA;
-        	
-            TabSpec firstSpec = tabHost.newTabSpec(tabSpec);
-            firstSpec.setIndicator(tabSpec);
-            Intent firstIntent = new Intent(this, DisplayAlternativeNovelListActivity.class);
-            firstIntent.putExtra("LANG", tabSpec);
-            firstSpec.setContent(firstIntent);
-     
-            // Adding all TabSpec to TabHost
-            tabHost.addTab(firstSpec); // Adding First tab        	
-            
-            //Cheap preload list hack.
-            tabHost.setCurrentTabByTag(tabSpec);
-        } else {
-        	/* If All is being chosen - Dynamically add Tabs */
+        
+        	/* Dynamically add Tabs */
         	ArrayList<String> Choice = new ArrayList<String>();
        
-        	Choice.add(Constants.LANG_BAHASA_INDONESIA);
+        	for (int i = 0; i < numberOfChoice; i++){
+        		boolean isChosen = PreferenceManager.getDefaultSharedPreferences(
+        				LNReaderApplication.getInstance().getApplicationContext())
+        				.getBoolean(selection[i], true);
+        		if (isChosen) Choice.add(selection[i]);
+        	}
         	
         	TabSpec[] allSpec = new TabSpec[Choice.size()]; 
         	for (int i = 0; i < Choice.size(); i++){
@@ -95,13 +83,11 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
                 tabHost.addTab(allSpec[i]);  	
                 
                 //Cheap preload list hack.
-                tabHost.setCurrentTabByTag(Choice.get(i));       		
-        	}	
-        }
-        
+                tabHost.setCurrentTabByTag(Choice.get(i));         		
+        	}
+      		 
         //Tab color
         setTabColor();
-        
     }
     
     @Override
