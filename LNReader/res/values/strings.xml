@@ -207,4 +207,7 @@
     <string name="last_update">Last Update</string>
     <string name="last_check">Last Check</string>
     <string name="updates">Updates</string>
+    <string name="alternative_language_summary">Select language for alternative language novels.</string>
+    <string name="alternative_language_title">Alternative Language Novels</string>
+    <string name="no_selected_language">No Alternative Language Selected!</string>
 </resources>

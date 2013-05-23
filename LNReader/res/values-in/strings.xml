@@ -207,4 +207,7 @@
     <string name="last_update">Pembaharuan Terakhir</string>
     <string name="last_check">Pengecekan Terakhir</string>
     <string name="updates">Pembaharuan</string>
+    <string name="alternative_language_summary">Pilih bahasa untuk novel-novel bahasa lain.</string>
+    <string name="alternative_language_title">Novel Bahasa Lain</string>
+    <string name="no_selected_language">Tidak Ada Bahasa Lain yang Dipilih!</string>
 </resources>

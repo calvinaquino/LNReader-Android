@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,6 +19,7 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
@@ -111,6 +113,46 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		});
 
         /* End of language section */
+        
+        /* A section to change Alternative Languages list
+         * 
+         *  @freedomofkeima
+         */
+        Preference selectAlternativeLanguage = findPreference("select_alternative_language");
+        /* List of languages */
+        final boolean indonesiaLanguage = PreferenceManager.getDefaultSharedPreferences(
+				LNReaderApplication.getInstance().getApplicationContext())
+				.getBoolean(Constants.LANG_BAHASA_INDONESIA, true);
+        /* End of list of languages */
+        selectAlternativeLanguage.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference p) {
+            	final CharSequence[] items = { Constants.LANG_BAHASA_INDONESIA };
+            	final boolean[] states = {indonesiaLanguage};
+            	 /* Show checkBox to screen */
+            	   AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            	    builder.setTitle(getResources().getString(R.string.alternative_language_title));
+            	    builder.setMultiChoiceItems(items, states, new DialogInterface.OnMultiChoiceClickListener(){
+            	        public void onClick(DialogInterface dialogInterface, int item, boolean state) {
+            	        }
+            	    });
+            	    builder.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+            	        public void onClick(DialogInterface dialog, int id) {
+            	            SparseBooleanArray Checked = ((AlertDialog)dialog).getListView().getCheckedItemPositions();
+            	            /* Save all choices to Shared Preferences */
+            	            UIHelper.setAlternativeLanguagePreferences(context, Constants.LANG_BAHASA_INDONESIA, Checked.get(Checked.keyAt(0)));
+            	            recreateUI();
+            	        }
+            	    });
+            	    builder.setPositiveButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+            	        public void onClick(DialogInterface dialog, int id) {
+            	             dialog.cancel();
+            	        }
+            	    });
+            	    builder.create().show();
+        		return true;
+            }
+        });       
+        /* End of alternative languages list section */
 
         Preference clearDatabase = findPreference("clear_database");
         clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
