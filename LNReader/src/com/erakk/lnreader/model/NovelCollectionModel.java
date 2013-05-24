@@ -1,5 +1,3 @@
-// Name might be changed
-
 package com.erakk.lnreader.model;
 
 import java.net.MalformedURLException;
@@ -19,20 +17,20 @@ import com.erakk.lnreader.helper.Util;
 
 public class NovelCollectionModel {
 	private static final String TAG = NovelCollectionModel.class.toString();
-	private int id;
-	private PageModel pageModel;	
+	private int id = -1;
+	private PageModel pageModel;
 	private String page;
 	private String cover;
 	private URL coverUrl;
 	private Bitmap coverBitmap;
-	private String synopsis;	
-	private ArrayList<BookModel> bookCollections; 
-	
+	private String synopsis;
+	private ArrayList<BookModel> bookCollections;
+
 	private String redirectTo;
-	
+
 	private Date lastUpdate;
 	private Date lastCheck;
-	
+
 	public int getId() {
 		return id;
 	}
@@ -45,7 +43,7 @@ public class NovelCollectionModel {
 			PageModel tempPage = new PageModel();
 			tempPage.setPage(this.page);
 			this.pageModel = dao.getPageModel(tempPage, null);
-		}		
+		}
 		return pageModel;
 	}
 	public void setPageModel(PageModel pageModel) {
@@ -69,7 +67,7 @@ public class NovelCollectionModel {
 	public void setBookCollections(ArrayList<BookModel> bookCollections) {
 		this.bookCollections = bookCollections;
 	}
-	
+
 	public URL getCoverUrl() {
 		if(this.coverUrl == null && this.cover != null && this.cover.length() > 0) {
 			try {
@@ -80,7 +78,7 @@ public class NovelCollectionModel {
 		}
 		return coverUrl;
 	}
-	
+
 	public void setCoverUrl(URL coverUri) {
 		this.coverUrl = coverUri;
 	}
@@ -94,16 +92,16 @@ public class NovelCollectionModel {
 					String filepath = Constants.IMAGE_ROOT + Util.sanitizeFilename(URLDecoder.decode(getCoverUrl().getFile()));
 					Log.d("GetCover", filepath);
 					this.coverBitmap = BitmapFactory.decodeFile(filepath);
-				}				
+				}
 			}catch(Exception e){
 				Log.e("GetCover", e.getClass().toString() + ": " + e.getMessage(), e);
 			}
 		}
 		// Redimension image so they all have a constant size
-		//coverBitmap = Bitmap.createScaledBitmap(coverBitmap, 200, 300, true); 
+		//coverBitmap = Bitmap.createScaledBitmap(coverBitmap, 200, 300, true);
 		return coverBitmap;
 	}
-	
+
 	public Date getLastUpdate() {
 		return lastUpdate;
 	}
@@ -125,10 +123,11 @@ public class NovelCollectionModel {
 		return this.page;
 	}
 
+	@Override
 	public String toString() {
 		return page;
 	}
-	
+
 	private ArrayList<PageModel> _FlattedChapterList;
 	public ArrayList<PageModel> getFlattedChapterList() {
 		if(_FlattedChapterList == null) {
@@ -144,7 +143,7 @@ public class NovelCollectionModel {
 		}
 		return _FlattedChapterList;
 	}
-	
+
 	public PageModel getNext(String page) {
 		int index = -1;
 		for(Iterator<PageModel> i = getFlattedChapterList().iterator(); i.hasNext();) {
@@ -158,7 +157,7 @@ public class NovelCollectionModel {
 			return getFlattedChapterList().get(index + 1);
 		else return null;
 	}
-	
+
 	public PageModel getPrev(String page) {
 		int index = -1;
 		for(Iterator<PageModel> i = getFlattedChapterList().iterator(); i.hasNext();) {

@@ -4,16 +4,16 @@ import java.util.Date;
 
 public class UpdateInfoModel {
 
-	private int id;
+	private int id = -1;
 	private UpdateType updateType;
 	private String updateTitle;
 	private Date updateDate;
-	
+
 	private String updatePage;
 	private PageModel updatePageModel;
-	
+
 	private boolean isSelected;
-	
+
 	public int getId() {
 		return id;
 	}
@@ -56,7 +56,7 @@ public class UpdateInfoModel {
 	public void setSelected(boolean isSelected) {
 		this.isSelected = isSelected;
 	}
-	
+
 }
 
 

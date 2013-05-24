@@ -9,24 +9,24 @@ import com.erakk.lnreader.dao.NovelsDao;
 
 public class NovelContentModel {
 	private static final String TAG = NovelContentModel.class.toString();
-	private int id;
+	private int id = -1;
 	private String content;
 	private String page;
 	private PageModel pageModel;
-	
+
 	private int lastXScroll;
 	private int lastYScroll;
 	private double lastZoom;
-	
+
 	private Date lastUpdate;
 	private Date lastCheck;
-	
+
 	private boolean isUpdatingFromInternet;
-	
+
 	private ArrayList<ImageModel> images;
-	
+
 	private ArrayList<BookmarkModel> bookmarks;
-	
+
 	public int getId() {
 		return id;
 	}
@@ -50,7 +50,7 @@ public class NovelContentModel {
 			NovelsDao dao = NovelsDao.getInstance();
 			PageModel tempPage = new PageModel();
 			tempPage.setPage(this.page);
-			this.pageModel = dao.getPageModel(tempPage, null); 
+			this.pageModel = dao.getPageModel(tempPage, null);
 		}
 		return pageModel;
 	}
@@ -106,10 +106,10 @@ public class NovelContentModel {
 			} catch (Exception e) {
 				Log.e(TAG, "Error when getting bookmarks: " + e.getMessage(), e);
 			}
-		}		
+		}
 		return bookmarks;
 	}
 	public void setBookmarks(ArrayList<BookmarkModel> bookmarks) {
 		this.bookmarks = bookmarks;
-	}	
+	}
 }

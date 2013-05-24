@@ -16,7 +16,7 @@ public class PageModel{
 	public static final String TYPE_TOS = "Copyrights";
 	private static final String TAG = PageModel.class.toString();
 
-	private int id;
+	private int id = -1;
 	private String page;
 	private String language; /* Attribute for language marker */
 	private String title;

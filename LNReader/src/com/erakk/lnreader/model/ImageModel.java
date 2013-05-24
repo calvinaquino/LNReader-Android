@@ -4,16 +4,16 @@ import java.net.URL;
 import java.util.Date;
 
 public class ImageModel {
-	private int id;
+	private int id = -1;
 	private String name;
 	private String path;
 	private URL url;
 	private Date lastUpdate;
 	private Date lastCheck;
-	
+
 	private String referer;
 	private boolean isBigImage;
-	
+
 	public int getId() {
 		return id;
 	}
@@ -62,6 +62,7 @@ public class ImageModel {
 	public void setBigImage(boolean isBigImage) {
 		this.isBigImage = isBigImage;
 	}
+	@Override
 	public String toString(){
 		return name;
 	}

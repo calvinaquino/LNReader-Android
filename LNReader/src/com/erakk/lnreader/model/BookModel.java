@@ -6,17 +6,17 @@ import java.util.Date;
 import com.erakk.lnreader.dao.NovelsDao;
 
 public class BookModel {
-	private int id;
+	private int id = -1;
 	private String title;
 	private ArrayList<PageModel> chapterCollection;
 	private String page;
-	
+
 	private Date lastUpdate;
 	private Date lastCheck;
-	private int order;	
-	
+	private int order;
+
 	private NovelCollectionModel parent;
-	
+
 	public int getId() {
 		return id;
 	}
@@ -62,14 +62,15 @@ public class BookModel {
 	public void setChapterCollection(ArrayList<PageModel> chapterCollection) {
 		this.chapterCollection = chapterCollection;
 	}
-	
+
 	public NovelCollectionModel getParent() {
 		return parent;
 	}
 	public void setParent(NovelCollectionModel parent) {
 		this.parent = parent;
 	}
-	
+
+	@Override
 	public String toString() {
 		return title;
 	}

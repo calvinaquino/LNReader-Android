@@ -5,15 +5,15 @@ import java.util.Date;
 import com.erakk.lnreader.dao.NovelsDao;
 
 public class BookmarkModel {
-	private int id;
+	private int id = -1;
 	private String page;
 	private String subPage;
 	private int pIndex;
 	private String excerpt;
 	private Date creationDate;
-	
+
 	private PageModel pageModel;
-	
+
 	public int getId() {
 		return id;
 	}
@@ -61,5 +61,5 @@ public class BookmarkModel {
 	public void setPageModel(PageModel pageModel) {
 		this.pageModel = pageModel;
 	}
-	
+
 }

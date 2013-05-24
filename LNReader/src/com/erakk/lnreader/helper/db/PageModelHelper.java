@@ -199,6 +199,15 @@ public class PageModelHelper {
 		return updatedList;
 	}
 
+	/**
+	 * Insert/Update Page Model, with note:
+	 * - isDownloaded flag is set from NovelContentModelHelper (insert/delete).
+	 * - if PageModel.id > 0, the content will be updated from input page.
+	 * @param db
+	 * @param page
+	 * @param updateStatus
+	 * @return
+	 */
 	public static PageModel insertOrUpdatePageModel(SQLiteDatabase db, PageModel page, boolean updateStatus){
 		//Log.d(TAG, page.toString());
 
@@ -211,14 +220,13 @@ public class PageModelHelper {
 		cv.put(DBHelper.COLUMN_ORDER, page.getOrder());
 		cv.put(DBHelper.COLUMN_PARENT, page.getParent());
 		cv.put(DBHelper.COLUMN_TYPE, page.getType());
-		cv.put(DBHelper.COLUMN_IS_WATCHED, page.isWatched());
-		cv.put(DBHelper.COLUMN_IS_FINISHED_READ, page.isFinishedRead());
 		if(updateStatus) cv.put(DBHelper.COLUMN_STATUS, page.getStatus());
 		cv.put(DBHelper.COLUMN_IS_MISSING, page.isMissing());
 		cv.put(DBHelper.COLUMN_IS_EXTERNAL, page.isExternal());
 
 		if(temp == null) {
-			//Log.d(TAG, "Inserting: " + page.toString());
+			// Fresh Data
+			// Log.d(TAG, "Inserting: " + page.toString());
 			if(page.getLastUpdate() == null)
 				cv.put(DBHelper.COLUMN_LAST_UPDATE, 0);
 			else
@@ -228,6 +236,8 @@ public class PageModelHelper {
 			else
 				cv.put(DBHelper.COLUMN_LAST_CHECK, "" + (int) (page.getLastCheck().getTime() / 1000));
 
+			cv.put(DBHelper.COLUMN_IS_WATCHED, page.isWatched());
+			cv.put(DBHelper.COLUMN_IS_FINISHED_READ, page.isFinishedRead());
 			cv.put(DBHelper.COLUMN_IS_DOWNLOADED, page.isDownloaded());
 
 			long id = helper.insertOrThrow(db, DBHelper.TABLE_PAGE, null, cv);
@@ -244,7 +254,17 @@ public class PageModelHelper {
 			else
 				cv.put(DBHelper.COLUMN_LAST_CHECK, "" + (int) (page.getLastCheck().getTime() / 1000));
 
-			cv.put(DBHelper.COLUMN_IS_DOWNLOADED, temp.isDownloaded());
+			if(page.getId() > 0) {
+				// new data model have an id, use the input value.
+				cv.put(DBHelper.COLUMN_IS_WATCHED, page.isWatched());
+				cv.put(DBHelper.COLUMN_IS_FINISHED_READ, page.isFinishedRead());
+				cv.put(DBHelper.COLUMN_IS_DOWNLOADED, page.isDownloaded());
+			}
+			else {
+				cv.put(DBHelper.COLUMN_IS_WATCHED, temp.isWatched());
+				cv.put(DBHelper.COLUMN_IS_FINISHED_READ, temp.isFinishedRead());
+				cv.put(DBHelper.COLUMN_IS_DOWNLOADED, temp.isDownloaded());
+			}
 
 			int result = helper.update(db, DBHelper.TABLE_PAGE, cv, DBHelper.COLUMN_ID + " = ?", new String[] {"" + temp.getId()});
 			Log.i(TAG, "Page Model: " + page.getPage() + " Updated, Affected Row: " + result);
