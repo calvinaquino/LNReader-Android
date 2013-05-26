@@ -1161,13 +1161,13 @@ public class NovelsDao {
 		return image;
 	}
 
-	public ArrayList<PageModel> doSearch(String searchStr, boolean isNovelOnly) {
+	public ArrayList<PageModel> doSearch(String searchStr, boolean isNovelOnly, String[] languageList, boolean[] languageStatus) {
 		if(searchStr == null || searchStr.length() < 3 ) return null;
 
 		ArrayList<PageModel> result;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
-			result = dbh.doSearch(db, searchStr, isNovelOnly);
+			result = dbh.doSearch(db, searchStr, isNovelOnly, languageList, languageStatus);
 		}
 		return result;
 	}

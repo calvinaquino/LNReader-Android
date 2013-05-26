@@ -243,14 +243,19 @@ public class DBHelper extends SQLiteOpenHelper {
 		return 0;
 	}
 
-	public ArrayList<PageModel> doSearch(SQLiteDatabase db, String searchStr, boolean isNovelOnly) {
+	public ArrayList<PageModel> doSearch(SQLiteDatabase db, String searchStr, boolean isNovelOnly, String[] languageList, boolean[] languageStatus) {
 		ArrayList<PageModel> result = new ArrayList<PageModel>();
 
 		String sql = null;
+		String sqlLang = "''";
+		
+		for (int i = 0; i < languageList.length; i++)
+			if (languageStatus[i]) sqlLang = sqlLang + ", '" + languageList[i] + "'";
+		
 		if(isNovelOnly) {
 			sql = "select * from " + TABLE_PAGE + " WHERE "
 		            + COLUMN_TYPE + " = '" + PageModel.TYPE_NOVEL + "' AND "
-		            + COLUMN_LANGUAGE + " = 'English' AND ("
+		            + COLUMN_LANGUAGE + " IN (" + sqlLang + ") AND ("
 					+ COLUMN_PAGE + " LIKE ? OR " + COLUMN_TITLE + " LIKE ? )"
 					+ " ORDER BY "
 					+ COLUMN_PARENT + ", "
@@ -261,7 +266,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 		else {
 			sql = "select * from " + TABLE_PAGE + " WHERE "
-		            + COLUMN_LANGUAGE + " = 'English' AND ("
+		            + COLUMN_LANGUAGE + " IN (" + sqlLang + ") AND ("
 					+ COLUMN_PAGE + " LIKE ? OR " + COLUMN_TITLE + " LIKE ? )"
 					+ " ORDER BY CASE " + COLUMN_TYPE
 					+ "   WHEN '" + PageModel.TYPE_NOVEL   + "' THEN 1 "

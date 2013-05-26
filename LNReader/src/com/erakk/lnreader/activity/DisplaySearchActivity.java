@@ -1,7 +1,10 @@
 package com.erakk.lnreader.activity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -17,8 +20,11 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -38,6 +44,10 @@ public class DisplaySearchActivity extends SherlockActivity{
 	private ProgressBar progress = null;
 	SearchPageModelAdapter adapter = null;
 	private CheckBox chkNovelOnly = null;
+	private Context ctx = this;
+	private ExpandableListView languageSelection = null;
+	/* You just need to add a new alternative language here */
+	String[] languageList = { Constants.LANG_ENGLISH , Constants.LANG_BAHASA_INDONESIA };
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,6 +69,41 @@ public class DisplaySearchActivity extends SherlockActivity{
 				doSearch(s);
 			}
 		});
+		
+		/* A section for Expandable List */
+		languageSelection = (ExpandableListView) findViewById(R.id.categorySearchLanguage);
+		SimpleExpandableListAdapter languageAdapter = new SimpleExpandableListAdapter(
+				this,
+				createGroupList(),	// groupData describes the first-level entries
+				R.layout.activity_search_group,	// Layout for the first-level entries
+				new String[] { "searchOption" },	// Key in the groupData maps to display
+				new int[] { R.id.optionName },		// Data under "colorName" key goes into this TextView
+				createChildList(),	// childData describes second-level entries
+				R.layout.activity_search_child,	// Layout for second-level entries
+				new String[] { "languagePreferences" },	// Keys in childData maps to display
+				new int[] { R.id.languageOptionName }	// Data under the keys above go into these TextViews
+		);
+		languageSelection.setAdapter(languageAdapter);
+		languageSelection.setOnChildClickListener(new OnChildClickListener(){
+			
+			@Override
+			public boolean onChildClick(ExpandableListView parent, View v,
+					int groupPosition, int childPosition, long id) {
+			    SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+			    SharedPreferences.Editor editor = sharedPrefs.edit();
+			    for (int i = 0; i < languageList.length; i++){
+			    	if (i == childPosition) {
+			    		editor.putBoolean("Search:" + languageList[i], !sharedPrefs.getBoolean("Search:" + languageList[i], true));
+			    		editor.commit();
+			    	}
+			    }
+			    doSearch(search.getEditableText());
+				progress.setVisibility(View.VISIBLE);
+				recreateUI();
+				return false;
+			}	
+		});
+		/* End of Expandable List section */
 		
 		ListView searchResult = (ListView) findViewById(R.id.searchResult);
 		int resourceId = R.layout.novel_list_item;
@@ -87,6 +132,40 @@ public class DisplaySearchActivity extends SherlockActivity{
 		});
 		
 	}
+	
+	/* A section for Expandable List */
+	private List<HashMap<String, String>> createGroupList() {
+		  ArrayList<HashMap<String, String>> advancedSearch = new ArrayList<HashMap<String, String>>();
+		  HashMap<String, String> option = new HashMap<String, String>();
+		  option.put("searchOption", getResources().getString(R.string.category_search_language));
+		  advancedSearch.add(option);
+		  return (List<HashMap<String, String>>)advancedSearch;
+	    }
+	
+	private List<ArrayList<HashMap<String, String>>> createChildList(){
+		  ArrayList<ArrayList<HashMap<String, String>>> firstTierOption = new ArrayList<ArrayList<HashMap<String, String>>>();
+		  ArrayList<HashMap<String, String>> secondTierOption = new ArrayList<HashMap<String, String>>();
+	      SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+	      SharedPreferences.Editor editor = sharedPrefs.edit();
+		  for( int n = 0 ; n < languageList.length ; n++ ) {
+			    HashMap<String, String> child = new HashMap<String, String>();
+			    /* Put a shared Preference if null */
+			    if (!sharedPrefs.contains("Search:" + languageList[n])){
+				    editor.putBoolean("Search:" + languageList[n], true);
+					editor.commit();	
+			    }
+			    if (sharedPrefs.getBoolean("Search:" + languageList[n], true)) child.put("languagePreferences", languageList[n] + " : " + getResources().getString(R.string.enabled));
+			    else child.put("languagePreferences", languageList[n] + " : " + getResources().getString(R.string.disabled));
+			    secondTierOption.add( child );
+			  }
+		  firstTierOption.add(secondTierOption);
+		  return firstTierOption;
+		}
+	
+	private void recreateUI() {
+		UIHelper.Recreate(this);
+	}
+	/* End of Expandable List section */
 	
 	protected void SetNovelOnly(boolean isChecked) {
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -140,9 +219,13 @@ public class DisplaySearchActivity extends SherlockActivity{
 		
 		public void run() {
 			Log.d(TAG, "Time: " + time + " Start Time: " + mStartTime);
+			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+			boolean[] languageStatus = new boolean[languageList.length];
+			for (int i = 0; i < languageList.length; i++)
+				languageStatus[i] = sharedPrefs.getBoolean("Search:" + languageList[i], true);
 			if(time == mStartTime) {
 				adapter.clear();
-				ArrayList<PageModel> result = NovelsDao.getInstance().doSearch(searchString, isNovelOnly);
+				ArrayList<PageModel> result = NovelsDao.getInstance().doSearch(searchString, isNovelOnly, languageList, languageStatus);
 				if (result != null)
 					adapter.addAll(result);
 				progress.setVisibility(View.GONE);
