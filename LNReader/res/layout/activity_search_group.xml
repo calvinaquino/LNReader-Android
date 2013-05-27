@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+
+    <TextView android:id="@+id/optionName"
+         android:paddingLeft="50dp"
+         android:textSize="16sp"
+         android:textStyle="italic"
+         android:layout_width="300dp"
+         android:layout_height="30dp"
+         android:textIsSelectable="false"/>
+
+</LinearLayout>

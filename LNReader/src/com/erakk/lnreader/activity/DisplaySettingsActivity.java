@@ -120,18 +120,18 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
          */
         Preference selectAlternativeLanguage = findPreference("select_alternative_language");
         /* List of languages */
-        final boolean indonesiaLanguage = PreferenceManager.getDefaultSharedPreferences(
-				LNReaderApplication.getInstance().getApplicationContext())
-				.getBoolean(Constants.LANG_BAHASA_INDONESIA, true);
+        final boolean[] languageStatus = new boolean [Constants.languagelistNotDefault.length];
+        for (int j = 0; j < Constants.languagelistNotDefault.length; j++)
+        	 languageStatus[j] = PreferenceManager.getDefaultSharedPreferences(
+     				LNReaderApplication.getInstance().getApplicationContext())
+    				.getBoolean(Constants.languagelistNotDefault[j], true);
         /* End of list of languages */
         selectAlternativeLanguage.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
-            	final CharSequence[] items = { Constants.LANG_BAHASA_INDONESIA };
-            	final boolean[] states = {indonesiaLanguage};
             	 /* Show checkBox to screen */
             	   AlertDialog.Builder builder = new AlertDialog.Builder(context);
             	    builder.setTitle(getResources().getString(R.string.alternative_language_title));
-            	    builder.setMultiChoiceItems(items, states, new DialogInterface.OnMultiChoiceClickListener(){
+            	    builder.setMultiChoiceItems(Constants.languagelistNotDefault, languageStatus, new DialogInterface.OnMultiChoiceClickListener(){
             	        public void onClick(DialogInterface dialogInterface, int item, boolean state) {
             	        }
             	    });
@@ -139,7 +139,8 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
             	        public void onClick(DialogInterface dialog, int id) {
             	            SparseBooleanArray Checked = ((AlertDialog)dialog).getListView().getCheckedItemPositions();
             	            /* Save all choices to Shared Preferences */
-            	            UIHelper.setAlternativeLanguagePreferences(context, Constants.LANG_BAHASA_INDONESIA, Checked.get(Checked.keyAt(0)));
+            	            for (int j = 0; j < Constants.languagelistNotDefault.length; j++)
+            	              UIHelper.setAlternativeLanguagePreferences(context, Constants.languagelistNotDefault[j], Checked.get(Checked.keyAt(j)));
             	            recreateUI();
             	        }
             	    });
