@@ -126,12 +126,11 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
         /* End of list of languages */
         selectAlternativeLanguage.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
-            	final CharSequence[] items = { Constants.LANG_BAHASA_INDONESIA };
             	final boolean[] states = {indonesiaLanguage};
             	 /* Show checkBox to screen */
             	   AlertDialog.Builder builder = new AlertDialog.Builder(context);
             	    builder.setTitle(getResources().getString(R.string.alternative_language_title));
-            	    builder.setMultiChoiceItems(items, states, new DialogInterface.OnMultiChoiceClickListener(){
+            	    builder.setMultiChoiceItems(Constants.languagelistNotDefault, states, new DialogInterface.OnMultiChoiceClickListener(){
             	        public void onClick(DialogInterface dialogInterface, int item, boolean state) {
             	        }
             	    });

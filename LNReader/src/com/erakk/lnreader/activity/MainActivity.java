@@ -182,13 +182,10 @@ public class MainActivity extends SherlockActivity {
 		int selection = 0;
 		
 		/* Checking number of selected languages */
-		String [] choice = { Constants.LANG_BAHASA_INDONESIA }; //Append another languages here
-		int numberOfChoice = 1; //Number of Alternative Languages
-    	
-    	for (int i = 0; i < numberOfChoice; i++)
+    	for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
 		   if (PreferenceManager.getDefaultSharedPreferences(
 				LNReaderApplication.getInstance().getApplicationContext())
-				.getBoolean(choice[i], true)) selection++;
+				.getBoolean(Constants.languagelistNotDefault[i], true)) selection++;
 		
 		if (selection == 0){
 			/* Build an AlertDialog */

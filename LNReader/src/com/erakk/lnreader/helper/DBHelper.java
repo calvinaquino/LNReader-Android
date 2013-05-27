@@ -243,14 +243,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		return 0;
 	}
 
-	public ArrayList<PageModel> doSearch(SQLiteDatabase db, String searchStr, boolean isNovelOnly, String[] languageList, boolean[] languageStatus) {
+	public ArrayList<PageModel> doSearch(SQLiteDatabase db, String searchStr, boolean isNovelOnly, ArrayList<String> languageList) {
 		ArrayList<PageModel> result = new ArrayList<PageModel>();
 
 		String sql = null;
-		String sqlLang = "''";
-		
-		for (int i = 0; i < languageList.length; i++)
-			if (languageStatus[i]) sqlLang = sqlLang + ", '" + languageList[i] + "'";
+		String sqlLang = "'" + Util.join(languageList, "' ,'") + "'";
 		
 		if(isNovelOnly) {
 			sql = "select * from " + TABLE_PAGE + " WHERE "

@@ -46,8 +46,6 @@ public class DisplaySearchActivity extends SherlockActivity{
 	private CheckBox chkNovelOnly = null;
 	private Context ctx = this;
 	private ExpandableListView languageSelection = null;
-	/* You just need to add a new alternative language here */
-	String[] languageList = { Constants.LANG_ENGLISH , Constants.LANG_BAHASA_INDONESIA };
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -91,9 +89,9 @@ public class DisplaySearchActivity extends SherlockActivity{
 					int groupPosition, int childPosition, long id) {
 			    SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 			    SharedPreferences.Editor editor = sharedPrefs.edit();
-			    for (int i = 0; i < languageList.length; i++){
+			    for (int i = 0; i < Constants.languageList.length; i++){
 			    	if (i == childPosition) {
-			    		editor.putBoolean("Search:" + languageList[i], !sharedPrefs.getBoolean("Search:" + languageList[i], true));
+			    		editor.putBoolean("Search:" + Constants.languageList[i], !sharedPrefs.getBoolean("Search:" + Constants.languageList[i], true));
 			    		editor.commit();
 			    	}
 			    }
@@ -147,15 +145,15 @@ public class DisplaySearchActivity extends SherlockActivity{
 		  ArrayList<HashMap<String, String>> secondTierOption = new ArrayList<HashMap<String, String>>();
 	      SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 	      SharedPreferences.Editor editor = sharedPrefs.edit();
-		  for( int n = 0 ; n < languageList.length ; n++ ) {
+		  for( int n = 0 ; n < Constants.languageList.length ; n++ ) {
 			    HashMap<String, String> child = new HashMap<String, String>();
 			    /* Put a shared Preference if null */
-			    if (!sharedPrefs.contains("Search:" + languageList[n])){
-				    editor.putBoolean("Search:" + languageList[n], true);
+			    if (!sharedPrefs.contains("Search:" + Constants.languageList[n])){
+				    editor.putBoolean("Search:" + Constants.languageList[n], true);
 					editor.commit();	
 			    }
-			    if (sharedPrefs.getBoolean("Search:" + languageList[n], true)) child.put("languagePreferences", languageList[n] + " : " + getResources().getString(R.string.enabled));
-			    else child.put("languagePreferences", languageList[n] + " : " + getResources().getString(R.string.disabled));
+			    if (sharedPrefs.getBoolean("Search:" + Constants.languageList[n], true)) child.put("languagePreferences", Constants.languageList[n] + " : " + getResources().getString(R.string.enabled));
+			    else child.put("languagePreferences", Constants.languageList[n] + " : " + getResources().getString(R.string.disabled));
 			    secondTierOption.add( child );
 			  }
 		  firstTierOption.add(secondTierOption);
@@ -220,12 +218,12 @@ public class DisplaySearchActivity extends SherlockActivity{
 		public void run() {
 			Log.d(TAG, "Time: " + time + " Start Time: " + mStartTime);
 			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-			boolean[] languageStatus = new boolean[languageList.length];
-			for (int i = 0; i < languageList.length; i++)
-				languageStatus[i] = sharedPrefs.getBoolean("Search:" + languageList[i], true);
+			ArrayList<String> languageList = new ArrayList<String>();
+			for (int i = 0; i < Constants.languageList.length; i++)
+				if(sharedPrefs.getBoolean("Search:" + Constants.languageList[i], true)) languageList.add(Constants.languageList[i]);
 			if(time == mStartTime) {
 				adapter.clear();
-				ArrayList<PageModel> result = NovelsDao.getInstance().doSearch(searchString, isNovelOnly, languageList, languageStatus);
+				ArrayList<PageModel> result = NovelsDao.getInstance().doSearch(searchString, isNovelOnly, languageList);
 				if (result != null)
 					adapter.addAll(result);
 				progress.setVisibility(View.GONE);
