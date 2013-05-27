@@ -51,9 +51,6 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
         tabHost.setup(lam);
         isInverted = getColorPreferences();
     	
-    	final String [] selection = { Constants.LANG_BAHASA_INDONESIA };  //Append another languages here
-    	int numberOfChoice = 1; //Number of Alternative Languages
-    	
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             public void onTabChanged(String tabId) {
             	setTabColor();
@@ -64,11 +61,11 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
         	/* Dynamically add Tabs */
         	ArrayList<String> Choice = new ArrayList<String>();
        
-        	for (int i = 0; i < numberOfChoice; i++){
+        	for (int i = 0; i < Constants.languagelistNotDefault.length; i++){
         		boolean isChosen = PreferenceManager.getDefaultSharedPreferences(
         				LNReaderApplication.getInstance().getApplicationContext())
-        				.getBoolean(selection[i], true);
-        		if (isChosen) Choice.add(selection[i]);
+        				.getBoolean(Constants.languagelistNotDefault[i], true);
+        		if (isChosen) Choice.add(Constants.languagelistNotDefault[i]);
         	}
         	
         	TabSpec[] allSpec = new TabSpec[Choice.size()]; 

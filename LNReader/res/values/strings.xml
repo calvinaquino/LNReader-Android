@@ -210,4 +210,7 @@
     <string name="alternative_language_summary">Select language for alternative language novels.</string>
     <string name="alternative_language_title">Alternative Language Novels</string>
     <string name="no_selected_language">No Alternative Language Selected!</string>
+    <string name="category_search_language">Search Language Category</string>
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
 </resources>
