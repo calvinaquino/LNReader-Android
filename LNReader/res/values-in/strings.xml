@@ -79,8 +79,8 @@
     <string name="novel_list_download_all">Unduh Semua Informasi</string>
     <string name="update_interval_summary">Menentukan frekuensi verifikasi pembaharuan (%1$s)</string>
     <string name="update_interval_title">Interval pembaharuan</string>
-    <string name="selected_mode">Bahasa yang dipilih: %1$s</string>
-    <string name="selected_language">Mode yang dipilih: %1$s.\nBuka ulang aplikasi untuk hasil maksimal.</string>
+    <string name="selected_language">Bahasa yang dipilih: %1$s</string>
+    <string name="selected_mode">Mode yang dipilih: %1$s.\nBuka ulang aplikasi untuk hasil maksimal.</string>
     <string name="last_run">Proses terakhir: %1$s\nStatus: %2$s</string>
     <string name="none">Tidak pernah</string>
     <string name="unknown">Tidak terdefinisi</string>
