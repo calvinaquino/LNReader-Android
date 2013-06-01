@@ -81,7 +81,6 @@
 	            android:layout_height="wrap_content"
    	            android:layout_gravity="center"
 	            android:layout_marginTop="25dp"
-	            android:layout_marginBottom="25dp"
 	            android:minHeight="56dp"
 	            android:minWidth="165dp"
    	            android:onClick="jumpLastRead"
@@ -89,6 +88,21 @@
 	            android:textStyle="bold"
 	            android:textSize="22sp"
    	            android:text="@string/jump_last_read" />
+	        
+	        <Button
+	            android:id="@+id/button7"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+   	            android:layout_gravity="center"
+	            android:layout_marginTop="25dp"
+	            android:layout_marginBottom="30dp"
+	            android:minHeight="66dp"
+	            android:minWidth="165dp"
+	            android:onClick="openAlternativeNovelList"
+	            android:background="@drawable/button"	            
+	            android:textStyle="bold"
+	            android:textSize="22sp"
+   	            android:text="@string/alternative_language" />	
 
 	    </LinearLayout>
 	    
