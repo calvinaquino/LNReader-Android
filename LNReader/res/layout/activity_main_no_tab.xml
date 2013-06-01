@@ -101,7 +101,7 @@
 	            android:onClick="openAlternativeNovelList"
 	            android:background="@drawable/button"	            
 	            android:textStyle="bold"
-	            android:textSize="20sp"
+	            android:textSize="22sp"
    	            android:text="@string/alternative_language" />	
 
 	    </LinearLayout>
