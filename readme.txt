@@ -2,7 +2,8 @@ DEVELOPMENT REQUIREMENT:
 ====================================================
 * Android SDK
 * eclipse Juno + ADT
-* JSoup
+* JSoup 1.7.2
+* ActionBarSherlock
 * Android 3+ (Honeycomb)
 
 APPLICATION REQUIREMENT:
