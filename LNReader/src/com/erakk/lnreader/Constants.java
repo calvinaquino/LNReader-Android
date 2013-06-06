@@ -101,7 +101,8 @@ public class Constants {
 	/* Section of Language */
 	public static final String LANG_ENGLISH = "English";
 	public static final String LANG_BAHASA_INDONESIA = "Bahasa Indonesia";
-	/* You just need to add a new alternative language here */
-	public static final String[] languageList = { Constants.LANG_ENGLISH , Constants.LANG_BAHASA_INDONESIA };
-	public static final String[] languagelistNotDefault = { Constants.LANG_BAHASA_INDONESIA };
+	public static final String LANG_FRENCH = "Français";
+	
+	/* You just need to add a new alternative language here and in AlternativeLanguageInfo -> initSingleton */
+	public static final String[] languageList = { Constants.LANG_ENGLISH , Constants.LANG_FRENCH, Constants.LANG_BAHASA_INDONESIA };
 }

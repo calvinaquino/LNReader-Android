@@ -17,6 +17,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.callback.CallbackEventData;
@@ -39,7 +40,7 @@ import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.model.UpdateInfoModel;
 import com.erakk.lnreader.parser.BakaTsukiParser;
-import com.erakk.lnreader.parser.BakaTsukiParserBahasa;
+import com.erakk.lnreader.parser.BakaTsukiParserAlternative;
 
 /**
  * @author Nandaka
@@ -445,7 +446,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			try{
 				db = dbh.getReadableDatabase();
-				page = PageModelHelper.getAlternativePage(db, Constants.LANG_BAHASA_INDONESIA);
+				page = PageModelHelper.getAlternativePage(db, language);
 			}finally{
 				db.close();
 			}
@@ -458,7 +459,7 @@ public class NovelsDao {
 			synchronized (dbh) {
 				try{
 					db = dbh.getReadableDatabase();
-					list = dbh.getAllAlternative(db, alphOrder, Constants.LANG_BAHASA_INDONESIA);
+					list = dbh.getAllAlternative(db, alphOrder, language);
 				}finally{
 					db.close();
 				}
@@ -469,20 +470,21 @@ public class NovelsDao {
 		return list;
 	}
 
-	@SuppressWarnings("null")
 	public ArrayList<PageModel> getAlternativeFromInternet(ICallbackNotifier notifier, String language) throws Exception {
 		if(!LNReaderApplication.getInstance().isOnline()) throw new Exception("No Network Connectifity");
 		if (notifier != null) {
 			notifier.onCallback(new CallbackEventData("Downloading " + language + " Novels list..."));
 		}
 
-		// parse Category:Teasers information
+		// parse information
 		PageModel teaserPage = new PageModel();
-		if (language.equals(Constants.LANG_BAHASA_INDONESIA)){
-			teaserPage.setPage("Category:Indonesian");
-			teaserPage.setTitle("Bahasa Indonesia Novels");
-			teaserPage.setLanguage(Constants.LANG_BAHASA_INDONESIA);
+    	
+		if (language != null){
+			teaserPage.setPage(AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo());
+			teaserPage.setTitle( language + " Novels");
+			teaserPage.setLanguage(language);
 		}
+
 		teaserPage = getPageModel(teaserPage, notifier);
 		teaserPage.setType(PageModel.TYPE_NOVEL);
 
@@ -496,14 +498,13 @@ public class NovelsDao {
 		// get alternative list
 		ArrayList<PageModel> list = null;
 		String url = null;
-		if (language.equals(Constants.LANG_BAHASA_INDONESIA)) url = Constants.BASE_URL + "/project/index.php?title=Category:Indonesian";
+		    if (language != null) url = Constants.BASE_URL + "/project/index.php?title=" + AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo();
 		int retry = 0;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{
 				Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
-
-				if (language.equals(Constants.LANG_BAHASA_INDONESIA)) list = BakaTsukiParserBahasa.ParseBahasaList(doc);
+                list = BakaTsukiParserAlternative.ParseAlternativeList(doc,language);
 				Log.d(TAG, "Found from internet: " + list.size() + " " + language + " Novel");
 
 				if (notifier != null) {
@@ -513,7 +514,7 @@ public class NovelsDao {
 			}catch(EOFException eof) {
 				++retry;
 				if(notifier != null) {
-					notifier.onCallback(new CallbackEventData("Retrying: Category:Indonesian (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
+					notifier.onCallback(new CallbackEventData("Retrying: " + language + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
 				}
 				if(retry > Constants.PAGE_DOWNLOAD_RETRY) throw eof;
 			}
@@ -533,7 +534,7 @@ public class NovelsDao {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			for (PageModel pageModel : list) {
 				pageModel = PageModelHelper.insertOrUpdatePageModel(db, pageModel, true);
-				Log.d(TAG, "Updated " + Constants.LANG_BAHASA_INDONESIA + " novel: " + pageModel.getPage());
+				Log.d(TAG, "Updated " + language + " novel: " + pageModel.getPage());
 			}
 		}
 
@@ -611,8 +612,7 @@ public class NovelsDao {
 				Response response = Jsoup.connect(fullUrl).timeout(Constants.TIMEOUT).execute();
 				PageModel pageModel = null;
 				String lang = page.getLanguage();
-				if (lang!= null && lang.equals(Constants.LANG_BAHASA_INDONESIA)) pageModel = BakaTsukiParserBahasa.parsePageAPI(page, response.parse(), fullUrl);
-				else pageModel = BakaTsukiParser.parsePageAPI(page, response.parse(), fullUrl);
+				if (lang!= null) pageModel = BakaTsukiParserAlternative.parsePageAPI(page, response.parse(), fullUrl);
 				pageModel.setFinishedRead(page.isFinishedRead());
 				pageModel.setWatched(page.isWatched());
 
@@ -697,7 +697,7 @@ public class NovelsDao {
 				Response response = Jsoup.connect(fullUrl).timeout(Constants.TIMEOUT).execute();
 				Document doc = response.parse();
 				/* Add your section of alternative language here, create own parser for each language for modularity reason */
-				if (page.getLanguage().equals(Constants.LANG_BAHASA_INDONESIA)) novel = BakaTsukiParserBahasa.ParseNovelDetails(doc, page);
+				if (!page.getLanguage().equals(Constants.LANG_ENGLISH)) novel = BakaTsukiParserAlternative.ParseNovelDetails(doc, page);
 				else novel = BakaTsukiParser.ParseNovelDetails(doc, page);
 			}catch(EOFException eof) {
 				++retry;

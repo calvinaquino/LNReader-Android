@@ -2,6 +2,8 @@ package com.erakk.lnreader.activity;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -24,6 +26,7 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
@@ -120,18 +123,33 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
          */
         Preference selectAlternativeLanguage = findPreference("select_alternative_language");
         /* List of languages */
-        final boolean[] languageStatus = new boolean [Constants.languagelistNotDefault.length];
-        for (int j = 0; j < Constants.languagelistNotDefault.length; j++)
-        	 languageStatus[j] = PreferenceManager.getDefaultSharedPreferences(
+        final boolean[] languageStatus = new boolean [AlternativeLanguageInfo.getAlternativeLanguageInfo().size()];
+    	Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
+    	int j = 0;
+    	while (it.hasNext()){
+    		AlternativeLanguageInfo info = (AlternativeLanguageInfo) it.next().getValue();
+    		languageStatus[j] = PreferenceManager.getDefaultSharedPreferences(
      				LNReaderApplication.getInstance().getApplicationContext())
-    				.getBoolean(Constants.languagelistNotDefault[j], true);
+    				.getBoolean(info.getLanguage(), true);
+    		j++;
+    		it.remove();
+    	}
         /* End of list of languages */
         selectAlternativeLanguage.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference p) {
-            	 /* Show checkBox to screen */
+            	final String[] languageChoice = new String[AlternativeLanguageInfo.getAlternativeLanguageInfo().size()];
+            	Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
+            	int j = 0;
+            	while (it.hasNext()){
+            		AlternativeLanguageInfo info = (AlternativeLanguageInfo) it.next().getValue();
+            		languageChoice[j] = info.getLanguage();
+            		j++;
+            		it.remove();
+            	}
+            	/* Show checkBox to screen */
             	   AlertDialog.Builder builder = new AlertDialog.Builder(context);
             	    builder.setTitle(getResources().getString(R.string.alternative_language_title));
-            	    builder.setMultiChoiceItems(Constants.languagelistNotDefault, languageStatus, new DialogInterface.OnMultiChoiceClickListener(){
+            	    builder.setMultiChoiceItems(languageChoice, languageStatus, new DialogInterface.OnMultiChoiceClickListener(){
             	        public void onClick(DialogInterface dialogInterface, int item, boolean state) {
             	        }
             	    });
@@ -139,8 +157,14 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
             	        public void onClick(DialogInterface dialog, int id) {
             	            SparseBooleanArray Checked = ((AlertDialog)dialog).getListView().getCheckedItemPositions();
             	            /* Save all choices to Shared Preferences */
-            	            for (int j = 0; j < Constants.languagelistNotDefault.length; j++)
-            	              UIHelper.setAlternativeLanguagePreferences(context, Constants.languagelistNotDefault[j], Checked.get(Checked.keyAt(j)));
+            	        	Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
+            	        	int j = 0;
+            	        	while (it.hasNext()){
+            	        		AlternativeLanguageInfo info = (AlternativeLanguageInfo) it.next().getValue();
+            	        		UIHelper.setAlternativeLanguagePreferences(context, info.getLanguage(), Checked.get(Checked.keyAt(j)));
+            	        		j++;
+            	        		it.remove();
+            	        	}
             	            recreateUI();
             	        }
             	    });
