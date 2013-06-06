@@ -157,13 +157,15 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 	}
 	
 	public void downloadAllNovelInfo() {
-		touchedForDownload = language  + " Light Novels information";
-		executeDownloadTask(listItems);
+		if (language != null) {
+			touchedForDownload = language  + " Light Novels information";
+			executeDownloadTask(listItems);
+		}
 	}
 	
 	public void manualAdd() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		alert.setTitle("Add Novel (" + language + ")");
+		if (language != null) alert.setTitle("Add Novel (" + language + ")");
 		//alert.setMessage("Message");
 		LayoutInflater factory = LayoutInflater.from(this);
 		View inputView = factory.inflate(R.layout.layout_add_new_novel, null);
