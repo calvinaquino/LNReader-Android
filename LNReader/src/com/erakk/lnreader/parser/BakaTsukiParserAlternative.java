@@ -1,5 +1,5 @@
 /**
- * Parse baka-tsuki wiki page - Bahasa Indonesia
+ * Parse baka-tsuki wiki page - Alternative Language
  */
 package com.erakk.lnreader.parser;
 
@@ -36,10 +36,10 @@ import com.erakk.lnreader.model.PageModel;
  * Modified from: BakaTsukiParser by Nandaka
  *
  */
-public class BakaTsukiParserBahasa {
+public class BakaTsukiParserAlternative {
 
 
-	private static final String TAG = BakaTsukiParserBahasa.class.toString();
+	private static final String TAG = BakaTsukiParserAlternative.class.toString();
 
 	/**
 	 * parse page info from Wiki API
@@ -122,12 +122,15 @@ public class BakaTsukiParserBahasa {
 
 	
 	/**
-	 * Parse Bahasa Indonesia list from http://www.baka-tsuki.org/project/index.php?title=Category:Indonesian
+	 * Parse Alternative Language list from http://www.baka-tsuki.org/project/index.php?title=[Alternative Category]
 	 * @param doc
 	 * @return
 	 */
-	public static ArrayList<PageModel> ParseBahasaList(Document doc) {
+	public static ArrayList<PageModel> ParseAlternativeList(Document doc, String language) {
 		ArrayList<PageModel> result = new ArrayList<PageModel>();
+		String category = "";
+		for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
+		    if (language.equals(Constants.languagelistNotDefault[i])) category = Constants.languageCategoryNotDefault[i];
 
 		if(doc == null) throw new NullPointerException("Document cannot be null.");
 
@@ -138,14 +141,14 @@ public class BakaTsukiParserBahasa {
 			for (Element element : list) {
 				Element link = element.select("a").first();
 				PageModel page = new PageModel();
-				page.setParent("Category:Indonesian");
+				page.setParent(category);
 				String tempPage = link.attr("href").replace("/project/index.php?title=","")
                         .replace(Constants.BASE_URL, "");
 				page.setPage(tempPage);
-				page.setLanguage(Constants.LANG_BAHASA_INDONESIA);
+				page.setLanguage(language);
 				page.setType(PageModel.TYPE_NOVEL);
 				page.setTitle(link.text());
-				page.setStatus(Constants.STATUS_BAHASA_INDONESIA);
+				page.setStatus(language);
 				page.setOrder(order);
 
 				result.add(page);
@@ -170,9 +173,9 @@ public class BakaTsukiParserBahasa {
 		String redirected = redirectedFrom(doc, page);
 		novel.setRedirectTo(redirected);
 
-		parseNovelSynopsis(doc, novel);
+		parseNovelSynopsis(doc, novel, page.getLanguage()); //language-dependent
 		parseNovelCover(doc, novel);
-		parseNovelChapters(doc, novel);
+		parseNovelChapters(doc, novel, page.getLanguage()); //language-dependent
 
 		parseNovelStatus(doc, page);
 
@@ -261,11 +264,14 @@ public class BakaTsukiParserBahasa {
 		return title.trim();
 	}
 
-	private static void parseNovelChapters(Document doc, NovelCollectionModel novel) {
+	private static void parseNovelChapters(Document doc, NovelCollectionModel novel, String language) {
 		//Log.d(TAG, "Start parsing book collections for " + novel.getPage());
 		// parse the collection
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
 		boolean oneBookOnly = false;
+		String[] parser = {};
+		for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
+			if (language.equals(Constants.languagelistNotDefault[i])) parser = Constants.parser[i];
 		try{
 			Elements h2s = doc.select("h1,h2");
 			for(Iterator<Element> i = h2s.iterator(); i.hasNext();){
@@ -281,18 +287,11 @@ public class BakaTsukiParserBahasa {
 					for(Iterator<Element> iSpan = spans.iterator(); iSpan.hasNext(); ) {
 						Element s = iSpan.next();
 						Log.d(TAG, "Checking: " + s.id());
-						if(s.id().contains("_oleh") ||
-						   s.id().contains("Full_Text") ||
-						   s.id().contains("Serial_") ||
-						   s.id().contains("serial_") ||
-						   s.id().contains("Seri_") ||	
-						   s.id().contains("seri_") ||		
+						boolean tempBool = false;
+						for (int j = 0; j < parser.length; j++)
+							 if (s.id().contains(parser[j])) tempBool = true;
+						if(tempBool ||		
 						   s.id().contains(novel.getPage()) ||
-						   s.id().contains("Cerita_Tambah") ||		
-						   s.id().contains("Cerita_Singkat") ||
-						   s.id().contains("Cerita_Pendek") ||
-						   s.id().contains("Side_Stor") ||
-						   s.id().contains("Short_Stor") ||
 						   (novel.getRedirectTo() != null && s.id().contains(novel.getRedirectTo())) ) {
 							containsBy = true;
 							Log.d(TAG, "Got valid id: " + s.id());
@@ -305,14 +304,14 @@ public class BakaTsukiParserBahasa {
 					}
 
 					//Log.d(TAG, "Found h2: " +h2.text());
-					ArrayList<BookModel> tempBooks = parseBooksMethod1(novel, h2);
+					ArrayList<BookModel> tempBooks = parseBooksMethod1(novel, h2, language);
 					if(tempBooks != null && tempBooks.size() > 0 )
 					{
 						books.addAll(tempBooks);
 					}
 					if(books.size() == 0 || ( oneBookOnly && tempBooks.size() == 0 )) {
 						Log.d(TAG, "No books found, use method 2: Only have 1 book, chapter in <p> tag.");
-						tempBooks = parseBooksMethod2(novel, h2);
+						tempBooks = parseBooksMethod2(novel, h2, language);
 						if(tempBooks != null && tempBooks.size() > 0 )
 						{
 							oneBookOnly = true;
@@ -321,7 +320,7 @@ public class BakaTsukiParserBahasa {
 					}
 					if(books.size() == 0 || ( oneBookOnly && tempBooks.size() == 0 )) {
 						Log.d(TAG, "No books found, use method 3: Only have 1 book.");
-						tempBooks = parseBooksMethod3(novel, h2);
+						tempBooks = parseBooksMethod3(novel, h2, language);
 						if(tempBooks != null && tempBooks.size() > 0 )
 						{
 							oneBookOnly = true;
@@ -345,7 +344,7 @@ public class BakaTsukiParserBahasa {
 	 * @param h2
 	 * @return
 	 */
-	private static ArrayList<BookModel> parseBooksMethod1(NovelCollectionModel novel, Element h2)
+	private static ArrayList<BookModel> parseBooksMethod1(NovelCollectionModel novel, Element h2, String language)
 	{
 		//Log.d(TAG, "method 1");
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
@@ -359,18 +358,18 @@ public class BakaTsukiParserBahasa {
 				Elements h3s = bookElement.select("h3");
 				if( h3s != null && h3s.size() > 0 ) {
 					for (Element h3 : h3s) {
-						bookOrder = processH3(novel, books, h3, bookOrder);
+						bookOrder = processH3(novel, books, h3, bookOrder, language);
 					}
 				}
 			}
 			else if(bookElement.tagName() == "h3") {
-				bookOrder = processH3(novel, books, bookElement, bookOrder);
+				bookOrder = processH3(novel, books, bookElement, bookOrder, language);
 			}
 		}while(walkBook);
 		return books;
 	}
 
-	public static int processH3(NovelCollectionModel novel, ArrayList<BookModel> books, Element bookElement, int bookOrder) {
+	public static int processH3(NovelCollectionModel novel, ArrayList<BookModel> books, Element bookElement, int bookOrder, String language) {
 		//Log.d(TAG, "Found: " +bookElement.text());
 		BookModel book = new BookModel();
 		book.setTitle(sanitize(bookElement.text(), true));
@@ -392,7 +391,7 @@ public class BakaTsukiParserBahasa {
 			else {
 				Elements chapters = chapterElement.select("li");
 				for(Element chapter : chapters) {
-					PageModel p = processLI(chapter, parent, chapterOrder);
+					PageModel p = processLI(chapter, parent, chapterOrder, language);
 					if(p != null) {
 						chapterCollection.add(p);
 						++chapterOrder;
@@ -413,7 +412,7 @@ public class BakaTsukiParserBahasa {
 	 * @param chapterOrder
 	 * @return
 	 */
-	private static PageModel processLI(Element li, String parent, int chapterOrder) {
+	private static PageModel processLI(Element li, String parent, int chapterOrder, String language) {
 		PageModel p = null;
 		Elements links = li.select("a");
 		if(links != null && links.size() > 0) {
@@ -423,7 +422,7 @@ public class BakaTsukiParserBahasa {
 			// skip if User_talk:
 			if(link.attr("href").contains("User_talk:")) return null;
 
-			p = processA(li.text(), parent, chapterOrder, link);
+			p = processA(li.text(), parent, chapterOrder, link, language);
 		}
 		return p;
 	}
@@ -436,14 +435,14 @@ public class BakaTsukiParserBahasa {
 	 * @param link
 	 * @return
 	 */
-	private static PageModel processA(String title, String parent, int chapterOrder, Element link) {
+	private static PageModel processA(String title, String parent, int chapterOrder, Element link, String language) {
 		PageModel p = new PageModel();
 		p.setTitle(sanitize(title, false));
 		p.setParent(parent);
 		p.setType(PageModel.TYPE_CONTENT);
 		p.setOrder(chapterOrder);
 		p.setLastUpdate(new Date(0));
-		p.setLanguage(Constants.LANG_BAHASA_INDONESIA);
+		p.setLanguage(language);
 
 		//External link
 		if(link.className().contains("external text")) {
@@ -468,7 +467,7 @@ public class BakaTsukiParserBahasa {
 	 * @param h2
 	 * @return
 	 */
-	private static ArrayList<BookModel> parseBooksMethod2(NovelCollectionModel novel, Element h2){
+	private static ArrayList<BookModel> parseBooksMethod2(NovelCollectionModel novel, Element h2, String language){
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
 		Element bookElement = h2;
 		boolean walkBook = true;
@@ -497,7 +496,7 @@ public class BakaTsukiParserBahasa {
 							chapterElement.tagName() == "div") {
 						Elements chapters = chapterElement.select("li");
 						for (Element chapter : chapters) {
-							PageModel p = processLI(chapter, parent, chapterOrder);
+							PageModel p = processLI(chapter, parent, chapterOrder, language);
 							if(p != null) {
 								chapterCollection.add(p);
 								++chapterOrder;
@@ -509,7 +508,7 @@ public class BakaTsukiParserBahasa {
 						Elements links = bookElement.select("a");
 						if(links.size() > 0) {
 							Element link = links.first();
-							PageModel p = processA(link.text(), parent, chapterOrder, link);
+							PageModel p = processA(link.text(), parent, chapterOrder, link, chapterCollection.get(0).getLanguage());
 							//Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 							chapterCollection.add(p);
 							++chapterOrder;
@@ -531,7 +530,7 @@ public class BakaTsukiParserBahasa {
 	 * @param h2
 	 * @return
 	 */
-	private static ArrayList<BookModel> parseBooksMethod3(NovelCollectionModel novel, Element h2){
+	private static ArrayList<BookModel> parseBooksMethod3(NovelCollectionModel novel, Element h2, String language){
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
 		Element bookElement = h2;
 		boolean walkBook = true;
@@ -552,7 +551,7 @@ public class BakaTsukiParserBahasa {
 				int chapterOrder = 0;
 				Elements chapters = bookElement.select("li");
 				for(Element chapter : chapters) {
-					PageModel p = processLI(chapter, parent, chapterOrder);
+					PageModel p = processLI(chapter, parent, chapterOrder, language);
 					if(p != null) {
 						chapterCollection.add(p);
 						++chapterOrder;
@@ -632,24 +631,26 @@ public class BakaTsukiParserBahasa {
 		return imageUrl;
 	}
 
-	private static String parseNovelSynopsis(Document doc, NovelCollectionModel novel) {
+	private static String parseNovelSynopsis(Document doc, NovelCollectionModel novel, String language) {
 		//Log.d(TAG, "Start parsing synopsis");
 		// parse the synopsis
 		String synopsis = "";
-		String source = "#Sinopsis_Cerita";
+		String source = "";
+		for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
+			if (language.equals(Constants.languagelistNotDefault[i])) source = Constants.markerSynopsis[i];
 		// from Story_Synopsis id
 		Elements stage = doc.select(source);//.first().parent().nextElementSibling();
 		// from main text
 		if(stage == null || stage.size() <= 0) {
 			source = "#mw-content-text,p";
 			stage = doc.select(source);
-			Log.i(TAG, "Sinopsis dari: " + source);
+			Log.i(TAG, "Synopsis from: " + source);
 		}
 
 		if(stage.size() > 0) {
-			Element synopsisE;
-			if(source == "#Sinopsis_Cerita") synopsisE = stage.first().parent().nextElementSibling();
-			else synopsisE = stage.first().children().first();
+			Element synopsisE =  stage.first().children().first();
+			for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
+			     if(source.equals(Constants.markerSynopsis[i])) synopsisE = stage.first().parent().nextElementSibling();
 
 			boolean processOne = false;
 			if(synopsisE == null || synopsisE.select("p").size() == 0) {

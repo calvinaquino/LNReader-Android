@@ -157,13 +157,13 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 	}
 	
 	public void downloadAllNovelInfo() {
-		if (language.equals(Constants.LANG_BAHASA_INDONESIA)) touchedForDownload = "Bahasa Indonesia Light Novels information";
+		touchedForDownload = language  + " Light Novels information";
 		executeDownloadTask(listItems);
 	}
 	
 	public void manualAdd() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		if (language.equals(Constants.LANG_BAHASA_INDONESIA)) alert.setTitle("Add Novel (Bahasa Indonesia)");
+		alert.setTitle("Add Novel (" + language + ")");
 		//alert.setMessage("Message");
 		LayoutInflater factory = LayoutInflater.from(this);
 		View inputView = factory.inflate(R.layout.layout_add_new_novel, null);
@@ -189,9 +189,11 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 			temp.setPage(novel);
 			temp.setTitle(title);
 			temp.setType(PageModel.TYPE_NOVEL);
-			if (language.equals(Constants.LANG_BAHASA_INDONESIA)){
-				temp.setParent("Category:Indonesian");
-				temp.setStatus(Constants.STATUS_BAHASA_INDONESIA);	
+			for (int i = 0; i < Constants.languagelistNotDefault.length; i++){
+				if (language.equals(Constants.languagelistNotDefault[i])){
+					temp.setParent(Constants.languageCategoryNotDefault[i]);
+					temp.setStatus(Constants.languagelistNotDefault[i]);	
+				}				
 			}
 			executeAddTask(temp);
 		}
@@ -264,7 +266,8 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 	private void executeTask(boolean isRefresh, boolean alphOrder) {
 		task = new LoadAlternativeTask(this, isRefresh, alphOrder, language);
 		String key = null;
-		if (language.equals(Constants.LANG_BAHASA_INDONESIA)) key = TAG + ":Category:Indonesian";
+		for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
+		    if (language.equals(Constants.languagelistNotDefault[i])) key = TAG + ":" + Constants.languageCategoryNotDefault[i];
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if(isAdded) {
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -288,7 +291,8 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 		downloadTask = new DownloadNovelDetailsTask(this);
 		String key = DisplayAlternativeNovelListActivity.TAG + ":" + novels.get(0).getPage();
 		if(novels.size() > 1) {
-			if (language.equals(Constants.LANG_BAHASA_INDONESIA)) key = DisplayAlternativeNovelListActivity.TAG + ":All_Indonesian";
+			for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
+			     if (language.equals(Constants.languagelistNotDefault[i])) key = DisplayAlternativeNovelListActivity.TAG + ":All_" +  Constants.languageAllNotDefault[i];
 		}
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if(isAdded) {

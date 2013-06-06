@@ -396,7 +396,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		else          sql += " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE;
         Cursor cursor = null;
 
-        if (language.equals(Constants.LANG_BAHASA_INDONESIA)) cursor = rawQuery(db, sql, new String[] {"Category:Indonesian"});
+        for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
+             if (language.equals(Constants.languagelistNotDefault[i])) cursor = rawQuery(db, sql, new String[] {Constants.languageCategoryNotDefault[i]});
 
 		try {
 			cursor.moveToFirst();

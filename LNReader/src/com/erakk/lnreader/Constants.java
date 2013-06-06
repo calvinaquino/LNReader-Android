@@ -101,7 +101,18 @@ public class Constants {
 	/* Section of Language */
 	public static final String LANG_ENGLISH = "English";
 	public static final String LANG_BAHASA_INDONESIA = "Bahasa Indonesia";
+	public static final String LANG_FRENCH = "Français";
+	
 	/* You just need to add a new alternative language here */
-	public static final String[] languageList = { Constants.LANG_ENGLISH , Constants.LANG_BAHASA_INDONESIA };
-	public static final String[] languagelistNotDefault = { Constants.LANG_BAHASA_INDONESIA };
+	public static final String[] languageList = { Constants.LANG_ENGLISH , Constants.LANG_FRENCH, Constants.LANG_BAHASA_INDONESIA };
+	public static final String[] languagelistNotDefault = { Constants.LANG_FRENCH, Constants.LANG_BAHASA_INDONESIA };
+	public static final String[] languageCategoryNotDefault = { "Category:French", "Category:Indonesian" };
+	public static final String[] languageAllNotDefault = { "French", "Indonesian" };
+	
+	/* Parser */
+	public static final String[] markerSynopsis = {"#Synopsis", "#Sinopsis_Cerita"};
+	public static final String[] indonesiaParser = {"_oleh", "Full_Text", "Serial_", "serial_", "Seri_", "seri_", "Cerita_Tambah", "Cerita_Singkat", "Cerita_Pendek", "Side_Stor", "Short_Stor"};
+	public static final String[] frenchParser = {"_par", "Texte_Intégral", "Full_Text", "Serial_", "serial_", "Tome_", "tome_", "Histoir_", "histoir_", "Side_Stor", "Short_Stor"};
+	
+	public static final String[][] parser = {frenchParser, indonesiaParser};
 }

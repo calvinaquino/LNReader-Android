@@ -83,7 +83,8 @@ public class PageModelHelper {
 	public static PageModel getAlternativePage(SQLiteDatabase db, String language) {
 		/* Return PageModel depends on language */
 		PageModel page = null;
-		if (language.equals(Constants.LANG_BAHASA_INDONESIA)) page = getPageModel(db, "Category:Indonesian");
+		for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
+		if (language.equals(Constants.languagelistNotDefault[i])) page = getPageModel(db, Constants.languageCategoryNotDefault[i]);
 		return page;
 	}
 
