@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.Map.Entry;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,6 +24,7 @@ import org.jsoup.select.Elements;
 
 import android.util.Log;
 
+import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
@@ -129,9 +131,7 @@ public class BakaTsukiParserAlternative {
 	public static ArrayList<PageModel> ParseAlternativeList(Document doc, String language) {
 		ArrayList<PageModel> result = new ArrayList<PageModel>();
 		String category = "";
-		for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
-		    if (language.equals(Constants.languagelistNotDefault[i])) category = Constants.languageCategoryNotDefault[i];
-
+		if (language != null) category = AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo();
 		if(doc == null) throw new NullPointerException("Document cannot be null.");
 
 		Element stage = doc.select("#mw-pages").first();
@@ -269,9 +269,8 @@ public class BakaTsukiParserAlternative {
 		// parse the collection
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
 		boolean oneBookOnly = false;
-		String[] parser = {};
-		for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
-			if (language.equals(Constants.languagelistNotDefault[i])) parser = Constants.parser[i];
+		ArrayList<String> parser = null;
+			if (language != null) parser = AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getParserInfo();
 		try{
 			Elements h2s = doc.select("h1,h2");
 			for(Iterator<Element> i = h2s.iterator(); i.hasNext();){
@@ -288,8 +287,8 @@ public class BakaTsukiParserAlternative {
 						Element s = iSpan.next();
 						Log.d(TAG, "Checking: " + s.id());
 						boolean tempBool = false;
-						for (int j = 0; j < parser.length; j++)
-							 if (s.id().contains(parser[j])) tempBool = true;
+						for (int j = 0; j < parser.size(); j++)
+							 if (s.id().contains(parser.get(j))) tempBool = true;
 						if(tempBool ||		
 						   s.id().contains(novel.getPage()) ||
 						   (novel.getRedirectTo() != null && s.id().contains(novel.getRedirectTo())) ) {
@@ -636,8 +635,7 @@ public class BakaTsukiParserAlternative {
 		// parse the synopsis
 		String synopsis = "";
 		String source = "";
-		for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
-			if (language.equals(Constants.languagelistNotDefault[i])) source = Constants.markerSynopsis[i];
+        if (language != null) source = AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getMarkerSynopsis();
 		// from Story_Synopsis id
 		Elements stage = doc.select(source);//.first().parent().nextElementSibling();
 		// from main text
@@ -649,9 +647,12 @@ public class BakaTsukiParserAlternative {
 
 		if(stage.size() > 0) {
 			Element synopsisE =  stage.first().children().first();
-			for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
-			     if(source.equals(Constants.markerSynopsis[i])) synopsisE = stage.first().parent().nextElementSibling();
-
+			Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
+        	while (it.hasNext()){
+        		AlternativeLanguageInfo info = (AlternativeLanguageInfo) it.next().getValue();
+        		if(source.equals(info.getMarkerSynopsis())) synopsisE = stage.first().parent().nextElementSibling();
+        		it.remove();
+        	}
 			boolean processOne = false;
 			if(synopsisE == null || synopsisE.select("p").size() == 0) {
 				// cannot found any synopsis, take the first available p

@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.DBHelper;
@@ -83,8 +84,7 @@ public class PageModelHelper {
 	public static PageModel getAlternativePage(SQLiteDatabase db, String language) {
 		/* Return PageModel depends on language */
 		PageModel page = null;
-		for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
-		if (language.equals(Constants.languagelistNotDefault[i])) page = getPageModel(db, Constants.languageCategoryNotDefault[i]);
+		page = getPageModel(db, AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo());
 		return page;
 	}
 

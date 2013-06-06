@@ -17,6 +17,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.callback.CallbackEventData;
@@ -477,12 +478,11 @@ public class NovelsDao {
 
 		// parse information
 		PageModel teaserPage = new PageModel();
-		for (int i = 0; i < Constants.languagelistNotDefault.length; i++){
-			if (language.equals(Constants.languagelistNotDefault[i])){
-				teaserPage.setPage(Constants.languageCategoryNotDefault[i]);
-				teaserPage.setTitle( Constants.languagelistNotDefault[i] + " Novels");
-				teaserPage.setLanguage(Constants.languagelistNotDefault[i]);
-			}			
+    	
+		if (language != null){
+			teaserPage.setPage(AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo());
+			teaserPage.setTitle( language + " Novels");
+			teaserPage.setLanguage(language);
 		}
 
 		teaserPage = getPageModel(teaserPage, notifier);
@@ -498,8 +498,7 @@ public class NovelsDao {
 		// get alternative list
 		ArrayList<PageModel> list = null;
 		String url = null;
-		for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
-		    if (language.equals(Constants.languagelistNotDefault[i])) url = Constants.BASE_URL + "/project/index.php?title=" + Constants.languageCategoryNotDefault[i];
+		    if (language != null) url = Constants.BASE_URL + "/project/index.php?title=" + AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo();
 		int retry = 0;
 		while(retry < Constants.PAGE_DOWNLOAD_RETRY) {
 			try{

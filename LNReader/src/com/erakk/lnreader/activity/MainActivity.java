@@ -1,5 +1,8 @@
 package com.erakk.lnreader.activity;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,6 +21,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
@@ -182,10 +186,14 @@ public class MainActivity extends SherlockActivity {
 		int selection = 0;
 		
 		/* Checking number of selected languages */
-    	for (int i = 0; i < Constants.languagelistNotDefault.length; i++)
-		   if (PreferenceManager.getDefaultSharedPreferences(
-				LNReaderApplication.getInstance().getApplicationContext())
-				.getBoolean(Constants.languagelistNotDefault[i], true)) selection++;
+    	Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
+    	while (it.hasNext()){
+    		AlternativeLanguageInfo info = (AlternativeLanguageInfo) it.next().getValue();
+ 		   if (PreferenceManager.getDefaultSharedPreferences(
+ 					LNReaderApplication.getInstance().getApplicationContext())
+ 					.getBoolean(info.getLanguage(), true)) selection++;    		
+    		it.remove();
+    	}
 		
 		if (selection == 0){
 			/* Build an AlertDialog */
