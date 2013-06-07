@@ -29,7 +29,7 @@ public class AlternativeLanguageInfo {
 		/* French Language */
 		instance.put(Constants.LANG_FRENCH , new AlternativeLanguageInfo(
 				Constants.LANG_FRENCH, "French", "#Synopsis",
-				new ArrayList<String>(Arrays.asList("_par", "Texte_Intégral", "Full_Text", "Serial_", "serial_", "Tome_", "tome_", "Histoire_", "histoire_", "Side_Stor", "Short_Stor"))));
+				new ArrayList<String>(Arrays.asList("_par", "Texte_Intégral", "Full_Text", "Série_", "série_", "Tome_", "tome_", "Histoire_", "histoire_",  "Histoires_", "histoires_", "Side_Stor", "Short_Stor", "Material"))));
 	    Log.d(TAG,"French Language added");
 	    /* Indonesian Language */
 		instance.put(Constants.LANG_BAHASA_INDONESIA , new AlternativeLanguageInfo(
