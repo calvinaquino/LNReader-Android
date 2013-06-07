@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
@@ -76,12 +77,20 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 		Intent intent = getIntent();
 		language = intent.getStringExtra("LANG");
 		
+		if ((language == null) && (savedInstanceState != null)) language = savedInstanceState.getString("LANG");
+		
 		registerForContextMenu(getListView());
 		updateContent(false);
 		
 		setTitle("Light Novels: " + language);
 		isInverted = getColorPreferences();
 	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle savedInstanceState) {
+		  super.onSaveInstanceState(savedInstanceState);
+		  savedInstanceState.putString("LANG", language);
+		}
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -157,13 +166,15 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 	}
 	
 	public void downloadAllNovelInfo() {
-		if (language.equals(Constants.LANG_BAHASA_INDONESIA)) touchedForDownload = "Bahasa Indonesia Light Novels information";
-		executeDownloadTask(listItems);
+		if (language != null) {
+			touchedForDownload = language  + " Light Novels information";
+			executeDownloadTask(listItems);
+		}
 	}
 	
 	public void manualAdd() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		if (language.equals(Constants.LANG_BAHASA_INDONESIA)) alert.setTitle("Add Novel (Bahasa Indonesia)");
+		if (language != null) alert.setTitle("Add Novel (" + language + ")");
 		//alert.setMessage("Message");
 		LayoutInflater factory = LayoutInflater.from(this);
 		View inputView = factory.inflate(R.layout.layout_add_new_novel, null);
@@ -189,11 +200,11 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 			temp.setPage(novel);
 			temp.setTitle(title);
 			temp.setType(PageModel.TYPE_NOVEL);
-			if (language.equals(Constants.LANG_BAHASA_INDONESIA)){
-				temp.setParent("Category:Indonesian");
-				temp.setStatus(Constants.STATUS_BAHASA_INDONESIA);	
+			if (language != null){
+				temp.setParent(AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo());
+				temp.setStatus(language);
+			    executeAddTask(temp);
 			}
-			executeAddTask(temp);
 		}
 		else {
 			Toast.makeText(this, "Empty Input", Toast.LENGTH_LONG).show();
@@ -264,7 +275,7 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 	private void executeTask(boolean isRefresh, boolean alphOrder) {
 		task = new LoadAlternativeTask(this, isRefresh, alphOrder, language);
 		String key = null;
-		if (language.equals(Constants.LANG_BAHASA_INDONESIA)) key = TAG + ":Category:Indonesian";
+		if (language != null) key = TAG + ":" + AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo();
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if(isAdded) {
 			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -286,9 +297,10 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 	@SuppressLint("NewApi")
 	private void executeDownloadTask(ArrayList<PageModel> novels) {
 		downloadTask = new DownloadNovelDetailsTask(this);
-		String key = DisplayAlternativeNovelListActivity.TAG + ":" + novels.get(0).getPage();
-		if(novels.size() > 1) {
-			if (language.equals(Constants.LANG_BAHASA_INDONESIA)) key = DisplayAlternativeNovelListActivity.TAG + ":All_Indonesian";
+		String key = null;
+		if (novels != null){
+			key = DisplayAlternativeNovelListActivity.TAG + ":" + novels.get(0).getPage();
+			if (novels.size() > 1) key = AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategory();
 		}
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if(isAdded) {

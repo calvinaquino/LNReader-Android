@@ -1,6 +1,8 @@
 package com.erakk.lnreader.activity;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import android.app.Activity;
 import android.app.LocalActivityManager;
@@ -9,12 +11,14 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
@@ -61,11 +65,17 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
         	/* Dynamically add Tabs */
         	ArrayList<String> Choice = new ArrayList<String>();
        
-        	for (int i = 0; i < Constants.languagelistNotDefault.length; i++){
+        	Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
+        	while (it.hasNext()){
+        		AlternativeLanguageInfo info = (AlternativeLanguageInfo) it.next().getValue();
         		boolean isChosen = PreferenceManager.getDefaultSharedPreferences(
         				LNReaderApplication.getInstance().getApplicationContext())
-        				.getBoolean(Constants.languagelistNotDefault[i], true);
-        		if (isChosen) Choice.add(Constants.languagelistNotDefault[i]);
+        				.getBoolean(info.getLanguage(), true);  
+        		if (isChosen) {
+        			Choice.add(info.getLanguage());
+        			Log.d("Language Added: ", info.getLanguage());
+        		}
+        		it.remove();
         	}
         	
         	TabSpec[] allSpec = new TabSpec[Choice.size()]; 

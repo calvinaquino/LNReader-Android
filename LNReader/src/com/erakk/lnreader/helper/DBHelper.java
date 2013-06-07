@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
 import android.util.Log;
 
+import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.helper.db.BookModelHelper;
 import com.erakk.lnreader.helper.db.BookmarkModelHelper;
@@ -396,7 +397,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		else          sql += " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE;
         Cursor cursor = null;
 
-        if (language.equals(Constants.LANG_BAHASA_INDONESIA)) cursor = rawQuery(db, sql, new String[] {"Category:Indonesian"});
+        if (language != null) cursor = rawQuery(db, sql, new String[] {AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo()});
 
 		try {
 			cursor.moveToFirst();
