@@ -230,6 +230,7 @@ public class UIHelper {
 		/* Add system locale / your values folder name here */
 		if      (langIdx == 0) lang = "en";
 		else if (langIdx == 1) lang = "in";
+		else if (langIdx == 2) lang = "fr";
 
 		/* Changing configuration to user's choice */
 		Locale myLocale = new Locale(lang);
@@ -247,7 +248,7 @@ public class UIHelper {
 		int langIdx = GetIntFromPreferences(Constants.PREF_LANGUAGE, 0);
 		setLanguage(activity, langIdx);
 	}
-	
+
 	public static void setAlternativeLanguagePreferences(Context activity, String lang, boolean val) {
 		/* Set Alternative Language Novels preferences */
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(

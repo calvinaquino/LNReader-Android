@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">BakaReader EX</string>
+    <string name="menu_settings">Param&#232;tres</string>
+    <string name="light_novels">Light Novels</string>
+    <string name="watch_list">Observateur</string>
+    <string name="originals">Oeuvres originales</string>
+    <string name="alternative_language">Autres Langues</string>
+    <string name="choose">Choisir</string>
+    <string name="all">Tous</string>
+    <string name="settings">Param&#232;tres</string>
+    <string name="title_activity_display_light_novels">Light Novels</string>
+    <string name="title_activity_display_settings">Param&#232;tres</string>
+    <string name="title_activity_light_novel_chapters">Chapitres de Light Novel</string>
+    <string name="title_activity_display_alternative_novels">Novels non anglais</string>
+    <string name="title_activity_display_alternative_novel_pager">Listes des langues alternatives</string>
+    <string name="novel_title">titre</string>
+    <string name="novel_cover">couverture</string>
+    <string name="novel_synopsys"></string>
+    <string name="title_activity_display_synopsys">Synopsis</string>
+    <string name="title_activity_display_novel_content">Contenu</string>
+    <string name="invert_colors">Inverser les couleurs</string>
+    <string name="title_activity_display_image">Visionneuse d\'images</string>
+    <string name="novel_last_update">derni&#232;re M&#224;J</string>
+    <string name="novel_chapter">Chapitre du roman</string>
+    <string name="novel_chapter_dl">(DL)</string>
+    <string name="list_empty">La liste est vide</string>
+    <string name="service_name">LNReader M&#224;J</string>
+    <string name="hint_search">Recherche</string>
+    <string name="teasers">Liste des Teasers</string>
+    <string name="search">Recherche</string>
+    <string name="novel_only">Romans uniquement</string>
+    <string name="task_loading">Tâche en cours de chargement &#8230;</string>
+    <string name="jump_last_read">Reprendre la lecture</string>
+    <string name="title_activity_display_bookmark">Signets</string>
+    <string name="main_activity_menu">Menu Principal</string>
+    <string name="title_activity_download_list">Listes des t&#233;l&#233;chargements</string>
+    <string name="downloadsList">T&#233;l&#233;chargements</string>
+    <string name="title_activity_download_list_adapter">Listes des t&#233;l&#233;chargements</string>
+    <string name="title_activity_display_novel_pager">Listes des Light Novels</string>
+    <string name="title_activity_update_history">Historique des M&#224;J</string>
+    <string name="language_selection">S&#233;lection de la langue</string>
+    <string name="current_value">Valeur actuelle</string>
+    <string name="set">Appliquer</string>
+    <string name="cancel">Annuler</string>
+    <string name="cancel_task">Annuler la tâche : </string>
+    
+    <string name="bakatsuki_message">Avant d\'utiliser cette application, souvenez\-vous que nous, les d&#233;vellopeurs de BakaTsuki EX, ne sommes en aucun cas responsables du contenu affich&#233; par l\'application. C\'est pourquoi vous devez lire et accepter le TLG Translation Common Agreement de Baka\-Tsuki.org:\n\n</string>
+    <string name="bakatsuki_copyrights">\nTLG Translation Common Agreement v.0.4.1
+         \n0) \"Wiki\" is defined as the site \"Baka\-Tsuki\" running on any variation of wiki\-like content management package, as defined by The American Heritage® Dictionary of the English Language, Fourth Edition. Houghton Mifflin Company, 2004.
+         \na) \"Work\" is defined as any material from the product/service their respective copyright holders hold including, but not limited to, scripts(translated and original), dialogue, illustrations, screenshots, animation, clips, sound, etc. When the word \"translated\" is used before (a), (a) becomes \"translated and/or raw script\". b1) \"You\", \"your\" are defined as a copyright holder of the works as defined in (a) . b2) \"You\", \"your\" are defined as the submitter of the translated works as defined in (a) . b3) \"You\", \"your\" are defined as the viewer of the works as defined in (a) . b4) \"we\" is defined as the owner of this wiki AND the translators of the works as defined in (a) . c) \"I\", \"me\", \"my\" are defined as the owner of this wiki. d) \"licenced\" is defined as global and/or English publishing rights.
+         \nBy entering this wiki(0) you agree to the following conditions. If you do not agree with this agreement, portion and/or full, please leave this wiki(0) now.
+         \nSection A.1 All works(a), original and/or translated, belong to their respective copyright holders in their respective countries.
+         \nThis wiki(0) is done with the intention to A) Improve my(c) English writing skills. B) To provide a storage space for fans of the translated works(a) so that the fans can promote these works(a) C) To attract more readers to make English licensing(d) possible.
+         \nIf you(b1) feel your(b1) rights are being violated due to the usage of this wiki up to, but not limited by the presentation/broadcast/showing/distribution of works(a) in their original and/or translated full and/or portion of the work(a), please notify me(c) as soon as possible.
+         \nAll works(a) will be deleted without warning upon request by their copyright holders.
+         \n
+         \nSection A.2 Under no circumstances would the visitors of this wiki(0), the translators of the works(a), the owner of this wiki(c,0), or the owner of this server assume any responsibilities for any damages that may have been caused by this wiki(0). Furthermore, by agreeing to this agreement, you(b1) agree to the notion that while I(c) did everything I(c) could to honor the copyrights of the work(a), accident can happen.
+         \nSection B Under no circumstances would you(b2) 1. submit works(a) that are licenced(d) in the country the server and/or the submitter is located in. 2. submit translated works(a) copied directly from an unauthorized source such as, but not limited to, online, written sources etc. . If you(b2) submit works(a) that have been authorized by their rights holder, permission, in the form of written/electronic/printed must be available upon request. All translated works(a) rights are properties of their respective translators. By submitting translated works(a) to this wiki(0) you(b2) agree that All works(a) will be deleted without warning upon request by the copyright holders..
+         \nSection C Under no circumstances would you(b3) 1. take full and/or portion of the (translated) works(a) in this wiki(0) and use them(a) to engage in any commercial activities such as, but not limited to, rent, sell, print, auction, broadcast etc. 2. claim translated works(a) in this wiki(0) as your(b3) own products of translation unless you(b3) are qualified as defined in (b2).
+         \nSection D You(b3) agree with the notion that owner of this wiki(0), and all the submitters as defined in (b2), take no responsibility of any inappropriate material such as, but not limited to, pornography, violence, and offensive slurs. Furthermore, you(b3) agree with the notion that the owner of this wiki(0), and all the submitters as defined in (b2), by good wills try their best to moderate any material that may be suspected to be inappropriate in \"the owner of this wiki(0), and all the submitters as defined in (b2)\"\'s countries UNLESS such material is deemed necessary solely by the merit of preserving the integrity of such work(a). In this case, the consideration of integrity of such work(a) may take precedent before other considerations as mentioned previously in Section D.
+         \n
+         \nFinally, Have Fun! :D
+         \nthelastguardian \- May 26, 2008</string>
+    
+    <string name="content_refresh">Rafraichir le contenu</string>
+    <string name="content_previous">Pr&#233;c&#233;dent</string>
+    <string name="content_next">Suivant</string>
+    <string name="content_toc">Sauter &#224;</string>
+    <string name="content_search">Chercher</string>
+    <string name="content_bookmark">Signets sur des chapitres</string>
+    <string name="bookmarks">Signets</string>
+    <string name="download_list">Liste de t&#233;l&#233;chargement</string>
+    <string name="details_refresh">Rafraichir</string>
+    <string name="details_download_all">T&#233;l&#233;charger tous les chapitres</string>
+    <string name="novel_list_refresh">Rafraichir</string>
+    <string name="novel_list_manual_add">Ajouter manuellement</string>
+    <string name="novel_list_download_all">T&#233;l&#233;charger toutes les infos</string>
+    <string name="update_interval_summary">D&#233;finir &#224; quelle fr&#233;quence les M&#224;J seront v&#233;rifi&#233;es : %1$s</string>
+    <string name="update_interval_title">Intervalle des M&#224;J</string>
+    <string name="selected_mode">Mode s&#233;lectionn&#233; : %1$s</string>
+    <string name="selected_language">Langue s&#233;lectionn&#233;e : %1$s.\nRed&#233;marrez l\'application pour un r&#233;sultat optimal.</string>
+    <string name="last_run">Derni&#232;re passe : %1$s\n Statut: %2$s</string>
+    <string name="none">Aucun</string>
+    <string name="unknown">Inconnu</string>
+    <string name="download_image_to">Images t&#233;l&#233;charg&#233;es enregistr&#233;es sous : %1$s</string>
+    <string name="novel_database_to">Base de donn&#233;e des romans enregristr&#233;e sous : %1$s</string>
+    <string name="copyright">Baka\-Tsuki:Copyrights</string>
+    <string name ="not_copyright">N\'arrive pas &#224; acc&#233;der &#224; la page de copyright.</string>
+    <string name ="run_update_text">Appuyez pour forcer une M&#224;J.</string>
+    <string name ="use_sound_summary">Sonner en cas de nouvelle M&#224;J de chapitres.</string>
+    <string name ="use_sound_title">Utiliser la sonnerie</string>
+    <string name ="use_vibration_summary">Vibrer en cas de nouvelle M&#224;J de chapitres.</string>
+    <string name ="use_vibration_title">Utiliser le vibreur</string>
+    <string name="persist_notification_summary">Garde les notifications de M&#224;J apr&#232;s avoir cliqu&#233; dessus.</string>
+    <string name="persist_notification_title">Conserver les notifications</string>
+    <string name="consolidate_notification_summary">R&#233;uni toutes les notifications en une seule notification qui permet l\'acc&#232;s &#224; la liste des chapitres mis &#224; jour.</string>
+    <string name="consolidate_notification_title">Consolider les notifications</string>
+    <string name="general_preference">Pr&#233;f&#233;rences g&#233;n&#233;rales</string>
+    <string name="UI_selection_title">Modifier l\'interface</string>
+    <string name="invert_color_summary">Permute la couleur de la police et celle de l\'arri&#232;re\-plan.</string>
+    <string name="invert_color_title">Inverser les couleurs</string>
+    <string name="lock_horizontal_summary">Mettre en mode paysage et verrouiller l\'orientation.</string>
+    <string name="lock_horizontal_title">Verrouillage horizontal</string>
+    <string name="auto_download_chapter_summary">Ajoute automatiquement un chapitre &#224; la liste de t&#233;l&#233;chargment lorsqu\'il est cliqu&#233;, s\'il n\'a pas d&#233;j&#224; &#233;t&#233; t&#233;l&#233;charg&#233;.</string>
+    <string name="auto_download_chapter_title">Appuyez pour t&#233;l&#233;charger</string>
+    <string name="alphabet_order_summary">La liste des Novels sera toujours ordonn&#233;e alphab&#233;tiquement.</string>
+    <string name="alphabet_order_title">Ordre alphab&#233;tique</string>
+    <string name="show_missing_summary">Affiche les chapitres manquants dans la liste (marqu&#233;s en rouge).</string>
+    <string name="show_missing_title">Afficher les chapitres manquants</string>
+    <string name="show_external_summary">Affiche les chapitres "externes", non h&#233;berg&#233;s sur Baka\-Tsuki.org (marqu&#233;s avec un icône bleu.)</string>
+    <string name="show_external_title">Afficher les chapitres externes</string>
+    <string name="use_internal_webview_summary">N\'utilisera pas le navigateur pour acc&#233;der aux liens externes, mais uniquement l\'application.</string>
+    <string name="use_internal_webview_title">Utiliser la WebView interne</string>
+    <string name="strech_detail_image_summary">Fait en sorte que la couverture occupe tout l\'&#233;cran (avec l\'encart) au lien de sa taille originale.</string>
+    <string name="strech_detail_image_title">Redimensionner les couvertures</string>
+    <string name="reading_layout">Agencement de lecture</string>
+    <string name="show_images_summary">D&#233;cide si les images sont affich&#233;es ou non (pour les performances).</string>
+    <string name="show_images_title">Montrer les images</string>
+    <string name="enable_zoom_summary">Active le zoom dans les Novels.</string>
+    <string name="enable_zoom_title">Activer le zoom</string>
+    <string name="show_zoom_control_summary">Affiche le bouton de zoom au cours de la lecture, n\'affecte pas la fonction de zoom.</string>
+    <string name="show_zoom_control_title">Montrer les contrôles de Zoom</string>
+    <string name="show_webview_summary">Active les boutons dynamiques lors du d&#233;filement dans un chapitre.</string>
+    <string name="show_webview_title">Boutons dynamiques</string>
+    <string name="keep_awake_summary">Garde l\'&#233;cran allum&#233; lorsqu\'il affiche un chapitre.</string>
+    <string name="keep_awake_title">Garder r&#233;veill&#233;</string>
+    <string name="use_volume_to_scroll_summary">Permet d\'utiliser les boutons de r&#233;galge du volume pour faire d&#233;filer le texte d\'une Novel.</string>
+    <string name="use_volume_to_scroll_title">Utiliser les boutons de volume</string>
+    <string name="scroll_size_summary">D&#233;fini la quantit&#233; de lignes &#224; faire d&#233;filer lors d\'une pression d\'un bouton de volume.</string>
+    <string name="scroll_size_summary2">Nombre de lignes qui d&#233;fileront : (%1$s)</string>
+    <string name="scroll_size_title">Vitesse du d&#233;filement</string>
+    <string name="invert_scroll_summary">Inverse les directions de d&#233;filement des boutons de volumes.</string>
+    <string name="invert_scroll_title">Inverser les directions</string>
+    <string name="fullscreen_summary">Entrer en mode plein &#233;cran lors de la lecture.</string>
+    <string name="fullscreen_title">Utiliser le plein &#233;cran</string>
+    <string name="enable_bookmark_summary">Active les fonctionnalit&#233;s des signets lors de la lecture.</string>
+    <string name="enable_bookmark_title">Utiliser les Signets</string>
+    <string name="css_layout_title">CSS Layouts</string>
+    <string name="custom_css_title">Utiliser son CSS perso</string>
+    <string name="custom_css_summary">Permet d\'utiliser un code CSS personnalis&#233; lors de la lecture. N&#233;cessite de recharger les chapitres pour &#234;tre effectif (y compris pour le changement de chemin CSS).</string>   
+    <string name="custom_css_path_title">Chemin CSS perso</string>
+    <string name="custom_css_path_summary">Chemin vers le CSS personnel qui sera alors utilis&#233; pour la lecture.</string>
+    <string name="force_justified_title">Forcer le justifi&#233;</string>
+    <string name="force_justified_summary">Force le texte &#224; &#234;tre au format \"justifi&#233;\" pour le contenu des Novels. N&#233;cessite de recharger les chapitres pour &#234;tre effectif.</string>
+    <string name="line_spacing_title">Interligne</string>
+    <string name="line_spacing_summary">Modifie l\'interligne. L\'espacement augmentera proportionnellement au chiffre choisi. N&#233;cessite de recharger les chapitres pour &#234;tre effectif.</string>
+    <string name="line_spacing_dialog_content">Veuillez entre l\'interligne d&#233;ir&#233; en pourcentage. (Par d&#233;faut \: 150\%)</string>
+    <string name="line_spacing_dialog_title">Interligne</string>
+    <string name="line_spacing_summary2">Modifie l\'interligne. Un chiffre plus &#233;lev&#233; donnera un interligne plus grand.</string>
+    <string name="margin_title">Marges</string>
+    <string name="margin_summary">Change l\'espacement entre le texte et les bords de l\'&#233;cran. N&#233;cessite de recharger les chapitres pour &#234;tre effectif.</string>
+    <string name="margin_dialog">Veuillez entrer la marge d&#233;sir&#233;e en pourcent de taille d\'&#233;cran. N\'oubliez pas que cela affecte la marge gauche et la droite en m&#234;me temps. (Par d&#233;faut : 5%)</string>
+    <string name="margin_summary2">Augmente l\'espace entre le texte et les bords de l\'&#233;cran.</string>
+    <string name="storage">Stockage</string>
+    <string name="clear_database_summary">Supprimer la base de donn&#233;es de Light Novels.</string>
+    <string name="clear_database_title">Purger la base de donn&#233;es des Novels</string>
+    <string name="backup_database_summary">Cr&#233;e un backup de la base de donn&#233;e de Light Novels &#224; la racine du stockage interne de votre appareil.</string>
+    <string name="backup_database_title">Cr&#233;er un backup de la BD de Novels</string>
+    <string name="restore_database_summary">Restaure un backup pr&#233;c&#233;demment cr&#233;&#233; de la base de donn&#233;e de Light Novels depuis la racine du stockage interne de votre appareil.</string>
+    <string name="restore_database_title">Restaurer un backup de la BD de Novels</string>
+    <string name="clear_cache_summary">Purge les images mises en cache</string>
+    <string name="clear_cache_title">Purger le cache d\'images</string>
+    <string name="save_location_title">Emplacement de sauvegarde des iamges</string>
+    <string name="db_location_title">Emplacement de sauvegarde de la base de donn&#233;es</string>
+    <string name="download_big_image_summary">T&#233;l&#233;charger les images en r&#233;solution maximale. *Prendra* beaucoup d\'espace de stockage.</string>
+    <string name="download_big_image_title">T&#233;l&#233;charger les images en r&#233;solution maximale</string>
+    <string name="application_info">Info de l\'application</string>
+    <string name="version">Version</string>
+    <string name="clear_image_question">Voulez-vous purger le cache d\'images ?</string>
+    <string name="clear_image_question2">Purger le cache d\'images</string>
+    <string name="clear_db_question">Voulez-vous purger la base de donn&#233;es ?</string>
+    <string name="clear_db_question2">Purger BD</string>
+    <string name="clear_database">Vidage de la base de donn&#233;es...</string>
+    <string name="database_cleared">Database purg&#233;e!</string>
+    <string name="running">En cours...</string>
+    <string name="database_manager">Gestionnaire de base de donn&#233;e</string>
+    <string name="database_backup_create">Cr&#233;ation d\'un backup de la Database...</string>
+    <string name="database_not_found">N\'arrive pas &#224; trouver un backup de la database.</string>
+    <string name="display_image">Afficher l\'image</string>
+    <string name="loading_image">Chargement de l\'image...</string>
+    <string name="first_available_chapter">Premier chapitre disponible.</string>
+    <string name="last_available_chapter">Dernier chapitre disponible.</string>
+    <string name="error_parsing_url">Erreur lors de la lecture de l\'url</string>
+    <string name="background_task_load">Tâche de fond encore en cours de chargement...</string>
+    <string name="content_may_updated">Le contenu peut &#234;tre mis &#224; jour</string>
+    <string name="css_layout_not_exist">Le layout CSS n\'existe pas au chemin indiqu&#233;. Utilisation de celui par d&#233;faut.</string>
+    <string name="clear_this_volume">Supprimer ce tome</string>
+    <string name="mark_volume_read">Marqu&#233; le tome comme lu</string>
+    <string name="clear_this_chapter">Supprimer ce chapitre</string>    
+    <string name="download_on_queue">T&#233;l&#233;chargement d&#233;j&#224; dans la file.</string>
+    <string name="downloading">En cours de t&#233;l&#233;chargement </string>
+    <string name="teaser_project">Teaser</string>
+    <string name="project_stalled">Projet bloqu&#233;</string>
+    <string name="project_abandonded">Projet abandonn&#233;</string>
+    <string name="project_pending_authorization">Projet en attente d\'autorisation</string>
+    <string name="added_to_watchlist">Ajout&#233; &#224; l\'observateur</string>
+    <string name="removed_from_watchlist">Retir&#233; de l\'observateur</string>
+    <string name="error_update">Erreur durant la mise &#224; jour</string>
+    <string name="no_last_novel">Vous n\'avez aucune Novel pour reprendre la lecture.</string>
+    <string name="terms_of_use">Conditions d\'utilisation</string>
+    <string name="agree">J\'accepte</string>
+    <string name="disagree">Quitter l\'app</string>
+    <string name="watched_light_novels">Light Novels surveill&#233;es</string>
+    <string name="add_novel_main">Ajouter une Novel (Principal)</string>
+    <string name="last_update">Derni&#232;re M&#224;J</string>
+    <string name="last_check">Dernier contrôle</string>
+    <string name="updates">M&#224;J</string>
+    <string name="alternative_language_summary">Choisis une langue pour les traductions dans d\'autres langues.</string>
+    <string name="alternative_language_title">Novels dans d\'autres langues</string>
+    <string name="no_selected_language">Aucun langage alternatif s&#233;lectionn&#233; !</string>
+    <string name="category_search_language">Chercher une cat&#233;gorie de langage</string>
+    <string name="enabled">Activ&#233;</string>
+    <string name="disabled">D&#233;sactiv&#233;</string>
+</resources>
