@@ -116,9 +116,9 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		});
 
         /* End of language section */
-        
+
         /* A section to change Alternative Languages list
-         * 
+         *
          *  @freedomofkeima
          */
         Preference selectAlternativeLanguage = findPreference("select_alternative_language");
@@ -127,7 +127,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
     	Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
     	int j = 0;
     	while (it.hasNext()){
-    		AlternativeLanguageInfo info = (AlternativeLanguageInfo) it.next().getValue();
+    		AlternativeLanguageInfo info = it.next().getValue();
     		languageStatus[j] = PreferenceManager.getDefaultSharedPreferences(
      				LNReaderApplication.getInstance().getApplicationContext())
     				.getBoolean(info.getLanguage(), true);
@@ -141,7 +141,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
             	Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
             	int j = 0;
             	while (it.hasNext()){
-            		AlternativeLanguageInfo info = (AlternativeLanguageInfo) it.next().getValue();
+            		AlternativeLanguageInfo info = it.next().getValue();
             		languageChoice[j] = info.getLanguage();
             		j++;
             		it.remove();
@@ -160,7 +160,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
             	        	Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
             	        	int j = 0;
             	        	while (it.hasNext()){
-            	        		AlternativeLanguageInfo info = (AlternativeLanguageInfo) it.next().getValue();
+            	        		AlternativeLanguageInfo info = it.next().getValue();
             	        		UIHelper.setAlternativeLanguagePreferences(context, info.getLanguage(), Checked.get(Checked.keyAt(j)));
             	        		j++;
             	        		it.remove();
@@ -176,7 +176,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
             	    builder.create().show();
         		return true;
             }
-        });       
+        });
         /* End of alternative languages list section */
 
         Preference clearDatabase = findPreference("clear_database");
@@ -278,6 +278,19 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			        startActivity(intent);
 				} catch (Exception e) {
 					Log.e(TAG, getResources().getString(R.string.not_copyright), e);
+				}
+				return false;
+			}
+		});
+
+        Preference credits = findPreference("credits");
+        credits.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				try {
+					Intent intent = new Intent(getApplicationContext(), DisplayCreditActivity.class);
+			        startActivity(intent);
+				} catch (Exception e) {
+					Log.e(TAG, getResources().getString(R.string.title_activity_display_credit), e);
 				}
 				return false;
 			}

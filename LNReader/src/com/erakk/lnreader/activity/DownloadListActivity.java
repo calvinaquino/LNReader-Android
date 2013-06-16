@@ -25,9 +25,9 @@ public class DownloadListActivity extends SherlockActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		UIHelper.SetTheme(this, R.layout.activity_display_light_novel_list);
+		UIHelper.SetTheme(this, R.layout.activity_download_list);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
-		setContentView(R.layout.activity_download_list);
+		//setContentView(R.layout.activity_download_list);
 		instance = this;
 		downloadListView = (ListView) findViewById(R.id.download_list);
 		downloadList = LNReaderApplication.getInstance().getDownloadList();

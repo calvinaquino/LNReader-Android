@@ -219,5 +219,6 @@
         <Preference
             android:key="app_version"
             android:title="@string/version" />
+        <Preference android:key="credits" android:title="@string/title_activity_display_credit"/>
     </PreferenceCategory>
 </PreferenceScreen>

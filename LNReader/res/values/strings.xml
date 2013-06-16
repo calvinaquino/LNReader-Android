@@ -45,7 +45,6 @@
     <string name="set">Set</string>
     <string name="cancel">Cancel</string>
     <string name="cancel_task">Cancel Task: </string>
-    
     <string name="bakatsuki_message">Before using this application, keep in mind that we, the developers of BakaTsuki EX, are not responsible for the content displayed by the application in any way. Therefore, you must read and agree to the TLG Translation Common Agreement of Baka-Tsuki.org:\n\n</string>
     <string name="bakatsuki_copyrights">\nTLG Translation Common Agreement v.0.4.1
 			\n0) \"Wiki\" is defined as the site \"Baka\-Tsuki\" running on any variation of wiki-like content management package, as defined by The American Heritage® Dictionary of the English Language, Fourth Edition. Houghton Mifflin Company, 2004.
@@ -63,7 +62,6 @@
 			\n
 			\nFinally, Have Fun! :D
 			\nthelastguardian \- May 26, 2008</string>
-    
     <string name="content_refresh">Refresh Content</string>
     <string name="content_previous">Previous</string>
     <string name="content_next">Next</string>
@@ -87,12 +85,12 @@
     <string name="download_image_to">Downloaded images saved to: %1$s</string>
     <string name="novel_database_to">Novel Database saved to: %1$s</string>
     <string name="copyright">Baka-Tsuki:Copyrights</string>
-    <string name ="not_copyright">Cannot get copyright page.</string>
-    <string name ="run_update_text">Tap to force Run Update</string>
-    <string name ="use_sound_summary">Ring if there is new chapters update.</string>
-    <string name ="use_sound_title">Use Ringer</string>
-    <string name ="use_vibration_summary">Vibrate if there is new chapters update.</string>
-    <string name ="use_vibration_title">Use Vibration</string>
+    <string name="not_copyright">Cannot get copyright page.</string>
+    <string name="run_update_text">Tap to force Run Update</string>
+    <string name="use_sound_summary">Ring if there is new chapters update.</string>
+    <string name="use_sound_title">Use Ringer</string>
+    <string name="use_vibration_summary">Vibrate if there is new chapters update.</string>
+    <string name="use_vibration_title">Use Vibration</string>
     <string name="persist_notification_summary">Keep the update notification after click.</string>
     <string name="persist_notification_title">Persist Notifications</string>
     <string name="consolidate_notification_summary">Consolidate the notification into single notification which launch Update History.</string>
@@ -139,7 +137,7 @@
     <string name="enable_bookmark_title">Enable Bookmark</string>
     <string name="css_layout_title">CSS Layouts</string>
     <string name="custom_css_title">Use Custom CSS</string>
-    <string name="custom_css_summary">Use custom CSS for reading. Reload chapter to take effect (including changing the css path).</string>   
+    <string name="custom_css_summary">Use custom CSS for reading. Reload chapter to take effect (including changing the css path).</string>
     <string name="custom_css_path_title">Custom CSS Path</string>
     <string name="custom_css_path_summary">Path to Custom CSS to be used for reading.</string>
     <string name="force_justified_title">Force Justified</string>
@@ -188,7 +186,7 @@
     <string name="css_layout_not_exist">CSS Layout does not exists at the assigned path. Using default.</string>
     <string name="clear_this_volume">Clear this Volume</string>
     <string name="mark_volume_read">Mark Volume as Read</string>
-    <string name="clear_this_chapter">Clear this Chapter</string>    
+    <string name="clear_this_chapter">Clear this Chapter</string>
     <string name="download_on_queue">Download already on queue.</string>
     <string name="downloading">Downloading </string>
     <string name="teaser_project">Teaser Project</string>
@@ -213,4 +211,5 @@
     <string name="category_search_language">Search Language Category</string>
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
+    <string name="title_activity_display_credit">Credits </string>
 </resources>

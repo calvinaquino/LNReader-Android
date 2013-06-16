@@ -23,11 +23,12 @@
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" android:largeHeap="true">
+        android:largeHeap="true"
+        android:theme="@style/AppTheme" >
         <activity
             android:name="com.erakk.lnreader.activity.MainActivity"
-            android:label="@string/app_name" 
-            android:launchMode="singleTop">
+            android:label="@string/app_name"
+            android:launchMode="singleTop" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -81,13 +82,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.erakk.lnreader.activity.DisplayLightNovelListActivity" />
         </activity>
-        <!-- <activity
+        <!--
+        <activity
             android:name="com.erakk.lnreader.activity.DisplaySynopsisActivity"
             android:label="@string/title_activity_display_synopsys" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.erakk.lnreader.activity.DisplayLightNovelListActivity" />
-        </activity> -->
+        </activity>
+        -->
         <activity
             android:name="com.erakk.lnreader.activity.DisplayLightNovelContentActivity"
             android:label="@string/title_activity_display_novel_content" >
@@ -126,7 +129,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.erakk.lnreader.activity.MainActivity" />
         </activity>
-         <activity
+        <activity
             android:name="com.erakk.lnreader.activity.DisplayAlternativeNovelPagerActivity"
             android:label="@string/title_activity_display_alternative_novel_pager"
             android:parentActivityName="com.erakk.lnreader.activity.MainActivity" >
@@ -166,7 +169,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.erakk.lnreader.activity.MainActivity" />
         </activity>
-        
+
         <service
             android:name="com.erakk.lnreader.service.UpdateService"
             android:icon="@drawable/ic_launcher"
@@ -181,6 +184,11 @@
         </receiver>
         <receiver android:name="com.erakk.lnreader.service.MyStartServiceReceiver" >
         </receiver>
+
+        <activity
+            android:name="com.erakk.lnreader.activity.DisplayCreditActivity"
+            android:label="@string/title_activity_display_credit" >
+        </activity>
     </application>
 
 </manifest>
