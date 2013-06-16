@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.webkit.WebView;
@@ -33,27 +34,33 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 	private LoadImageTask task;
 	private String url;
 	private ProgressDialog dialog;
-	
+
+	@SuppressLint("NewApi")
 	@Override
     public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
     	UIHelper.SetTheme(this, R.layout.activity_display_image);
         UIHelper.SetActionBarDisplayHomeAsUp(this, true);
-        
+
         imgWebView = (WebView) findViewById(R.id.webView1);
         imgWebView.getSettings().setAllowFileAccess(true);
-        imgWebView.getSettings().setBuiltInZoomControls(true);
         imgWebView.getSettings().setLoadWithOverviewMode(true);
         imgWebView.getSettings().setUseWideViewPort(true);
         imgWebView.setBackgroundColor(0);
-        
+
+        imgWebView.getSettings().setBuiltInZoomControls(getZoomPreferences());
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+        	imgWebView.getSettings().setDisplayZoomControls(getZoomControlPreferences());
+		}
+
         Intent intent = getIntent();
         url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
         executeTask(url, false);
     }
-	
+
 	@SuppressLint("NewApi")
-	private void executeTask(String url, boolean refresh) {        
+	private void executeTask(String url, boolean refresh) {
 		task = new LoadImageTask(refresh, this);
 		String key = TAG + ":" + url;
 		if(LNReaderApplication.getInstance().addTask(key, task)) {
@@ -63,14 +70,14 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 				task.execute(new String[] {url});
 		}
 	}
-	
+
     @Override
     protected void onStop() {
     	// check running task
     	if(task != null){
     		if(!(task.getStatus() == Status.FINISHED)) {
     			Toast.makeText(this, getResources().getString(R.string.cancel_task) + task.toString(), Toast.LENGTH_SHORT).show();
-    			task.cancel(true);    			
+    			task.cancel(true);
     		}
     	}
     	super.onStop();
@@ -81,7 +88,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
         getSupportMenuInflater().inflate(R.menu.activity_display_image, menu);
         return true;
     }
-    
+
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -89,24 +96,24 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 			Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
 			startActivity(launchNewIntent);
 			return true;
-		case R.id.menu_refresh_image:			
+		case R.id.menu_refresh_image:
 			/*
 			 * Implement code to refresh image content
 			 */
 			//refresh = true;
-			executeTask(url, true);			
+			executeTask(url, true);
 			return true;
 		case R.id.menu_downloads:
     		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
         	startActivity(downloadsItent);;
-			return true; 
+			return true;
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-    
+
     public void toggleProgressBar(boolean show) {
 		if(show) {
 			dialog = ProgressDialog.show(this, getResources().getString(R.string.display_image), getResources().getString(R.string.loading_image), false);
@@ -146,12 +153,12 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 
 	public void getResult(AsyncTaskResult<?> result) {
 		if(result == null) return;
-		
+
 		Exception e = result.getError();
 		if(e == null) {
 			ImageModel imageModel = (ImageModel) result.getResult();
 			imgWebView = (WebView) findViewById(R.id.webView1);
-			String imageUrl = "file:///" + Util.sanitizeFilename(imageModel.getPath()); 
+			String imageUrl = "file:///" + Util.sanitizeFilename(imageModel.getPath());
 			imgWebView.loadUrl(imageUrl);
 			String title = imageModel.getName();
 			setTitle(title.substring(title.lastIndexOf("/")));
@@ -166,11 +173,19 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 
 	public void updateProgress(String id,int current, int total, String messString) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public boolean downloadListSetup(String id, String toastText, int type) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	private boolean getZoomPreferences(){
+    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ZOOM_ENABLED, false);
+	}
+
+	private boolean getZoomControlPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_SHOW_ZOOM_CONTROL, false);
 	}
 }

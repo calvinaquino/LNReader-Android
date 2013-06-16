@@ -30,7 +30,7 @@ import com.erakk.lnreader.UIHelper;
 public class MainActivity extends SherlockActivity {
 	private static final String TAG = MainActivity.class.toString();
 	private boolean isInverted;
-	private Context ctx = this;
+	private final Context ctx = this;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -44,7 +44,7 @@ public class MainActivity extends SherlockActivity {
 		}
 		UIHelper.SetActionBarDisplayHomeAsUp(this, false);
 		isInverted = getColorPreferences();
-		setIconColor();	
+		setIconColor();
 
 		if (isFirstRun()) {
 			// Show copyrights
@@ -90,6 +90,12 @@ public class MainActivity extends SherlockActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void onBackPressed(){
+		// always exit if pressing back on Main Activity.
+		finish();
 	}
 
 	public void openNovelList(View view) {
@@ -170,31 +176,31 @@ public class MainActivity extends SherlockActivity {
 			Toast.makeText(this, getResources().getString(R.string.no_last_novel), Toast.LENGTH_SHORT).show();
 		}
 	}
-	
+
 	/* Open An activity to select alternative language */
 	public void openAlternativeNovelList(View view){
 		selectAlternativeLanguage();
 	}
-	
+
 	/**
 	 * Create a dialog for alternative language selection
 	 */
-	
+
 	public void selectAlternativeLanguage(){
-		
+
 		/* Counts number of selected Alternative Language */
 		int selection = 0;
-		
+
 		/* Checking number of selected languages */
     	Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
     	while (it.hasNext()){
-    		AlternativeLanguageInfo info = (AlternativeLanguageInfo) it.next().getValue();
+    		AlternativeLanguageInfo info = it.next().getValue();
  		   if (PreferenceManager.getDefaultSharedPreferences(
  					LNReaderApplication.getInstance().getApplicationContext())
- 					.getBoolean(info.getLanguage(), true)) selection++;    		
+ 					.getBoolean(info.getLanguage(), true)) selection++;
     		it.remove();
     	}
-		
+
 		if (selection == 0){
 			/* Build an AlertDialog */
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
@@ -212,11 +218,11 @@ public class MainActivity extends SherlockActivity {
 		} else {
 			/* Start next Activity */
 			Intent intent = new Intent(ctx, DisplayAlternativeNovelPagerActivity.class);
-			startActivity(intent);	
+			startActivity(intent);
 		}
-		
+
 	}
-	
+
 	private void setIconColor() {
 		LinearLayout rightMenu = (LinearLayout) findViewById(R.id.menu_right);
 		int childCount = rightMenu.getChildCount();

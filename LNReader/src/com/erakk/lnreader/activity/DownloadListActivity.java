@@ -8,6 +8,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
@@ -20,7 +21,7 @@ public class DownloadListActivity extends SherlockActivity {
 	ListView downloadListView;
 	DownloadListAdapter adapter;
 	private static DownloadListActivity instance;
-		
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -31,16 +32,26 @@ public class DownloadListActivity extends SherlockActivity {
 		downloadListView = (ListView) findViewById(R.id.download_list);
 		downloadList = LNReaderApplication.getInstance().getDownloadList();
 		updateContent();
-
 	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			finish();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
 	public static DownloadListActivity getInstance() {
 		return instance;
 	}
-	
+
 	public int getDownloadListCount() {
 		return downloadList.size();
 	}
-	
+
 	public void updateContent () {
 		try {
 			int resourceId = R.layout.download_list_item;
