@@ -101,12 +101,12 @@ public class LNReaderApplication extends Application {
 		}
 	}
 	public boolean isOnline() {
-	    ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
-	    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-	        return true;
-	    }
-	    return false;
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+			return true;
+		}
+		return false;
 	}
 
 	/*
@@ -126,6 +126,7 @@ public class LNReaderApplication extends Application {
 			for (int i=0;i<downloadList.size();i++) {
 				if (downloadList.get(i).getDownloadId() == id) {
 					downloadList.remove(i);
+					break;
 				}
 			}
 		}
@@ -138,6 +139,7 @@ public class LNReaderApplication extends Application {
 		for (int i=0;i<downloadList.size();i++) {
 			if (downloadList.get(i).getDownloadId() == id) {
 				name = downloadList.get(i).getDownloadName();
+				break;
 			}
 		}
 		return name;
@@ -159,16 +161,16 @@ public class LNReaderApplication extends Application {
 		return downloadList;
 	}
 
-//	public void updateDownload(String id, Integer progress){
-//
-//		for (int i=0;i<downloadList.size();i++) {
-//			if (downloadList.get(i).getDownloadId() == id) {
-//				downloadList.get(i).setDownloadProgress(progress);
-//			}
-//		}
-//		if (DownloadListActivity.getInstance() != null)
-//			DownloadListActivity.getInstance().updateContent();
-//	}
+	//	public void updateDownload(String id, Integer progress){
+	//
+	//		for (int i=0;i<downloadList.size();i++) {
+	//			if (downloadList.get(i).getDownloadId() == id) {
+	//				downloadList.get(i).setDownloadProgress(progress);
+	//			}
+	//		}
+	//		if (DownloadListActivity.getInstance() != null)
+	//			DownloadListActivity.getInstance().updateContent();
+	//	}
 
 
 	public void updateDownload(String id, Integer progress, String message){
@@ -234,20 +236,22 @@ public class LNReaderApplication extends Application {
 	 */
 	private final ServiceConnection mConnection = new ServiceConnection() {
 
-	    public void onServiceConnected(ComponentName className, IBinder binder) {
-	    	service = ((UpdateService.MyBinder) binder).getService();
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder binder) {
+			service = ((UpdateService.MyBinder) binder).getService();
 			Log.d(UpdateService.TAG, "onServiceConnected");
-	      	Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
-	    }
+			Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
+		}
 
-	    public void onServiceDisconnected(ComponentName className) {
-	    	service = null;
+		@Override
+		public void onServiceDisconnected(ComponentName className) {
+			service = null;
 			Log.d(UpdateService.TAG, "onServiceDisconnected");
-	   	}
+		}
 	};
 
 	private void doBindService() {
-	    bindService(new Intent(this, UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
+		bindService(new Intent(this, UpdateService.class), mConnection, Context.BIND_AUTO_CREATE);
 		Log.d(UpdateService.TAG, "doBindService");
 	}
 
@@ -265,8 +269,8 @@ public class LNReaderApplication extends Application {
 		}
 		else
 			service.force = force;
-			service.notifier = notifier;
-			service.onStartCommand(null, BIND_AUTO_CREATE, (int)(new Date().getTime()/1000));
+		service.notifier = notifier;
+		service.onStartCommand(null, BIND_AUTO_CREATE, (int)(new Date().getTime()/1000));
 	}
 
 	@Override
@@ -317,8 +321,8 @@ public class LNReaderApplication extends Application {
 
 	public void resetFirstRun() {
 		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
-	    edit.remove(Constants.PREF_FIRST_RUN);
-	    edit.commit();
+		edit.remove(Constants.PREF_FIRST_RUN);
+		edit.commit();
 	}
 
 	public void restartApplication() {
