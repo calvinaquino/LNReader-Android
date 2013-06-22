@@ -213,4 +213,6 @@
     <string name="category_search_language">Chercher une cat&#233;gorie de langage</string>
     <string name="enabled">Activ&#233;</string>
     <string name="disabled">D&#233;sactiv&#233;</string>
+    <string name="title_activity_display_credit">Credits</string>
+    <string name="refresh_image">Rafraichir l\'image</string>
 </resources>

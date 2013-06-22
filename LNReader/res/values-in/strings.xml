@@ -213,4 +213,6 @@
     <string name="category_search_language">Kategori Bahasa Pencarian</string>
     <string name="enabled">Aktif</string>
     <string name="disabled">Tidak Aktif</string>
+    <string name="title_activity_display_credit">Credits</string>
+    <string name="refresh_image">Refresh Gambar</string>
 </resources>
