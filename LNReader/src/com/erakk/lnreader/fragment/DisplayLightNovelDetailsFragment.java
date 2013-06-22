@@ -102,7 +102,6 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		expandList = (ExpandableListView) view.findViewById(R.id.chapter_list);
 		registerForContextMenu(expandList);
 		expandList.setOnChildClickListener(new OnChildClickListener() {
-			@Override
 			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 				if(novelCol != null) {
 					PageModel chapter = bookModelAdapter.getChild(groupPosition, childPosition);
@@ -355,7 +354,6 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		}
 	}
 
-	@Override
 	public boolean downloadListSetup(String id, String toastText, int type){
 		boolean exists = false;
 		if(page != null && !Util.isStringNullOrEmpty(page.getTitle())) {
@@ -384,7 +382,6 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		return exists;
 	}
 
-	@Override
 	public void updateProgress(String id, int current, int total, String message){
 		double cur = current;
 		double tot = total;
@@ -392,7 +389,6 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		LNReaderApplication.getInstance().updateDownload(id, (int)result, message);
 	}
 
-	@Override
 	public void toggleProgressBar(boolean show) {
 		if(show) {
 			dialog = ProgressDialog.show(getSherlockActivity(), "Novel Details", "Loading. Please wait...", true);
@@ -400,7 +396,6 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			dialog.setCanceledOnTouchOutside(true);
 			dialog.setOnCancelListener(new OnCancelListener() {
 
-				@Override
 				public void onCancel(DialogInterface dialog) {
 					if(novelCol == null) {
 						txtLoading.setVisibility(View.VISIBLE);
@@ -413,14 +408,12 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		}
 	}
 
-	@Override
 	public void setMessageDialog(ICallbackEventData message) {
 		//		if(dialog.isShowing())
 		//			dialog.setMessage(message.getMessage());
 		//		LNReaderApplication.getInstance().updateDownload(page.getTitle(), 5);
 	}
 
-	@Override
 	@SuppressLint("NewApi")
 	public void getResult(AsyncTaskResult<?> result) {
 		Exception e = result.getError();
@@ -477,7 +470,6 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 						isWatched.setChecked(page.isWatched());
 						isWatched.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
-							@Override
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 								if(isChecked){
 									Toast.makeText(getSherlockActivity(), "Added to watch list: " + page.getTitle(),	Toast.LENGTH_SHORT).show();

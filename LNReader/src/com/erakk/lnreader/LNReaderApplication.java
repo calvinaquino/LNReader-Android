@@ -236,14 +236,12 @@ public class LNReaderApplication extends Application {
 	 */
 	private final ServiceConnection mConnection = new ServiceConnection() {
 
-		@Override
 		public void onServiceConnected(ComponentName className, IBinder binder) {
 			service = ((UpdateService.MyBinder) binder).getService();
 			Log.d(UpdateService.TAG, "onServiceConnected");
 			Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
 		}
 
-		@Override
 		public void onServiceDisconnected(ComponentName className) {
 			service = null;
 			Log.d(UpdateService.TAG, "onServiceDisconnected");

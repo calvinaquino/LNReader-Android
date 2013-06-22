@@ -16,6 +16,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:text="Credit here" />
+        android:text="@string/title_activity_display_credit" />
 
 </RelativeLayout>

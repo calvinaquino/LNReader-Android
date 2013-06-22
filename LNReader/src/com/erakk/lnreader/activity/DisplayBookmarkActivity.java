@@ -21,13 +21,13 @@ import com.erakk.lnreader.model.BookmarkModel;
 public class DisplayBookmarkActivity extends SherlockListActivity  {
 	private boolean isInverted;
 	private BookmarkModelAdapter adapter = null;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		UIHelper.SetTheme(this, R.layout.activity_display_bookmark);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
-		
+
 		isInverted = getColorPreferences();
 		setTitle(getResources().getString(R.string.bookmarks));
 		getBookmarks();
@@ -36,7 +36,7 @@ public class DisplayBookmarkActivity extends SherlockListActivity  {
 	private void getBookmarks() {
 		int resourceId = R.layout.bookmark_list_item;
 		if(UIHelper.IsSmallScreen(this)) {
-			resourceId = R.layout.bookmark_list_item; 
+			resourceId = R.layout.bookmark_list_item;
 		}
 		ArrayList<BookmarkModel> bookmarks = NovelsDao.getInstance(this).getAllBookmarks();
 		adapter = new BookmarkModelAdapter(this, resourceId, bookmarks, null);
@@ -52,7 +52,7 @@ public class DisplayBookmarkActivity extends SherlockListActivity  {
         }
         if(adapter != null) adapter.notifyDataSetChanged();
     }
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -63,14 +63,14 @@ public class DisplayBookmarkActivity extends SherlockListActivity  {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.invert_colors:			
+		case R.id.invert_colors:
 			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);
 			return true;
-		case R.id.menu_downloads:
+		case R.id.menu_downloads_list:
     		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
         	startActivity(downloadsItent);;
-			return true; 
+			return true;
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;

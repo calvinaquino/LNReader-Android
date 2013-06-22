@@ -30,12 +30,12 @@ import com.erakk.lnreader.UIHelper;
 
 @SuppressWarnings("deprecation")
 public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
-    
+
     static TabHost tabHost;
 	private boolean isInverted;
 	LocalActivityManager lam;
 	private Activity currentActivity = null;
- 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,55 +48,55 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
             UIHelper.SetTheme(this, R.layout.activity_display_novel_pager_fix);
             UIHelper.SetActionBarDisplayHomeAsUp(this, true);
             setContentView(R.layout.activity_display_novel_pager_fix);
-		} 
+		}
         tabHost = (TabHost) findViewById(android.R.id.tabhost);
         lam = new LocalActivityManager(this,false);
         lam.dispatchCreate(savedInstanceState);
         tabHost.setup(lam);
         isInverted = getColorPreferences();
-    	
+
         tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             public void onTabChanged(String tabId) {
             	setTabColor();
             	currentActivity = lam.getActivity(tabId);
             }
         });
-        
+
         	/* Dynamically add Tabs */
         	ArrayList<String> Choice = new ArrayList<String>();
-       
+
         	Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
         	while (it.hasNext()){
-        		AlternativeLanguageInfo info = (AlternativeLanguageInfo) it.next().getValue();
+        		AlternativeLanguageInfo info = it.next().getValue();
         		boolean isChosen = PreferenceManager.getDefaultSharedPreferences(
         				LNReaderApplication.getInstance().getApplicationContext())
-        				.getBoolean(info.getLanguage(), true);  
+        				.getBoolean(info.getLanguage(), true);
         		if (isChosen) {
         			Choice.add(info.getLanguage());
         			Log.d("Language Added: ", info.getLanguage());
         		}
         		it.remove();
         	}
-        	
-        	TabSpec[] allSpec = new TabSpec[Choice.size()]; 
+
+        	TabSpec[] allSpec = new TabSpec[Choice.size()];
         	for (int i = 0; i < Choice.size(); i++){
                 allSpec[i] = tabHost.newTabSpec(Choice.get(i));
                 allSpec[i].setIndicator(Choice.get(i));
                 Intent firstIntent = new Intent(this, DisplayAlternativeNovelListActivity.class);
                 firstIntent.putExtra("LANG", Choice.get(i));
                 allSpec[i].setContent(firstIntent);
-         
+
                 // Adding all TabSpec to TabHost
-                tabHost.addTab(allSpec[i]);  	
-                
+                tabHost.addTab(allSpec[i]);
+
                 //Cheap preload list hack.
-                tabHost.setCurrentTabByTag(Choice.get(i));         		
+                tabHost.setCurrentTabByTag(Choice.get(i));
         	}
-      		 
+
         //Tab color
         setTabColor();
     }
-    
+
     @Override
 	protected void onPause() {
 		super.onPause();
@@ -116,7 +116,7 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
         	UIHelper.Recreate(this);
         }
     }
-    
+
     public static void setTabColor() {
         for(int i=0;i<tabHost.getTabWidget().getChildCount();i++)
         {
@@ -126,27 +126,27 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
 //        tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.parseColor("#234B7E")); // selected
         tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.parseColor("#708090")); // selected
     }
-    
+
     public static TabHost getMainTabHost() {
     	return tabHost;
     }
-    
+
     private boolean getColorPreferences(){
     	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
-    
-    
+
+
     // Option Menu related
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
 		return true;
 	}
-    
+
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
     	Activity activity = currentActivity;
-    	
+
 		switch (item.getItemId()) {
 		case R.id.menu_settings:
 			Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
@@ -156,7 +156,7 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
 			if(activity instanceof INovelListHelper)
 				((INovelListHelper)activity).refreshList();
 			return true;
-		case R.id.invert_colors:			
+		case R.id.invert_colors:
 			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);
 			return true;
@@ -171,11 +171,11 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
 		case R.id.menu_bookmarks:
     		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
         	startActivity(bookmarkIntent);
-			return true;    
-		case R.id.menu_downloads:
+			return true;
+		case R.id.menu_downloads_list:
     		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
         	startActivity(downloadsItent);
-			return true; 
+			return true;
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;

@@ -211,5 +211,6 @@
     <string name="category_search_language">Search Language Category</string>
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
-    <string name="title_activity_display_credit">Credits </string>
+    <string name="title_activity_display_credit">Credits</string>
+    <string name="refresh_image">Refresh Image</string>
 </resources>

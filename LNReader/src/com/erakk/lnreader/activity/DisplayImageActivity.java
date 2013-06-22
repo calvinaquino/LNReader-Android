@@ -103,7 +103,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 			//refresh = true;
 			executeTask(url, true);
 			return true;
-		case R.id.menu_downloads:
+		case R.id.menu_downloads_list:
     		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
         	startActivity(downloadsItent);;
 			return true;
