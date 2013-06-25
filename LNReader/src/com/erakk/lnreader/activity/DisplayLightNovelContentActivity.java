@@ -126,7 +126,13 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	@Override
 	protected void onDestroy() {
-		if(webView != null) webView.destroy();
+		super.onDestroy();
+		if(webView != null) {
+			RelativeLayout rootView = (RelativeLayout) findViewById(R.id.rootView);
+			rootView.removeView(webView);
+			webView.removeAllViews();
+			webView.destroy();
+		}
 	}
 
 	@Override

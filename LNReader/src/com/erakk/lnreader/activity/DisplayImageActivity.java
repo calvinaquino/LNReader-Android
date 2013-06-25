@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -58,12 +59,18 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
 		executeTask(url, false);
 	}
-	
+
 	@Override
 	protected void onDestroy() {
-		if(imgWebView != null) imgWebView.destroy();
+		super.onDestroy();
+		if(imgWebView != null) {
+			RelativeLayout rootView = (RelativeLayout) findViewById(R.id.rootView);
+			rootView.removeView(imgWebView);
+			imgWebView.removeAllViews();
+			imgWebView.destroy();
+		}
 	}
-	
+
 	@SuppressLint("NewApi")
 	private void executeTask(String url, boolean refresh) {
 		task = new LoadImageTask(refresh, this);

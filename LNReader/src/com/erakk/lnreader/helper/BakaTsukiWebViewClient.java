@@ -18,19 +18,19 @@ import com.erakk.lnreader.model.PageModel;
 @TargetApi(11)
 public class BakaTsukiWebViewClient extends WebViewClient {
 	private static final String TAG = BakaTsukiWebViewClient.class.toString();
-	private DisplayLightNovelContentActivity caller;
-	
+	private final DisplayLightNovelContentActivity caller;
+
 	public BakaTsukiWebViewClient(DisplayLightNovelContentActivity caller) {
 		super();
 		this.caller = caller;
 	}
-	
+
 	@Override
-    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+	public boolean shouldOverrideUrlLoading(WebView view, String url) {
 		caller.setLastReadState();
 		Log.d(TAG, "Handling: " + url);
-		
-		Context context = view.getContext();
+
+		Context context = caller;//view.getContext();
 		// if image file
 		if(url.contains("title=File:")) {
 			Intent intent = new Intent(context, DisplayImageActivity.class);
@@ -47,7 +47,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 					NovelsDao dao = NovelsDao.getInstance(context);
 					try {
 						// split anchor text
-						String[] titles2 = titles[1].split("#", 2 ); 
+						String[] titles2 = titles[1].split("#", 2 );
 
 						// check if load different page.
 						synchronized (caller.content) {
@@ -68,14 +68,14 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 								view.loadUrl("#" + titles2[1]);
 							}
 						}
-						
+
 						isInternalPages = true;
 					} catch (Exception e) {
 						Log.e(TAG, "Failed to load: " + titles[1], e);
 					}
 				}
 			}
-			
+
 			if(!isInternalPages){
 				boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(caller.getApplicationContext()).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
 				if(useInternalWebView) {
@@ -89,7 +89,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 					}
 					if(temp != null) pageModel = temp;
 					caller.loadExternalUrl(pageModel);
-					
+
 				}
 				else {
 					// use default handler.
@@ -98,6 +98,6 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 				}
 			}
 		}
-        return true;
-    }	
+		return true;
+	}
 }
