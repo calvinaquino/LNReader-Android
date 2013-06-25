@@ -3,10 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <WebView
+    <com.erakk.lnreader.helper.NonLeakingWebView
         android:id="@+id/webView1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
 
     <!-- <ProgressBar
         android:id="@+id/progressBar2"

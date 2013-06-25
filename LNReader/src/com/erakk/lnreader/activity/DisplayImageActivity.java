@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
-import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -23,6 +22,7 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.DownloadCallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.helper.NonLeakingWebView;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
@@ -30,35 +30,40 @@ import com.erakk.lnreader.task.LoadImageTask;
 
 public class DisplayImageActivity extends SherlockActivity implements IAsyncTaskOwner{
 	private static final String TAG = DisplayImageActivity.class.toString();
-	private WebView imgWebView;
+	private NonLeakingWebView imgWebView;
 	private LoadImageTask task;
 	private String url;
 	private ProgressDialog dialog;
 
 	@SuppressLint("NewApi")
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-    	UIHelper.SetTheme(this, R.layout.activity_display_image);
-        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
+		UIHelper.SetTheme(this, R.layout.activity_display_image);
+		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
-        imgWebView = (WebView) findViewById(R.id.webView1);
-        imgWebView.getSettings().setAllowFileAccess(true);
-        imgWebView.getSettings().setLoadWithOverviewMode(true);
-        imgWebView.getSettings().setUseWideViewPort(true);
-        imgWebView.setBackgroundColor(0);
+		imgWebView = (NonLeakingWebView) findViewById(R.id.webView1);
+		imgWebView.getSettings().setAllowFileAccess(true);
+		imgWebView.getSettings().setLoadWithOverviewMode(true);
+		imgWebView.getSettings().setUseWideViewPort(true);
+		imgWebView.setBackgroundColor(0);
 
-        imgWebView.getSettings().setBuiltInZoomControls(getZoomPreferences());
+		imgWebView.getSettings().setBuiltInZoomControls(getZoomPreferences());
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
-        	imgWebView.getSettings().setDisplayZoomControls(getZoomControlPreferences());
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+			imgWebView.getSettings().setDisplayZoomControls(getZoomControlPreferences());
 		}
 
-        Intent intent = getIntent();
-        url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
-        executeTask(url, false);
-    }
-
+		Intent intent = getIntent();
+		url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
+		executeTask(url, false);
+	}
+	
+	@Override
+	protected void onDestroy() {
+		if(imgWebView != null) webView.destroy();
+	}
+	
 	@SuppressLint("NewApi")
 	private void executeTask(String url, boolean refresh) {
 		task = new LoadImageTask(refresh, this);
@@ -71,25 +76,25 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		}
 	}
 
-    @Override
-    protected void onStop() {
-    	// check running task
-    	if(task != null){
-    		if(!(task.getStatus() == Status.FINISHED)) {
-    			Toast.makeText(this, getResources().getString(R.string.cancel_task) + task.toString(), Toast.LENGTH_SHORT).show();
-    			task.cancel(true);
-    		}
-    	}
-    	super.onStop();
-    }
+	@Override
+	protected void onStop() {
+		// check running task
+		if(task != null){
+			if(!(task.getStatus() == Status.FINISHED)) {
+				Toast.makeText(this, getResources().getString(R.string.cancel_task) + task.toString(), Toast.LENGTH_SHORT).show();
+				task.cancel(true);
+			}
+		}
+		super.onStop();
+	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.activity_display_image, menu);
-        return true;
-    }
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getSupportMenuInflater().inflate(R.menu.activity_display_image, menu);
+		return true;
+	}
 
-    @Override
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_settings:
@@ -104,8 +109,8 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 			executeTask(url, true);
 			return true;
 		case R.id.menu_downloads_list:
-    		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
-        	startActivity(downloadsItent);;
+			Intent downloadsItent = new Intent(this, DownloadListActivity.class);
+			startActivity(downloadsItent);;
 			return true;
 		case android.R.id.home:
 			super.onBackPressed();
@@ -114,7 +119,8 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		return super.onOptionsItemSelected(item);
 	}
 
-    public void toggleProgressBar(boolean show) {
+	@Override
+	public void toggleProgressBar(boolean show) {
 		if(show) {
 			dialog = ProgressDialog.show(this, getResources().getString(R.string.display_image), getResources().getString(R.string.loading_image), false);
 			dialog.getWindow().setGravity(Gravity.CENTER);
@@ -125,6 +131,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		}
 	}
 
+	@Override
 	public void setMessageDialog(ICallbackEventData message) {
 		if(dialog != null && dialog.isShowing()){
 			ICallbackEventData data = message;
@@ -151,13 +158,14 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		}
 	}
 
+	@Override
 	public void getResult(AsyncTaskResult<?> result) {
 		if(result == null) return;
 
 		Exception e = result.getError();
 		if(e == null) {
 			ImageModel imageModel = (ImageModel) result.getResult();
-			imgWebView = (WebView) findViewById(R.id.webView1);
+			imgWebView = (NonLeakingWebView) findViewById(R.id.webView1);
 			String imageUrl = "file:///" + Util.sanitizeFilename(imageModel.getPath());
 			imgWebView.loadUrl(imageUrl);
 			String title = imageModel.getName();
@@ -171,18 +179,20 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		//LNReaderApplication.getInstance().removeTask(TAG + ":" + url);
 	}
 
+	@Override
 	public void updateProgress(String id,int current, int total, String messString) {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public boolean downloadListSetup(String id, String toastText, int type) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	private boolean getZoomPreferences(){
-    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ZOOM_ENABLED, false);
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ZOOM_ENABLED, false);
 	}
 
 	private boolean getZoomControlPreferences() {
