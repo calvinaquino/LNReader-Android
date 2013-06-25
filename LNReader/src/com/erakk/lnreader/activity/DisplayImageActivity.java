@@ -61,7 +61,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 	
 	@Override
 	protected void onDestroy() {
-		if(imgWebView != null) webView.destroy();
+		if(imgWebView != null) imgWebView.destroy();
 	}
 	
 	@SuppressLint("NewApi")
