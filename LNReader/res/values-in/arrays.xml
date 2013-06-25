@@ -26,16 +26,4 @@
         <item name="1">1</item>
         <item name="2">2</item>
     </string-array>
-
-     <string-array name="languageSelection">
-        <item name="0">Inggris</item>
-        <item name="1">Bahasa Indonesia</item>        
-        <item name="2">Fran&#231;ais</item>
-    </string-array>
-    
-    <string-array name="languageSelectionValues">
-        <item name="0">0</item>
-        <item name="1">1</item>
-        <item name="2">2</item>
-    </string-array> 
 </resources>

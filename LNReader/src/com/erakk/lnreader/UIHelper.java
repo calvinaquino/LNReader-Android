@@ -34,10 +34,10 @@ public class UIHelper {
 	{
 		if(PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_LOCK_HORIZONTAL, false)) {
 			activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-    	}
-    	else {
-    		activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-    	}
+		}
+		else {
+			activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+		}
 	}
 
 	/**
@@ -77,15 +77,15 @@ public class UIHelper {
 	 * @param layoutId layout to use
 	 */
 	public static void SetTheme(Activity activity, Integer layoutId) {
-    	if(PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
-    		activity.setTheme(R.style.AppTheme2);
-    	}
-    	else {
-    		activity.setTheme(R.style.AppTheme);
-    	}
-    	if(layoutId != null) {
-    		activity.setContentView(layoutId);
-    	}
+		if(PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
+			activity.setTheme(R.style.AppTheme2);
+		}
+		else {
+			activity.setTheme(R.style.AppTheme);
+		}
+		if(layoutId != null) {
+			activity.setContentView(layoutId);
+		}
 	}
 
 	public static boolean CheckKeepAwake(Activity activity) {
@@ -140,7 +140,7 @@ public class UIHelper {
 		else {
 			activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 			activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-	    }
+		}
 	}
 
 	@SuppressLint("NewApi")
@@ -161,16 +161,16 @@ public class UIHelper {
 	 * @param activity target activity
 	 */
 	public static void ToggleColorPref(Activity activity) {
-    	SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(activity);
-    	SharedPreferences.Editor editor = sharedPrefs.edit();
-    	if (sharedPrefs.getBoolean(Constants.PREF_INVERT_COLOR, true)) {
-    		editor.putBoolean(Constants.PREF_INVERT_COLOR, false);
-    	}
-    	else {
-    		editor.putBoolean(Constants.PREF_INVERT_COLOR, true);
-    	}
-    	editor.commit();
-    }
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(activity);
+		SharedPreferences.Editor editor = sharedPrefs.edit();
+		if (sharedPrefs.getBoolean(Constants.PREF_INVERT_COLOR, true)) {
+			editor.putBoolean(Constants.PREF_INVERT_COLOR, false);
+		}
+		else {
+			editor.putBoolean(Constants.PREF_INVERT_COLOR, true);
+		}
+		editor.commit();
+	}
 
 	public static int GetIntFromPreferences(String key, int defaultValue) {
 		String value = PreferenceManager.getDefaultSharedPreferences(
@@ -224,29 +224,29 @@ public class UIHelper {
 		return targetIv;
 	}
 
-	public static void setLanguage(Context activity, int langIdx) {
-		String lang = "en";
-
-		/* Add system locale / your values folder name here */
-		if      (langIdx == 0) lang = "en";
-		else if (langIdx == 1) lang = "in";
-		else if (langIdx == 2) lang = "fr";
-
-		/* Changing configuration to user's choice */
-		Locale myLocale = new Locale(lang);
-		Log.d(TAG, "Locale: " + lang);
-		Resources res = activity.getResources();
-		DisplayMetrics dm = res.getDisplayMetrics();
-        Configuration conf = res.getConfiguration();
-        conf.locale = myLocale;
-        /* update resources */
-        res.updateConfiguration(conf, dm);
+	public static void setLanguage(Context activity, String key) {
+		try {
+			/* Changing configuration to user's choice */
+			Locale myLocale = new Locale(key);
+			Log.d(TAG, "Locale: " + key);
+			Resources res = activity.getResources();
+			DisplayMetrics dm = res.getDisplayMetrics();
+			Configuration conf = res.getConfiguration();
+			conf.locale = myLocale;
+			/* update resources */
+			res.updateConfiguration(conf, dm);
+		} catch (Exception ex) {
+			Log.e(TAG, "Failed to set language: " + key, ex);
+			setLanguage(activity, "en");
+		}
 	}
 
 	public static void setLanguage(Context activity) {
 		/* Set starting language */
-		int langIdx = GetIntFromPreferences(Constants.PREF_LANGUAGE, 0);
-		setLanguage(activity, langIdx);
+		String locale = PreferenceManager.getDefaultSharedPreferences(
+				LNReaderApplication.getInstance().getApplicationContext())
+				.getString(Constants.PREF_LANGUAGE, "en");
+		setLanguage(activity, locale);
 	}
 
 	public static void setAlternativeLanguagePreferences(Context activity, String lang, boolean val) {

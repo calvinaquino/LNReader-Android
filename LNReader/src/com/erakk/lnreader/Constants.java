@@ -9,7 +9,7 @@ public class Constants {
 
 	//public static final String BaseURL = "http://www.baka-tsuki.org/project/";
 	public static final String BASE_URL = "http://www.baka-tsuki.org";
-	
+
 	// Intent parameter list
 	public static final String EXTRA_NOVEL = "com.erakk.lnreader.NOVEL";
 	public static final String EXTRA_PAGE = "com.erakk.lnreader.page";
@@ -21,19 +21,19 @@ public class Constants {
 	public static final String EXTRA_SCROLL_Y = "com.erakk.lnreader.SCROLL_Y";
 	public static final String EXTRA_P_INDEX = "pIndex";
 	public static final String EXTRA_CALLER_ACTIVITY = "caller_activity";
-	
+
 	public static final String IMAGE_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files";
-	
+
 	public static final int IMAGE_DOWNLOAD_RETRY = 3;
 	public static final int PAGE_DOWNLOAD_RETRY = 3;
-	
+
 	public static final String NOVEL_BOOK_DIVIDER = "%NOVEL_BOOK_DIVIDER%";
 	public static final int CHECK_INTERVAL = 7;
-	
+
 	public static final int TIMEOUT = 60000;
-	
+
 	public static final String TAG = "LNReader";
-	
+
 	// Shared Preferences keys
 	public static final String PREF_FIRST_RUN = "first_run";
 	public static final String PREF_DOWNLOAD_TOUCH = "auto_download_chapter";
@@ -71,7 +71,7 @@ public class Constants {
 	public static final String PREF_CUSTOM_CSS_PATH = "custom_css_path";
 	public static final String PREF_MARGINS = "margin_space";
 	public static final String PREF_UI_SELECTION = "ui_selection";
-	
+
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
 
 	@SuppressWarnings("deprecation")
@@ -90,19 +90,19 @@ public class Constants {
 	public static final int COLOR_UNREAD_DARK = Color.parseColor("#222222");
 	public static final int COLOR_MISSING = Color.parseColor("#ff0000");
 	public static final int COLOR_EXTERNAL = Color.parseColor("#3333ff");
-	
+
 	public static final String ROOT_NOVEL = "Main_Page";
-	
+
 	/* Section of Task Key */
 	public static final String KEY_LOAD_CHAPTER = ":LoadChapter:";
 	public static final String KEY_DOWNLOAD_CHAPTER = ":DownloadChapters:";
 	public static final String KEY_DOWNLOAD_ALL_CHAPTER = ":DownloadChaptersAll:";
-	
-	/* Section of Language */
+
+	/* Section of Language for novel parser*/
 	public static final String LANG_ENGLISH = "English";
 	public static final String LANG_BAHASA_INDONESIA = "Bahasa Indonesia";
 	public static final String LANG_FRENCH = "Français";
-	
+
 	/* You just need to add a new alternative language here and in AlternativeLanguageInfo -> initSingleton */
 	public static final String[] languageList = { Constants.LANG_ENGLISH , Constants.LANG_FRENCH, Constants.LANG_BAHASA_INDONESIA };
 }

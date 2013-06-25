@@ -38,7 +38,7 @@
         android:key="general_category"
         android:title="@string/general_preference" >
         <ListPreference android:entries="@array/uiSelection" android:title="@string/UI_selection_title" android:key="ui_selection" android:entryValues="@array/uiSelectionValues" android:defaultValue="0"/>
-        <ListPreference android:entries="@array/languageSelection" android:title="@string/language_selection" android:key="language_selection" android:entryValues="@array/languageSelectionValues" android:defaultValue="0"/>
+        <ListPreference android:entries="@array/languageSelection" android:title="@string/language_selection" android:key="language_selection" android:entryValues="@array/languageSelectionValues" android:defaultValue="en"/>
         <Preference
             android:key="select_alternative_language"
             android:summary="@string/alternative_language_summary"
