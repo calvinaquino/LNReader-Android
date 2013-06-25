@@ -29,7 +29,7 @@ import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadImageTask;
 
-public class DisplayImageActivity extends SherlockActivity implements IAsyncTaskOwner{
+public class DisplayImageActivity extends SherlockActivity implements IAsyncTaskOwner {
 	private static final String TAG = DisplayImageActivity.class.toString();
 	private NonLeakingWebView imgWebView;
 	private LoadImageTask task;
@@ -51,7 +51,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 
 		imgWebView.getSettings().setBuiltInZoomControls(getZoomPreferences());
 
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			imgWebView.getSettings().setDisplayZoomControls(getZoomControlPreferences());
 		}
 
@@ -63,7 +63,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if(imgWebView != null) {
+		if (imgWebView != null) {
 			RelativeLayout rootView = (RelativeLayout) findViewById(R.id.rootView);
 			rootView.removeView(imgWebView);
 			imgWebView.removeAllViews();
@@ -75,19 +75,19 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 	private void executeTask(String url, boolean refresh) {
 		task = new LoadImageTask(refresh, this);
 		String key = TAG + ":" + url;
-		if(LNReaderApplication.getInstance().addTask(key, task)) {
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new String[] {url});
+		if (LNReaderApplication.getInstance().addTask(key, task)) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new String[] { url });
 			else
-				task.execute(new String[] {url});
+				task.execute(new String[] { url });
 		}
 	}
 
 	@Override
 	protected void onStop() {
 		// check running task
-		if(task != null){
-			if(!(task.getStatus() == Status.FINISHED)) {
+		if (task != null) {
+			if (!(task.getStatus() == Status.FINISHED)) {
 				Toast.makeText(this, getResources().getString(R.string.cancel_task) + task.toString(), Toast.LENGTH_SHORT).show();
 				task.cancel(true);
 			}
@@ -112,12 +112,12 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 			/*
 			 * Implement code to refresh image content
 			 */
-			//refresh = true;
+			// refresh = true;
 			executeTask(url, true);
 			return true;
 		case R.id.menu_downloads_list:
 			Intent downloadsItent = new Intent(this, DownloadListActivity.class);
-			startActivity(downloadsItent);;
+			startActivity(downloadsItent);
 			return true;
 		case android.R.id.home:
 			super.onBackPressed();
@@ -128,35 +128,33 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 
 	@Override
 	public void toggleProgressBar(boolean show) {
-		if(show) {
+		if (show) {
 			dialog = ProgressDialog.show(this, getResources().getString(R.string.display_image), getResources().getString(R.string.loading_image), false);
 			dialog.getWindow().setGravity(Gravity.CENTER);
 			dialog.setCanceledOnTouchOutside(true);
-		}
-		else {
+		} else {
 			dialog.dismiss();
 		}
 	}
 
 	@Override
 	public void setMessageDialog(ICallbackEventData message) {
-		if(dialog != null && dialog.isShowing()){
+		if (dialog != null && dialog.isShowing()) {
 			ICallbackEventData data = message;
 			dialog.setMessage(data.getMessage());
 
-			if(data.getClass() == DownloadCallbackEventData.class) {
+			if (data.getClass() == DownloadCallbackEventData.class) {
 				DownloadCallbackEventData downloadData = (DownloadCallbackEventData) data;
 				int percent = downloadData.getPercentage();
 				synchronized (dialog) {
-					if(percent > -1) {
+					if (percent > -1) {
 						// somehow doesn't works....
 						dialog.setIndeterminate(false);
 						dialog.setSecondaryProgress(percent);
 						dialog.setMax(100);
 						dialog.setProgress(percent);
 						dialog.setMessage(data.getMessage());
-					}
-					else {
+					} else {
 						dialog.setIndeterminate(true);
 						dialog.setMessage(data.getMessage());
 					}
@@ -167,10 +165,11 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 
 	@Override
 	public void getResult(AsyncTaskResult<?> result) {
-		if(result == null) return;
+		if (result == null)
+			return;
 
 		Exception e = result.getError();
-		if(e == null) {
+		if (e == null) {
 			ImageModel imageModel = (ImageModel) result.getResult();
 			imgWebView = (NonLeakingWebView) findViewById(R.id.webView1);
 			String imageUrl = "file:///" + Util.sanitizeFilename(imageModel.getPath());
@@ -178,16 +177,15 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 			String title = imageModel.getName();
 			setTitle(title.substring(title.lastIndexOf("/")));
 			Log.d("LoadImageTask", "Loaded: " + imageUrl);
-		}
-		else{
-			Log.e(TAG, "Cannot load image.",e);
+		} else {
+			Log.e(TAG, "Cannot load image.", e);
 			Toast.makeText(getApplicationContext(), e.getClass() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
-		//LNReaderApplication.getInstance().removeTask(TAG + ":" + url);
+		// LNReaderApplication.getInstance().removeTask(TAG + ":" + url);
 	}
 
 	@Override
-	public void updateProgress(String id,int current, int total, String messString) {
+	public void updateProgress(String id, int current, int total, String messString) {
 		// TODO Auto-generated method stub
 
 	}
@@ -198,7 +196,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		return false;
 	}
 
-	private boolean getZoomPreferences(){
+	private boolean getZoomPreferences() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ZOOM_ENABLED, false);
 	}
 

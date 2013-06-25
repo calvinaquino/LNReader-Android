@@ -56,7 +56,7 @@ import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelContentTask;
 
-public class DisplayLightNovelContentActivity extends SherlockActivity implements IAsyncTaskOwner{
+public class DisplayLightNovelContentActivity extends SherlockActivity implements IAsyncTaskOwner {
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
 	public NovelContentModel content;
 	private NovelCollectionModel novelDetails;
@@ -76,7 +76,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	boolean dynamicButtonsEnabled;
 	Runnable hideBottom;
 	Runnable hideTop;
-	Handler mHandler=new Handler();
+	Handler mHandler = new Handler();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -89,7 +89,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		// compatibility search box
 		final EditText searchText = (EditText) findViewById(R.id.searchText);
 		searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-			@Override
+
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				search(searchText.getText().toString());
 				return false;
@@ -109,25 +109,25 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		Log.d(TAG, "OnCreate Completed.");
 
 		// Hide button after a certain time being shown
-		hideBottom=new Runnable() {
-			@Override
+		hideBottom = new Runnable() {
+
 			public void run() {
 				goBottom.setVisibility(ImageButton.GONE);
 			}
 		};
-		hideTop=new Runnable() {
-			@Override
+		hideTop = new Runnable() {
+
 			public void run() {
 				goTop.setVisibility(ImageButton.GONE);
 			}
 		};
-		//Android Studio Config Commit Test
+		// Android Studio Config Commit Test
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if(webView != null) {
+		if (webView != null) {
 			RelativeLayout rootView = (RelativeLayout) findViewById(R.id.rootView);
 			rootView.removeView(webView);
 			webView.removeAllViews();
@@ -154,17 +154,16 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 		dynamicButtonsEnabled = getDynamicButtonsPreferences();
 
-		if(isFullscreen != getFullscreenPreferences()) {
+		if (isFullscreen != getFullscreenPreferences()) {
 			UIHelper.Recreate(this);
 		}
 
-		//show/hide option button
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		// show/hide option button
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			Button btnOption = (Button) findViewById(R.id.btnMenu);
-			if(getFullscreenPreferences()) {
+			if (getFullscreenPreferences()) {
 				btnOption.setVisibility(View.VISIBLE);
-			}
-			else {
+			} else {
 				btnOption.setVisibility(View.GONE);
 			}
 		}
@@ -173,7 +172,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		// to avoid only the first page loaded when resume from sleep
 		// (activity destroyed, onCreate called again)
 		// when the user navigate using next/prev/jumpTo
-		if(!restored) {
+		if (!restored) {
 			PageModel pageModel = new PageModel();
 			pageModel.setPage(getIntent().getStringExtra(Constants.EXTRA_PAGE));
 			try {
@@ -184,10 +183,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			}
 		}
 		setWebViewSettings();
-		if(content != null) {
+		if (content != null) {
 			NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webView1);
 			int pos = content.getLastYScroll();
-			if(pos > 0) pos = pos - 1 ;
+			if (pos > 0)
+				pos = pos - 1;
 			wv.loadUrl("javascript:goToParagraph(" + pos + ")");
 		}
 		Log.d(TAG, "onResume Completed");
@@ -202,37 +202,36 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	}
 
 	public void toggleTopButton(boolean enable) {
-		if(enable) {
+		if (enable) {
 			goTop.setVisibility(ImageButton.VISIBLE);
 			mHandler.removeCallbacks(hideTop);
 			mHandler.postDelayed(hideTop, 1000);
-		}
-		else
+		} else
 			goTop.setVisibility(ImageButton.GONE);
 	}
+
 	public void toggleBottomButton(boolean enable) {
-		if(enable) {
+		if (enable) {
 			goBottom.setVisibility(ImageButton.VISIBLE);
 			mHandler.removeCallbacks(hideBottom);
 			mHandler.postDelayed(hideBottom, 1000);
-		}
-		else
+		} else
 			goBottom.setVisibility(ImageButton.GONE);
 	}
 
 	public void goTop(View view) {
 		webView.pageUp(true);
 	}
+
 	public void goBottom(View view) {
 		webView.pageDown(true);
 	}
-
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
 		try {
-			if(content == null)
+			if (content == null)
 				savedInstanceState.putString(Constants.EXTRA_PAGE, getIntent().getStringExtra(Constants.EXTRA_PAGE));
 			else
 				savedInstanceState.putString(Constants.EXTRA_PAGE, content.getPageModel().getPage());
@@ -247,7 +246,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		super.onRestoreInstanceState(savedInstanceState);
 		String restoredPage = savedInstanceState.getString(Constants.EXTRA_PAGE);
 		try {
-			// replace the current pageModel with the saved instance if have different page
+			// replace the current pageModel with the saved instance if have
+			// different page
 			PageModel pageModel = new PageModel();
 			pageModel.setPage(restoredPage);
 			pageModel = NovelsDao.getInstance(this).getPageModel(pageModel, null);
@@ -264,21 +264,21 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	@Override
 	public void onStop() {
 		super.onStop();
-		//		don't cancel, so can get the result after closing the activity
-		//		if(task.getStatus() != Status.FINISHED) {
-		//			task.cancel(true);
-		//		}
+		// don't cancel, so can get the result after closing the activity
+		// if(task.getStatus() != Status.FINISHED) {
+		// task.cancel(true);
+		// }
 		//
 		Log.d(TAG, "onStop Completed");
 	}
 
-	@SuppressLint("NewApi")
 	@Override
+	@SuppressLint("NewApi")
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.activity_display_light_novel_content, menu);
 
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			if(getFullscreenPreferences()) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			if (getFullscreenPreferences()) {
 				menu.findItem(R.id.menu_chapter_next).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 				menu.findItem(R.id.menu_chapter_previous).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 			}
@@ -298,11 +298,12 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			/*
 			 * Implement code to refresh chapter content
 			 */
-			//refresh = true;
-			if(content != null) {
+			// refresh = true;
+			if (content != null) {
 				try {
 					executeTask(content.getPageModel(), true);
-					//Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
+					// Toast.makeText(getApplicationContext(), "Refreshing",
+					// Toast.LENGTH_SHORT).show();
 				} catch (Exception e) {
 					Log.e(TAG, "Cannot get current chapter.", e);
 				}
@@ -321,13 +322,12 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			/*
 			 * Implement code to move to previous chapter
 			 */
-			if(content != null) {
+			if (content != null) {
 				try {
 					PageModel prev = novelDetails.getPrev(content.getPageModel().getPage());
-					if(prev!= null) {
+					if (prev != null) {
 						jumpTo(prev);
-					}
-					else {
+					} else {
 						Toast.makeText(getApplicationContext(), getResources().getString(R.string.first_available_chapter), Toast.LENGTH_SHORT).show();
 					}
 				} catch (Exception e) {
@@ -340,13 +340,12 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			/*
 			 * Implement code to move to next chapter
 			 */
-			if(content != null) {
+			if (content != null) {
 				try {
 					PageModel next = novelDetails.getNext(content.getPageModel().getPage());
-					if(next!= null) {
+					if (next != null) {
 						jumpTo(next);
-					}
-					else {
+					} else {
 						Toast.makeText(getApplicationContext(), getResources().getString(R.string.last_available_chapter), Toast.LENGTH_SHORT).show();
 					}
 				} catch (Exception e) {
@@ -355,13 +354,15 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			}
 			return true;
 		case R.id.menu_chapter_toc:
-			if(tocMenu != null) tocMenu.show();
+			if (tocMenu != null)
+				tocMenu.show();
 			return true;
 		case R.id.menu_search:
 			showSearchBox();
 			return true;
 		case R.id.menu_bookmarks_here:
-			if(bookmarkMenu != null) bookmarkMenu.show();
+			if (bookmarkMenu != null)
+				bookmarkMenu.show();
 			return true;
 		case R.id.menu_bookmarks:
 			Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
@@ -369,7 +370,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			return true;
 		case R.id.menu_downloads_list:
 			Intent downloadsItent = new Intent(this, DownloadListActivity.class);
-			startActivity(downloadsItent);;
+			startActivity(downloadsItent);
+			;
 			return true;
 		case android.R.id.home:
 			finish();
@@ -381,11 +383,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	@Override
 	public void onBackPressed() {
-		if(isTaskRoot()) {
+		if (isTaskRoot()) {
 			startActivity(new Intent(this, MainActivity.class));
 			finish();
-		}
-		else {
+		} else {
 			super.onBackPressed();
 		}
 	}
@@ -393,11 +394,12 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		boolean useVolumeRocker = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_VOLUME_FOR_SCROLL, false);
-		if(useVolumeRocker) {
-			int scrollSize = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5)*100;
+		if (useVolumeRocker) {
+			int scrollSize = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5) * 100;
 
 			boolean invertScroll = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_SCROLL, false);
-			if(invertScroll) scrollSize = scrollSize * -1;
+			if (invertScroll)
+				scrollSize = scrollSize * -1;
 
 			if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
 				webView.flingScroll(0, -scrollSize);
@@ -407,16 +409,17 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				webView.flingScroll(0, +scrollSize);
 				Log.d("Volume", "Down Pressed");
 				return true;
-			}
-			else return super.onKeyDown(keyCode, event);
+			} else
+				return super.onKeyDown(keyCode, event);
 		}
 		return super.onKeyDown(keyCode, event);
 	}
+
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_VOLUME_UP) || (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN)) {
 			boolean useVolumeRocker = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_VOLUME_FOR_SCROLL, false);
-			if(!useVolumeRocker) {
+			if (!useVolumeRocker) {
 				return false;
 			}
 			return true;
@@ -426,7 +429,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	@SuppressLint("NewApi")
 	private void showSearchBox() {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			webView.showFindDialog("", true);
 		else {
 			RelativeLayout searchBox = (RelativeLayout) findViewById(R.id.searchBox);
@@ -443,7 +446,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		try {
 			Method m = NonLeakingWebView.class.getMethod("setFindIsUp", Boolean.TYPE);
 			m.invoke(webView, true);
-		} catch (Exception ignored) { }
+		} catch (Exception ignored) {
+		}
 	}
 
 	public void searchNext(View view) {
@@ -459,48 +463,48 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		searchBox.setVisibility(View.GONE);
 		webView.clearMatches();
 	}
+
 	// end of Compatibility search method for older android version
 
-	public void jumpTo(PageModel page){
+	public void jumpTo(PageModel page) {
 		setLastReadState();
-		if(page.isExternal() && !getHandleExternalLinkPreferences()) {
-			try{
+		if (page.isExternal() && !getHandleExternalLinkPreferences()) {
+			try {
 				Uri url = Uri.parse(page.getPage());
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
 				startActivity(browserIntent);
-			}catch(Exception ex) {
+			} catch (Exception ex) {
 				String message = getResources().getString(R.string.error_parsing_url) + ": " + page.getPage();
-				Log.e(TAG, message , ex);
+				Log.e(TAG, message, ex);
 				Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 			}
-		}
-		else executeTask(page, false);
+		} else
+			executeTask(page, false);
 	}
 
 	private void buildTOCMenu(PageModel referencePageModel) {
 		Log.d(TAG, "Trying to create TOC");
-		//if(novelDetails != null) {
+		// if(novelDetails != null) {
 		try {
 			BookModel book = referencePageModel.getBook();
-			if(book != null) {
+			if (book != null) {
 				ArrayList<PageModel> chapters = book.getChapterCollection();
 				for (PageModel chapter : chapters) {
-					if(chapter.getPage().contentEquals(referencePageModel.getPage())) {
+					if (chapter.getPage().contentEquals(referencePageModel.getPage())) {
 						chapter.setHighlighted(true);
-					}
-					else chapter.setHighlighted(false);
+					} else
+						chapter.setHighlighted(false);
 				}
 				Log.d(TAG, "TOC Found: " + chapters.size());
 
 				int resourceId = R.layout.jumpto_list_item;
-				if(UIHelper.IsSmallScreen(this)) {
+				if (UIHelper.IsSmallScreen(this)) {
 					resourceId = R.layout.jumpto_list_item;
 				}
 				jumpAdapter = new PageModelAdapter(this, resourceId, chapters);
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setTitle(getResources().getString(R.string.content_toc));
 				builder.setAdapter(jumpAdapter, new OnClickListener() {
-					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						PageModel page = jumpAdapter.getItem(which);
 						jumpTo(page);
@@ -511,28 +515,27 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		} catch (Exception e) {
 			Log.e(TAG, "Cannot get current page for menu.", e);
 		}
-		//}
+		// }
 	}
 
 	public void buildBookmarkMenu() {
-		if(content != null) {
+		if (content != null) {
 			try {
 				int resourceId = R.layout.bookmark_list_item;
-				if(UIHelper.IsSmallScreen(this)) {
+				if (UIHelper.IsSmallScreen(this)) {
 					resourceId = R.layout.bookmark_list_item_small;
 				}
 				bookmarkAdapter = new BookmarkModelAdapter(this, resourceId, content.getBookmarks(), content.getPageModel());
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setTitle(getResources().getString(R.string.bookmarks));
 				builder.setAdapter(bookmarkAdapter, new OnClickListener() {
-					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						BookmarkModel bookmark = bookmarkAdapter.getItem(which);
 						NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webView1);
 						wv.loadUrl("javascript:goToParagraph(" + bookmark.getpIndex() + ")");
 					}
 				});
-				bookmarkMenu  = builder.create();
+				bookmarkMenu = builder.create();
 			} catch (Exception e) {
 				Log.e(TAG, "Error getting pageModel: " + e.getMessage(), e);
 			}
@@ -541,25 +544,25 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	@SuppressWarnings("deprecation")
 	public void setLastReadState() {
-		if(content!= null) {
+		if (content != null) {
 			// save last position and zoom
 			NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webView1);
-			//content.setLastXScroll(wv.getScrollX());
-			//content.setLastYScroll(wv.getScrollY());
+			// content.setLastXScroll(wv.getScrollX());
+			// content.setLastYScroll(wv.getScrollY());
 			content.setLastZoom(wv.getScale());
-			try{
+			try {
 				content = NovelsDao.getInstance(this).updateNovelContent(content);
-			}catch(Exception ex) {
+			} catch (Exception ex) {
 				Log.e(TAG, "Error when saving state: " + ex.getMessage(), ex);
 			}
 
 			// check if complete read.
-			if(wv.getContentHeight() <=  wv.getScrollY() + wv.getBottom()) {
-				try{
+			if (wv.getContentHeight() <= wv.getScrollY() + wv.getBottom()) {
+				try {
 					PageModel page = content.getPageModel();
 					page.setFinishedRead(true);
 					page = NovelsDao.getInstance(this).updatePageModel(page);
-				}catch(Exception ex) {
+				} catch (Exception ex) {
 					Log.e(TAG, "Error updating PageModel for Content: " + content.getPage(), ex);
 				}
 			}
@@ -570,31 +573,29 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			editor.putString(Constants.PREF_LAST_READ, content.getPage());
 			editor.commit();
 
-			Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
+			Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() + " " + content.getLastZoom());
 		}
 	}
 
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel, boolean refresh) {
 		NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webView1);
-		if(pageModel.isExternal()) {
+		if (pageModel.isExternal()) {
 			loadExternalUrl(pageModel);
-		}
-		else {
+		} else {
 			isLoaded = false;
 			task = new LoadNovelContentTask(refresh, this);
 			String key = TAG + ":" + pageModel.getPage();
 			boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
-			if(isAdded) {
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-					task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {pageModel});
+			if (isAdded) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+					task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] { pageModel });
 				else
-					task.execute(new PageModel[] {pageModel});
-			}
-			else {
-				webView.loadData("<p style='background: black; color: white;'>" + getResources().getString(R.string.background_task_load)  +"</p>", "text/html", "utf-8");
+					task.execute(new PageModel[] { pageModel });
+			} else {
+				webView.loadData("<p style='background: black; color: white;'>" + getResources().getString(R.string.background_task_load) + "</p>", "text/html", "utf-8");
 				LoadNovelContentTask tempTask = (LoadNovelContentTask) LNReaderApplication.getInstance().getTask(key);
-				if(tempTask != null) {
+				if (tempTask != null) {
 					task = tempTask;
 					task.owner = this;
 				}
@@ -604,14 +605,14 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	}
 
 	public void loadExternalUrl(PageModel pageModel) {
-		try{
+		try {
 			final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webView1);
 			setWebViewSettings();
 			wv.loadUrl(pageModel.getPage());
 			setChapterTitle(pageModel);
 			buildTOCMenu(pageModel);
 			content = null;
-		} catch(Exception ex) {
+		} catch (Exception ex) {
 			Log.e(TAG, "Cannot load external content: " + pageModel.getPage(), ex);
 		}
 	}
@@ -621,7 +622,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		try {
 			PageModel pageModel = content.getPageModel();
 
-			if(content.getLastUpdate().getTime() != pageModel.getLastUpdate().getTime())
+			if (content.getLastUpdate().getTime() != pageModel.getLastUpdate().getTime())
 				Toast.makeText(getApplicationContext(), getResources().getString(R.string.content_may_updated) + ": " + content.getLastUpdate().toString() + " != " + pageModel.getLastUpdate().toString(), Toast.LENGTH_LONG).show();
 
 			// load the contents here
@@ -630,26 +631,19 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 			int lastPos = content.getLastYScroll();
 			int pIndex = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, -1);
-			if(pIndex > 0) lastPos = pIndex;
+			if (pIndex > 0)
+				lastPos = pIndex;
 
-			String html = "<html><head><style type=\"text/css\">"
-					+ getCSSSheet()
-					+ "</style>"
-					+ "<meta name='viewport' content='width=device-width, minimum-scale=0.5, maximum-scale=5' />"
-					+ prepareJavaScript(lastPos, content.getBookmarks())
-					+ "</head><body onclick='toogleHighlight(this, event);' onload='setup();'>"
-					+ content.getContent()
-					+ "</body></html>";
+			String html = "<html><head><style type=\"text/css\">" + getCSSSheet() + "</style>" + "<meta name='viewport' content='width=device-width, minimum-scale=0.5, maximum-scale=5' />" + prepareJavaScript(lastPos, content.getBookmarks()) + "</head><body onclick='toogleHighlight(this, event);' onload='setup();'>" + content.getContent() + "</body></html>";
 			wv.loadDataWithBaseURL(Constants.BASE_URL, html, "text/html", "utf-8", "");
-			if(content.getLastZoom() > 0) {
+			if (content.getLastZoom() > 0) {
 				wv.setInitialScale((int) (content.getLastZoom() * 100));
-			}
-			else {
+			} else {
 				wv.setInitialScale(100);
 			}
 
 			setChapterTitle(pageModel);
-			Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() +  " " + content.getLastZoom());
+			Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() + " " + content.getLastZoom());
 
 			buildTOCMenu(pageModel);
 			buildBookmarkMenu();
@@ -661,7 +655,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	}
 
 	private void setChapterTitle(PageModel pageModel) {
-		try{
+		try {
 			Log.d(TAG, "Parent Page: " + pageModel.getParent());
 			novelDetails = NovelsDao.getInstance(this).getNovelDetails(pageModel.getParentPageModel(), null);
 
@@ -674,31 +668,26 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 	}
 
-
-
-
 	private String prepareJavaScript(int lastPos, ArrayList<BookmarkModel> bookmarks) {
-		String script ="<script type='text/javascript'>";
+		String script = "<script type='text/javascript'>";
 		String js = LNReaderApplication.getInstance().ReadCss(R.raw.content_script);
 		js = "var bookmarkCol = [%bookmarks%];" + js;
 		js = "var lastPos = %lastpos%;" + js;
 		js = "var isBookmarkEnabled = " + getBookmarkPreferences() + ";" + js;
 
-		if(bookmarks != null && bookmarks.size() > 0) {
+		if (bookmarks != null && bookmarks.size() > 0) {
 			ArrayList<Integer> list = new ArrayList<Integer>();
 			for (BookmarkModel bookmark : bookmarks) {
 				list.add(bookmark.getpIndex());
 			}
 			js = js.replace("%bookmarks%", Util.join(list, ","));
-		}
-		else {
+		} else {
 			js = js.replace("%bookmarks%", "");
 		}
-		if(lastPos > 0) {
+		if (lastPos > 0) {
 			js = js.replace("%lastpos%", "" + lastPos);
 			Log.d(TAG, "Last Position: " + lastPos);
-		}
-		else {
+		} else {
 			js = js.replace("%lastpos%", "-1");
 		}
 		script += js;
@@ -716,55 +705,50 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		wv.getSettings().setSupportZoom(getZoomPreferences());
 		wv.getSettings().setBuiltInZoomControls(getZoomPreferences());
 
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			wv.getSettings().setDisplayZoomControls(getZoomControlPreferences());
 		}
 
 		wv.getSettings().setLoadWithOverviewMode(true);
-		//wv.getSettings().setUseWideViewPort(true);
+		// wv.getSettings().setUseWideViewPort(true);
 		wv.getSettings().setLoadsImagesAutomatically(getShowImagesPreferences());
 		wv.setBackgroundColor(0);
 		wv.getSettings().setJavaScriptEnabled(true);
 
-		if(isLoaded) wv.loadUrl("javascript:toogleEnableBookmark(" + getBookmarkPreferences() + ")");
+		if (isLoaded)
+			wv.loadUrl("javascript:toogleEnableBookmark(" + getBookmarkPreferences() + ")");
 	}
 
-	@Override
 	public void setMessageDialog(ICallbackEventData message) {
-		if(dialog.isShowing())
+		if (dialog.isShowing())
 			dialog.setMessage(message.getMessage());
 	}
 
-	@Override
 	public void toggleProgressBar(boolean show) {
 		synchronized (this) {
-			if(show) {
+			if (show) {
 				dialog = ProgressDialog.show(this, getResources().getString(R.string.title_activity_display_novel_content), "Loading. Please wait...", true);
 				dialog.getWindow().setGravity(Gravity.CENTER);
 				dialog.setCanceledOnTouchOutside(true);
 				dialog.setOnCancelListener(new OnCancelListener() {
 
-					@Override
 					public void onCancel(DialogInterface dialog) {
 						NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webView1);
 						webView.loadData("<p style='background: black; color: white;'>Task still loading...</p>", "text/html", "utf-8");
 					}
 				});
-			}
-			else {
+			} else {
 				dialog.dismiss();
 			}
 		}
 	}
 
-	@Override
 	public void getResult(AsyncTaskResult<?> result) {
 		Exception e = result.getError();
-		if(e == null) {
+		if (e == null) {
 			NovelContentModel loadedContent = (NovelContentModel) result.getResult();
 			setContent(loadedContent);
-		}
-		else {
+		} else {
 			Log.e(TAG, "Error when loading novel content: " + e.getMessage(), e);
 			Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
@@ -775,11 +759,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(Constants.PREF_SHOW_IMAGE, true);
 	}
 
-	private boolean getColorPreferences(){
+	private boolean getColorPreferences() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 
-	private boolean getZoomPreferences(){
+	private boolean getZoomPreferences() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ZOOM_ENABLED, false);
 	}
 
@@ -799,38 +783,39 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ENABLE_WEBVIEW_BUTTONS, false);
 	}
 
-	public boolean getDynamicButtons(){
+	public boolean getDynamicButtons() {
 		return dynamicButtonsEnabled;
 	}
 
 	public void refreshBookmarkData() {
-		if(bookmarkAdapter != null) bookmarkAdapter.refreshData();
+		if (bookmarkAdapter != null)
+			bookmarkAdapter.refreshData();
 	}
 
 	public void updateLastLine(int pIndex) {
-		if(content != null) content.setLastYScroll(pIndex);
+		if (content != null)
+			content.setLastYScroll(pIndex);
 	}
 
 	@SuppressLint("NewApi")
 	public void OpenMenu(View view) {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			invalidateOptionsMenu();
 		}
 		openOptionsMenu();
 	}
 
-	@Override
-	public void updateProgress(String id,int current, int total, String messString) {
-		Log.d(TAG, "Progress of " + id + ": " + messString + " ("+ current + "/" + total + ")");
+	public void updateProgress(String id, int current, int total, String messString) {
+		Log.d(TAG, "Progress of " + id + ": " + messString + " (" + current + "/" + total + ")");
 	}
 
-	@Override
 	public boolean downloadListSetup(String id, String toastText, int type) {
 		Log.d(TAG, "Setup of " + id + ": " + toastText + " (type: " + type + ")");
 		return false;
 	}
 
 	boolean isLoaded = false;
+
 	public void notifyLoadComplete() {
 		isLoaded = true;
 	}
@@ -838,11 +823,12 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	private boolean getUseCustomCSS() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_CUSTOM_CSS, false);
 	}
-	private float getLineSpacingPreferences(){
+
+	private float getLineSpacingPreferences() {
 		return Float.parseFloat(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LINESPACING, "150"));
 	}
 
-	private boolean getHandleExternalLinkPreferences(){
+	private boolean getHandleExternalLinkPreferences() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
 	}
 
@@ -855,16 +841,18 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	}
 
 	/**
-	 * getCSSSheet() method will put all the CSS data into the HTML header.
-	 * At the current moment, it reads the external data line by line then applies it directly to the header.
+	 * getCSSSheet() method will put all the CSS data into the HTML header. At
+	 * the current moment, it reads the external data line by line then applies
+	 * it directly to the header.
+	 * 
 	 * @return
 	 */
-	private String getCSSSheet(){
+	private String getCSSSheet() {
 		StringBuilder css = new StringBuilder();
 
-		if(getUseCustomCSS()){
+		if (getUseCustomCSS()) {
 			String cssPath = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_CUSTOM_CSS_PATH, Environment.getExternalStorageDirectory().getPath() + "/custom.css");
-			if(!Util.isStringNullOrEmpty(cssPath)) {
+			if (!Util.isStringNullOrEmpty(cssPath)) {
 				File cssFile = new File(cssPath);
 				if (cssFile.exists()) {
 					// read the file
@@ -885,8 +873,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 						} catch (Exception e) {
 							throw e;
 						} finally {
-							if (fr != null)	fr.close();
-							if (br != null)	br.close();
+							if (fr != null)
+								fr.close();
+							if (br != null)
+								br.close();
 						}
 					} catch (Exception e) {
 						Log.e(TAG, "Error when reading Custom CSS: " + cssPath, e);
@@ -899,18 +889,17 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 		// Default CSS start here
 		int styleId = -1;
-		if(getColorPreferences()) {
+		if (getColorPreferences()) {
 			styleId = R.raw.style_dark;
-			//Log.d("CSS", "CSS = dark");
-		}
-		else {
+			// Log.d("CSS", "CSS = dark");
+		} else {
 			styleId = R.raw.style;
-			//Log.d("CSS", "CSS = normal");
+			// Log.d("CSS", "CSS = normal");
 		}
 		LNReaderApplication app = (LNReaderApplication) getApplication();
 		css.append(app.ReadCss(styleId));
 
-		if(getUseJustifiedPreferences()) {
+		if (getUseJustifiedPreferences()) {
 			css.append("\nbody { text-align: justify !important; }\n");
 		}
 		css.append("\np { line-height:" + getLineSpacingPreferences() + "% !important; }\n");
