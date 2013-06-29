@@ -80,10 +80,10 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		UIHelper.SetActionBarDisplayHomeAsUp(getSherlockActivity(), true);
 		View view = inflater.inflate(R.layout.activity_display_light_novel_details, container, false);
 
-		//Get intent and message
+		// Get intent and message
 		page = new PageModel();
 		String pageTitle = getArguments().getString(Constants.EXTRA_PAGE);
-		if(Util.isStringNullOrEmpty(pageTitle)) {
+		if (Util.isStringNullOrEmpty(pageTitle)) {
 			Log.w(TAG, "Page title is empty!");
 		}
 		page.setPage(pageTitle);
@@ -102,8 +102,9 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		expandList = (ExpandableListView) view.findViewById(R.id.chapter_list);
 		registerForContextMenu(expandList);
 		expandList.setOnChildClickListener(new OnChildClickListener() {
+			@Override
 			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-				if(novelCol != null) {
+				if (novelCol != null) {
 					PageModel chapter = bookModelAdapter.getChild(groupPosition, childPosition);
 					String bookName = novelCol.getBookCollections().get(groupPosition).getTitle();
 					touchedForDownload = bookName + " " + chapter.getTitle();
@@ -123,32 +124,30 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 	private void loadChapter(PageModel chapter) {
 		boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity()).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
 
-		if(chapter.isExternal() && !useInternalWebView) {
-			try{
+		if (chapter.isExternal() && !useInternalWebView) {
+			try {
 				Uri url = Uri.parse(chapter.getPage());
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
 				startActivity(browserIntent);
-			}catch(Exception ex) {
+			} catch (Exception ex) {
 				String message = "Error when parsing url: " + chapter.getPage();
-				Log.e(TAG, message , ex);
+				Log.e(TAG, message, ex);
 				Toast.makeText(getSherlockActivity(), message, Toast.LENGTH_SHORT).show();
 			}
-		}
-		else {
+		} else {
 			if (chapter.isExternal() || chapter.isDownloaded() || !getDownloadTouchPreference()) {
 				Intent intent = new Intent(getSherlockActivity(), DisplayLightNovelContentActivity.class);
 				intent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
 				startActivity(intent);
-			}
-			else {
-				downloadTask = new DownloadNovelContentTask(new PageModel[] { chapter}, DisplayLightNovelDetailsFragment.this);
+			} else {
+				downloadTask = new DownloadNovelContentTask(new PageModel[] { chapter }, DisplayLightNovelDetailsFragment.this);
 				downloadTask.execute();
 			}
 		}
 	}
 
 	@Override
-	public void onResume(){
+	public void onResume() {
 		super.onResume();
 		Log.d(TAG, "OnResume: " + task.getStatus().toString());
 	}
@@ -163,7 +162,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		Log.d(TAG, "menu Option called.");
 		switch (item.getItemId()) {
 		case R.id.menu_refresh_chapter_list:
-			Log.d(TAG,"Refreshing Details");
+			Log.d(TAG, "Refreshing Details");
 			executeTask(page, true);
 			Toast.makeText(getSherlockActivity(), "Refreshing Details...", Toast.LENGTH_SHORT).show();
 			return true;
@@ -174,10 +173,14 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			ArrayList<PageModel> availableChapters = novelCol.getFlattedChapterList();
 			ArrayList<PageModel> notDownloadedChapters = new ArrayList<PageModel>();
 			for (PageModel pageModel : availableChapters) {
-				if(pageModel.isMissing() || pageModel.isExternal()) continue;
-				else if(!pageModel.isDownloaded()  												// add to list if not downloaded
-						|| (pageModel.isDownloaded()
-								&& NovelsDao.getInstance(getSherlockActivity()).isContentUpdated(pageModel))) // or the update available.
+				if (pageModel.isMissing() || pageModel.isExternal())
+					continue;
+				else if (!pageModel.isDownloaded() // add to list if not
+													// downloaded
+						|| (pageModel.isDownloaded() && NovelsDao.getInstance(getSherlockActivity()).isContentUpdated(pageModel))) // or
+																																	// the
+																																	// update
+																																	// available.
 				{
 					notDownloadedChapters.add(pageModel);
 				}
@@ -206,7 +209,8 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 
 	@Override
 	public boolean onContextItemSelected(android.view.MenuItem item) {
-		if(!(item.getMenuInfo() instanceof ExpandableListView.ExpandableListContextMenuInfo)) return super.onContextItemSelected(item);
+		if (!(item.getMenuInfo() instanceof ExpandableListView.ExpandableListContextMenuInfo))
+			return super.onContextItemSelected(item);
 		Log.d(TAG, "Context menu called");
 
 		ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) item.getMenuInfo();
@@ -216,8 +220,8 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 
 		PageModel chapter = null;
 
-		switch(item.getItemId()) {
-		//Volume cases
+		switch (item.getItemId()) {
+		// Volume cases
 		case R.id.download_volume:
 
 			/*
@@ -226,15 +230,14 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			BookModel book = novelCol.getBookCollections().get(groupPosition);
 			// get the chapter which not downloaded yet
 			ArrayList<PageModel> downloadingChapters = new ArrayList<PageModel>();
-			for(Iterator<PageModel> i = book.getChapterCollection().iterator(); i.hasNext();) {
+			for (Iterator<PageModel> i = book.getChapterCollection().iterator(); i.hasNext();) {
 				PageModel temp = i.next();
-				if(temp.isDownloaded()) {
+				if (temp.isDownloaded()) {
 					// add to list if the update available.
-					if(NovelsDao.getInstance(getSherlockActivity()).isContentUpdated(temp)) {
+					if (NovelsDao.getInstance(getSherlockActivity()).isContentUpdated(temp)) {
 						downloadingChapters.add(temp);
 					}
-				}
-				else {
+				} else {
 					downloadingChapters.add(temp);
 				}
 			}
@@ -248,8 +251,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			 */
 			BookModel bookDel = novelCol.getBookCollections().get(groupPosition);
 			Toast.makeText(getSherlockActivity(), "Clear this Volume: " + bookDel.getTitle(), Toast.LENGTH_SHORT).show();
-			dao.deleteBooks(bookDel);
-			novelCol.getBookCollections().remove(groupPosition);
+			dao.deleteBookCache(bookDel);
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		case R.id.mark_volume:
@@ -257,16 +259,16 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			/*
 			 * Implement code to mark entire volume as read
 			 */
-			Toast.makeText(getSherlockActivity(), "Mark Volume as Read",	Toast.LENGTH_SHORT).show();
+			Toast.makeText(getSherlockActivity(), "Mark Volume as Read", Toast.LENGTH_SHORT).show();
 			BookModel book2 = novelCol.getBookCollections().get(groupPosition);
-			for(Iterator<PageModel> iPage = book2.getChapterCollection().iterator(); iPage.hasNext();) {
+			for (Iterator<PageModel> iPage = book2.getChapterCollection().iterator(); iPage.hasNext();) {
 				PageModel page = iPage.next();
 				page.setFinishedRead(true);
 				dao.updatePageModel(page);
 			}
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
-			//Chapter cases
+			// Chapter cases
 		case R.id.download_chapter:
 
 			/*
@@ -274,8 +276,8 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			 */
 			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
 			String bookName = novelCol.getBookCollections().get(groupPosition).getTitle();
-			touchedForDownload = bookName +" "+chapter.getTitle();
-			downloadTask = new DownloadNovelContentTask(new PageModel[] { chapter}, this);
+			touchedForDownload = bookName + " " + chapter.getTitle();
+			downloadTask = new DownloadNovelContentTask(new PageModel[] { chapter }, this);
 			downloadTask.execute();
 			return true;
 		case R.id.clear_chapter:
@@ -285,15 +287,13 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			 */
 			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
 			Toast.makeText(getSherlockActivity(), "Clear this Chapter: " + chapter.getTitle(), Toast.LENGTH_SHORT).show();
-			dao.deletePage(chapter);
-			novelCol.getBookCollections().get(groupPosition).getChapterCollection().remove(chapter);
+			dao.deleteChapterCache(chapter);
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		case R.id.mark_read:
 
 			/*
-			 * Implement code to mark this chapter read
-			 * >> change to toggle
+			 * Implement code to mark this chapter read >> change to toggle
 			 */
 			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
 			chapter.setFinishedRead(!chapter.isFinishedRead());
@@ -311,16 +311,15 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		task = new LoadNovelDetailsTask(willRefresh, this);
 		String key = TAG + ":" + pageModel.getPage();
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
-		if(isAdded) {
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {pageModel});
+		if (isAdded) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] { pageModel });
 			else
-				task.execute(new PageModel[] {pageModel});
-		}
-		else {
+				task.execute(new PageModel[] { pageModel });
+		} else {
 			Log.i(TAG, "Continue execute task: " + key);
 			LoadNovelDetailsTask tempTask = (LoadNovelDetailsTask) LNReaderApplication.getInstance().getTask(key);
-			if(tempTask != null) {
+			if (tempTask != null) {
 				task = tempTask;
 				task.owner = this;
 			}
@@ -330,23 +329,22 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 
 	@SuppressLint("NewApi")
 	private void executeDownloadTask(ArrayList<PageModel> chapters, boolean isAll) {
-		if(page != null) {
+		if (page != null) {
 			downloadTask = new DownloadNovelContentTask(chapters.toArray(new PageModel[chapters.size()]), this);
 			String key = TAG + ":DownloadChapters:" + page.getPage();
-			if(isAll) {
+			if (isAll) {
 				key = TAG + ":DownloadChaptersAll:" + page.getPage();
 			}
 			boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
-			if(isAdded) {
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			if (isAdded) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 					downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 				else
 					downloadTask.execute();
-			}
-			else {
+			} else {
 				Log.i(TAG, "Continue download task: " + key);
 				DownloadNovelContentTask tempTask = (DownloadNovelContentTask) LNReaderApplication.getInstance().getTask(key);
-				if(tempTask != null) {
+				if (tempTask != null) {
 					downloadTask = tempTask;
 					downloadTask.owner = this;
 				}
@@ -354,26 +352,24 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		}
 	}
 
-	public boolean downloadListSetup(String id, String toastText, int type){
+	@Override
+	public boolean downloadListSetup(String id, String toastText, int type) {
 		boolean exists = false;
-		if(page != null && !Util.isStringNullOrEmpty(page.getTitle())) {
+		if (page != null && !Util.isStringNullOrEmpty(page.getTitle())) {
 			String name = page.getTitle() + " " + touchedForDownload;
 			if (type == 0) {
 				if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
 					exists = true;
 					Toast.makeText(getSherlockActivity(), "Download already on queue.", Toast.LENGTH_SHORT).show();
-				}
-				else {
-					Toast.makeText(getSherlockActivity(),"Downloading " + name + ".", Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(getSherlockActivity(), "Downloading " + name + ".", Toast.LENGTH_SHORT).show();
 					LNReaderApplication.getInstance().addDownload(id, name);
 				}
-			}
-			else if (type == 1) {
+			} else if (type == 1) {
 				Toast.makeText(getSherlockActivity(), toastText, Toast.LENGTH_SHORT).show();
-			}
-			else if (type == 2) {
+			} else if (type == 2) {
 				String downloadDescription = LNReaderApplication.getInstance().getDownloadDescription(id);
-				if(downloadDescription != null) {
+				if (downloadDescription != null) {
 					Toast.makeText(getSherlockActivity(), page.getTitle() + " " + downloadDescription + "'s download finished!", Toast.LENGTH_SHORT).show();
 				}
 				LNReaderApplication.getInstance().removeDownload(id);
@@ -382,51 +378,55 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		return exists;
 	}
 
-	public void updateProgress(String id, int current, int total, String message){
+	@Override
+	public void updateProgress(String id, int current, int total, String message) {
 		double cur = current;
 		double tot = total;
-		double result = (cur/tot)*100;
-		LNReaderApplication.getInstance().updateDownload(id, (int)result, message);
+		double result = (cur / tot) * 100;
+		LNReaderApplication.getInstance().updateDownload(id, (int) result, message);
 	}
 
+	@Override
 	public void toggleProgressBar(boolean show) {
-		if(show) {
+		if (show) {
 			dialog = ProgressDialog.show(getSherlockActivity(), "Novel Details", "Loading. Please wait...", true);
 			dialog.getWindow().setGravity(Gravity.CENTER);
 			dialog.setCanceledOnTouchOutside(true);
 			dialog.setOnCancelListener(new OnCancelListener() {
 
+				@Override
 				public void onCancel(DialogInterface dialog) {
-					if(novelCol == null) {
+					if (novelCol == null) {
 						txtLoading.setVisibility(View.VISIBLE);
 					}
 				}
 			});
-		}
-		else {
+		} else {
 			dialog.dismiss();
 		}
 	}
 
+	@Override
 	public void setMessageDialog(ICallbackEventData message) {
-		//		if(dialog.isShowing())
-		//			dialog.setMessage(message.getMessage());
-		//		LNReaderApplication.getInstance().updateDownload(page.getTitle(), 5);
+		// if(dialog.isShowing())
+		// dialog.setMessage(message.getMessage());
+		// LNReaderApplication.getInstance().updateDownload(page.getTitle(), 5);
 	}
 
+	@Override
 	@SuppressLint("NewApi")
 	public void getResult(AsyncTaskResult<?> result) {
 		Exception e = result.getError();
 
-		if(e == null) {
+		if (e == null) {
 			// from DownloadNovelContentTask
-			if(result.getResult() instanceof NovelContentModel[]) {
+			if (result.getResult() instanceof NovelContentModel[]) {
 				NovelContentModel[] content = (NovelContentModel[]) result.getResult();
-				if(content != null) {
-					for(BookModel book : novelCol.getBookCollections()) {
-						for(PageModel temp : book.getChapterCollection()) {
-							for(int i = 0; i < content.length; ++i) {
-								if(temp.getPage() == content[i].getPage()) {
+				if (content != null) {
+					for (BookModel book : novelCol.getBookCollections()) {
+						for (PageModel temp : book.getChapterCollection()) {
+							for (int i = 0; i < content.length; ++i) {
+								if (temp.getPage() == content[i].getPage()) {
 									temp.setDownloaded(true);
 								}
 							}
@@ -436,12 +436,12 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 				}
 			}
 			// from LoadNovelDetailsTask
-			else if(result.getResult() instanceof NovelCollectionModel) {
+			else if (result.getResult() instanceof NovelCollectionModel) {
 				novelCol = (NovelCollectionModel) result.getResult();
 				// now add the volume and chapter list.
 				try {
 					// Prepare header
-					if((expandList.getHeaderViewsCount() == 0) && getArguments().getBoolean("show_list_child")  ) {
+					if ((expandList.getHeaderViewsCount() == 0) && getArguments().getBoolean("show_list_child")) {
 						page = novelCol.getPageModel();
 						LayoutInflater layoutInflater = getSherlockActivity().getLayoutInflater();
 						View synopsis = layoutInflater.inflate(R.layout.activity_display_synopsis, null);
@@ -450,16 +450,16 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 						textViewTitle.setTextSize(20);
 						textViewSynopsis.setTextSize(16);
 						String title = page.getTitle();
-						if(page.isTeaser()) {
+						if (page.isTeaser()) {
 							title += " (Teaser Project)";
 						}
-						if(page.isStalled()) {
+						if (page.isStalled()) {
 							title += "\nStatus: Project Stalled";
 						}
-						if(page.isAbandoned()) {
+						if (page.isAbandoned()) {
 							title += "\nStatus: Project Abandoned";
 						}
-						if(page.isPending()) {
+						if (page.isPending()) {
 							title += "\nStatus: Project Pending Authorization";
 						}
 
@@ -470,12 +470,12 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 						isWatched.setChecked(page.isWatched());
 						isWatched.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
+							@Override
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-								if(isChecked){
-									Toast.makeText(getSherlockActivity(), "Added to watch list: " + page.getTitle(),	Toast.LENGTH_SHORT).show();
-								}
-								else {
-									Toast.makeText(getSherlockActivity(), "Removed from watch list: " + page.getTitle(),	Toast.LENGTH_SHORT).show();
+								if (isChecked) {
+									Toast.makeText(getSherlockActivity(), "Added to watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
+								} else {
+									Toast.makeText(getSherlockActivity(), "Removed from watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
 								}
 								// update the db!
 								page.setWatched(isChecked);
@@ -488,20 +488,18 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 						if (novelCol.getCoverBitmap() == null) {
 							// IN app test, is returning empty bitmap
 							Toast.makeText(getSherlockActivity(), "Bitmap empty", Toast.LENGTH_LONG).show();
-						}
-						else {
+						} else {
 
-							if((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && getStrechCoverPreference()) {
-								Drawable coverDrawable = new BitmapDrawable(getResources(),novelCol.getCoverBitmap());
+							if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && getStrechCoverPreference()) {
+								Drawable coverDrawable = new BitmapDrawable(getResources(), novelCol.getCoverBitmap());
 								int coverHeight = novelCol.getCoverBitmap().getHeight();
 								int coverWidth = novelCol.getCoverBitmap().getWidth();
-								int screenWidth = (int) (UIHelper.getScreenHeight(getSherlockActivity())*0.9);
-								int finalHeight = coverHeight*(screenWidth/coverWidth);
+								int screenWidth = (int) (UIHelper.getScreenHeight(getSherlockActivity()) * 0.9);
+								int finalHeight = coverHeight * (screenWidth / coverWidth);
 								ImageViewCover.setBackground(coverDrawable);
 								ImageViewCover.getLayoutParams().height = finalHeight;
 								ImageViewCover.getLayoutParams().width = screenWidth;
-							}
-							else {
+							} else {
 								ImageViewCover.setImageBitmap(novelCol.getCoverBitmap());
 							}
 						}
@@ -512,12 +510,11 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 					expandList.setAdapter(bookModelAdapter);
 				} catch (Exception e2) {
 					Log.e(TAG, "Error when setting up chapter list: " + e2.getMessage(), e2);
-					Toast.makeText(getSherlockActivity(), e2.getClass().toString() +": " + e2.getMessage(), Toast.LENGTH_SHORT).show();
+					Toast.makeText(getSherlockActivity(), e2.getClass().toString() + ": " + e2.getMessage(), Toast.LENGTH_SHORT).show();
 				}
 				Log.d(TAG, "Loaded: " + novelCol.getPage());
 			}
-		}
-		else {
+		} else {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
 			Toast.makeText(getSherlockActivity(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
@@ -525,11 +522,11 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		txtLoading.setVisibility(View.GONE);
 	}
 
-	private boolean getDownloadTouchPreference(){
+	private boolean getDownloadTouchPreference() {
 		return PreferenceManager.getDefaultSharedPreferences(getSherlockActivity()).getBoolean(Constants.PREF_DOWNLOAD_TOUCH, false);
 	}
 
-	private boolean getStrechCoverPreference(){
+	private boolean getStrechCoverPreference() {
 		return PreferenceManager.getDefaultSharedPreferences(getSherlockActivity()).getBoolean(Constants.PREF_STRETCH_COVER, false);
 	}
 }
