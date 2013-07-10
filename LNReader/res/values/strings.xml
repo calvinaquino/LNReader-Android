@@ -94,7 +94,7 @@
     <string name="persist_notification_title">Persist Notifications</string>
     <string name="consolidate_notification_summary">Consolidate the notification into single notification which launch Update History.</string>
     <string name="consolidate_notification_title">Consolidate Notification</string>
-    <string name="general_preference">General Preferences</string>
+    <string name="general_preference">General</string>
     <string name="UI_selection_title">UI Selection</string>
     <string name="invert_color_summary">Changes the font color with the background color</string>
     <string name="invert_color_title">Invert Colors</string>
@@ -212,4 +212,7 @@
     <string name="disabled">Disabled</string>
     <string name="title_activity_display_credit">Credits</string>
     <string name="refresh_image">Refresh Image</string>
+    <string name="update_preferences">Update and Notification</string>
+    <string name="orientation_preferences">Orientation Lock</string>
+    <string name="orientation_summary">Selected Orientation Lock: %1$s</string>
 </resources>

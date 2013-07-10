@@ -212,4 +212,7 @@
     <string name="disabled">Uitgeschakeld</string>
     <string name="title_activity_display_credit">Credits</string>
     <string name="refresh_image">Afbeelding herladen</string>
+    <string name="update_preferences">Update en Notification</string>
+    <string name="orientation_preferences">Orientation Lock</string>
+    <string name="orientation_summary">Geselecteerde Orientation Lock: %1$s</string>
 </resources>

@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -75,24 +74,11 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		// API
 		addPreferencesFromResource(R.xml.preferences);
 
-		// Screen Orientation
-		Preference lockHorizontal = findPreference(Constants.PREF_LOCK_HORIZONTAL);
-		lockHorizontal.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-			public boolean onPreferenceClick(Preference p) {
-				if (p.getSharedPreferences().getBoolean(Constants.PREF_LOCK_HORIZONTAL, false)) {
-					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-				} else {
-					setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-				}
-				return true;
-			}
-		});
-
 		// Invert Color
 		Preference invertColors = findPreference(Constants.PREF_INVERT_COLOR);
 		invertColors.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
+			@Override
 			public boolean onPreferenceClick(Preference p) {
 				recreateUI();
 				return true;
@@ -125,6 +111,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 		changeLanguages.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
+			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				String newLocale = newValue.toString();
 				UIHelper.setLanguage(context, newLocale);
@@ -154,6 +141,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		/* End of list of languages */
 		selectAlternativeLanguage.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
+			@Override
 			public boolean onPreferenceClick(Preference p) {
 				final String[] languageChoice = new String[AlternativeLanguageInfo.getAlternativeLanguageInfo().size()];
 				Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
@@ -169,11 +157,13 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				builder.setTitle(getResources().getString(R.string.alternative_language_title));
 				builder.setMultiChoiceItems(languageChoice, languageStatus, new DialogInterface.OnMultiChoiceClickListener() {
 
+					@Override
 					public void onClick(DialogInterface dialogInterface, int item, boolean state) {
 					}
 				});
 				builder.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
 
+					@Override
 					public void onClick(DialogInterface dialog, int id) {
 						SparseBooleanArray Checked = ((AlertDialog) dialog).getListView().getCheckedItemPositions();
 						/* Save all choices to Shared Preferences */
@@ -190,6 +180,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				});
 				builder.setPositiveButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
 
+					@Override
 					public void onClick(DialogInterface dialog, int id) {
 						dialog.cancel();
 					}
@@ -203,6 +194,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		Preference clearDatabase = findPreference("clear_database");
 		clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
+			@Override
 			public boolean onPreferenceClick(Preference p) {
 				clearDB();
 				return true;
@@ -212,6 +204,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		Preference backupDatabase = findPreference("backup_database");
 		backupDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
+			@Override
 			public boolean onPreferenceClick(Preference p) {
 				try {
 					copyDB(true);
@@ -225,6 +218,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		Preference restoreDatabase = findPreference("restore_database");
 		restoreDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
+			@Override
 			public boolean onPreferenceClick(Preference p) {
 				try {
 					copyDB(false);
@@ -238,6 +232,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		Preference clearImages = findPreference("clear_image_cache");
 		clearImages.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
+			@Override
 			public boolean onPreferenceClick(Preference p) {
 				clearImages();
 				return true;
@@ -250,6 +245,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		updatesInterval.setSummary(String.format(getResources().getString(R.string.update_interval_summary), updateIntervalArray[updatesIntervalValue]));
 		updatesInterval.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
+			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int updatesIntervalInt = Util.tryParseInt(newValue.toString(), 0);
 				MyScheduleReceiver.reschedule(updatesIntervalInt);
@@ -262,6 +258,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		runUpdates.setSummary(String.format(getResources().getString(R.string.last_run), runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES, getResources().getString(R.string.none)), runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES_STATUS, getResources().getString(R.string.unknown))));
 		runUpdates.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
+			@Override
 			public boolean onPreferenceClick(Preference p) {
 				runUpdate();
 				return true;
@@ -282,6 +279,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		uiMode.setSummary(String.format(getResources().getString(R.string.selected_mode), uiSelectionArray[uiSelectionValue]));
 		uiMode.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
+			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int uiSelectionValue = Util.tryParseInt(newValue.toString(), 0);
 				uiMode.setSummary(String.format(getResources().getString(R.string.selected_mode), uiSelectionArray[uiSelectionValue]));
@@ -298,6 +296,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		Preference tos = findPreference("tos");
 		tos.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
+			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				try {
 					Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
@@ -313,6 +312,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		Preference credits = findPreference("credits");
 		credits.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
+			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				try {
 					Intent intent = new Intent(getApplicationContext(), DisplayCreditActivity.class);
@@ -329,6 +329,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		scrollingSize.setSummary(String.format(getResources().getString(R.string.scroll_size_summary2), scrollingSizeValue));
 		scrollingSize.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
+			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int scrollingSizeValue = Util.tryParseInt(newValue.toString(), 5);
 				scrollingSize.setSummary(String.format(getResources().getString(R.string.scroll_size_summary2), scrollingSizeValue));
@@ -378,6 +379,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		// Behaviour 1 (Updated Preference)
 		user_cssPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
+			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				Boolean set = (Boolean) newValue;
 
@@ -401,6 +403,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		customCssPathPref.setSummary("Path: " + customCssPath);
 		customCssPathPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
+			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				customCssPathPref.setSummary("Path: " + newValue.toString());
 				return true;
@@ -409,6 +412,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		// Line Spacing Preference update for Screen
 		lineSpacePref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
+			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				String set = (String) newValue;
 				preference.setSummary(getResources().getString(R.string.line_spacing_summary2) + " \n" + getResources().getString(R.string.current_value) + ": " + set + "%");
@@ -418,17 +422,41 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 		marginPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
+			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				String set = (String) newValue;
 				preference.setSummary(getResources().getString(R.string.margin_summary2) + " \n" + getResources().getString(R.string.current_value) + ": " + set + "%");
 				return true;
 			}
 		});
+
+		// Orientation Selection
+		final Preference orientation = findPreference(Constants.PREF_ORIENTATION);
+		final String[] orientationArray = getResources().getStringArray(R.array.orientationSelection);
+		int orientationIntervalValue = UIHelper.GetIntFromPreferences(Constants.PREF_ORIENTATION, 0);
+		orientation.setSummary(String.format(getResources().getString(R.string.orientation_summary), orientationArray[orientationIntervalValue]));
+		orientation.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				int orientationIntervalValue = Util.tryParseInt(newValue.toString(), 0);
+				MyScheduleReceiver.reschedule(orientationIntervalValue);
+				orientation.setSummary(String.format(getResources().getString(R.string.orientation_summary), orientationArray[orientationIntervalValue]));
+				setOrientation();
+				return true;
+			}
+		});
+	}
+
+	private void setOrientation() {
+		UIHelper.CheckScreenRotation(this);
+		UIHelper.Recreate(this);
 	}
 
 	private void clearImages() {
 		UIHelper.createYesNoDialog(this, getResources().getString(R.string.clear_image_question), getResources().getString(R.string.clear_image_question2), new OnClickListener() {
 
+			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				if (which == DialogInterface.BUTTON_POSITIVE) {
 					Toast.makeText(getApplicationContext(), "Clearing Images...", Toast.LENGTH_SHORT).show();
@@ -442,6 +470,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	private void clearDB() {
 		UIHelper.createYesNoDialog(this, getResources().getString(R.string.clear_db_question), getResources().getString(R.string.clear_db_question2), new OnClickListener() {
 
+			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				if (which == DialogInterface.BUTTON_POSITIVE) {
 					Toast.makeText(getApplicationContext(), getResources().getString(R.string.clear_database), Toast.LENGTH_SHORT).show();
@@ -510,6 +539,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			Log.e(TAG, "Failed to delete: " + fileOrDirectory.getAbsolutePath());
 	}
 
+	@Override
 	@SuppressWarnings("deprecation")
 	public void onCallback(ICallbackEventData message) {
 		Preference runUpdates = findPreference(Constants.PREF_RUN_UPDATES);

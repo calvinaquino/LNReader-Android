@@ -7,7 +7,7 @@ import android.os.Environment;
 
 public class Constants {
 
-	//public static final String BaseURL = "http://www.baka-tsuki.org/project/";
+	// public static final String BaseURL = "http://www.baka-tsuki.org/project/";
 	public static final String BASE_URL = "http://www.baka-tsuki.org";
 
 	// Intent parameter list
@@ -38,7 +38,7 @@ public class Constants {
 	public static final String PREF_FIRST_RUN = "first_run";
 	public static final String PREF_DOWNLOAD_TOUCH = "auto_download_chapter";
 	public static final String PREF_INVERT_COLOR = "invert_colors";
-	public static final String PREF_LANGUAGE="language_selection";
+	public static final String PREF_LANGUAGE = "language_selection";
 	public static final String PREF_LOCK_HORIZONTAL = "lock_horizontal";
 	public static final String PREF_LAST_READ = "last_read";
 	public static final String PREF_UPDATE_INTERVAL = "updates_interval";
@@ -71,11 +71,12 @@ public class Constants {
 	public static final String PREF_CUSTOM_CSS_PATH = "custom_css_path";
 	public static final String PREF_MARGINS = "margin_space";
 	public static final String PREF_UI_SELECTION = "ui_selection";
+	public static final String PREF_ORIENTATION = "orientation_lock";
 
-	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density ;
+	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 
 	@SuppressWarnings("deprecation")
-	public static final int NOTIFIER_ID = (int)(new Date().getTime() - new Date(2012, 1, 1).getTime());
+	public static final int NOTIFIER_ID = (int) (new Date().getTime() - new Date(2012, 1, 1).getTime());
 	public static final int CONSOLIDATED_NOTIFIER_ID = 20130210;
 
 	public static final String STATUS_TEASER = "teaser";
@@ -83,7 +84,7 @@ public class Constants {
 	public static final String STATUS_ABANDONED = "abandoned";
 	public static final String STATUS_PENDING = "pending";
 	public static final String STATUS_ORIGINAL = "original";
-	public static final String STATUS_BAHASA_INDONESIA ="indonesian";
+	public static final String STATUS_BAHASA_INDONESIA = "indonesian";
 
 	public static final int COLOR_READ = Color.parseColor("#888888");
 	public static final int COLOR_UNREAD = Color.parseColor("#dddddd");
@@ -98,11 +99,12 @@ public class Constants {
 	public static final String KEY_DOWNLOAD_CHAPTER = ":DownloadChapters:";
 	public static final String KEY_DOWNLOAD_ALL_CHAPTER = ":DownloadChaptersAll:";
 
-	/* Section of Language for novel parser*/
+	/* Section of Language for novel parser */
 	public static final String LANG_ENGLISH = "English";
 	public static final String LANG_BAHASA_INDONESIA = "Bahasa Indonesia";
 	public static final String LANG_FRENCH = "Français";
 
 	/* You just need to add a new alternative language here and in AlternativeLanguageInfo -> initSingleton */
-	public static final String[] languageList = { Constants.LANG_ENGLISH , Constants.LANG_FRENCH, Constants.LANG_BAHASA_INDONESIA };
+	public static final String[] languageList = { Constants.LANG_ENGLISH, Constants.LANG_FRENCH, Constants.LANG_BAHASA_INDONESIA };
+
 }

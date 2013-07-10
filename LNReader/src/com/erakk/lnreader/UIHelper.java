@@ -30,26 +30,37 @@ public class UIHelper {
 
 	private static final String TAG = UIHelper.class.toString();
 
-	private static void CheckScreenRotation(Activity activity)
-	{
-		if(PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_LOCK_HORIZONTAL, false)) {
-			activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-		}
-		else {
+	public static void CheckScreenRotation(Activity activity) {
+		switch (GetIntFromPreferences(Constants.PREF_ORIENTATION, 0)) {
+		case 0:
 			activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+			break;
+		case 1:
+			activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			break;
+		case 2:
+			activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+			break;
+		default:
+			activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+			break;
 		}
 	}
 
 	/**
 	 * Set action bar behaviour, only for API Level 11 and up.
-	 * @param activity target activity
-	 * @param enable enable up behaviour
+	 * 
+	 * @param activity
+	 *            target activity
+	 * @param enable
+	 *            enable up behaviour
 	 */
 	@SuppressLint("NewApi")
 	public static void SetActionBarDisplayHomeAsUp(Activity activity, boolean enable) {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			ActionBar actionBar = activity.getActionBar();
-			if(actionBar != null) actionBar.setDisplayHomeAsUpEnabled(enable);
+			if (actionBar != null)
+				actionBar.setDisplayHomeAsUpEnabled(enable);
 		}
 		CheckScreenRotation(activity);
 		CheckKeepAwake(activity);
@@ -57,13 +68,15 @@ public class UIHelper {
 
 	/**
 	 * Recreate the activity
-	 * @param activity target activity
+	 * 
+	 * @param activity
+	 *            target activity
 	 */
 	@SuppressLint("NewApi")
 	public static void Recreate(Activity activity) {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			activity.recreate();
-		else{
+		else {
 			activity.finish();
 			activity.startActivity(activity.getIntent());
 		}
@@ -73,17 +86,19 @@ public class UIHelper {
 
 	/**
 	 * Set up the application theme based on Preferences:Constants.PREF_INVERT_COLOR
-	 * @param activity target activity
-	 * @param layoutId layout to use
+	 * 
+	 * @param activity
+	 *            target activity
+	 * @param layoutId
+	 *            layout to use
 	 */
 	public static void SetTheme(Activity activity, Integer layoutId) {
-		if(PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
+		if (PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
 			activity.setTheme(R.style.AppTheme2);
-		}
-		else {
+		} else {
 			activity.setTheme(R.style.AppTheme);
 		}
-		if(layoutId != null) {
+		if (layoutId != null) {
 			activity.setContentView(layoutId);
 		}
 	}
@@ -99,7 +114,9 @@ public class UIHelper {
 
 	/**
 	 * Check whether the screen width is less than 600dp
-	 * @param activity target activity
+	 * 
+	 * @param activity
+	 *            target activity
 	 * @return true if less than 600dp
 	 */
 	@SuppressWarnings("deprecation")
@@ -123,21 +140,20 @@ public class UIHelper {
 
 	@SuppressLint("NewApi")
 	public static void ToggleFullscreen(Activity activity, boolean fullscreen) {
-		if(fullscreen) {
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		if (fullscreen) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				ActionBar actionBar = activity.getActionBar();
-				if(actionBar != null) actionBar.hide();
-			}
-			else {
+				if (actionBar != null)
+					actionBar.hide();
+			} else {
 				activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			}
 
-			//activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-			//						  WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			// activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+			// WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-		}
-		else {
+		} else {
 			activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 			activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		}
@@ -145,12 +161,12 @@ public class UIHelper {
 
 	@SuppressLint("NewApi")
 	public static void ToggleActionBar(Activity activity, boolean show) {
-		if(!show) {
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		if (!show) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				ActionBar actionBar = activity.getActionBar();
-				if(actionBar != null) actionBar.hide();
-			}
-			else {
+				if (actionBar != null)
+					actionBar.hide();
+			} else {
 				activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			}
 		}
@@ -158,24 +174,23 @@ public class UIHelper {
 
 	/**
 	 * Toggle the Preferences:Constants.PREF_INVERT_COLOR
-	 * @param activity target activity
+	 * 
+	 * @param activity
+	 *            target activity
 	 */
 	public static void ToggleColorPref(Activity activity) {
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(activity);
 		SharedPreferences.Editor editor = sharedPrefs.edit();
 		if (sharedPrefs.getBoolean(Constants.PREF_INVERT_COLOR, true)) {
 			editor.putBoolean(Constants.PREF_INVERT_COLOR, false);
-		}
-		else {
+		} else {
 			editor.putBoolean(Constants.PREF_INVERT_COLOR, true);
 		}
 		editor.commit();
 	}
 
 	public static int GetIntFromPreferences(String key, int defaultValue) {
-		String value = PreferenceManager.getDefaultSharedPreferences(
-				LNReaderApplication.getInstance().getApplicationContext())
-				.getString(key, "");
+		String value = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getString(key, "");
 		try {
 			return Integer.parseInt(value);
 		} catch (NumberFormatException ex) {
@@ -185,6 +200,7 @@ public class UIHelper {
 
 	/**
 	 * Create Yes/No Alert Dialog
+	 * 
 	 * @param context
 	 * @param message
 	 * @param caption
@@ -202,13 +218,13 @@ public class UIHelper {
 
 	/**
 	 * Change the color of image in ImageView, works nicely with single coloured images.
+	 * 
 	 * @param targetIv
 	 */
 	public static ImageView setColorFilter(ImageView targetIv) {
 		if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
 			targetIv.setColorFilter(Constants.COLOR_UNREAD);
-		}
-		else {
+		} else {
 			targetIv.setColorFilter(Constants.COLOR_UNREAD_DARK);
 		}
 		return targetIv;
@@ -217,8 +233,7 @@ public class UIHelper {
 	public static Drawable setColorFilter(Drawable targetIv) {
 		if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
 			targetIv.setColorFilter(Constants.COLOR_UNREAD, Mode.SRC_ATOP);
-		}
-		else {
+		} else {
 			targetIv.setColorFilter(Constants.COLOR_UNREAD_DARK, Mode.SRC_ATOP);
 		}
 		return targetIv;
@@ -243,18 +258,15 @@ public class UIHelper {
 
 	public static void setLanguage(Context activity) {
 		/* Set starting language */
-		String locale = PreferenceManager.getDefaultSharedPreferences(
-				LNReaderApplication.getInstance().getApplicationContext())
-				.getString(Constants.PREF_LANGUAGE, "en");
+		String locale = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getString(Constants.PREF_LANGUAGE, "en");
 		setLanguage(activity, locale);
 	}
 
 	public static void setAlternativeLanguagePreferences(Context activity, String lang, boolean val) {
 		/* Set Alternative Language Novels preferences */
-		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(
-				LNReaderApplication.getInstance().getApplicationContext());
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext());
 
-		//write
+		// write
 		SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putBoolean(lang, val);
 		editor.commit(); // save change

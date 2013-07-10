@@ -215,4 +215,7 @@
     <string name="disabled">Tidak Aktif</string>
     <string name="title_activity_display_credit">Credits</string>
     <string name="refresh_image">Refresh Gambar</string>
+    <string name="update_preferences">Pembaharuan dan Notifikasi</string>
+    <string name="orientation_preferences">Kunci Orientasi</string>
+    <string name="orientation_summary">Pilihan Kunci Orientasi: %1$s</string>
 </resources>

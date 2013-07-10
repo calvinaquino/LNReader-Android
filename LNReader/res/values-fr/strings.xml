@@ -215,4 +215,7 @@
     <string name="disabled">D&#233;sactiv&#233;</string>
     <string name="title_activity_display_credit">Credits</string>
     <string name="refresh_image">Rafraichir l\'image</string>
+    <string name="update_preferences">Mise &#224; jour et notification</string>
+    <string name="orientation_preferences">Orientation verrouillage</string>
+    <string name="orientation_summary">Orientation verrouillage s&#233;lectionn&#233;: %1$s</string>
 </resources>
