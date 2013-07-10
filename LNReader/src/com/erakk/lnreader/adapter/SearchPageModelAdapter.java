@@ -11,9 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.dao.NovelsDao;
@@ -22,35 +22,34 @@ import com.erakk.lnreader.model.PageModel;
 
 public class SearchPageModelAdapter extends PageModelAdapter {
 	private static final String TAG = SearchPageModelAdapter.class.toString();
-	private Context context;
-	private int layoutResourceId;
+	private final Context context;
+	private final int layoutResourceId;
 	public List<PageModel> data;
-	
+
 	public SearchPageModelAdapter(Context context, int resourceId, List<PageModel> objects) {
 		super(context, resourceId, objects);
 		this.layoutResourceId = resourceId;
 		this.context = context;
 		this.data = objects;
 	}
-	
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View row = convertView;
 		SearchPageModelHolder holder = null;
 
 		final PageModel page = data.get(position);
-		
-		LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+
+		LayoutInflater inflater = ((Activity) context).getLayoutInflater();
 		row = inflater.inflate(layoutResourceId, parent, false);
 
 		holder = new SearchPageModelHolder();
-		holder.txtNovel = (TextView)row.findViewById(R.id.novel_name);
-		if(holder.txtNovel != null) {
+		holder.txtNovel = (TextView) row.findViewById(R.id.novel_name);
+		if (holder.txtNovel != null) {
 			String title = "";
-			if(page.getType().equalsIgnoreCase(PageModel.TYPE_NOVEL)) {
+			if (page.getType().equalsIgnoreCase(PageModel.TYPE_NOVEL)) {
 				title = page.getTitle();
-			}
-			else {
+			} else {
 				// novel name
 				try {
 					title = page.getParentPageModel().getTitle() + ": ";
@@ -59,41 +58,42 @@ public class SearchPageModelAdapter extends PageModelAdapter {
 					title = "Chapter: ";
 				}
 				// book name
-				title += " " + page.getBook().getTitle();
+				if (page.getBook() != null)
+					title += " " + page.getBook().getTitle();
 				// chapter name
 				title += "\n\t" + page.getTitle();
 			}
 			holder.txtNovel.setText(title);
-			if(page.isHighlighted()) {
+			if (page.isHighlighted()) {
 				holder.txtNovel.setTypeface(null, Typeface.BOLD);
 				holder.txtNovel.setTextSize(18);
 			}
 		}
-		
-		holder.txtLastUpdate = (TextView)row.findViewById(R.id.novel_last_update);
-		if(holder.txtLastUpdate != null) {
+
+		holder.txtLastUpdate = (TextView) row.findViewById(R.id.novel_last_update);
+		if (holder.txtLastUpdate != null) {
 			holder.txtLastUpdate.setText(context.getResources().getString(R.string.last_update) + ": " + Util.formatDateForDisplay(page.getLastUpdate()));
 		}
-		
-		holder.txtLastCheck = (TextView)row.findViewById(R.id.novel_last_check);
-		if(holder.txtLastCheck != null) {
+
+		holder.txtLastCheck = (TextView) row.findViewById(R.id.novel_last_check);
+		if (holder.txtLastCheck != null) {
 			holder.txtLastCheck.setText(context.getResources().getString(R.string.last_check) + ": " + Util.formatDateForDisplay(page.getLastCheck()));
 		}
-		
-		holder.chkIsWatched = (CheckBox)row.findViewById(R.id.novel_is_watched);
-		if(holder.chkIsWatched != null) {
-			if(page.getType().equalsIgnoreCase(PageModel.TYPE_NOVEL)) {
+
+		holder.chkIsWatched = (CheckBox) row.findViewById(R.id.novel_is_watched);
+		if (holder.chkIsWatched != null) {
+			if (page.getType().equalsIgnoreCase(PageModel.TYPE_NOVEL)) {
 				holder.chkIsWatched.setVisibility(View.VISIBLE);
-				//Log.d(TAG, page.getId() + " " + page.getTitle() + " isWatched: " + page.isWatched());
+				// Log.d(TAG, page.getId() + " " + page.getTitle() + " isWatched: " + page.isWatched());
 				holder.chkIsWatched.setChecked(page.isWatched());
 				holder.chkIsWatched.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
+					@Override
 					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-						if(isChecked){
-							Toast.makeText(context, "Added to watch list: " + page.getTitle(),	Toast.LENGTH_SHORT).show();
-						}
-						else {
-							Toast.makeText(context, "Removed from watch list: " + page.getTitle(),	Toast.LENGTH_SHORT).show();
+						if (isChecked) {
+							Toast.makeText(context, "Added to watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
+						} else {
+							Toast.makeText(context, "Removed from watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
 						}
 						// update the db!
 						page.setWatched(isChecked);
@@ -101,8 +101,7 @@ public class SearchPageModelAdapter extends PageModelAdapter {
 						dao.updatePageModel(page);
 					}
 				});
-			}
-			else {
+			} else {
 				holder.chkIsWatched.setVisibility(View.GONE);
 			}
 		}
@@ -111,8 +110,7 @@ public class SearchPageModelAdapter extends PageModelAdapter {
 		return row;
 	}
 
-	static class SearchPageModelHolder
-	{
+	static class SearchPageModelHolder {
 		TextView txtNovel;
 		TextView txtLastUpdate;
 		TextView txtLastCheck;
