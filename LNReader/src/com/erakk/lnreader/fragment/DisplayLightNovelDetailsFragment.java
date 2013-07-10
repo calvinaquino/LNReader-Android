@@ -366,7 +366,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 					LNReaderApplication.getInstance().addDownload(id, name);
 				}
 			} else if (type == 1) {
-				Toast.makeText(getSherlockActivity(), toastText, Toast.LENGTH_SHORT).show();
+				Toast.makeText(getSherlockActivity(), "" + toastText, Toast.LENGTH_SHORT).show();
 			} else if (type == 2) {
 				String downloadDescription = LNReaderApplication.getInstance().getDownloadDescription(id);
 				if (downloadDescription != null) {
@@ -512,7 +512,6 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 					Log.e(TAG, "Error when setting up chapter list: " + e2.getMessage(), e2);
 					Toast.makeText(getSherlockActivity(), e2.getClass().toString() + ": " + e2.getMessage(), Toast.LENGTH_SHORT).show();
 				}
-				Log.d(TAG, "Loaded: " + novelCol.getPage());
 			}
 		} else {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
