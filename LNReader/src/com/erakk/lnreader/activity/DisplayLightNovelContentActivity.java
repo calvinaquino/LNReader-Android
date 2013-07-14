@@ -90,13 +90,14 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		final EditText searchText = (EditText) findViewById(R.id.searchText);
 		searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
+			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				search(searchText.getText().toString());
 				return false;
 			}
 		});
 
-		webView = (NonLeakingWebView) findViewById(R.id.webView1);
+		webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
 		goTop = (ImageButton) findViewById(R.id.webview_go_top);
 		goBottom = (ImageButton) findViewById(R.id.webview_go_bottom);
 
@@ -111,12 +112,14 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		// Hide button after a certain time being shown
 		hideBottom = new Runnable() {
 
+			@Override
 			public void run() {
 				goBottom.setVisibility(ImageButton.GONE);
 			}
 		};
 		hideTop = new Runnable() {
 
+			@Override
 			public void run() {
 				goTop.setVisibility(ImageButton.GONE);
 			}
@@ -184,7 +187,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 		setWebViewSettings();
 		if (content != null) {
-			NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webView1);
+			NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 			int pos = content.getLastYScroll();
 			if (pos > 0)
 				pos = pos - 1;
@@ -505,6 +508,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setTitle(getResources().getString(R.string.content_toc));
 				builder.setAdapter(jumpAdapter, new OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						PageModel page = jumpAdapter.getItem(which);
 						jumpTo(page);
@@ -529,9 +533,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setTitle(getResources().getString(R.string.bookmarks));
 				builder.setAdapter(bookmarkAdapter, new OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						BookmarkModel bookmark = bookmarkAdapter.getItem(which);
-						NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webView1);
+						NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 						wv.loadUrl("javascript:goToParagraph(" + bookmark.getpIndex() + ")");
 					}
 				});
@@ -546,7 +551,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	public void setLastReadState() {
 		if (content != null) {
 			// save last position and zoom
-			NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webView1);
+			NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 			// content.setLastXScroll(wv.getScrollX());
 			// content.setLastYScroll(wv.getScrollY());
 			content.setLastZoom(wv.getScale());
@@ -579,7 +584,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel, boolean refresh) {
-		NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webView1);
+		NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
 		if (pageModel.isExternal()) {
 			loadExternalUrl(pageModel);
 		} else {
@@ -606,7 +611,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	public void loadExternalUrl(PageModel pageModel) {
 		try {
-			final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webView1);
+			final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 			setWebViewSettings();
 			wv.loadUrl(pageModel.getPage());
 			setChapterTitle(pageModel);
@@ -626,7 +631,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				Toast.makeText(getApplicationContext(), getResources().getString(R.string.content_may_updated) + ": " + content.getLastUpdate().toString() + " != " + pageModel.getLastUpdate().toString(), Toast.LENGTH_LONG).show();
 
 			// load the contents here
-			final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webView1);
+			final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 			setWebViewSettings();
 
 			int lastPos = content.getLastYScroll();
@@ -698,7 +703,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	@SuppressLint({ "NewApi", "SetJavaScriptEnabled" })
 	private void setWebViewSettings() {
-		NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webView1);
+		NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 
 		wv.getSettings().setAllowFileAccess(true);
 
@@ -719,11 +724,13 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			wv.loadUrl("javascript:toogleEnableBookmark(" + getBookmarkPreferences() + ")");
 	}
 
+	@Override
 	public void setMessageDialog(ICallbackEventData message) {
 		if (dialog.isShowing())
 			dialog.setMessage(message.getMessage());
 	}
 
+	@Override
 	public void toggleProgressBar(boolean show) {
 		synchronized (this) {
 			if (show) {
@@ -732,9 +739,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				dialog.setCanceledOnTouchOutside(true);
 				dialog.setOnCancelListener(new OnCancelListener() {
 
+					@Override
 					public void onCancel(DialogInterface dialog) {
-						NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webView1);
-						webView.loadData("<p style='background: black; color: white;'>Task still loading...</p>", "text/html", "utf-8");
+						NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
+						if (webView != null)
+							webView.loadData("<p style='background: black; color: white;'>Task still loading...</p>", "text/html", "utf-8");
 					}
 				});
 			} else {
@@ -743,6 +752,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 	}
 
+	@Override
 	public void getResult(AsyncTaskResult<?> result) {
 		Exception e = result.getError();
 		if (e == null) {
@@ -805,10 +815,12 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		openOptionsMenu();
 	}
 
+	@Override
 	public void updateProgress(String id, int current, int total, String messString) {
 		Log.d(TAG, "Progress of " + id + ": " + messString + " (" + current + "/" + total + ")");
 	}
 
+	@Override
 	public boolean downloadListSetup(String id, String toastText, int type) {
 		Log.d(TAG, "Setup of " + id + ": " + toastText + " (type: " + type + ")");
 		return false;

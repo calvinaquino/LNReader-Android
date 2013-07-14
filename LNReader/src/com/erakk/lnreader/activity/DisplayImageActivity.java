@@ -43,7 +43,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		UIHelper.SetTheme(this, R.layout.activity_display_image);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
-		imgWebView = (NonLeakingWebView) findViewById(R.id.webView1);
+		imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
 		imgWebView.getSettings().setAllowFileAccess(true);
 		imgWebView.getSettings().setLoadWithOverviewMode(true);
 		imgWebView.getSettings().setUseWideViewPort(true);
@@ -172,7 +172,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		if (e == null) {
 			ImageModel imageModel = (ImageModel) result.getResult();
 			if (!Util.isStringNullOrEmpty(imageModel.getPath())) {
-				imgWebView = (NonLeakingWebView) findViewById(R.id.webView1);
+				imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
 				String imageUrl = "file:///" + Util.sanitizeFilename(imageModel.getPath());
 				imgWebView.loadUrl(imageUrl);
 				String title = imageModel.getName();

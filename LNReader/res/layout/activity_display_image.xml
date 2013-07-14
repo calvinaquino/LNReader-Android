@@ -5,7 +5,7 @@
     android:layout_height="match_parent" >
 
     <com.erakk.lnreader.helper.NonLeakingWebView
-        android:id="@+id/webView1"
+        android:id="@+id/webViewImage"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 

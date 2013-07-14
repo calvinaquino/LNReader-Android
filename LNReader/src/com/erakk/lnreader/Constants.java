@@ -72,6 +72,7 @@ public class Constants {
 	public static final String PREF_MARGINS = "margin_space";
 	public static final String PREF_UI_SELECTION = "ui_selection";
 	public static final String PREF_ORIENTATION = "orientation_lock";
+	public static final String PREF_LAST_UPDATE = "last_update";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 

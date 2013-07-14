@@ -45,63 +45,62 @@ public class UpdateService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		Log.d(TAG, "onStartCommand");
 		execute();
-	    return Service.START_NOT_STICKY;
-	}
-	
-	@Override
-	public IBinder onBind(Intent arg0) {
-		Log.d(TAG, "onBind");
-	    return mBinder;
+		return Service.START_NOT_STICKY;
 	}
 
 	@Override
-    public void onCreate() {
-        // Display a notification about us starting.  We put an icon in the status bar.
+	public IBinder onBind(Intent arg0) {
+		Log.d(TAG, "onBind");
+		return mBinder;
+	}
+
+	@Override
+	public void onCreate() {
+		// Display a notification about us starting. We put an icon in the status bar.
 		Log.d(TAG, "onCreate");
 		execute();
-    }
-	
+	}
+
 	@TargetApi(11)
 	public void execute() {
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		String updatesIntervalStr = preferences.getString(Constants.PREF_UPDATE_INTERVAL, "0");
-		Log.d(TAG, "updatesIntervalStr = " + updatesIntervalStr);
-		if(updatesIntervalStr.startsWith("0") && !force) return;
-		
-		if(!isRunning) {
+		if (!shouldRun(force)) {
+			return;
+		}
+
+		if (!isRunning) {
 			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-	    	SharedPreferences.Editor editor = sharedPrefs.edit();
-	    	editor.putString(Constants.PREF_RUN_UPDATES, "Running...");
-	    	editor.putString(Constants.PREF_RUN_UPDATES_STATUS, "");
-	    	editor.commit();
-	    	
+			SharedPreferences.Editor editor = sharedPrefs.edit();
+			editor.putString(Constants.PREF_RUN_UPDATES, "Running...");
+			editor.putString(Constants.PREF_RUN_UPDATES_STATUS, "");
+			editor.commit();
+
 			GetUpdatedChaptersTask task = new GetUpdatedChaptersTask();
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			else
 				task.execute();
-			
+
 			// add on Download List
 			LNReaderApplication.getInstance().addDownload(TAG, "Update Service");
 		}
 	}
-	
+
 	public class MyBinder extends Binder {
-	    public UpdateService getService() {
+		public UpdateService getService() {
 			Log.d(TAG, "getService");
-	    	return UpdateService.this;
-	    }
+			return UpdateService.this;
+		}
 	}
-	
+
 	public void sendNotification(ArrayList<PageModel> updatedChapters) {
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		
-		if(updatedChapters != null && updatedChapters.size() > 0) {
+
+		if (updatedChapters != null && updatedChapters.size() > 0) {
 			Log.d(TAG, "sendNotification");
-			
+
 			// remove previous update history.
-			//NovelsDao.getInstance(this).deleteAllUpdateHistory();
-			
+			// NovelsDao.getInstance(this).deleteAllUpdateHistory();
+
 			// create UpdateInfoModel list
 			int updateCount = 0;
 			int newCount = 0;
@@ -109,50 +108,45 @@ public class UpdateService extends Service {
 			ArrayList<UpdateInfoModel> updatesInfo = new ArrayList<UpdateInfoModel>();
 			for (PageModel pageModel : updatedChapters) {
 				UpdateInfoModel updateInfo = new UpdateInfoModel();
-				
-				if(pageModel.getType().equalsIgnoreCase(PageModel.TYPE_NOVEL)) {
+
+				if (pageModel.getType().equalsIgnoreCase(PageModel.TYPE_NOVEL)) {
 					++newNovel;
 					updateInfo.setUpdateTitle("New Novel: " + pageModel.getTitle());
 					updateInfo.setUpdateType(UpdateType.NewNovel);
-				}
-				else if(pageModel.getType().equalsIgnoreCase(PageModel.TYPE_TOS)) {
+				} else if (pageModel.getType().equalsIgnoreCase(PageModel.TYPE_TOS)) {
 					updateInfo.setUpdateTitle("Updated TOS");
 					updateInfo.setUpdateType(UpdateType.UpdateTos);
-				}
-				else {
-					if(pageModel.isUpdated()) {
+				} else {
+					if (pageModel.isUpdated()) {
 						updateInfo.setUpdateType(UpdateType.Updated);
 						++updateCount;
-					}
-					else {
+					} else {
 						updateInfo.setUpdateType(UpdateType.New);
 						++newCount;
 					}
 
 					String novelTitle = "";
-					try{
+					try {
 						novelTitle = pageModel.getBook().getParent().getPageModel().getTitle() + ": ";
-					}
-					catch(Exception ex){
+					} catch (Exception ex) {
 						Log.e(TAG, "Error when getting Novel title", ex);
 					}
-									
+
 					updateInfo.setUpdateTitle(novelTitle + pageModel.getTitle() + " (" + pageModel.getBook().getTitle() + ")");
 				}
-				
+
 				updateInfo.setUpdateDate(pageModel.getLastUpdate());
 				updateInfo.setUpdatePage(pageModel.getPage());
 				updateInfo.setUpdatePageModel(pageModel);
-			
+
 				// insert to db
 				NovelsDao.getInstance(this).insertUpdateHistory(updateInfo);
 				updatesInfo.add(updateInfo);
 			}
-			
-			if(getConsolidateNotificationPref()) {
+
+			if (getConsolidateNotificationPref()) {
 				createConsolidatedNotification(mNotificationManager, updateCount, newCount, newNovel);
-			}
-			else {
+			} else {
 				int id = Constants.NOTIFIER_ID;
 				boolean first = true;
 				for (UpdateInfoModel updateInfoModel : updatesInfo) {
@@ -160,16 +154,16 @@ public class UpdateService extends Service {
 					Log.d(TAG, "set Notification for: " + updateInfoModel.getUpdatePage());
 					Notification notification = getNotificationTemplate(first);
 					first = false;
-					
+
 					prepareNotification(notifId, updateInfoModel, notification);
 					mNotificationManager.notify(notifId, notification);
-				}	
+				}
 			}
 		}
-		
+
 		updateStatus("OK");
-    	Toast.makeText(getApplicationContext(), "Update Service completed", Toast.LENGTH_SHORT).show();
-    	LNReaderApplication.getInstance().updateDownload(TAG, 100, "Update Service completed");
+		Toast.makeText(getApplicationContext(), "Update Service completed", Toast.LENGTH_SHORT).show();
+		LNReaderApplication.getInstance().updateDownload(TAG, 100, "Update Service completed");
 	}
 
 	@SuppressWarnings("deprecation")
@@ -178,19 +172,21 @@ public class UpdateService extends Service {
 		Notification notification = getNotificationTemplate(true);
 		CharSequence contentTitle = "BakaReader EX Updates";
 		String contentText = "Found";
-		if(updateCount > 0) {
+		if (updateCount > 0) {
 			contentText += " " + updateCount + " updated chapter(s)";
 		}
-		if(newCount > 0) {
-			if(updateCount > 0) contentText += " and ";
+		if (newCount > 0) {
+			if (updateCount > 0)
+				contentText += " and ";
 			contentText += " " + newCount + " new chapter(s)";
 		}
-		if(newNovel > 0) {
-			if(updateCount > 0 || newCount > 0) contentText += " and ";
+		if (newNovel > 0) {
+			if (updateCount > 0 || newCount > 0)
+				contentText += " and ";
 			contentText += " " + newNovel + " new novel(s)";
-		}				
+		}
 		contentText += ".";
-		
+
 		Intent notificationIntent = new Intent(this, UpdateHistoryActivity.class);
 		notificationIntent.putExtra(Constants.EXTRA_CALLER_ACTIVITY, UpdateService.class.toString());
 		int pendingFlag = PendingIntent.FLAG_CANCEL_CURRENT;
@@ -199,15 +195,15 @@ public class UpdateService extends Service {
 		notification.setLatestEventInfo(getApplicationContext(), contentTitle, contentText, contentIntent);
 		mNotificationManager.notify(Constants.CONSOLIDATED_NOTIFIER_ID, notification);
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public void prepareNotification(final int notifId, UpdateInfoModel chapter, Notification notification) {
 		CharSequence contentTitle = chapter.getUpdateType().toString();
 		CharSequence contentText = chapter.getUpdateTitle();
-		
+
 		Intent notificationIntent = new Intent(this, DisplayLightNovelContentActivity.class);
 		notificationIntent.putExtra(Constants.EXTRA_PAGE, chapter.getUpdatePage());
-		
+
 		int pendingFlag = PendingIntent.FLAG_CANCEL_CURRENT;
 		PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, pendingFlag);
 
@@ -216,21 +212,21 @@ public class UpdateService extends Service {
 
 	@SuppressWarnings("deprecation")
 	public Notification getNotificationTemplate(boolean firstNotification) {
-		int icon = android.R.drawable.arrow_up_float; //Just a placeholder
+		int icon = android.R.drawable.arrow_up_float; // Just a placeholder
 		CharSequence tickerText = "New Chapters Update";
-		long when = System.currentTimeMillis();	
-		
+		long when = System.currentTimeMillis();
+
 		Notification notification = new Notification(icon, tickerText, when);
-		if(!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_PERSIST_NOTIFICATION, false)) {
-			notification.flags = Notification.FLAG_AUTO_CANCEL;	
-		}		
-		
+		if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_PERSIST_NOTIFICATION, false)) {
+			notification.flags = Notification.FLAG_AUTO_CANCEL;
+		}
+
 		notification.defaults = 0;
-		if(firstNotification){
-			if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_UPDATE_RING, false)) {
-				notification.defaults |= Notification.DEFAULT_SOUND;		
+		if (firstNotification) {
+			if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_UPDATE_RING, false)) {
+				notification.defaults |= Notification.DEFAULT_SOUND;
 			}
-			if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_UPDATE_VIBRATE, false)) {
+			if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_UPDATE_VIBRATE, false)) {
 				notification.defaults |= Notification.DEFAULT_VIBRATE;
 			}
 		}
@@ -239,63 +235,70 @@ public class UpdateService extends Service {
 
 	private void updateStatus(String status) {
 		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-    	SharedPreferences.Editor editor = sharedPrefs.edit();
-    	String date = new Date().toString();
-    	editor.putString(Constants.PREF_RUN_UPDATES, date);
-    	editor.putString(Constants.PREF_RUN_UPDATES_STATUS, status);
-    	editor.commit();
-    	if(notifier != null) notifier.onCallback(new CallbackEventData("Last Run: " + date + "\nStatus: " + status));
+		SharedPreferences.Editor editor = sharedPrefs.edit();
+		String date = new Date().toString();
+		editor.putString(Constants.PREF_RUN_UPDATES, date);
+		editor.putString(Constants.PREF_RUN_UPDATES_STATUS, status);
+		editor.commit();
+		if (notifier != null)
+			notifier.onCallback(new CallbackEventData("Last Run: " + date + "\nStatus: " + status));
 	}
 
-	public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>> implements ICallbackNotifier{
+	public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>> implements ICallbackNotifier {
 		private int lastProgress;
-		
+
 		@Override
 		protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(Void... arg0) {
 			isRunning = true;
-			try{
+			try {
 				ArrayList<PageModel> result = GetUpdatedChapters(this);
 				return new AsyncTaskResult<ArrayList<PageModel>>(result);
-			}
-			catch(Exception ex) {
+			} catch (Exception ex) {
 				Log.e("GetUpdatedChaptersTask", "Error when updating", ex);
 				return new AsyncTaskResult<ArrayList<PageModel>>(ex);
 			}
 		}
+
 		@Override
 		protected void onPostExecute(AsyncTaskResult<ArrayList<PageModel>> result) {
 			Exception e = result.getError();
-			if(e == null) {
+			if (e == null) {
 				sendNotification(result.getResult());
-			}
-			else {
+			} else {
 				String text = "Error when getting updates: " + e.getMessage();
 				Log.e(TAG, text, e);
-				updateStatus("ERROR==>" +  e.getMessage());
+				updateStatus("ERROR==>" + e.getMessage());
 				Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
 			}
-			
+
 			// Reschedule for next run
 			MyScheduleReceiver.reschedule();
 			isRunning = false;
-			
+
 			// remove from download list
 			LNReaderApplication.getInstance().removeDownload(TAG);
+
+			// update last run
+			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+			SharedPreferences.Editor editor = preferences.edit();
+			editor.putLong(Constants.PREF_LAST_UPDATE, new Date().getTime());
+			editor.commit();
+
 		}
-		
+
 		private ArrayList<PageModel> GetUpdatedChapters(ICallbackNotifier callback) throws Exception {
 			Log.d(TAG, "Checking Updates...");
 			ArrayList<PageModel> updatesTotal = new ArrayList<PageModel>();
 			NovelsDao dao = NovelsDao.getInstance();
-			
+
 			PageModel updatedTos = getUpdatedTOS(callback);
-			if(updatedTos != null) {
+			if (updatedTos != null) {
 				updatesTotal.add(updatedTos);
 			}
-			
+
 			// check updated novel list
 			ArrayList<PageModel> updatedNovelList = getUpdatedNovelList(callback);
-			if(updatedNovelList != null && updatedNovelList.size() > 0) {
+			if (updatedNovelList != null && updatedNovelList.size() > 0) {
 				Log.d(TAG, "Got new novel! ");
 				for (PageModel pageModel : updatedNovelList) {
 					updatesTotal.add(pageModel);
@@ -303,80 +306,85 @@ public class UpdateService extends Service {
 			}
 
 			// check only watched novel
-			if(callback != null) callback.onCallback(new CallbackEventData("Getting watched novel."));
+			if (callback != null)
+				callback.onCallback(new CallbackEventData("Getting watched novel."));
 			ArrayList<PageModel> watchedNovels = dao.getWatchedNovel();
-			if(watchedNovels != null){
+			if (watchedNovels != null) {
 				double total = watchedNovels.size() + 1;
 				double current = 0;
-				for(Iterator<PageModel> iNovels = watchedNovels.iterator(); iNovels.hasNext();) {
+				for (Iterator<PageModel> iNovels = watchedNovels.iterator(); iNovels.hasNext();) {
 					// get last update date from internet
 					PageModel novel = iNovels.next();
-					if(callback != null) callback.onCallback(new CallbackEventData("Checking: " + novel.getTitle()));
+					if (callback != null)
+						callback.onCallback(new CallbackEventData("Checking: " + novel.getTitle()));
 					PageModel updatedNovel = dao.getPageModelFromInternet(novel.getPageModel(), callback);
-					
+
 					// different timestamp
-					if(force || !novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
-						if(force) {
+					if (force || !novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
+						if (force) {
 							Log.i(TAG, "Force Mode: " + novel.getPage());
-						}
-						else {
+						} else {
 							Log.d(TAG, "Different Timestamp for: " + novel.getPage());
 							Log.d(TAG, "old: " + novel.getLastUpdate().toString() + " != " + updatedNovel.getLastUpdate().toString());
 						}
 						ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, callback).getFlattedChapterList();
-						
-						if(callback != null) callback.onCallback(new CallbackEventData("Getting updated chapters: " + novel.getTitle()));
+
+						if (callback != null)
+							callback.onCallback(new CallbackEventData("Getting updated chapters: " + novel.getTitle()));
 						NovelCollectionModel updatedNovelDetails = dao.getNovelDetailsFromInternet(novel, callback);
-						if(updatedNovelDetails!= null){
+						if (updatedNovelDetails != null) {
 							ArrayList<PageModel> updates = updatedNovelDetails.getFlattedChapterList();
-							
+
 							Log.d(TAG, "Starting size: " + updates.size());
 							// compare the chapters!
-							for(int i = 0 ; i < novelDetailsChapters.size() ; ++i) {
+							for (int i = 0; i < novelDetailsChapters.size(); ++i) {
 								PageModel oldChapter = novelDetailsChapters.get(i);
-								//if(callback != null) callback.onCallback(new CallbackEventData("Checking: " + oldChapter.getTitle()));
-								for(int j = 0; j < updates.size(); j++) {								
+								// if(callback != null) callback.onCallback(new CallbackEventData("Checking: " +
+								// oldChapter.getTitle()));
+								for (int j = 0; j < updates.size(); j++) {
 									PageModel newChapter = updates.get(j);
-									if(callback != null) callback.onCallback(new CallbackEventData("Checking: " + oldChapter.getTitle() + " ==> " + newChapter.getTitle()));
+									if (callback != null)
+										callback.onCallback(new CallbackEventData("Checking: " + oldChapter.getTitle() + " ==> " + newChapter.getTitle()));
 									// check if the same page
-									if(newChapter.getPage().compareTo(oldChapter.getPage()) == 0) {
+									if (newChapter.getPage().compareTo(oldChapter.getPage()) == 0) {
 										// check if last update date is newer
-										//Log.i(TAG, oldChapter.getPage() +  " new: " + newChapter.getLastUpdate().toString() + " old: " + oldChapter.getLastUpdate().toString());
-										if(newChapter.getLastUpdate().getTime() != oldChapter.getLastUpdate().getTime()){
+										// Log.i(TAG, oldChapter.getPage() + " new: " +
+										// newChapter.getLastUpdate().toString() + " old: " +
+										// oldChapter.getLastUpdate().toString());
+										if (newChapter.getLastUpdate().getTime() != oldChapter.getLastUpdate().getTime()) {
 											newChapter.setUpdated(true);
 											Log.i(TAG, "Found updated chapter: " + newChapter.getTitle());
-										}
-										else{
+										} else {
 											updates.remove(newChapter);
-											//updates.remove(j);
-											//--j;
+											// updates.remove(j);
+											// --j;
 											Log.i(TAG, "No Update for Chapter: " + newChapter.getTitle());
-										}											
+										}
 										break;
 									}
-								}								
+								}
 							}
-							Log.d(TAG, "End size: " + updates.size());							
+							Log.d(TAG, "End size: " + updates.size());
 							updatesTotal.addAll(updates);
 						}
 					}
 					lastProgress = (int) (++current / total * 100);
 					Log.d(TAG, "Progress: " + lastProgress);
-				}				
+				}
 				force = false;
 			}
-			
+
 			Log.i(TAG, "Found updates: " + updatesTotal.size());
-			
+
 			return updatesTotal;
 		}
-		
+
 		private ArrayList<PageModel> getUpdatedNovelList(ICallbackNotifier callback) throws Exception {
 			ArrayList<PageModel> newList = null;
-			
+
 			PageModel mainPage = new PageModel();
 			mainPage.setPage("Main_Page");
-			
+
 			mainPage = NovelsDao.getInstance().getPageModel(mainPage, callback);
 
 			// check if more than 7 day
@@ -384,21 +392,21 @@ public class UpdateService extends Service {
 			long diff = today.getTime() - mainPage.getLastCheck().getTime();
 			if (force || diff > (Constants.CHECK_INTERVAL * 24 * 3600 * 1000) && LNReaderApplication.getInstance().isOnline()) {
 				Log.d(TAG, "Last check is over 7 days, checking online status");
-				ArrayList<PageModel> currList =  NovelsDao.getInstance().getNovels(callback, true);
+				ArrayList<PageModel> currList = NovelsDao.getInstance().getNovels(callback, true);
 				newList = NovelsDao.getInstance().getNovelsFromInternet(callback);
-				
-				for(int i = 0; i < currList.size(); ++i) {
-					for(int j = 0; j < newList.size(); ++j) {
-						if(currList.get(i).getPage().equalsIgnoreCase(newList.get(j).getPage())) {
+
+				for (int i = 0; i < currList.size(); ++i) {
+					for (int j = 0; j < newList.size(); ++j) {
+						if (currList.get(i).getPage().equalsIgnoreCase(newList.get(j).getPage())) {
 							newList.remove(j);
 							break;
 						}
-					}					
+					}
 				}
 			}
-			return newList;			
+			return newList;
 		}
-		
+
 		public PageModel getUpdatedTOS(ICallbackNotifier callback) throws Exception {
 
 			// checking copyrights
@@ -406,26 +414,28 @@ public class UpdateService extends Service {
 			p.setPage("Baka-Tsuki:Copyrights");
 			p.setTitle("Baka-Tsuki:Copyrights");
 			p.setType(PageModel.TYPE_TOS);
-			
+
 			// get current tos
 			NovelsDao.getInstance().getPageModel(p, callback);
-			
+
 			PageModel newP = NovelsDao.getInstance().getPageModelFromInternet(p, callback);
-			
-			if(newP.getLastUpdate().getTime() > p.getLastUpdate().getTime()) {
+
+			if (newP.getLastUpdate().getTime() > p.getLastUpdate().getTime()) {
 				Log.d(TAG, "TOS Updated.");
 				return newP;
 			}
 			return null;
 		}
 
+		@Override
 		public void onCallback(ICallbackEventData message) {
 			publishProgress(message.getMessage());
 		}
-		
+
 		@Override
-		protected void onProgressUpdate (String... values){
-			if(notifier != null) notifier.onCallback(new CallbackEventData(values[0]));
+		protected void onProgressUpdate(String... values) {
+			if (notifier != null)
+				notifier.onCallback(new CallbackEventData(values[0]));
 			LNReaderApplication.getInstance().updateDownload(TAG, lastProgress, values[0]);
 		}
 	}
@@ -433,5 +443,39 @@ public class UpdateService extends Service {
 	private boolean getConsolidateNotificationPref() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_CONSOLIDATE_NOTIFICATION, true);
 	}
-} 
 
+	private boolean shouldRun(boolean forced) {
+		if (forced) {
+			Log.i(TAG, "Forced run");
+			return true;
+		}
+
+		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		String updatesIntervalStr = preferences.getString(Constants.PREF_UPDATE_INTERVAL, "0");
+
+		if (!updatesIntervalStr.equalsIgnoreCase("0")) {
+			long lastUpdate = preferences.getLong(Constants.PREF_LAST_UPDATE, 0);
+			long now = new Date().getTime();
+			if (updatesIntervalStr == "1") {
+				lastUpdate += 15 * 60 * 1000;
+			} else if (updatesIntervalStr == "2") {
+				lastUpdate += 30 * 60 * 1000;
+			} else if (updatesIntervalStr == "3") {
+				lastUpdate += 60 * 60 * 1000;
+			} else if (updatesIntervalStr == "4") {
+				lastUpdate += 12 * 60 * 60 * 1000;
+			} else if (updatesIntervalStr == "5") {
+				lastUpdate += 24 * 60 * 60 * 1000;
+			}
+
+			if (lastUpdate > now) {
+				return true;
+			}
+			Log.i(TAG, "Next Update: " + lastUpdate + ", Now: " + now);
+			return false;
+		} else {
+			Log.i(TAG, "Update Interval set to Never.");
+			return false;
+		}
+	}
+}
