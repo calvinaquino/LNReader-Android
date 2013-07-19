@@ -342,8 +342,6 @@ public class UpdateService extends Service {
 							// compare the chapters!
 							for (int i = 0; i < novelDetailsChapters.size(); ++i) {
 								PageModel oldChapter = novelDetailsChapters.get(i);
-								// if(callback != null) callback.onCallback(new CallbackEventData("Checking: " +
-								// oldChapter.getTitle()));
 								for (int j = 0; j < updates.size(); j++) {
 									PageModel newChapter = updates.get(j);
 									if (callback != null)
@@ -351,16 +349,11 @@ public class UpdateService extends Service {
 									// check if the same page
 									if (newChapter.getPage().compareTo(oldChapter.getPage()) == 0) {
 										// check if last update date is newer
-										// Log.i(TAG, oldChapter.getPage() + " new: " +
-										// newChapter.getLastUpdate().toString() + " old: " +
-										// oldChapter.getLastUpdate().toString());
-										if (newChapter.getLastUpdate().getTime() != oldChapter.getLastUpdate().getTime()) {
+										if (newChapter.getLastUpdate().getTime() > oldChapter.getLastUpdate().getTime()) {
 											newChapter.setUpdated(true);
 											Log.i(TAG, "Found updated chapter: " + newChapter.getTitle());
 										} else {
 											updates.remove(newChapter);
-											// updates.remove(j);
-											// --j;
 											Log.i(TAG, "No Update for Chapter: " + newChapter.getTitle());
 										}
 										break;
