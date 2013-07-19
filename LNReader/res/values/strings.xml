@@ -215,4 +215,5 @@
     <string name="update_preferences">Update and Notification</string>
     <string name="orientation_preferences">Orientation Lock</string>
     <string name="orientation_summary">Selected Orientation Lock: %1$s</string>
+    <string name="menu_bookmark_delete_selected">Delete Selected</string>
 </resources>

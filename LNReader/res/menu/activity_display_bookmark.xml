@@ -14,5 +14,6 @@
     <item android:id="@+id/invert_colors"
         android:orderInCategory="98"
         android:title="@string/invert_colors" />
+    <item android:id="@+id/menu_bookmark_delete_selected" android:title="@string/menu_bookmark_delete_selected"></item>
 
 </menu>

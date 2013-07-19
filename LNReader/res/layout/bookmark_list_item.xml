@@ -15,7 +15,6 @@
         android:text="pageTitle"
         android:textSize="14sp" />
 
-
     <TextView
         android:id="@+id/page_subtitle"
         android:layout_width="fill_parent"
@@ -47,7 +46,7 @@
         android:text="Create Date"
         android:gravity="right"
         android:textColor="#777777"
-        android:textSize="11sp" />
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/excerpt"
@@ -60,5 +59,15 @@
         android:text="Excerpt..."
         android:textColor="#999999"
         android:textSize="13sp" />
-
+    
+	<CheckBox
+        android:id="@+id/chk_selection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="20dp"
+        android:focusable="false"
+        android:focusableInTouchMode="true"
+        android:visibility="gone" />
 </RelativeLayout>

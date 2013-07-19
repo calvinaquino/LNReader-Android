@@ -18,9 +18,10 @@ import com.erakk.lnreader.adapter.BookmarkModelAdapter;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookmarkModel;
 
-public class DisplayBookmarkActivity extends SherlockListActivity  {
+public class DisplayBookmarkActivity extends SherlockListActivity {
 	private boolean isInverted;
 	private BookmarkModelAdapter adapter = null;
+	private ArrayList<BookmarkModel> bookmarks = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,23 +36,25 @@ public class DisplayBookmarkActivity extends SherlockListActivity  {
 
 	private void getBookmarks() {
 		int resourceId = R.layout.bookmark_list_item;
-		if(UIHelper.IsSmallScreen(this)) {
+		if (UIHelper.IsSmallScreen(this)) {
 			resourceId = R.layout.bookmark_list_item;
 		}
-		ArrayList<BookmarkModel> bookmarks = NovelsDao.getInstance(this).getAllBookmarks();
+		bookmarks = NovelsDao.getInstance(this).getAllBookmarks();
 		adapter = new BookmarkModelAdapter(this, resourceId, bookmarks, null);
 		adapter.showPage = true;
+		adapter.showCheckBox = true;
 		setListAdapter(adapter);
 	}
 
 	@Override
-    protected void onRestart() {
-        super.onRestart();
-        if(isInverted != getColorPreferences()) {
-        	UIHelper.Recreate(this);
-        }
-        if(adapter != null) adapter.notifyDataSetChanged();
-    }
+	protected void onRestart() {
+		super.onRestart();
+		if (isInverted != getColorPreferences()) {
+			UIHelper.Recreate(this);
+		}
+		if (adapter != null)
+			adapter.notifyDataSetChanged();
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -68,8 +71,18 @@ public class DisplayBookmarkActivity extends SherlockListActivity  {
 			UIHelper.Recreate(this);
 			return true;
 		case R.id.menu_downloads_list:
-    		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
-        	startActivity(downloadsItent);;
+			Intent downloadsItent = new Intent(this, DownloadListActivity.class);
+			startActivity(downloadsItent);
+			return true;
+		case R.id.menu_bookmark_delete_selected:
+			if (bookmarks != null) {
+				for (BookmarkModel bookmark : bookmarks) {
+					if (bookmark.isSelected())
+						NovelsDao.getInstance(this).deleteBookmark(bookmark);
+				}
+				if (adapter != null)
+					adapter.refreshData();
+			}
 			return true;
 		case android.R.id.home:
 			super.onBackPressed();
@@ -83,13 +96,14 @@ public class DisplayBookmarkActivity extends SherlockListActivity  {
 		super.onListItemClick(l, v, position, id);
 		// Get the item that was clicked
 		BookmarkModel page = adapter.getItem(position);
-		//Create new intent
+		// Create new intent
 		Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
-        intent.putExtra(Constants.EXTRA_PAGE, page.getPage());
-        intent.putExtra(Constants.EXTRA_P_INDEX, page.getpIndex());
-        startActivity(intent);
+		intent.putExtra(Constants.EXTRA_PAGE, page.getPage());
+		intent.putExtra(Constants.EXTRA_P_INDEX, page.getpIndex());
+		startActivity(intent);
 	}
-	private boolean getColorPreferences(){
-    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
+
+	private boolean getColorPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 }
