@@ -26,7 +26,7 @@ public class DisplayCreditActivity extends SherlockActivity {
 				"- erakk<br />" +
 				"- <a href=\"http://nandaka.wordpress.com\">nandaka</a><br />" +
 				"- Thatdot7<br />" +
-				"- freedomofkeima<br />" +
+				"- <a href=\"http://nstranslation.blogspot.com\">freedomofkeima</a><br />" +
 				"<h2>UI Translations</h2>" +
 				"- English : erakk & nandaka<br />" +
 				"- Indonesian : freedomofkeima<br />" +

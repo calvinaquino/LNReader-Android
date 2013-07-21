@@ -40,12 +40,18 @@ public class AlternativeLanguageInfo {
 					Constants.LANG_BAHASA_INDONESIA, "Indonesian", "#Sinopsis_Cerita",
 					new ArrayList<String>(Arrays.asList("_oleh", "Full_Text", "Serial_", "serial_", "Seri_", "seri_", "Cerita_Tambah", "Cerita_Singkat", "Cerita_Pendek", "Side_Stor", "Short_Stor"))));
 		    Log.d(TAG,"Bahasa Indonesia Language added");
+		    
+		    /* Polish Language */
+			instance.put(Constants.LANG_POLISH , new AlternativeLanguageInfo(
+					Constants.LANG_POLISH, "Polish", "#Streszczenie_fabu.C5.82y",
+					new ArrayList<String>(Arrays.asList("_autorstwa", "Pe.C5.82ny_tekst", "Seria_", "seria_", "Cerita_Tambah", "Historie_poboczne", "Historie_Poboczne", "Historie_kr.C3.B3tki", "Historie_Kr.C3.B3tki", "Side_Stor", "Short_Stor"))));
+		    Log.d(TAG,"Polish Language added");
 		}
 	}
 
 	public static Hashtable<String, AlternativeLanguageInfo> getAlternativeLanguageInfo() {
 		synchronized (lock) {
-			/* if instance is null, then initSingleton */
+			/* if instance is null, then initHashMap */
 		   if(instance == null || instance.isEmpty()) initHashMap();
 		   return instance;
 		}

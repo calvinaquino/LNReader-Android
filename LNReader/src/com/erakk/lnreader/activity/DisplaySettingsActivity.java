@@ -8,12 +8,14 @@ import java.util.Map.Entry;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -22,6 +24,10 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockPreferenceActivity;
@@ -55,10 +61,62 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		super.onPreferenceTreeClick(preferenceScreen, preference);
 		if (preference != null)
 			if (preference instanceof PreferenceScreen)
-				if (((PreferenceScreen) preference).getDialog() != null)
-					((PreferenceScreen) preference).getDialog().getWindow().getDecorView().setBackgroundDrawable(this.getWindow().getDecorView().getBackground().getConstantState().newDrawable());
+				if (((PreferenceScreen) preference).getDialog() != null) {
+					/* If API Version >= 11 */
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) initializeActionBar((PreferenceScreen) preference);	
+					else ((PreferenceScreen)preference).getDialog().getWindow().getDecorView().setBackgroundDrawable(this.getWindow().getDecorView().getBackground().getConstantState().newDrawable());
+				}
+
 		return false;
 
+	}
+	
+	/*
+	 * Action Bar doesn't inherit parent (on nested Preference Tree)
+	 * Reference : http://stackoverflow.com/questions/16374820/action-bar-home-button-not-functional-with-nested-preferencescreen
+	 * Because of DialogInterface and View have OnClickListener, I've changed manually it to android.view.View (@freedomofkeima)
+	 */
+	/** Sets up the action bar for an {@link PreferenceScreen} */
+	@SuppressLint("NewApi")
+	public static void initializeActionBar(PreferenceScreen preferenceScreen) {
+	    final Dialog dialog = preferenceScreen.getDialog();
+
+	    if (dialog != null) {
+	        // Initialize the action bar
+	        dialog.getActionBar().setDisplayHomeAsUpEnabled(true);
+
+	        // Apply custom home button area click listener to close the PreferenceScreen because PreferenceScreens are dialogs which swallow
+	        // events instead of passing to the activity
+	        // Related Issue: https://code.google.com/p/android/issues/detail?id=4611
+	        android.view.View homeBtn = dialog.findViewById(android.R.id.home);
+
+	        if (homeBtn != null) {
+	            android.view.View.OnClickListener dismissDialogClickListener = new android.view.View.OnClickListener() {
+	                @Override
+	                public void onClick(android.view.View v) {
+	                    dialog.dismiss();
+	                }
+	            };
+
+	            // Prepare yourselves for some hacky programming
+	            ViewParent homeBtnContainer = homeBtn.getParent();
+
+	            // The home button is an ImageView inside a FrameLayout
+	            if (homeBtnContainer instanceof FrameLayout) {
+	                ViewGroup containerParent = (ViewGroup) homeBtnContainer.getParent();
+	                if (containerParent instanceof LinearLayout) {
+	                    // This view also contains the title text, set the whole view as clickable
+	                    ((LinearLayout) containerParent).setOnClickListener(dismissDialogClickListener);
+	                } else {
+	                    // Just set it on the home button
+	                    ((FrameLayout) homeBtnContainer).setOnClickListener(dismissDialogClickListener);
+	                }
+	            } else {
+	                // The 'If all else fails' default case
+	                homeBtn.setOnClickListener(dismissDialogClickListener);
+	            }
+	        }    
+	    }
 	}
 
 	@Override
@@ -134,7 +192,8 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		int j = 0;
 		while (it.hasNext()) {
 			AlternativeLanguageInfo info = it.next().getValue();
-			languageStatus[j] = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(info.getLanguage(), true);
+			/* Default value of unregistered Alternative language = false (preventing too much tabs) */
+			languageStatus[j] = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(info.getLanguage(), false);
 			j++;
 			it.remove();
 		}
