@@ -36,20 +36,4 @@
         <item name="1">1</item>
         <item name="2">2</item>
     </string-array>
-    
-  <!-- Add UI Translation languange here, please note the languange and value pair -->
-     <string-array name="languageSelection" translatable="false">
-        <item name="0">English</item>
-        <item name="1">Bahasa Indonesia</item>        
-        <item name="2">Fran&#231;ais</item>
-        <item name="3">Nederlands</item>
-        <item name="4">Polski</item>
-    </string-array>    
-    <string-array name="languageSelectionValues" translatable="false">
-        <item name="0">en</item>
-        <item name="1">in</item>
-        <item name="2">fr</item>
-        <item name="3">nl</item>
-        <item name="4">pl</item>
-    </string-array> 
 </resources>
