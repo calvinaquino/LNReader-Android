@@ -230,7 +230,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 						int j = 0;
 						while (it.hasNext()) {
 							AlternativeLanguageInfo info = it.next().getValue();
-							UIHelper.setAlternativeLanguagePreferences(context, info.getLanguage(), Checked.get(Checked.keyAt(j)));
+							UIHelper.setAlternativeLanguagePreferences(context, info.getLanguage(), Checked.get(j));
 							j++;
 							it.remove();
 						}
@@ -606,7 +606,11 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	}
 
 	private void recreateUI() {
-		UIHelper.Recreate(this);
+		//UIHelper.Recreate(this);
+		finish();
+		startActivity(getIntent());
+		UIHelper.CheckScreenRotation(this);
+		UIHelper.CheckKeepAwake(this);
 	}
 
 	private boolean getColorPreferences() {
