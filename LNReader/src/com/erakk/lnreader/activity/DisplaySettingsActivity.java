@@ -609,6 +609,8 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		//UIHelper.Recreate(this);
 		finish();
 		startActivity(getIntent());
+		UIHelper.CheckScreenRotation(this);
+		UIHelper.CheckKeepAwake(this);
 	}
 
 	private boolean getColorPreferences() {
