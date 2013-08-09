@@ -368,7 +368,8 @@ public class BakaTsukiParser {
 	private static String sanitize(String title, boolean isAggresive) {
 		title = title.replaceAll("<.+?>", "") // Strip tags
 				.replaceAll("\\[.+?\\]", "") // Strip [___]s
-				.replaceAll("- PDF", "").replaceAll("\\(.*PDF.*\\)", "");
+				.replaceAll("- PDF", "").replaceAll("\\(.*PDF.*\\)", "") // Strip (PDF)
+				.replaceAll("- (Full Text)", "").replaceAll("- \\(.*Full Text.*\\)", ""); // Strip - (Full Text)
 		if (isAggresive)
 			title = title.replaceAll("^(.+?)[(\\[].*$", "$1"); // Leaves only the text before brackets (might be a bit
 																// too aggressive);

@@ -249,9 +249,9 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			/*
 			 * Implement code to clear this volume cache
 			 */
-			BookModel bookDel = novelCol.getBookCollections().get(groupPosition);
-			Toast.makeText(getSherlockActivity(), "Clear this Volume: " + bookDel.getTitle(), Toast.LENGTH_SHORT).show();
-			dao.deleteBookCache(bookDel);
+			BookModel bookClear = novelCol.getBookCollections().get(groupPosition);
+			Toast.makeText(getSherlockActivity(), "Clear this Volume: " + bookClear.getTitle(), Toast.LENGTH_SHORT).show();
+			dao.deleteBookCache(bookClear);
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		case R.id.mark_volume:
@@ -300,6 +300,27 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			dao.updatePageModel(chapter);
 			bookModelAdapter.notifyDataSetChanged();
 			Toast.makeText(getSherlockActivity(), "Toggle Read", Toast.LENGTH_SHORT).show();
+			return true;
+		case R.id.delete_volume:
+
+			/*
+			 * Implement code to delete this volume cache
+			 */
+			BookModel bookDel = novelCol.getBookCollections().get(groupPosition);
+			dao.deleteBooks(bookDel);
+			novelCol.getBookCollections().remove(groupPosition);
+			bookModelAdapter.notifyDataSetChanged();
+			return true;
+		case R.id.delete_chapter:
+
+			/*
+			 * Implement code to delete this chapter cache
+			 */
+			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
+			dao.deleteNovelContent(chapter);
+			dao.deletePage(chapter);
+			novelCol.getBookCollections().get(groupPosition).getChapterCollection().remove(chapter);
+			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		default:
 			return super.onContextItemSelected(item);

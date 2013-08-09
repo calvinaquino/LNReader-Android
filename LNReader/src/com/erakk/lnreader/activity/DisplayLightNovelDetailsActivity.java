@@ -271,9 +271,9 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			/*
 			 * Implement code to clear this volume cache
 			 */
-			BookModel bookDel = novelCol.getBookCollections().get(groupPosition);
-			Toast.makeText(this, getResources().getString(R.string.clear_this_volume) + ": " + bookDel.getTitle(), Toast.LENGTH_SHORT).show();
-			dao.deleteBookCache(bookDel);
+			BookModel bookClear = novelCol.getBookCollections().get(groupPosition);
+			Toast.makeText(this, getResources().getString(R.string.clear_this_volume) + ": " + bookClear.getTitle(), Toast.LENGTH_SHORT).show();
+			dao.deleteBookCache(bookClear);
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		case R.id.mark_volume:
@@ -323,6 +323,29 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			dao.updatePageModel(chapter);
 			bookModelAdapter.notifyDataSetChanged();
 			Toast.makeText(this, "Toggle Read", Toast.LENGTH_SHORT).show();
+			return true;
+		case R.id.delete_volume:
+
+			/*
+			 * Implement code to delete this volume cache
+			 */
+			BookModel bookDel = novelCol.getBookCollections().get(groupPosition);
+			Toast.makeText(this, getResources().getString(R.string.delete_this_volume) + ": " + bookDel.getTitle(), Toast.LENGTH_SHORT).show();
+			dao.deleteBooks(bookDel);
+			novelCol.getBookCollections().remove(groupPosition);
+			bookModelAdapter.notifyDataSetChanged();
+			return true;
+		case R.id.delete_chapter:
+
+			/*
+			 * Implement code to delete this chapter cache
+			 */
+			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
+			Toast.makeText(this, getResources().getString(R.string.delete_this_chapter) + ": " + chapter.getTitle(), Toast.LENGTH_SHORT).show();
+			dao.deleteNovelContent(chapter);
+			dao.deletePage(chapter);
+			novelCol.getBookCollections().get(groupPosition).getChapterCollection().remove(chapter);
+			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		default:
 			return super.onContextItemSelected(item);

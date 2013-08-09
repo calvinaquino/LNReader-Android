@@ -215,4 +215,6 @@
     <string name="update_preferences">Update en Notification</string>
     <string name="orientation_preferences">Orientation Lock</string>
     <string name="orientation_summary">Geselecteerde Orientation Lock: %1$s</string>
+    <string name="delete_this_volume">Verwijder dit Deel</string>
+    <string name="delete_this_chapter">Verwijder dit hoofdstuk</string>
 </resources>

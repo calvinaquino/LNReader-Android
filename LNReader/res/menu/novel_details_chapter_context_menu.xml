@@ -6,4 +6,6 @@
               android:title="Clear Chapter Cache" />
       <item android:id="@+id/mark_read"
               android:title="Toggle Read/Unread" />
+      <item android:id="@+id/delete_chapter"
+              android:title="Delete Chapter" />
 </menu>

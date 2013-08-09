@@ -216,4 +216,6 @@
     <string name="orientation_preferences">Orientation Lock</string>
     <string name="orientation_summary">Selected Orientation Lock: %1$s</string>
     <string name="menu_bookmark_delete_selected">Delete Selected</string>
+    <string name="delete_this_volume">Delete this Volume</string>
+    <string name="delete_this_chapter">Delete this Chapter</string>
 </resources>

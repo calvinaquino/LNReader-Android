@@ -244,4 +244,6 @@ before other considerations as mentioned previously in Section D.
     <string name="orientation_preferences">Wybór orientacji</string>
     <string name="orientation_summary">Wybrana orientacja: %1$s</string>
     <string name="menu_bookmark_delete_selected">Usuń Wybrane</string>
+    <string name="delete_this_volume">Usuń ten tom</string>
+    <string name="delete_this_chapter">Usuń ten rozdział</string>
 </resources>

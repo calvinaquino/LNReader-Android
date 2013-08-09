@@ -218,4 +218,6 @@
     <string name="update_preferences">Mise &#224; jour et notification</string>
     <string name="orientation_preferences">Orientation verrouillage</string>
     <string name="orientation_summary">Orientation verrouillage s&#233;lectionn&#233;: %1$s</string>
+    <string name="delete_this_volume">Supprimer ce volume</string>
+    <string name="delete_this_chapter">Supprimer ce chapitre</string>
 </resources>
