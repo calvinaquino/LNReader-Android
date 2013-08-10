@@ -1,6 +1,6 @@
 LATEST RELEASED VERSION
 ====================================================
-Google Play Store Link: https://play.google.com/store/apps/details?id=com.erakk.lnreader
+[Google Play Store](https://play.google.com/store/apps/details?id=com.erakk.lnreader)
 
 DEVELOPMENT REQUIREMENT:
 ====================================================
