@@ -821,8 +821,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	}
 
 	@Override
-	public boolean downloadListSetup(String id, String toastText, int type) {
-		Log.d(TAG, "Setup of " + id + ": " + toastText + " (type: " + type + ")");
+	public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
+		Log.d(TAG, "Setup of " + id + ": " + toastText + " (type: " + type + ")" + "hasError: " + hasError);
 		return false;
 	}
 

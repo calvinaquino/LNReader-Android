@@ -20,8 +20,10 @@ import android.util.Log;
 import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.helper.BakaReaderException;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.DownloadFileTask;
 import com.erakk.lnreader.helper.Util;
@@ -71,6 +73,8 @@ public class NovelsDao {
 					instance = new NovelsDao(LNReaderApplication.getInstance().getApplicationContext());
 				} catch (Exception ex) {
 					Log.e(TAG, "Failed to get context for NovelsDao", ex);
+					// throw new BakaReaderException("NovelsDao is not Initialized!", BakaReaderException.NULL_NOVELDAO,
+					// ex);
 					throw new NullPointerException("NovelsDao is not Initialized!");
 				}
 			}
@@ -152,7 +156,7 @@ public class NovelsDao {
 
 	public ArrayList<PageModel> getNovelsFromInternet(ICallbackNotifier notifier) throws Exception {
 		if (!LNReaderApplication.getInstance().isOnline())
-			throw new Exception("No Network Connectifity");
+			throw new BakaReaderException("No Network Connectifity", BakaReaderException.NO_NETWORK_CONNECTIFITY);
 		if (notifier != null) {
 			notifier.onCallback(new CallbackEventData("Downloading Main Novels list..."));
 		}
@@ -180,9 +184,9 @@ public class NovelsDao {
 
 				String url = Constants.BASE_URL + "/project";
 				int retry = 0;
-				while (retry < Constants.PAGE_DOWNLOAD_RETRY) {
+				while (retry < getRetry()) {
 					try {
-						Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
+						Response response = Jsoup.connect(url).timeout(getTimeout()).execute();
 						Document doc = response.parse();
 
 						list = BakaTsukiParser.ParseNovelList(doc);
@@ -200,18 +204,18 @@ public class NovelsDao {
 					} catch (EOFException eof) {
 						++retry;
 						if (notifier != null) {
-							notifier.onCallback(new CallbackEventData("Retrying: Main_Page (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
+							notifier.onCallback(new CallbackEventData("Retrying: Main_Page (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
 						}
-						if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+						if (retry > getRetry())
 							throw eof;
 					} catch (IOException eof) {
 						++retry;
-						String message = "Retrying: Main_Page (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
+						String message = "Retrying: Main_Page (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 						if (notifier != null) {
 							notifier.onCallback(new CallbackEventData(message));
 						}
 						Log.d(TAG, message, eof);
-						if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+						if (retry > getRetry())
 							throw eof;
 					}
 				}
@@ -276,7 +280,7 @@ public class NovelsDao {
 
 	public ArrayList<PageModel> getTeaserFromInternet(ICallbackNotifier notifier) throws Exception {
 		if (!LNReaderApplication.getInstance().isOnline())
-			throw new Exception("No Network Connectifity");
+			throw new BakaReaderException("No Network Connectifity", BakaReaderException.NO_NETWORK_CONNECTIFITY);
 		if (notifier != null) {
 			notifier.onCallback(new CallbackEventData("Downloading Teaser Novels list..."));
 		}
@@ -300,9 +304,9 @@ public class NovelsDao {
 		ArrayList<PageModel> list = null;
 		String url = Constants.BASE_URL + "/project/index.php?title=Category:Teasers";
 		int retry = 0;
-		while (retry < Constants.PAGE_DOWNLOAD_RETRY) {
+		while (retry < getRetry()) {
 			try {
-				Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
+				Response response = Jsoup.connect(url).timeout(getTimeout()).execute();
 				Document doc = response.parse();
 
 				list = BakaTsukiParser.ParseTeaserList(doc);
@@ -315,18 +319,18 @@ public class NovelsDao {
 			} catch (EOFException eof) {
 				++retry;
 				if (notifier != null) {
-					notifier.onCallback(new CallbackEventData("Retrying: Category:Teasers (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
+					notifier.onCallback(new CallbackEventData("Retrying: Category:Teasers (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
 				}
-				if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+				if (retry > getRetry())
 					throw eof;
 			} catch (IOException eof) {
 				++retry;
-				String message = "Retrying: Category:Teasers (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
+				String message = "Retrying: Category:Teasers (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 				if (notifier != null) {
 					notifier.onCallback(new CallbackEventData(message));
 				}
 				Log.d(TAG, message, eof);
-				if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+				if (retry > getRetry())
 					throw eof;
 			}
 		}
@@ -402,9 +406,9 @@ public class NovelsDao {
 		ArrayList<PageModel> list = null;
 		String url = Constants.BASE_URL + "/project/index.php?title=Category:Original";
 		int retry = 0;
-		while (retry < Constants.PAGE_DOWNLOAD_RETRY) {
+		while (retry < getRetry()) {
 			try {
-				Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
+				Response response = Jsoup.connect(url).timeout(getTimeout()).execute();
 				Document doc = response.parse();
 
 				list = BakaTsukiParser.ParseOriginalList(doc);
@@ -417,18 +421,18 @@ public class NovelsDao {
 			} catch (EOFException eof) {
 				++retry;
 				if (notifier != null) {
-					notifier.onCallback(new CallbackEventData("Retrying: Category:Original (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
+					notifier.onCallback(new CallbackEventData("Retrying: Category:Original (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
 				}
-				if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+				if (retry > getRetry())
 					throw eof;
 			} catch (IOException eof) {
 				++retry;
-				String message = "Retrying: Category:Original (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
+				String message = "Retrying: Category:Original (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 				if (notifier != null) {
 					notifier.onCallback(new CallbackEventData(message));
 				}
 				Log.d(TAG, message, eof);
-				if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+				if (retry > getRetry())
 					throw eof;
 			}
 		}
@@ -480,7 +484,7 @@ public class NovelsDao {
 
 	public ArrayList<PageModel> getAlternativeFromInternet(ICallbackNotifier notifier, String language) throws Exception {
 		if (!LNReaderApplication.getInstance().isOnline())
-			throw new Exception("No Network Connectifity");
+			throw new BakaReaderException("No Network Connectifity", BakaReaderException.NO_NETWORK_CONNECTIFITY);
 		if (notifier != null) {
 			notifier.onCallback(new CallbackEventData("Downloading " + language + " Novels list..."));
 		}
@@ -510,9 +514,9 @@ public class NovelsDao {
 		if (language != null)
 			url = Constants.BASE_URL + "/project/index.php?title=" + AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo();
 		int retry = 0;
-		while (retry < Constants.PAGE_DOWNLOAD_RETRY) {
+		while (retry < getRetry()) {
 			try {
-				Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
+				Response response = Jsoup.connect(url).timeout(getTimeout()).execute();
 				Document doc = response.parse();
 				list = BakaTsukiParserAlternative.ParseAlternativeList(doc, language);
 				Log.d(TAG, "Found from internet: " + list.size() + " " + language + " Novel");
@@ -524,18 +528,18 @@ public class NovelsDao {
 			} catch (EOFException eof) {
 				++retry;
 				if (notifier != null) {
-					notifier.onCallback(new CallbackEventData("Retrying: " + language + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
+					notifier.onCallback(new CallbackEventData("Retrying: " + language + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
 				}
-				if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+				if (retry > getRetry())
 					throw eof;
 			} catch (IOException eof) {
 				++retry;
-				String message = "Retrying: " + language + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
+				String message = "Retrying: " + language + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 				if (notifier != null) {
 					notifier.onCallback(new CallbackEventData(message));
 				}
 				Log.d(TAG, message, eof);
-				if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+				if (retry > getRetry())
 					throw eof;
 			}
 		}
@@ -614,18 +618,18 @@ public class NovelsDao {
 
 	public PageModel getPageModelFromInternet(PageModel page, ICallbackNotifier notifier) throws Exception {
 		if (!LNReaderApplication.getInstance().isOnline())
-			throw new Exception("No Network Connectifity");
+			throw new BakaReaderException("No Network Connectifity", BakaReaderException.NO_NETWORK_CONNECTIFITY);
 		Log.d(TAG, "PageModel = " + page.getPage());
 
 		int retry = 0;
-		while (retry < Constants.PAGE_DOWNLOAD_RETRY) {
+		while (retry < getRetry()) {
 			try {
 				if (notifier != null) {
 					notifier.onCallback(new CallbackEventData("Fetching " + page.getTitle() + " list... First time may be slow."));
 				}
 				String encodedTitle = Util.UrlEncode(page.getPage());
 				String fullUrl = "http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=" + encodedTitle;
-				Response response = Jsoup.connect(fullUrl).timeout(Constants.TIMEOUT).execute();
+				Response response = Jsoup.connect(fullUrl).timeout(getTimeout()).execute();
 				PageModel pageModel = null;
 				String lang = page.getLanguage();
 				if (lang != null)
@@ -646,18 +650,18 @@ public class NovelsDao {
 			} catch (EOFException eof) {
 				++retry;
 				if (notifier != null) {
-					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
+					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
 				}
-				if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+				if (retry > getRetry())
 					throw eof;
 			} catch (IOException eof) {
 				++retry;
-				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
+				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 				if (notifier != null) {
 					notifier.onCallback(new CallbackEventData(message));
 				}
 				Log.d(TAG, message, eof);
-				if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+				if (retry > getRetry())
 					throw eof;
 			}
 		}
@@ -699,19 +703,19 @@ public class NovelsDao {
 
 	public NovelCollectionModel getNovelDetailsFromInternet(PageModel page, ICallbackNotifier notifier) throws Exception {
 		if (!LNReaderApplication.getInstance().isOnline())
-			throw new Exception("No Network Connectifity");
+			throw new BakaReaderException("No Network Connectifity", BakaReaderException.NO_NETWORK_CONNECTIFITY);
 		Log.d(TAG, "Getting Novel Details from internet: " + page.getPage());
 		NovelCollectionModel novel = null;
 
 		int retry = 0;
-		while (retry < Constants.PAGE_DOWNLOAD_RETRY) {
+		while (retry < getRetry()) {
 			try {
 				if (notifier != null) {
 					notifier.onCallback(new CallbackEventData("Downloading novel details page for: " + page.getPage()));
 				}
 				String encodedTitle = Util.UrlEncode(page.getPage());
 				String fullUrl = Constants.BASE_URL + "/project/index.php?action=render&title=" + encodedTitle;
-				Response response = Jsoup.connect(fullUrl).timeout(Constants.TIMEOUT).execute();
+				Response response = Jsoup.connect(fullUrl).timeout(getTimeout()).execute();
 				Document doc = response.parse();
 				/*
 				 * Add your section of alternative language here, create own
@@ -724,18 +728,18 @@ public class NovelsDao {
 			} catch (EOFException eof) {
 				++retry;
 				if (notifier != null) {
-					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
+					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
 				}
-				if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+				if (retry > getRetry())
 					throw eof;
 			} catch (IOException eof) {
 				++retry;
-				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
+				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 				if (notifier != null) {
 					notifier.onCallback(new CallbackEventData(message));
 				}
 				Log.d(TAG, message, eof);
-				if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+				if (retry > getRetry())
 					throw eof;
 			}
 
@@ -856,11 +860,11 @@ public class NovelsDao {
 				}
 			}
 			// request the page
-			while (retry < Constants.PAGE_DOWNLOAD_RETRY) {
+			while (retry < getRetry()) {
 				try {
 					// Log.d(TAG, "Trying to get: " + baseUrl + titles);
 					String url = baseUrl + titles;
-					Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
+					Response response = Jsoup.connect(url).timeout(getTimeout()).execute();
 					Document doc = response.parse();
 					ArrayList<PageModel> updatedPageModels = BakaTsukiParser.parsePageAPI(checkedPageModel, doc, url);
 					resultPageModel.addAll(updatedPageModels);
@@ -868,18 +872,18 @@ public class NovelsDao {
 				} catch (EOFException eof) {
 					++retry;
 					if (notifier != null) {
-						notifier.onCallback(new CallbackEventData("Retrying: Get Pages Info (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
+						notifier.onCallback(new CallbackEventData("Retrying: Get Pages Info (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
 					}
-					if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+					if (retry > getRetry())
 						throw eof;
 				} catch (IOException eof) {
 					++retry;
-					String message = "Retrying: Get Pages Info (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
+					String message = "Retrying: Get Pages Info (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 					if (notifier != null) {
 						notifier.onCallback(new CallbackEventData(message));
 					}
 					Log.d(TAG, message, eof);
-					if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+					if (retry > getRetry())
 						throw eof;
 				}
 			}
@@ -961,18 +965,18 @@ public class NovelsDao {
 
 	public NovelContentModel getNovelContentFromInternet(PageModel page, ICallbackNotifier notifier) throws Exception {
 		if (!LNReaderApplication.getInstance().isOnline())
-			throw new Exception("No Network Connectifity");
+			throw new BakaReaderException("No Network Connectifity", BakaReaderException.NO_NETWORK_CONNECTIFITY);
 
 		String oldTitle = page.getTitle();
 
 		NovelContentModel content = new NovelContentModel();
 		int retry = 0;
 		Document doc = null;
-		while (retry < Constants.PAGE_DOWNLOAD_RETRY) {
+		while (retry < getRetry()) {
 			try {
 				String encodedUrl = Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&redirects=yes&page=" + Util.UrlEncode(page.getPage());
 				;
-				Response response = Jsoup.connect(encodedUrl).timeout(Constants.TIMEOUT).execute();
+				Response response = Jsoup.connect(encodedUrl).timeout(getTimeout()).execute();
 				doc = response.parse();
 				content = BakaTsukiParser.ParseNovelContent(doc, page);
 				content.setUpdatingFromInternet(true);
@@ -980,18 +984,18 @@ public class NovelsDao {
 			} catch (EOFException eof) {
 				++retry;
 				if (notifier != null) {
-					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
+					notifier.onCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
 				}
-				if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+				if (retry > getRetry())
 					throw eof;
 			} catch (IOException eof) {
 				++retry;
-				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
+				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 				if (notifier != null) {
 					notifier.onCallback(new CallbackEventData(message));
 				}
 				Log.d(TAG, message, eof);
-				if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+				if (retry > getRetry())
 					throw eof;
 			}
 		}
@@ -1092,7 +1096,7 @@ public class NovelsDao {
 	 */
 	public ImageModel getImageModel(ImageModel image, ICallbackNotifier notifier) throws Exception {
 		if (image == null || image.getName() == null)
-			throw new Exception("Empty Image!");
+			throw new BakaReaderException("Empty Image!", BakaReaderException.EMPTY_IMAGE);
 		ImageModel imageTemp = null;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
@@ -1126,7 +1130,7 @@ public class NovelsDao {
 	 */
 	public ImageModel getImageModelFromInternet(ImageModel image, ICallbackNotifier notifier) throws Exception {
 		if (!LNReaderApplication.getInstance().isOnline())
-			throw new Exception("No Network Connectifity");
+			throw new BakaReaderException("No Network Connectifity", BakaReaderException.NO_NETWORK_CONNECTIFITY);
 		String url = image.getName();
 		if (!url.startsWith("http"))
 			url = Constants.BASE_URL + url;
@@ -1136,9 +1140,9 @@ public class NovelsDao {
 		}
 
 		int retry = 0;
-		while (retry < Constants.IMAGE_DOWNLOAD_RETRY) {
+		while (retry < getRetry()) {
 			try {
-				Response response = Jsoup.connect(url).timeout(Constants.TIMEOUT).execute();
+				Response response = Jsoup.connect(url).timeout(getTimeout()).execute();
 				Document doc = response.parse();
 
 				// only return the full image url
@@ -1160,19 +1164,19 @@ public class NovelsDao {
 				break;
 			} catch (EOFException eof) {
 				if (notifier != null) {
-					notifier.onCallback(new CallbackEventData("Retrying: " + url + " (" + retry + " of " + Constants.IMAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage()));
+					notifier.onCallback(new CallbackEventData("Retrying: " + url + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
 				}
 				++retry;
-				if (retry > Constants.IMAGE_DOWNLOAD_RETRY)
+				if (retry > getRetry())
 					throw eof;
 			} catch (IOException eof) {
 				++retry;
-				String message = "Retrying: " + url + " (" + retry + " of " + Constants.PAGE_DOWNLOAD_RETRY + ")\n" + eof.getMessage();
+				String message = "Retrying: " + url + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 				if (notifier != null) {
 					notifier.onCallback(new CallbackEventData(message));
 				}
 				Log.d(TAG, message, eof);
-				if (retry > Constants.PAGE_DOWNLOAD_RETRY)
+				if (retry > getRetry())
 					throw eof;
 			}
 		}
@@ -1288,6 +1292,13 @@ public class NovelsDao {
 		}
 	}
 
+	private int getRetry() {
+		return UIHelper.GetIntFromPreferences(Constants.PREF_RETRY, 3);
+	}
+
+	private int getTimeout() {
+		return UIHelper.GetIntFromPreferences(Constants.PREF_TIMEOUT, 60) * 1000;
+	}
 	// public void temp() {
 	// synchronized (dbh) {
 	// SQLiteDatabase db = dbh.getWritableDatabase();

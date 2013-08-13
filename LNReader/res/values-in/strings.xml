@@ -220,4 +220,8 @@
     <string name="orientation_summary">Pilihan Kunci Orientasi: %1$s</string>
     <string name="delete_this_volume">Hapus total jilid ini</string>
     <string name="delete_this_chapter">Hapus total bab ini</string>
+    <string name="pref_timeout_summary">Time to wait until download timed out: %1$s second(s)</string>
+    <string name="pref_timeout_title">Time Out</string>
+    <string name="pref_retry_title">Download Retry</string>
+    <string name="pref_retry_summary">Times to retry before giving up: %1$s time(s)</string>
 </resources>

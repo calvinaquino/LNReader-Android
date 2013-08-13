@@ -49,20 +49,20 @@ import com.erakk.lnreader.task.LoadNovelsTask;
  * Copy from: NovelsActivity.java
  */
 
-public class DisplayLightNovelListFragment extends SherlockListFragment implements IAsyncTaskOwner, INovelListHelper{
+public class DisplayLightNovelListFragment extends SherlockListFragment implements IAsyncTaskOwner, INovelListHelper {
 	private static final String TAG = DisplayLightNovelListFragment.class.toString();
-	private ArrayList<PageModel> listItems = new ArrayList<PageModel>();
+	private final ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	private PageModelAdapter adapter;
 	private LoadNovelsTask task = null;
 	private DownloadNovelDetailsTask downloadTask = null;
 	private AddNovelTask addTask = null;
 	private boolean onlyWatched = false;
 	String touchedForDownload;
-	
+
 	private TextView loadingText;
 	private ProgressBar loadingBar;
 	FragmentListener mFragListener;
-	
+
 	public interface FragmentListener {
 		public void changeNextFragment(Bundle bundle);
 	}
@@ -77,32 +77,31 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 		}
 	}
 
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.activity_display_light_novel_list, container, false);
-		
+
 		loadingText = (TextView) view.findViewById(R.id.emptyList);
 		loadingBar = (ProgressBar) view.findViewById(R.id.empttListProgress);
 		getSherlockActivity().setTitle("Light Novels");
-		
+
 		return view;
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
-		
+
 		/************************************************
 		 * These lines of code require the ListView to already be created before
 		 * they are used, hence, put in the onStart() method
 		 ****************************************************/
-		
+
 		onlyWatched = getSherlockActivity().getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
-		
-		//Encapsulated in updateContent
+
+		// Encapsulated in updateContent
 		updateContent(false, onlyWatched);
-		
+
 		registerForContextMenu(getListView());
 	}
 
@@ -112,8 +111,8 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 		// Get the item that was clicked
 		PageModel o = adapter.getItem(position);
 		String novel = o.toString();
-		
-		//Create a bundle containing information about the novel that is clicked
+
+		// Create a bundle containing information about the novel that is clicked
 		Bundle bundle = new Bundle();
 		bundle.putString(Constants.EXTRA_NOVEL, novel);
 		bundle.putString(Constants.EXTRA_PAGE, o.getPage());
@@ -121,18 +120,20 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 		bundle.putBoolean(Constants.EXTRA_ONLY_WATCHED, getSherlockActivity().getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false));
 
 		mFragListener.changeNextFragment(bundle);
-		
+
 		Log.d("DisplayLightNovelsActivity", o.getPage() + " (" + o.getTitle() + ")");
-		
+
 		// Need to send it through
 	}
 
+	@Override
 	public void refreshList() {
 		boolean onlyWatched = getSherlockActivity().getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
-		updateContent(true, onlyWatched);			
+		updateContent(true, onlyWatched);
 		Toast.makeText(getSherlockActivity(), "Refreshing Main Novel...", Toast.LENGTH_SHORT).show();
 	}
 
+	@Override
 	public void downloadAllNovelInfo() {
 		if (onlyWatched)
 			touchedForDownload = "Watched Light Novels information";
@@ -141,6 +142,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 		executeDownloadTask(listItems);
 	}
 
+	@Override
 	public void manualAdd() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(getSherlockActivity());
 		alert.setTitle("Add Novel (Main)");
@@ -151,8 +153,9 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 		final EditText inputTitle = (EditText) inputView.findViewById(R.id.title);
 		alert.setView(inputView);
 		alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
-				if(whichButton == DialogInterface.BUTTON_POSITIVE) {
+				if (whichButton == DialogInterface.BUTTON_POSITIVE) {
 					handleOK(inputName, inputTitle);
 				}
 			}
@@ -160,88 +163,88 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 		alert.setNegativeButton("Cancel", null);
 		alert.show();
 	}
-	
+
 	private void handleOK(EditText input, EditText inputTitle) {
 		String novel = input.getText().toString();
 		String title = inputTitle.getText().toString();
-		if(novel != null && novel.length() > 0 && inputTitle != null && inputTitle.length() > 0) {
+		if (novel != null && novel.length() > 0 && inputTitle != null && inputTitle.length() > 0) {
 			PageModel temp = new PageModel();
 			temp.setPage(novel);
 			temp.setTitle(title);
 			temp.setType(PageModel.TYPE_NOVEL);
 			temp.setParent("Main_Page");
 			executeAddTask(temp);
-		}
-		else {
+		} else {
 			Toast.makeText(getSherlockActivity(), "Empty Input", Toast.LENGTH_LONG).show();
 		}
-	}  
+	}
 
+	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		MenuInflater inflater = getSherlockActivity().getMenuInflater();
 		inflater.inflate(R.menu.novel_context_menu, menu);
 	}
-	
+
 	@Override
 	public boolean onContextItemSelected(android.view.MenuItem item) {
-		if(!(item.getMenuInfo() instanceof AdapterContextMenuInfo)) return super.onContextItemSelected(item);
+		if (!(item.getMenuInfo() instanceof AdapterContextMenuInfo))
+			return super.onContextItemSelected(item);
 		Log.d(TAG, "Context menu called");
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-		switch(item.getItemId()) {
-			case R.id.add_to_watch:			
-				/*
-				 * Implement code to toggle watch of this novel
-				 */
-				if(info.position > -1) {
-					PageModel novel = listItems.get(info.position);
-			        if (novel.isWatched()) {
-			        	novel.setWatched(false);
-			        	Toast.makeText(getSherlockActivity(), "Removed from watch list: " + novel.getTitle(),	Toast.LENGTH_SHORT).show();
-			        }
-			        else {
-			        	novel.setWatched(true);
-			        	Toast.makeText(getSherlockActivity(), "Added to watch list: " + novel.getTitle(),	Toast.LENGTH_SHORT).show();
-			        }
-			        NovelsDao.getInstance(getSherlockActivity()).updatePageModel(novel);
-			        adapter.notifyDataSetChanged();
+		switch (item.getItemId()) {
+		case R.id.add_to_watch:
+			/*
+			 * Implement code to toggle watch of this novel
+			 */
+			if (info.position > -1) {
+				PageModel novel = listItems.get(info.position);
+				if (novel.isWatched()) {
+					novel.setWatched(false);
+					Toast.makeText(getSherlockActivity(), "Removed from watch list: " + novel.getTitle(), Toast.LENGTH_SHORT).show();
+				} else {
+					novel.setWatched(true);
+					Toast.makeText(getSherlockActivity(), "Added to watch list: " + novel.getTitle(), Toast.LENGTH_SHORT).show();
 				}
-				return true;
-			case R.id.download_novel:			
-				/*
-				 * Implement code to download novel synopsis
-				 */
-				if(info.position > -1) {
-					PageModel novel = listItems.get(info.position);
-					ArrayList<PageModel> novels = new ArrayList<PageModel>();
-					novels.add(novel);
-					touchedForDownload = novel.getTitle()+"'s information";
-					executeDownloadTask(novels);
+				NovelsDao.getInstance(getSherlockActivity()).updatePageModel(novel);
+				adapter.notifyDataSetChanged();
+			}
+			return true;
+		case R.id.download_novel:
+			/*
+			 * Implement code to download novel synopsis
+			 */
+			if (info.position > -1) {
+				PageModel novel = listItems.get(info.position);
+				ArrayList<PageModel> novels = new ArrayList<PageModel>();
+				novels.add(novel);
+				touchedForDownload = novel.getTitle() + "'s information";
+				executeDownloadTask(novels);
+			}
+			return true;
+		case R.id.delete_novel:
+			if (info.position > -1) {
+				toggleProgressBar(true);
+				PageModel novel = listItems.get(info.position);
+				boolean result = NovelsDao.getInstance(getSherlockActivity()).deleteNovel(novel);
+				if (result) {
+					listItems.remove(novel);
+					adapter.notifyDataSetChanged();
 				}
-				return true;
-			case R.id.delete_novel:
-				if(info.position > -1) {
-					toggleProgressBar(true);
-					PageModel novel = listItems.get(info.position);
-					boolean result = NovelsDao.getInstance(getSherlockActivity()).deleteNovel(novel);
-					if(result) {
-						listItems.remove(novel);
-						adapter.notifyDataSetChanged();
-					}				
-					toggleProgressBar(false);
-				}
-				return true;
-			default:
-				return super.onContextItemSelected(item);
+				toggleProgressBar(false);
+			}
+			return true;
+		default:
+			return super.onContextItemSelected(item);
 		}
 	}
-	
-	private void updateContent (boolean isRefresh, boolean onlyWatched) {
+
+	private void updateContent(boolean isRefresh, boolean onlyWatched) {
 		try {
 			// Check size
 			int resourceId = R.layout.novel_list_item;
-			if(UIHelper.IsSmallScreen(getSherlockActivity())) {
-				resourceId = R.layout.novel_list_item_small; 
+			if (UIHelper.IsSmallScreen(getSherlockActivity())) {
+				resourceId = R.layout.novel_list_item_small;
 			}
 			if (adapter != null) {
 				adapter.setResourceId(resourceId);
@@ -256,153 +259,156 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 			Toast.makeText(getSherlockActivity(), "Error when updating: " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
-	
+
 	@SuppressLint("NewApi")
 	private void executeTask(boolean isRefresh, boolean onlyWatched, boolean alphOrder) {
 		task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder);
 		String key = TAG + ":Main+Page";
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
-		if(isAdded) {
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+		if (isAdded) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			else
 				task.execute();
-		}
-		else {
+		} else {
 			Log.i(TAG, "Continue execute task: " + key);
 			LoadNovelsTask tempTask = (LoadNovelsTask) LNReaderApplication.getInstance().getTask(key);
-			if(tempTask != null) {
+			if (tempTask != null) {
 				task = tempTask;
 				task.owner = this;
 			}
-			//This
+			// This
 			toggleProgressBar(true);
 		}
 	}
-	
-	public boolean downloadListSetup(String id, String toastText, int type){
+
+	@Override
+	public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
 		boolean exists = false;
 		String name = touchedForDownload;
 		if (type == 0) {
 			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
 				exists = true;
 				Toast.makeText(getSherlockActivity(), "Download already on queue.", Toast.LENGTH_SHORT).show();
-			}
-			else {
-				Toast.makeText(getSherlockActivity(),"Downloading "+name+".", Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(getSherlockActivity(), "Downloading " + name + ".", Toast.LENGTH_SHORT).show();
 				LNReaderApplication.getInstance().addDownload(id, name);
 			}
-		}
-		else if (type == 1) {
+		} else if (type == 1) {
 			Toast.makeText(getSherlockActivity(), toastText, Toast.LENGTH_SHORT).show();
-		}
-		else if (type == 2) {
-			Toast.makeText(getSherlockActivity(), LNReaderApplication.getInstance().getDownloadDescription(id)+"'s download finished!", Toast.LENGTH_SHORT).show();
+		} else if (type == 2) {
+			String message = String.format("%s's download finished!", LNReaderApplication.getInstance().getDownloadDescription(id));
+			if (hasError)
+				message = String.format("%s's download finished with error(s)!", LNReaderApplication.getInstance().getDownloadDescription(id));
+			Toast.makeText(getSherlockActivity(), message, Toast.LENGTH_SHORT).show();
 			LNReaderApplication.getInstance().removeDownload(id);
 		}
 		return exists;
 	}
-	public void updateProgress(String id, int current, int total, String messString){
-		double cur = (double)current;
-		double tot = (double)total;
-		double result = (cur/tot)*100;
-		LNReaderApplication.getInstance().updateDownload(id, (int)result, messString);
+
+	@Override
+	public void updateProgress(String id, int current, int total, String messString) {
+		double cur = current;
+		double tot = total;
+		double result = (cur / tot) * 100;
+		LNReaderApplication.getInstance().updateDownload(id, (int) result, messString);
 	}
-	
+
 	@SuppressLint("NewApi")
 	private void executeDownloadTask(ArrayList<PageModel> novels) {
 		downloadTask = new DownloadNovelDetailsTask(this);
-		if(novels == null ||novels.size() == 0) return;
+		if (novels == null || novels.size() == 0)
+			return;
 		String key = DisplayLightNovelDetailsActivity.TAG + ":" + novels.get(0).getPage();
-		if(novels.size() > 1) {
+		if (novels.size() > 1) {
 			key = DisplayLightNovelDetailsActivity.TAG + ":All_Novels";
 		}
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, downloadTask);
-		if(isAdded) {
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+		if (isAdded) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 				downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, novels.toArray(new PageModel[novels.size()]));
 			else
 				downloadTask.execute(novels.toArray(new PageModel[novels.size()]));
-		}
-		else {
+		} else {
 			Log.i(TAG, "Continue download task: " + key);
 			DownloadNovelDetailsTask tempTask = (DownloadNovelDetailsTask) LNReaderApplication.getInstance().getTask(key);
-			if(tempTask != null) {
+			if (tempTask != null) {
 				downloadTask = tempTask;
 				downloadTask.owner = this;
 			}
 			toggleProgressBar(true);
 		}
 	}
-	
+
 	@SuppressLint("NewApi")
 	private void executeAddTask(PageModel novel) {
 		addTask = new AddNovelTask(this);
 		String key = DisplayLightNovelDetailsActivity.TAG + ":Add:" + novel.getPage();
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, addTask);
-		if(isAdded) {
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				addTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {novel});
+		if (isAdded) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				addTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] { novel });
 			else
-				addTask.execute(new PageModel[] {novel});
-		}
-		else {
+				addTask.execute(new PageModel[] { novel });
+		} else {
 			Log.i(TAG, "Continue Add task: " + key);
 			AddNovelTask tempTask = (AddNovelTask) LNReaderApplication.getInstance().getTask(key);
-			if(tempTask != null) {
+			if (tempTask != null) {
 				addTask = tempTask;
 				addTask.owner = this;
 			}
 			toggleProgressBar(true);
 		}
 	}
-	
+
+	@Override
 	public void toggleProgressBar(boolean show) {
-//		if(show) {
-//			dialog = ProgressDialog.show(this, "Novel List", "Loading. Please wait...", true);
-//			dialog.getWindow().setGravity(Gravity.CENTER);
-//			dialog.setCanceledOnTouchOutside(true);
-//		}
-//		else {
-//			dialog.dismiss();
-//		}
-		if(show) {
+		// if(show) {
+		// dialog = ProgressDialog.show(this, "Novel List", "Loading. Please wait...", true);
+		// dialog.getWindow().setGravity(Gravity.CENTER);
+		// dialog.setCanceledOnTouchOutside(true);
+		// }
+		// else {
+		// dialog.dismiss();
+		// }
+		if (show) {
 			loadingText.setText("Loading List, please wait...");
 			loadingText.setVisibility(TextView.VISIBLE);
 			loadingBar.setVisibility(ProgressBar.VISIBLE);
 			getListView().setVisibility(ListView.GONE);
-		}
-		else {
+		} else {
 			loadingText.setVisibility(TextView.GONE);
 			loadingBar.setVisibility(ProgressBar.GONE);
 			getListView().setVisibility(ListView.VISIBLE);
 		}
 	}
 
+	@Override
 	public void setMessageDialog(ICallbackEventData message) {
-//		if(dialog.isShowing())
-//			dialog.setMessage(message.getMessage());
-		if(loadingText.getVisibility() == TextView.VISIBLE)
+		// if(dialog.isShowing())
+		// dialog.setMessage(message.getMessage());
+		if (loadingText.getVisibility() == TextView.VISIBLE)
 			loadingText.setText(message.getMessage());
 	}
 
+	@Override
 	public void getResult(AsyncTaskResult<?> result) {
 		Exception e = result.getError();
-		if(e == null) {
+		if (e == null) {
 			// from LoadNovelsTask
-			if(Util.isInstanceOf((ArrayList<?>)result.getResult(), PageModel.class)) {
+			if (Util.isInstanceOf((ArrayList<?>) result.getResult(), PageModel.class)) {
 				@SuppressWarnings("unchecked")
 				ArrayList<PageModel> list = (ArrayList<PageModel>) result.getResult();
 				Log.d("WatchList", "result ok");
-				if(list != null) {
+				if (list != null) {
 					Log.d("WatchList", "result not empty");
-					//if (refreshOnly) {
-						adapter.clear();
-					//	refreshOnly = false;
-					//}
+					// if (refreshOnly) {
+					adapter.clear();
+					// refreshOnly = false;
+					// }
 					adapter.addAll(list);
 					toggleProgressBar(false);
-					
+
 					// Show message if watch list is empty
 					if (list.size() == 0 && onlyWatched) {
 
@@ -413,7 +419,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 				}
 			}
 			// from DownloadNovelDetailsTask
-			else if(Util.isInstanceOf((ArrayList<?>)result.getResult(), NovelCollectionModel.class)) {
+			else if (Util.isInstanceOf((ArrayList<?>) result.getResult(), NovelCollectionModel.class)) {
 				setMessageDialog(new CallbackEventData("Download complete."));
 				@SuppressWarnings("unchecked")
 				ArrayList<NovelCollectionModel> list = (ArrayList<NovelCollectionModel>) result.getResult();
@@ -422,12 +428,12 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 						PageModel page = novelCol.getPageModel();
 						boolean found = false;
 						for (PageModel temp : adapter.data) {
-							if(temp.getPage().equalsIgnoreCase(page.getPage())) {
+							if (temp.getPage().equalsIgnoreCase(page.getPage())) {
 								found = true;
 								break;
 							}
 						}
-						if(!found) {
+						if (!found) {
 							adapter.data.add(page);
 						}
 					} catch (Exception e1) {
@@ -436,30 +442,25 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 				}
 				adapter.notifyDataSetChanged();
 				toggleProgressBar(false);
-			}
-			else {
-				if(result.getResult() instanceof ArrayList ) {
+			} else {
+				if (result.getResult() instanceof ArrayList) {
 					// Empty ArrayList.
-					if(((ArrayList<?>) result.getResult()).size() == 0) {
+					if (((ArrayList<?>) result.getResult()).size() == 0) {
 						toggleProgressBar(false);
 						loadingText.setVisibility(TextView.VISIBLE);
 						loadingText.setText("List is empty.");
 						Log.w(TAG, "Empty ArrayList!");
-						
-					}
-					else {
+
+					} else {
 						Log.e(TAG, "Unknown ArrayList!");
 					}
-				}
-				else {
+				} else {
 					Log.e(TAG, "Uknown ResultType!");
-				}				
+				}
 			}
-		}
-		else {
+		} else {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
 			Toast.makeText(getSherlockActivity(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
-		}		
+		}
 	}
 }
-

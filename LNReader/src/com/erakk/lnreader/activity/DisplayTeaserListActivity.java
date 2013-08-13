@@ -48,32 +48,32 @@ import com.erakk.lnreader.task.LoadTeasersTask;
  * Copy from: NovelsActivity.java
  */
 
-public class DisplayTeaserListActivity extends SherlockListActivity implements IAsyncTaskOwner, INovelListHelper{
+public class DisplayTeaserListActivity extends SherlockListActivity implements IAsyncTaskOwner, INovelListHelper {
 	private static final String TAG = DisplayTeaserListActivity.class.toString();
-	private ArrayList<PageModel> listItems = new ArrayList<PageModel>();
+	private final ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	private PageModelAdapter adapter;
 	private LoadTeasersTask task = null;
 	private DownloadNovelDetailsTask downloadTask = null;
 	private AddNovelTask addTask = null;
-	//private ProgressDialog dialog;
+	// private ProgressDialog dialog;
 	private boolean isInverted;
 	String touchedForDownload;
-	
+
 	private TextView loadingText;
 	private ProgressBar loadingBar;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		UIHelper.SetTheme(this, R.layout.activity_display_light_novel_list);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
-		
-		loadingText = (TextView)findViewById(R.id.emptyList);
-		loadingBar = (ProgressBar)findViewById(R.id.empttListProgress);
-		
+
+		loadingText = (TextView) findViewById(R.id.emptyList);
+		loadingBar = (ProgressBar) findViewById(R.id.empttListProgress);
+
 		registerForContextMenu(getListView());
 		updateContent(false);
-		
+
 		setTitle("Light Novels: Teasers");
 		isInverted = getColorPreferences();
 	}
@@ -84,7 +84,7 @@ public class DisplayTeaserListActivity extends SherlockListActivity implements I
 		// Get the item that was clicked
 		PageModel o = adapter.getItem(position);
 		String novel = o.toString();
-		//Create new intent
+		// Create new intent
 		Intent intent = new Intent(this, DisplayLightNovelDetailsActivity.class);
 		intent.putExtra(Constants.EXTRA_NOVEL, novel);
 		intent.putExtra(Constants.EXTRA_PAGE, o.getPage());
@@ -99,20 +99,21 @@ public class DisplayTeaserListActivity extends SherlockListActivity implements I
 		getSupportMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
 		return true;
 	}
-	
+
 	@Override
 	protected void onStop() {
 		super.onStop();
 	}
-	
+
 	@Override
-    protected void onRestart() {
-        super.onRestart();
-        if(isInverted != getColorPreferences()) {
-        	UIHelper.Recreate(this);
-        }
-        if(adapter != null) adapter.notifyDataSetChanged();
-    }
+	protected void onRestart() {
+		super.onRestart();
+		if (isInverted != getColorPreferences()) {
+			UIHelper.Recreate(this);
+		}
+		if (adapter != null)
+			adapter.notifyDataSetChanged();
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -121,23 +122,24 @@ public class DisplayTeaserListActivity extends SherlockListActivity implements I
 			Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
 			startActivity(launchNewIntent);
 			return true;
-		case R.id.menu_refresh_novel_list:			
+		case R.id.menu_refresh_novel_list:
 			refreshList();
 			return true;
-		case R.id.invert_colors:			
+		case R.id.invert_colors:
 			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);
 			return true;
-		case R.id.menu_manual_add:			
+		case R.id.menu_manual_add:
 			manualAdd();
 			return true;
-		case R.id.menu_download_all_info:			
+		case R.id.menu_download_all_info:
 			downloadAllNovelInfo();
-			return true;    
+			return true;
 		case R.id.menu_downloads_list:
-    		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
-        	startActivity(downloadsItent);;
-			return true; 
+			Intent downloadsItent = new Intent(this, DownloadListActivity.class);
+			startActivity(downloadsItent);
+			;
+			return true;
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;
@@ -146,28 +148,32 @@ public class DisplayTeaserListActivity extends SherlockListActivity implements I
 		}
 	}
 
+	@Override
 	public void refreshList() {
-		updateContent(true);			
+		updateContent(true);
 		Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
 	}
-	
+
+	@Override
 	public void downloadAllNovelInfo() {
 		touchedForDownload = "All Teaser Light Novels information";
 		executeDownloadTask(listItems);
 	}
-	
+
+	@Override
 	public void manualAdd() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setTitle("Add Novel (Teaser)");
-		//alert.setMessage("Message");
+		// alert.setMessage("Message");
 		LayoutInflater factory = LayoutInflater.from(this);
 		View inputView = factory.inflate(R.layout.layout_add_new_novel, null);
 		final EditText inputName = (EditText) inputView.findViewById(R.id.page);
 		final EditText inputTitle = (EditText) inputView.findViewById(R.id.title);
 		alert.setView(inputView);
 		alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
-				if(whichButton == DialogInterface.BUTTON_POSITIVE) {
+				if (whichButton == DialogInterface.BUTTON_POSITIVE) {
 					handleOK(inputName, inputTitle);
 				}
 			}
@@ -175,11 +181,11 @@ public class DisplayTeaserListActivity extends SherlockListActivity implements I
 		alert.setNegativeButton("Cancel", null);
 		alert.show();
 	}
-	
+
 	private void handleOK(EditText input, EditText inputTitle) {
 		String novel = input.getText().toString();
 		String title = inputTitle.getText().toString();
-		if(novel != null && novel.length() > 0 && inputTitle != null && inputTitle.length() > 0) {
+		if (novel != null && novel.length() > 0 && inputTitle != null && inputTitle.length() > 0) {
 			PageModel temp = new PageModel();
 			temp.setPage(novel);
 			temp.setTitle(title);
@@ -187,12 +193,12 @@ public class DisplayTeaserListActivity extends SherlockListActivity implements I
 			temp.setParent("Category:Teasers");
 			temp.setStatus(Constants.STATUS_TEASER);
 			executeAddTask(temp);
-		}
-		else {
+		} else {
 			Toast.makeText(this, "Empty Input", Toast.LENGTH_LONG).show();
 		}
-	}  
+	}
 
+	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		MenuInflater inflater = getMenuInflater();
@@ -201,29 +207,28 @@ public class DisplayTeaserListActivity extends SherlockListActivity implements I
 
 	@Override
 	public boolean onContextItemSelected(android.view.MenuItem item) {
-		switch(item.getItemId()) {
-		case R.id.add_to_watch:			
+		switch (item.getItemId()) {
+		case R.id.add_to_watch:
 			/*
 			 * Implement code to toggle watch of this novel
 			 */
-	        CheckBox checkBox = (CheckBox) findViewById(R.id.novel_is_watched);
-	        if (checkBox.isChecked()) {
-	        	checkBox.setChecked(false);
-	        }
-	        else {
-	        	checkBox.setChecked(true);
-	        }
+			CheckBox checkBox = (CheckBox) findViewById(R.id.novel_is_watched);
+			if (checkBox.isChecked()) {
+				checkBox.setChecked(false);
+			} else {
+				checkBox.setChecked(true);
+			}
 			return true;
-		case R.id.download_novel:			
+		case R.id.download_novel:
 			/*
 			 * Implement code to download novel synopsis
 			 */
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-			if(info.position > -1) {
+			if (info.position > -1) {
 				PageModel novel = listItems.get(info.position);
 				ArrayList<PageModel> novels = new ArrayList<PageModel>();
 				novels.add(novel);
-				touchedForDownload = novel.getTitle()+"'s information";
+				touchedForDownload = novel.getTitle() + "'s information";
 				executeDownloadTask(novels);
 			}
 			return true;
@@ -231,13 +236,13 @@ public class DisplayTeaserListActivity extends SherlockListActivity implements I
 			return super.onContextItemSelected(item);
 		}
 	}
-	
-	private void updateContent (boolean isRefresh) {
+
+	private void updateContent(boolean isRefresh) {
 		try {
 			// Check size
 			int resourceId = R.layout.novel_list_item;
-			if(UIHelper.IsSmallScreen(this)) {
-				resourceId = R.layout.novel_list_item_small; 
+			if (UIHelper.IsSmallScreen(this)) {
+				resourceId = R.layout.novel_list_item_small;
 			}
 			if (adapter != null) {
 				adapter.setResourceId(resourceId);
@@ -252,120 +257,119 @@ public class DisplayTeaserListActivity extends SherlockListActivity implements I
 			Toast.makeText(this, "Error when updating: " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
-	
+
 	@SuppressLint("NewApi")
 	private void executeTask(boolean isRefresh, boolean alphOrder) {
 		task = new LoadTeasersTask(this, isRefresh, alphOrder);
 		String key = TAG + ":Category:Teasers";
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
-		if(isAdded) {
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+		if (isAdded) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			else
 				task.execute();
-		}
-		else {
+		} else {
 			Log.i(TAG, "Continue execute task: " + key);
 			LoadTeasersTask tempTask = (LoadTeasersTask) LNReaderApplication.getInstance().getTask(key);
-			if(tempTask != null) {
+			if (tempTask != null) {
 				task = tempTask;
 				task.owner = this;
 			}
 			toggleProgressBar(true);
 		}
 	}
-	
+
 	@SuppressLint("NewApi")
 	private void executeDownloadTask(ArrayList<PageModel> novels) {
 		downloadTask = new DownloadNovelDetailsTask(this);
 		String key = DisplayTeaserListActivity.TAG + ":" + novels.get(0).getPage();
-		if(novels.size() > 1) {
+		if (novels.size() > 1) {
 			key = DisplayTeaserListActivity.TAG + ":All_Teasers";
 		}
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
-		if(isAdded) {
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+		if (isAdded) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 				downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, novels.toArray(new PageModel[novels.size()]));
 			else
 				downloadTask.execute(novels.toArray(new PageModel[novels.size()]));
-		}
-		else {
+		} else {
 			Log.i(TAG, "Continue download task: " + key);
 			DownloadNovelDetailsTask tempTask = (DownloadNovelDetailsTask) LNReaderApplication.getInstance().getTask(key);
-			if(tempTask != null) {
+			if (tempTask != null) {
 				downloadTask = tempTask;
 				downloadTask.owner = this;
 			}
 			toggleProgressBar(true);
 		}
 	}
-	
+
 	@SuppressLint("NewApi")
 	private void executeAddTask(PageModel novel) {
 		addTask = new AddNovelTask(this);
 		String key = DisplayLightNovelDetailsActivity.TAG + ":Add:" + novel.getPage();
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
-		if(isAdded) {
-			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				addTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] {novel});
+		if (isAdded) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				addTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] { novel });
 			else
-				addTask.execute(new PageModel[] {novel});
-		}
-		else {
+				addTask.execute(new PageModel[] { novel });
+		} else {
 			Log.i(TAG, "Continue Add task: " + key);
 			AddNovelTask tempTask = (AddNovelTask) LNReaderApplication.getInstance().getTask(key);
-			if(tempTask != null) {
+			if (tempTask != null) {
 				addTask = tempTask;
 				addTask.owner = this;
 			}
 			toggleProgressBar(true);
 		}
 	}
-	
+
+	@Override
 	public void toggleProgressBar(boolean show) {
-//		if(show) {
-//			dialog = ProgressDialog.show(this, "Teaser List", "Loading. Please wait...", true);
-//			dialog.getWindow().setGravity(Gravity.CENTER);
-//			dialog.setCanceledOnTouchOutside(true);
-//		}
-//		else {
-//			dialog.dismiss();
-//		}
-		if(show) {
+		// if(show) {
+		// dialog = ProgressDialog.show(this, "Teaser List", "Loading. Please wait...", true);
+		// dialog.getWindow().setGravity(Gravity.CENTER);
+		// dialog.setCanceledOnTouchOutside(true);
+		// }
+		// else {
+		// dialog.dismiss();
+		// }
+		if (show) {
 			loadingText.setText("Loading List, please wait...");
 			loadingText.setVisibility(TextView.VISIBLE);
 			loadingBar.setVisibility(ProgressBar.VISIBLE);
 			getListView().setVisibility(ListView.GONE);
-		}
-		else {
+		} else {
 			loadingText.setVisibility(TextView.GONE);
 			loadingBar.setVisibility(ProgressBar.GONE);
 			getListView().setVisibility(ListView.VISIBLE);
 		}
 	}
 
+	@Override
 	public void setMessageDialog(ICallbackEventData message) {
-//		if(dialog.isShowing())
-//			dialog.setMessage(message.getMessage());
-		if(loadingText.getVisibility() == TextView.VISIBLE)
+		// if(dialog.isShowing())
+		// dialog.setMessage(message.getMessage());
+		if (loadingText.getVisibility() == TextView.VISIBLE)
 			loadingText.setText(message.getMessage());
 	}
 
+	@Override
 	public void getResult(AsyncTaskResult<?> result) {
 		Exception e = result.getError();
-		if(e == null) {
+		if (e == null) {
 			// from LoadNovelsTask
-			if(Util.isInstanceOf((ArrayList<?>)result.getResult(), PageModel.class)) {
+			if (Util.isInstanceOf((ArrayList<?>) result.getResult(), PageModel.class)) {
 				@SuppressWarnings("unchecked")
 				ArrayList<PageModel> list = (ArrayList<PageModel>) result.getResult();
-				if(list != null) {
+				if (list != null) {
 					adapter.clear();
 					adapter.addAll(list);
 					toggleProgressBar(false);
 				}
 			}
 			// from DownloadNovelDetailsTask
-			else if(Util.isInstanceOf((ArrayList<?>)result.getResult(), NovelCollectionModel.class)) {
+			else if (Util.isInstanceOf((ArrayList<?>) result.getResult(), NovelCollectionModel.class)) {
 				setMessageDialog(new CallbackEventData("Download complete."));
 				@SuppressWarnings("unchecked")
 				ArrayList<NovelCollectionModel> list = (ArrayList<NovelCollectionModel>) result.getResult();
@@ -374,12 +378,12 @@ public class DisplayTeaserListActivity extends SherlockListActivity implements I
 						PageModel page = novelCol.getPageModel();
 						boolean found = false;
 						for (PageModel temp : adapter.data) {
-							if(temp.getPage().equalsIgnoreCase(page.getPage())) {
+							if (temp.getPage().equalsIgnoreCase(page.getPage())) {
 								found = true;
 								break;
 							}
 						}
-						if(!found) {
+						if (!found) {
 							adapter.data.add(page);
 						}
 					} catch (Exception e1) {
@@ -389,45 +393,46 @@ public class DisplayTeaserListActivity extends SherlockListActivity implements I
 				adapter.notifyDataSetChanged();
 				toggleProgressBar(false);
 			}
-		}
-		else {
+		} else {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
 			Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
-		}		
-	}
-	
-	private boolean getColorPreferences(){
-    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
+		}
 	}
 
-	public void updateProgress(String id, int current, int total, String messString){
-		double cur = (double)current;
-		double tot = (double)total;
-		double result = (cur/tot)*100;
-		LNReaderApplication.getInstance().updateDownload(id, (int)result, messString);
+	private boolean getColorPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 
-	public boolean downloadListSetup(String id, String toastText, int type){
+	@Override
+	public void updateProgress(String id, int current, int total, String messString) {
+		double cur = current;
+		double tot = total;
+		double result = (cur / tot) * 100;
+		LNReaderApplication.getInstance().updateDownload(id, (int) result, messString);
+	}
+
+	@Override
+	public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
 		boolean exists = false;
 		String name = touchedForDownload;
 		if (type == 0) {
 			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
 				exists = true;
 				Toast.makeText(this, getResources().getString(R.string.download_on_queue), Toast.LENGTH_SHORT).show();
-			}
-			else {
-				Toast.makeText(this,getResources().getString(R.string.downloading) +name+".", Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(this, getResources().getString(R.string.downloading) + name + ".", Toast.LENGTH_SHORT).show();
 				LNReaderApplication.getInstance().addDownload(id, name);
 			}
-		}
-		else if (type == 1) {
+		} else if (type == 1) {
 			Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show();
-		}
-		else if (type == 2) {
-			Toast.makeText(this, LNReaderApplication.getInstance().getDownloadDescription(id)+"'s download finished!", Toast.LENGTH_SHORT).show();
+		} else if (type == 2) {
+			String message = String.format("%s's download finished!", LNReaderApplication.getInstance().getDownloadDescription(id));
+			if (hasError)
+				message = String.format("%s's download finished with error(s)!", LNReaderApplication.getInstance().getDownloadDescription(id));
+
+			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 			LNReaderApplication.getInstance().removeDownload(id);
 		}
 		return exists;
 	}
 }
-

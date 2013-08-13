@@ -218,4 +218,8 @@
     <string name="menu_bookmark_delete_selected">Delete Selected</string>
     <string name="delete_this_volume">Delete this Volume</string>
     <string name="delete_this_chapter">Delete this Chapter</string>
+    <string name="pref_timeout_summary">Time to wait until download timed out: %1$s second(s)</string>
+    <string name="pref_timeout_title">Time Out</string>
+    <string name="pref_retry_title">Download Retry</string>
+    <string name="pref_retry_summary">Times to retry before giving up: %1$s time(s)</string>
 </resources>

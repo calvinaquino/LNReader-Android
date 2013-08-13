@@ -17,22 +17,24 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 	public volatile IAsyncTaskOwner owner;
 	private int currentPart = 0;
 	private int totalParts = 0;
-	private String taskId;
-	
+	private final String taskId;
+
 	public DownloadNovelDetailsTask(IAsyncTaskOwner owner) {
 		this.owner = owner;
 		this.taskId = this.toString();
 	}
+
 	@Override
-	protected void onPreExecute (){
+	protected void onPreExecute() {
 		// executed on UI thread.
-//		owner.toggleProgressBar(true);
+		// owner.toggleProgressBar(true);
 		boolean exists = false;
-		exists = owner.downloadListSetup(this.taskId,null,0);
-		if (exists) this.cancel(true);
+		exists = owner.downloadListSetup(this.taskId, null, 0, false);
+		if (exists)
+			this.cancel(true);
 	}
-	
-	
+
+	@Override
 	public void onCallback(ICallbackEventData message) {
 		publishProgress(message);
 	}
@@ -46,7 +48,7 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 			try {
 				publishProgress(new CallbackEventData("Downloading chapter list for: " + pageModel.getTitle()));
 				NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetailsFromInternet(pageModel, this);
-				Log.d("DownloadNovelDetailsTask", "Downloaded: " + novelCol.getPage());				
+				Log.d("DownloadNovelDetailsTask", "Downloaded: " + novelCol.getPage());
 				result.add(novelCol);
 			} catch (Exception e) {
 				Log.e("DownloadNovelDetailsTask", "Failed to download novel details for " + pageModel.getPage() + ": " + e.getMessage(), e);
@@ -55,17 +57,17 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 		}
 		return new AsyncTaskResult<ArrayList<NovelCollectionModel>>(result);
 	}
-	
+
 	@Override
-	protected void onProgressUpdate (ICallbackEventData... values){
-		//executed on UI thread.
+	protected void onProgressUpdate(ICallbackEventData... values) {
+		// executed on UI thread.
 		owner.setMessageDialog(values[0]);
 		owner.updateProgress(this.taskId, currentPart, totalParts, values[0].getMessage());
 	}
-	
+
 	@Override
 	protected void onPostExecute(AsyncTaskResult<ArrayList<NovelCollectionModel>> result) {
 		owner.getResult(result);
-		owner.downloadListSetup(this.taskId,null, 2);
+		owner.downloadListSetup(this.taskId, null, 2, result.getError() != null ? true : false);
 	}
 }

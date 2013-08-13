@@ -5,8 +5,12 @@ import com.erakk.lnreader.helper.AsyncTaskResult;
 
 public interface IAsyncTaskOwner {
 	void updateProgress(String id, int current, int total, String message);
-	boolean downloadListSetup(String id, String toastText, int type);
+
+	boolean downloadListSetup(String id, String toastText, int type, boolean hasError);
+
 	void toggleProgressBar(boolean show);
+
 	void setMessageDialog(ICallbackEventData message);
+
 	void getResult(AsyncTaskResult<?> result);
 }

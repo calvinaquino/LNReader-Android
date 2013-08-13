@@ -196,7 +196,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 	}
 
 	@Override
-	public boolean downloadListSetup(String id, String toastText, int type) {
+	public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
 		// TODO Auto-generated method stub
 		return false;
 	}

@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.DownloadCallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -30,15 +31,15 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 
 	@Override
 	protected AsyncTaskResult<ImageModel> doInBackground(URL... urls) {
-		try{
+		try {
 			ImageModel image = downloadImage(urls[0]);
-			return new AsyncTaskResult<ImageModel>(image);	         
+			return new AsyncTaskResult<ImageModel>(image);
 		} catch (Exception e) {
 			return new AsyncTaskResult<ImageModel>(e);
 		}
 	}
 
-	public ImageModel downloadImage(URL url) throws Exception{
+	public ImageModel downloadImage(URL url) throws Exception {
 		Log.d(TAG, "Start Downloading: " + url.toString());
 		InputStream input = null;
 		OutputStream output = null;
@@ -51,10 +52,9 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		String path = decodedUrl.substring(0, decodedUrl.lastIndexOf("/"));
 		File cacheDir = new File(path);
 
-		if(cacheDir.mkdirs() || cacheDir.isDirectory()) {
+		if (cacheDir.mkdirs() || cacheDir.isDirectory()) {
 			Log.d(TAG, "Path to: " + path);
-		}
-		else {
+		} else {
 			Log.e(TAG, "Failed to create Path: " + path);
 		}
 
@@ -64,11 +64,13 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		Log.d(TAG, "Start downloading image: " + url);
 
 		// remove temp file if exist
-		if(tempFilename.exists()) {
+		if (tempFilename.exists()) {
 			tempFilename.delete();
 		}
 
 		URLConnection connection = url.openConnection();
+		connection.setConnectTimeout(UIHelper.GetIntFromPreferences(Constants.PREF_TIMEOUT, 60) * 1000);
+		connection.setReadTimeout(UIHelper.GetIntFromPreferences(Constants.PREF_TIMEOUT, 60) * 1000);
 		connection.connect();
 
 		// this will be useful so that you can show a typical 0-100% progress bar
@@ -77,23 +79,22 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 
 		// check saved filesize if already downloaded
 		boolean download = true;
-		if(decodedFile.exists()) {
-			if(decodedFile.length() == fileLength) {
+		if (decodedFile.exists()) {
+			if (decodedFile.length() == fileLength) {
 				download = false;
 				Log.d(TAG, "File exists: " + decodedUrl + " Size: " + fileLength);
-			}
-			else {
+			} else {
 				decodedFile.delete();
 				Log.d(TAG, "File exists but different size: " + decodedUrl + " " + decodedFile.length() + "!=" + fileLength);
 			}
 		}
-		if(download) {
-			for(int i = 0 ; i < Constants.IMAGE_DOWNLOAD_RETRY; ++i) {
-				try{
+		if (download) {
+			for (int i = 0; i < UIHelper.GetIntFromPreferences(Constants.PREF_RETRY, 3); ++i) {
+				try {
 					// download the file
 					input = new BufferedInputStream(url.openStream());
 					output = new FileOutputStream(tempFilename);
-										
+
 					byte data[] = new byte[1024];
 					long total = 0;
 					int count;
@@ -102,37 +103,37 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 						// publishing the progress....
 						int progress = (int) (total * 100 / fileLength);
 						publishProgress(progress);
-		
-						//via notifier, C# style :)
-						if(notifier != null) {
+
+						// via notifier, C# style :)
+						if (notifier != null) {
 							DownloadCallbackEventData message = new DownloadCallbackEventData();
 							message.setUrl(url.toString());
 							message.setTotalSize(fileLength);
 							message.setDownloadedSize(total);
 							message.setFilePath(decodedUrl);
-							notifier.onCallback(message);//"Downloading: " + url + "\nProgress: " + progress + "%");
+							notifier.onCallback(message);// "Downloading: " + url + "\nProgress: " + progress + "%");
 						}
-						//Log.d(TAG, "Downloading: " + url + " " + progress + "%");
+						// Log.d(TAG, "Downloading: " + url + " " + progress + "%");
 						output.write(data, 0, count);
 					}
 					Log.d(TAG, "Filesize: " + total);
-					if(total > 0) break;
-				} catch(Exception ex) {
-					if(i > Constants.IMAGE_DOWNLOAD_RETRY) {
+					if (total > 0)
+						break;
+				} catch (Exception ex) {
+					if (i > UIHelper.GetIntFromPreferences(Constants.PREF_RETRY, 3)) {
 						Log.e(TAG, "Failed to download: " + url.toString(), ex);
 						throw ex;
-					}
-					else {
-						if(notifier!=null) {
-							notifier.onCallback(new CallbackEventData("Downloading: " + url + "\nRetry: " + i+ "x"));
+					} else {
+						if (notifier != null) {
+							notifier.onCallback(new CallbackEventData("Downloading: " + url + "\nRetry: " + i + "x"));
 						}
 					}
-				}finally{	
-					if(output != null) {
+				} finally {
+					if (output != null) {
 						output.flush();
 						output.close();
 					}
-					if(input != null) {
+					if (input != null) {
 						input.close();
 					}
 				}
@@ -147,12 +148,9 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		image.setUrl(url);
 		image.setPath(filepath);
 		image.setLastCheck(new Date());
-		image.setLastUpdate(new Date());        
+		image.setLastUpdate(new Date());
 		Log.d(TAG, "Complete Downloading: " + url.toString());
 		return image;
 	}
-	
-	
+
 }
-
-

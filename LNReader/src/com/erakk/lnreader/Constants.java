@@ -24,13 +24,13 @@ public class Constants {
 
 	public static final String IMAGE_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files";
 
-	public static final int IMAGE_DOWNLOAD_RETRY = 3;
-	public static final int PAGE_DOWNLOAD_RETRY = 3;
+	// public static final int IMAGE_DOWNLOAD_RETRY = 3;
+	// public static final int PAGE_DOWNLOAD_RETRY = 3;
 
 	public static final String NOVEL_BOOK_DIVIDER = "%NOVEL_BOOK_DIVIDER%";
 	public static final int CHECK_INTERVAL = 7;
 
-	public static final int TIMEOUT = 60000;
+	// public static final int TIMEOUT = 60000;
 
 	public static final String TAG = "LNReader";
 
@@ -73,6 +73,8 @@ public class Constants {
 	public static final String PREF_UI_SELECTION = "ui_selection";
 	public static final String PREF_ORIENTATION = "orientation_lock";
 	public static final String PREF_LAST_UPDATE = "last_update";
+	public static final String PREF_TIMEOUT = "timeout";
+	public static final String PREF_RETRY = "retry";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 

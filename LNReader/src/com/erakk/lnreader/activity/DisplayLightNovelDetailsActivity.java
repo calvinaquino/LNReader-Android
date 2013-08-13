@@ -401,7 +401,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 	}
 
 	@Override
-	public boolean downloadListSetup(String id, String toastText, int type) {
+	public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
 		boolean exists = false;
 		String name = page.getTitle() + " " + touchedForDownload;
 		if (type == 0) {
@@ -415,7 +415,10 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		} else if (type == 1) {
 			Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show();
 		} else if (type == 2) {
-			Toast.makeText(this, page.getTitle() + " " + LNReaderApplication.getInstance().getDownloadDescription(id) + "'s download finished!", Toast.LENGTH_SHORT).show();
+			String message = String.format("%s %s's download finished!", page.getTitle(), LNReaderApplication.getInstance().getDownloadDescription(id));
+			if (hasError)
+				message = String.format("%s %s's download finished with error(s)!", page.getTitle(), LNReaderApplication.getInstance().getDownloadDescription(id));
+			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 			LNReaderApplication.getInstance().removeDownload(id);
 		}
 		return exists;
@@ -579,4 +582,5 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 	private boolean getStrechCoverPreference() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_STRETCH_COVER, false);
 	}
+
 }

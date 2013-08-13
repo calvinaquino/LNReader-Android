@@ -374,7 +374,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 	}
 
 	@Override
-	public boolean downloadListSetup(String id, String toastText, int type) {
+	public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
 		boolean exists = false;
 		if (page != null && !Util.isStringNullOrEmpty(page.getTitle())) {
 			String name = page.getTitle() + " " + touchedForDownload;
@@ -391,7 +391,10 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			} else if (type == 2) {
 				String downloadDescription = LNReaderApplication.getInstance().getDownloadDescription(id);
 				if (downloadDescription != null) {
-					Toast.makeText(getSherlockActivity(), page.getTitle() + " " + downloadDescription + "'s download finished!", Toast.LENGTH_SHORT).show();
+					String message = String.format("%s %s's download finished!", page.getTitle(), downloadDescription);
+					if (hasError)
+						message = String.format("%s %s's download finished with error(s)!", page.getTitle(), downloadDescription);
+					Toast.makeText(getSherlockActivity(), message, Toast.LENGTH_SHORT).show();
 				}
 				LNReaderApplication.getInstance().removeDownload(id);
 			}

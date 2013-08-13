@@ -63,60 +63,65 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			if (preference instanceof PreferenceScreen)
 				if (((PreferenceScreen) preference).getDialog() != null) {
 					/* If API Version >= 11 */
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) initializeActionBar((PreferenceScreen) preference);	
-					else ((PreferenceScreen)preference).getDialog().getWindow().getDecorView().setBackgroundDrawable(this.getWindow().getDecorView().getBackground().getConstantState().newDrawable());
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+						initializeActionBar((PreferenceScreen) preference);
+					else
+						((PreferenceScreen) preference).getDialog().getWindow().getDecorView().setBackgroundDrawable(this.getWindow().getDecorView().getBackground().getConstantState().newDrawable());
 				}
 
 		return false;
 
 	}
-	
+
 	/*
 	 * Action Bar doesn't inherit parent (on nested Preference Tree)
-	 * Reference : http://stackoverflow.com/questions/16374820/action-bar-home-button-not-functional-with-nested-preferencescreen
-	 * Because of DialogInterface and View have OnClickListener, I've changed manually it to android.view.View (@freedomofkeima)
+	 * Reference :
+	 * http://stackoverflow.com/questions/16374820/action-bar-home-button-not-functional-with-nested-preferencescreen
+	 * Because of DialogInterface and View have OnClickListener, I've changed manually it to android.view.View
+	 * (@freedomofkeima)
 	 */
 	/** Sets up the action bar for an {@link PreferenceScreen} */
 	@SuppressLint("NewApi")
 	public static void initializeActionBar(PreferenceScreen preferenceScreen) {
-	    final Dialog dialog = preferenceScreen.getDialog();
+		final Dialog dialog = preferenceScreen.getDialog();
 
-	    if (dialog != null) {
-	        // Initialize the action bar
-	        dialog.getActionBar().setDisplayHomeAsUpEnabled(true);
+		if (dialog != null) {
+			// Initialize the action bar
+			dialog.getActionBar().setDisplayHomeAsUpEnabled(true);
 
-	        // Apply custom home button area click listener to close the PreferenceScreen because PreferenceScreens are dialogs which swallow
-	        // events instead of passing to the activity
-	        // Related Issue: https://code.google.com/p/android/issues/detail?id=4611
-	        android.view.View homeBtn = dialog.findViewById(android.R.id.home);
+			// Apply custom home button area click listener to close the PreferenceScreen because PreferenceScreens are
+			// dialogs which swallow
+			// events instead of passing to the activity
+			// Related Issue: https://code.google.com/p/android/issues/detail?id=4611
+			android.view.View homeBtn = dialog.findViewById(android.R.id.home);
 
-	        if (homeBtn != null) {
-	            android.view.View.OnClickListener dismissDialogClickListener = new android.view.View.OnClickListener() {
-	                @Override
-	                public void onClick(android.view.View v) {
-	                    dialog.dismiss();
-	                }
-	            };
+			if (homeBtn != null) {
+				android.view.View.OnClickListener dismissDialogClickListener = new android.view.View.OnClickListener() {
+					@Override
+					public void onClick(android.view.View v) {
+						dialog.dismiss();
+					}
+				};
 
-	            // Prepare yourselves for some hacky programming
-	            ViewParent homeBtnContainer = homeBtn.getParent();
+				// Prepare yourselves for some hacky programming
+				ViewParent homeBtnContainer = homeBtn.getParent();
 
-	            // The home button is an ImageView inside a FrameLayout
-	            if (homeBtnContainer instanceof FrameLayout) {
-	                ViewGroup containerParent = (ViewGroup) homeBtnContainer.getParent();
-	                if (containerParent instanceof LinearLayout) {
-	                    // This view also contains the title text, set the whole view as clickable
-	                    ((LinearLayout) containerParent).setOnClickListener(dismissDialogClickListener);
-	                } else {
-	                    // Just set it on the home button
-	                    ((FrameLayout) homeBtnContainer).setOnClickListener(dismissDialogClickListener);
-	                }
-	            } else {
-	                // The 'If all else fails' default case
-	                homeBtn.setOnClickListener(dismissDialogClickListener);
-	            }
-	        }    
-	    }
+				// The home button is an ImageView inside a FrameLayout
+				if (homeBtnContainer instanceof FrameLayout) {
+					ViewGroup containerParent = (ViewGroup) homeBtnContainer.getParent();
+					if (containerParent instanceof LinearLayout) {
+						// This view also contains the title text, set the whole view as clickable
+						((LinearLayout) containerParent).setOnClickListener(dismissDialogClickListener);
+					} else {
+						// Just set it on the home button
+						((FrameLayout) homeBtnContainer).setOnClickListener(dismissDialogClickListener);
+					}
+				} else {
+					// The 'If all else fails' default case
+					homeBtn.setOnClickListener(dismissDialogClickListener);
+				}
+			}
+		}
 	}
 
 	@Override
@@ -505,6 +510,34 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				return true;
 			}
 		});
+
+		// time out
+		final Preference timeout = findPreference(Constants.PREF_TIMEOUT);
+		int timeoutValue = UIHelper.GetIntFromPreferences(Constants.PREF_TIMEOUT, 60);
+		timeout.setSummary(String.format(getResources().getString(R.string.pref_timeout_summary), timeoutValue));
+		timeout.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				int timeoutValue = Util.tryParseInt(newValue.toString(), 60);
+				timeout.setSummary(String.format(getResources().getString(R.string.pref_timeout_summary), timeoutValue));
+				return true;
+			}
+		});
+
+		// Retry
+		final Preference retry = findPreference(Constants.PREF_RETRY);
+		int retryValue = UIHelper.GetIntFromPreferences(Constants.PREF_RETRY, 3);
+		retry.setSummary(String.format(getResources().getString(R.string.pref_retry_summary), retryValue));
+		retry.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				int retryValue = Util.tryParseInt(newValue.toString(), 3);
+				retry.setSummary(String.format(getResources().getString(R.string.pref_retry_summary), retryValue));
+				return true;
+			}
+		});
 	}
 
 	private void setOrientation() {
@@ -606,7 +639,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	}
 
 	private void recreateUI() {
-		//UIHelper.Recreate(this);
+		// UIHelper.Recreate(this);
 		finish();
 		startActivity(getIntent());
 		UIHelper.CheckScreenRotation(this);
