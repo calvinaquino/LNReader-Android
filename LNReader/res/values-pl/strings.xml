@@ -5,7 +5,7 @@
     <string name="light_novels">Powieści</string>
     <string name="watch_list">Obserwowane</string>
     <string name="originals">Powieści własne</string>
-    <string name="alternative_language">Inny język</string>
+    <string name="alternative_language">W Innych językach</string>
     <string name="choose">Wybierz</string>
     <string name="all">Wszystkie</string>
     <string name="settings">Ustawienia</string>
@@ -13,12 +13,12 @@
     <string name="title_activity_display_settings">Ustawienia</string>
     <string name="title_activity_light_novel_chapters">Rozdziały powieści</string>
     <string name="title_activity_display_alternative_novels">Powieści w innych językach</string>
-    <string name="title_activity_display_alternative_novel_pager">Lista innych języków</string>
+    <string name="title_activity_display_alternative_novel_pager">Powieści w innych językach</string>
     <string name="novel_title">Tytuł</string>
     <string name="novel_cover">Okładka</string>
     <string name="novel_synopsys"></string>
     <string name="title_activity_display_synopsys">Zajawka powieści</string>
-    <string name="title_activity_display_novel_content">Zawartość powieści</string>
+    <string name="title_activity_display_novel_content">Treść powieści</string>
     <string name="invert_colors">Odwróć kolory</string>
     <string name="title_activity_display_image">Przegląd obrazów</string>
     <string name="novel_last_update">Ostatnia aktualizacja</string>
@@ -44,52 +44,24 @@
     <string name="set">Wybierz</string>
     <string name="cancel">Anuluj</string>
     <string name="cancel_task">Anuluj zadanie:</string>
-    <string name="bakatsuki_message">Before using this application, keep in mind that we, the developers of BakaTsuki EX, are not responsible for the content displayed by the application in any way. Therefore, you must read and agree to 
-
-the TLG Translation Common Agreement of Baka-Tsuki.org:\n\n</string>
+    <string name="bakatsuki_message">Before using this application, keep in mind that we, the developers of BakaTsuki EX, are not responsible for the content displayed by the application in any way. Therefore, you must read and agree to the TLG Translation Common Agreement of Baka-Tsuki.org:\n\n</string>
     <string name="bakatsuki_copyrights">\nTLG Translation Common Agreement v.0.4.1
-\n0) \"Wiki\" is defined as the site \"Baka\-Tsuki\" running on any variation of wiki-like content management package, as defined by The American Heritage® Dictionary of the English Language, Fourth Edition. Houghton Mifflin Company, 
-
-2004.
-\na) \"Work\" is defined as any material from the product/service their respective copyright holders hold including, but not limited to, scripts(translated and original), dialogue, illustrations, screenshots, animation, clips, sound, etc. When 
-
-the word \"translated\" is used before (a), (a) becomes \"translated and/or raw script\". b1) \"You\", \"your\" are defined as a copyright holder of the works as defined in (a) . b2) \"You\", \"your\" are defined as the submitter of the 
-
-translated works as defined in (a) . b3) \"You\", \"your\" are defined as the viewer of the works as defined in (a) . b4) \"we\" is defined as the owner of this wiki AND the translators of the works as defined in (a) . c) \"I\", \"me\", \"my\" are 
-
-defined as the owner of this wiki. d) \"licenced\" is defined as global and/or English publishing rights.
+\n0) \"Wiki\" is defined as the site \"Baka\-Tsuki\" running on any variation of wiki-like content management package, as defined by The American Heritage® Dictionary of the English Language, Fourth Edition. Houghton Mifflin Company, 2004.
+\na) \"Work\" is defined as any material from the product/service their respective copyright holders hold including, but not limited to, scripts(translated and original), dialogue, illustrations, screenshots, animation, clips, sound, etc. When the word \"translated\" is used before (a), (a) becomes \"translated and/or raw script\". b1) \"You\", \"your\" are defined as a copyright holder of the works as defined in (a) . b2) \"You\", \"your\" are defined as the submitter of the translated works as defined in (a) . b3) \"You\", \"your\" are defined as the viewer of the works as defined in (a) . b4) \"we\" is defined as the owner of this wiki AND the translators of the works as defined in (a) . c) \"I\", \"me\", \"my\" are defined as the owner of this wiki. d) \"licenced\" is defined as global and/or English publishing rights.
 \nBy entering this wiki(0) you agree to the following conditions. If you do not agree with this agreement, portion and/or full, please leave this wiki(0) now.
 \nSection A.1 All works(a), original and/or translated, belong to their respective copyright holders in their respective countries.
-\nThis wiki(0) is done with the intention to A) Improve my(c) English writing skills. B) To provide a storage space for fans of the translated works(a) so that the fans can promote these works(a) C) To attract more readers to make English 
-
-licensing(d) possible.
-\nIf you(b1) feel your(b1) rights are being violated due to the usage of this wiki up to, but not limited by the presentation/broadcast/showing/distribution of works(a) in their original and/or translated full and/or portion of the work(a), 
-
-please notify me(c) as soon as possible.
+\nThis wiki(0) is done with the intention to A) Improve my(c) English writing skills. B) To provide a storage space for fans of the translated works(a) so that the fans can promote these works(a) C) To attract more readers to make English licensing(d) possible.
+\nIf you(b1) feel your(b1) rights are being violated due to the usage of this wiki up to, but not limited by the presentation/broadcast/showing/distribution of works(a) in their original and/or translated full and/or portion of the work(a), please notify me(c) as soon as possible.
 \nAll works(a) will be deleted without warning upon request by their copyright holders.
 \n
-\nSection A.2 Under no circumstances would the visitors of this wiki(0), the translators of the works(a), the owner of this wiki(c,0), or the owner of this server assume any responsibilities for any damages that may have been caused by this 
-
-wiki(0). Furthermore, by agreeing to this agreement, you(b1) agree to the notion that while I(c) did everything I(c) could to honor the copyrights of the work(a), accident can happen.
-\nSection B Under no circumstances would you(b2) 1. submit works(a) that are licenced(d) in the country the server and/or the submitter is located in. 2. submit translated works(a) copied directly from an unauthorized source such as, but 
-
-not limited to, online, written sources etc. . If you(b2) submit works(a) that have been authorized by their rights holder, permission, in the form of written/electronic/printed must be available upon request. All translated works(a) rights are 
-
-properties of their respective translators. By submitting translated works(a) to this wiki(0) you(b2) agree that All works(a) will be deleted without warning upon request by the copyright holders..
-\nSection C Under no circumstances would you(b3) 1. take full and/or portion of the (translated) works(a) in this wiki(0) and use them(a) to engage in any commercial activities such as, but not limited to, rent, sell, print, auction, broadcast 
-
-etc. 2. claim translated works(a) in this wiki(0) as your(b3) own products of translation unless you(b3) are qualified as defined in (b2).
-\nSection D You(b3) agree with the notion that owner of this wiki(0), and all the submitters as defined in (b2), take no responsibility of any inappropriate material such as, but not limited to, pornography, violence, and offensive slurs. 
-
-Furthermore, you(b3) agree with the notion that the owner of this wiki(0), and all the submitters as defined in (b2), by good wills try their best to moderate any material that may be suspected to be inappropriate in \"the owner of this wiki(0), 
-
-and all the submitters as defined in (b2)\"\'s countries UNLESS such material is deemed necessary solely by the merit of preserving the integrity of such work(a). In this case, the consideration of integrity of such work(a) may take precedent 
-
-before other considerations as mentioned previously in Section D.
+\nSection A.2 Under no circumstances would the visitors of this wiki(0), the translators of the works(a), the owner of this wiki(c,0), or the owner of this server assume any responsibilities for any damages that may have been caused by this wiki(0). Furthermore, by agreeing to this agreement, you(b1) agree to the notion that while I(c) did everything I(c) could to honor the copyrights of the work(a), accident can happen.
+\nSection B Under no circumstances would you(b2) 1. submit works(a) that are licenced(d) in the country the server and/or the submitter is located in. 2. submit translated works(a) copied directly from an unauthorized source such as, but not limited to, online, written sources etc. . If you(b2) submit works(a) that have been authorized by their rights holder, permission, in the form of written/electronic/printed must be available upon request. All translated works(a) rights are properties of their respective translators. By submitting translated works(a) to this wiki(0) you(b2) agree that All works(a) will be deleted without warning upon request by the copyright holders..
+\nSection C Under no circumstances would you(b3) 1. take full and/or portion of the (translated) works(a) in this wiki(0) and use them(a) to engage in any commercial activities such as, but not limited to, rent, sell, print, auction, broadcast etc. 2. claim translated works(a) in this wiki(0) as your(b3) own products of translation unless you(b3) are qualified as defined in (b2).
+\nSection D You(b3) agree with the notion that owner of this wiki(0), and all the submitters as defined in (b2), take no responsibility of any inappropriate material such as, but not limited to, pornography, violence, and offensive slurs. Furthermore, you(b3) agree with the notion that the owner of this wiki(0), and all the submitters as defined in (b2), by good wills try their best to moderate any material that may be suspected to be inappropriate in \"the owner of this wiki(0), and all the submitters as defined in (b2)\"\'s countries UNLESS such material is deemed necessary solely by the merit of preserving the integrity of such work(a). In this case, the consideration of integrity of such work(a) may take precedent before other considerations as mentioned previously in Section D.
 \n
 \nFinally, Have Fun! :D
 \nthelastguardian \- May 26, 2008</string>
-    <string name="content_refresh">Odświerz zawartość</string>
+    <string name="content_refresh">Odświerz treść</string>
     <string name="content_previous">Poprzedni</string>
     <string name="content_next">Następny</string>
     <string name="content_toc">Idź do</string>
@@ -100,12 +72,12 @@ before other considerations as mentioned previously in Section D.
     <string name="details_refresh">Odświerz</string>
     <string name="details_download_all">Pobierz wszystkie rozdziały</string>
     <string name="novel_list_refresh">Odświerz</string>
-    <string name="novel_list_manual_add">Dodaj ręcznie</string>
-    <string name="novel_list_download_all">Pobierz wszystkie opisy</string>
+    <string name="novel_list_manual_add">Dodaj powieść ręcznie</string>
+    <string name="novel_list_download_all">Pobierz opisy powieści</string>
     <string name="update_interval_summary">Wybierz częstość aktualizacji: %1$s</string>
     <string name="update_interval_title">Częstość aktualizacji</string>
     <string name="selected_mode">Wybierz tryb: %1$s</string>
-    <string name="selected_language">Wybierz język: %1$s.\n Zalecane ponowne uruchomienie aplikacji.</string>
+    <string name="selected_language">Wybrany język: %1$s.\n Po zmianie zalecane ponowne uruchomienie aplikacji.</string>
     <string name="last_run">Ostatnio uruchomione: %1$s\nStatus: %2$s</string>
     <string name="none">Brak</string>
     <string name="unknown">Nieznane</string>
@@ -168,7 +140,7 @@ before other considerations as mentioned previously in Section D.
     <string name="custom_css_path_title">Własna ścieżka CSS</string>
     <string name="custom_css_path_summary">Ścieżka CSS używana podczas czytania.</string>
     <string name="force_justified_title">Wymuś wyjustowanie</string>
-    <string name="force_justified_summary">Wymuś wyjustowanie dla zawartości powieści. Konieczne ponowne wczytanie rozdziału.</string>
+    <string name="force_justified_summary">Wymuś wyjustowanie tekstu powieści. Konieczne ponowne wczytanie rozdziału.</string>
     <string name="line_spacing_title">Linia odstępu</string>
     <string name="line_spacing_summary">Powiększ linię odstepu pomiędzy wierszami. Im większa liczba tym większy odstęp. Konieczne ponowne wczytanie rozdziału.</string>
     <string name="line_spacing_dialog_content">Wprowadź procentową wartość odstępu. (Domyślnie 150%)</string>
@@ -209,7 +181,7 @@ before other considerations as mentioned previously in Section D.
     <string name="last_available_chapter">Ostatni dostępny rozdział.</string>
     <string name="error_parsing_url">Błąd podczas przetwarzania URL</string>
     <string name="background_task_load">Ładowanie w tle aktywne...</string>
-    <string name="content_may_updated">Zawartość może mieć aktualizację</string>
+    <string name="content_may_updated">Treść może być nieaktualna</string>
     <string name="css_layout_not_exist">Własny CSS nie został znaleziony. Przywrócono domyślny.</string>
     <string name="clear_this_volume">Usuń rozdział</string>
     <string name="mark_volume_read">Oznacz jako Przeczytany</string>
@@ -229,11 +201,11 @@ before other considerations as mentioned previously in Section D.
     <string name="disagree">Opuść Apkę</string>
     <string name="watched_light_novels">Obserwowane powieści</string>
     <string name="add_novel_main">Dodaj powieść (Main)</string>
-    <string name="last_update">Ostatnia aktualizacja</string>
-    <string name="last_check">Ostatnie sprawdzanie</string>
+    <string name="last_update">Ostatnia aktualizacja: </string>
+    <string name="last_check">Ostatnio sprawdzano: </string>
     <string name="updates">Aktualizacje</string>
-    <string name="alternative_language_summary">Wybierz alternatywny język powieści.</string>
-    <string name="alternative_language_title">Alternatywny język powieści</string>
+    <string name="alternative_language_summary">Powieści w tłumaczeniach na inne języki.</string>
+    <string name="alternative_language_title">Dodatkowe języki powieści:</string>
     <string name="no_selected_language">Nie wybrano języka!</string>
     <string name="category_search_language">Szukaj w językach</string>
     <string name="enabled">Włączono</string>
@@ -246,8 +218,8 @@ before other considerations as mentioned previously in Section D.
     <string name="menu_bookmark_delete_selected">Usuń Wybrane</string>
     <string name="delete_this_volume">Usuń ten tom</string>
     <string name="delete_this_chapter">Usuń ten rozdział</string>
-    <string name="pref_timeout_summary">Time to wait until download timed out: %1$s second(s)</string>
-    <string name="pref_timeout_title">Time Out</string>
-    <string name="pref_retry_title">Download Retry</string>
-    <string name="pref_retry_summary">Times to retry before giving up: %1$s time(s)</string>
+	<string name="pref_timeout_summary">Przerwanie pobierania po: %1$s sekundach(s)</string>
+    <string name="pref_timeout_title">Przerwano</string>
+    <string name="pref_retry_title">Próby pobierania</string>
+    <string name="pref_retry_summary">Ilość prób pobierania: %1$s razy</string>
 </resources>
