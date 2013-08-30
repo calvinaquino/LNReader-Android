@@ -63,10 +63,14 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			if (preference instanceof PreferenceScreen)
 				if (((PreferenceScreen) preference).getDialog() != null) {
 					/* If API Version >= 11 */
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-						initializeActionBar((PreferenceScreen) preference);
-					else
+					try {
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+						initializeActionBar((PreferenceScreen) preference);	
+					} else
 						((PreferenceScreen) preference).getDialog().getWindow().getDecorView().setBackgroundDrawable(this.getWindow().getDecorView().getBackground().getConstantState().newDrawable());
+					} catch (NullPointerException e) {
+						Log.e(TAG, "Null Pointer Exception in PreferenceScreen Child.");
+					}
 				}
 
 		return false;
