@@ -186,7 +186,7 @@ public class NovelsDao {
 				int retry = 0;
 				while (retry < getRetry()) {
 					try {
-						Response response = Jsoup.connect(url).timeout(getTimeout()).execute();
+						Response response = Jsoup.connect(url).timeout(getTimeout(retry)).execute();
 						Document doc = response.parse();
 
 						list = BakaTsukiParser.ParseNovelList(doc);
@@ -306,7 +306,7 @@ public class NovelsDao {
 		int retry = 0;
 		while (retry < getRetry()) {
 			try {
-				Response response = Jsoup.connect(url).timeout(getTimeout()).execute();
+				Response response = Jsoup.connect(url).timeout(getTimeout(retry)).execute();
 				Document doc = response.parse();
 
 				list = BakaTsukiParser.ParseTeaserList(doc);
@@ -408,7 +408,7 @@ public class NovelsDao {
 		int retry = 0;
 		while (retry < getRetry()) {
 			try {
-				Response response = Jsoup.connect(url).timeout(getTimeout()).execute();
+				Response response = Jsoup.connect(url).timeout(getTimeout(retry)).execute();
 				Document doc = response.parse();
 
 				list = BakaTsukiParser.ParseOriginalList(doc);
@@ -516,7 +516,7 @@ public class NovelsDao {
 		int retry = 0;
 		while (retry < getRetry()) {
 			try {
-				Response response = Jsoup.connect(url).timeout(getTimeout()).execute();
+				Response response = Jsoup.connect(url).timeout(getTimeout(retry)).execute();
 				Document doc = response.parse();
 				list = BakaTsukiParserAlternative.ParseAlternativeList(doc, language);
 				Log.d(TAG, "Found from internet: " + list.size() + " " + language + " Novel");
@@ -629,7 +629,7 @@ public class NovelsDao {
 				}
 				String encodedTitle = Util.UrlEncode(page.getPage());
 				String fullUrl = "http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=" + encodedTitle;
-				Response response = Jsoup.connect(fullUrl).timeout(getTimeout()).execute();
+				Response response = Jsoup.connect(fullUrl).timeout(getTimeout(retry)).execute();
 				PageModel pageModel = null;
 				String lang = page.getLanguage();
 				if (lang != null)
@@ -715,7 +715,7 @@ public class NovelsDao {
 				}
 				String encodedTitle = Util.UrlEncode(page.getPage());
 				String fullUrl = Constants.BASE_URL + "/project/index.php?action=render&title=" + encodedTitle;
-				Response response = Jsoup.connect(fullUrl).timeout(getTimeout()).execute();
+				Response response = Jsoup.connect(fullUrl).timeout(getTimeout(retry)).execute();
 				Document doc = response.parse();
 				/*
 				 * Add your section of alternative language here, create own
@@ -745,34 +745,7 @@ public class NovelsDao {
 
 			// Novel details' Page Model
 			if (novel != null) {
-				// comment out because have teaser now...
-				// page.setParent("Main_Page"); // insurance
-
-				// get the last update time from internet
-				if (notifier != null) {
-					notifier.onCallback(new CallbackEventData("Getting novel information for: " + page.getPage()));
-				}
-				PageModel novelPageTemp = getPageModelFromInternet(page, notifier);
-				if (novelPageTemp != null) {
-					page.setLastUpdate(novelPageTemp.getLastUpdate());
-					page.setLastCheck(new Date());
-					novel.setLastUpdate(novelPageTemp.getLastUpdate());
-					novel.setLastCheck(new Date());
-				} else {
-					page.setLastUpdate(new Date(0));
-					page.setLastCheck(new Date());
-					novel.setLastUpdate(new Date(0));
-					novel.setLastCheck(new Date());
-				}
-				// save the changes
-				synchronized (dbh) {
-					SQLiteDatabase db = dbh.getWritableDatabase();
-					try {
-						page = PageModelHelper.insertOrUpdatePageModel(db, page, true);
-					} finally {
-						db.close();
-					}
-				}
+				page = updateNovelDetailsPageModel(page, notifier, novel);
 
 				synchronized (dbh) {
 					// insert to DB and get saved value
@@ -813,6 +786,38 @@ public class NovelsDao {
 			}
 		}
 		return novel;
+	}
+
+	public PageModel updateNovelDetailsPageModel(PageModel page, ICallbackNotifier notifier, NovelCollectionModel novel) throws Exception {
+		// comment out because have teaser now...
+		// page.setParent("Main_Page"); // insurance
+
+		// get the last update time from internet
+		if (notifier != null) {
+			notifier.onCallback(new CallbackEventData("Getting novel information for: " + page.getPage()));
+		}
+		PageModel novelPageTemp = getPageModelFromInternet(page, notifier);
+		if (novelPageTemp != null) {
+			page.setLastUpdate(novelPageTemp.getLastUpdate());
+			page.setLastCheck(new Date());
+			novel.setLastUpdate(novelPageTemp.getLastUpdate());
+			novel.setLastCheck(new Date());
+		} else {
+			page.setLastUpdate(new Date(0));
+			page.setLastCheck(new Date());
+			novel.setLastUpdate(new Date(0));
+			novel.setLastCheck(new Date());
+		}
+		// save the changes
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			try {
+				page = PageModelHelper.insertOrUpdatePageModel(db, page, true);
+			} finally {
+				db.close();
+			}
+		}
+		return page;
 	}
 
 	public PageModel getUpdateInfo(PageModel pageModel, ICallbackNotifier notifier) throws Exception {
@@ -864,7 +869,7 @@ public class NovelsDao {
 				try {
 					// Log.d(TAG, "Trying to get: " + baseUrl + titles);
 					String url = baseUrl + titles;
-					Response response = Jsoup.connect(url).timeout(getTimeout()).execute();
+					Response response = Jsoup.connect(url).timeout(getTimeout(retry)).execute();
 					Document doc = response.parse();
 					ArrayList<PageModel> updatedPageModels = BakaTsukiParser.parsePageAPI(checkedPageModel, doc, url);
 					resultPageModel.addAll(updatedPageModels);
@@ -975,8 +980,7 @@ public class NovelsDao {
 		while (retry < getRetry()) {
 			try {
 				String encodedUrl = Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&redirects=yes&page=" + Util.UrlEncode(page.getPage());
-				;
-				Response response = Jsoup.connect(encodedUrl).timeout(getTimeout()).execute();
+				Response response = Jsoup.connect(encodedUrl).timeout(getTimeout(retry)).execute();
 				doc = response.parse();
 				content = BakaTsukiParser.ParseNovelContent(doc, page);
 				content.setUpdatingFromInternet(true);
@@ -1142,7 +1146,7 @@ public class NovelsDao {
 		int retry = 0;
 		while (retry < getRetry()) {
 			try {
-				Response response = Jsoup.connect(url).timeout(getTimeout()).execute();
+				Response response = Jsoup.connect(url).timeout(getTimeout(retry)).execute();
 				Document doc = response.parse();
 
 				// only return the full image url
@@ -1296,8 +1300,13 @@ public class NovelsDao {
 		return UIHelper.GetIntFromPreferences(Constants.PREF_RETRY, 3);
 	}
 
-	private int getTimeout() {
-		return UIHelper.GetIntFromPreferences(Constants.PREF_TIMEOUT, 60) * 1000;
+	private int getTimeout(int retry) {
+		boolean increaseRetry = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_INCREASE_RETRY, false);
+		int timeout = UIHelper.GetIntFromPreferences(Constants.PREF_TIMEOUT, 60) * 1000;
+		if (increaseRetry) {
+			timeout = timeout * (retry + 1);
+		}
+		return timeout;
 	}
 	// public void temp() {
 	// synchronized (dbh) {

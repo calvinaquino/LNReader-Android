@@ -75,6 +75,7 @@ public class Constants {
 	public static final String PREF_LAST_UPDATE = "last_update";
 	public static final String PREF_TIMEOUT = "timeout";
 	public static final String PREF_RETRY = "retry";
+	public static final String PREF_INCREASE_RETRY = "increase_retry";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 

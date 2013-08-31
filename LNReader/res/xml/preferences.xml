@@ -103,6 +103,7 @@
                 android:title="@string/consolidate_notification_title" />
             <EditTextPreference android:summary="@string/pref_timeout_summary" android:key="timeout" android:title="@string/pref_timeout_title" android:defaultValue="60"/>
             <EditTextPreference android:summary="@string/pref_retry_summary" android:title="@string/pref_retry_title" android:defaultValue="3" android:key="retry"/>
+            <CheckBoxPreference android:key="increase_retry" android:summary="@string/increase_retry_summary" android:title="@string/increase_retry_title" android:defaultValue="false"/>
         </PreferenceScreen>
         <PreferenceScreen
             android:key="reading_category"

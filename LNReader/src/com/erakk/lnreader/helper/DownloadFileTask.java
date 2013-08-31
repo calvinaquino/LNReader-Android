@@ -11,9 +11,11 @@ import java.net.URLDecoder;
 import java.util.Date;
 
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.DownloadCallbackEventData;
@@ -69,8 +71,10 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		}
 
 		URLConnection connection = url.openConnection();
-		connection.setConnectTimeout(UIHelper.GetIntFromPreferences(Constants.PREF_TIMEOUT, 60) * 1000);
-		connection.setReadTimeout(UIHelper.GetIntFromPreferences(Constants.PREF_TIMEOUT, 60) * 1000);
+
+		int timeout = UIHelper.GetIntFromPreferences(Constants.PREF_TIMEOUT, 60) * 1000;
+		connection.setConnectTimeout(timeout);
+		connection.setReadTimeout(timeout);
 		connection.connect();
 
 		// this will be useful so that you can show a typical 0-100% progress bar
@@ -91,6 +95,13 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		if (download) {
 			for (int i = 0; i < UIHelper.GetIntFromPreferences(Constants.PREF_RETRY, 3); ++i) {
 				try {
+					boolean increase_retry = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_INCREASE_RETRY, false);
+					if (increase_retry) {
+						timeout = timeout * (i + 1);
+						connection.setConnectTimeout(timeout);
+						connection.setReadTimeout(timeout);
+					}
+
 					// download the file
 					input = new BufferedInputStream(url.openStream());
 					output = new FileOutputStream(tempFilename);
@@ -152,5 +163,4 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		Log.d(TAG, "Complete Downloading: " + url.toString());
 		return image;
 	}
-
 }
