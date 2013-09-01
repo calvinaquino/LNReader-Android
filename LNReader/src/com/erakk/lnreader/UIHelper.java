@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -22,6 +23,8 @@ import android.view.Display;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+
+import com.erakk.lnreader.helper.Util;
 
 /*
  * Class for handling all the UI with API Warning ==> @SuppressLint("NewApi")
@@ -258,17 +261,26 @@ public class UIHelper {
 
 	public static void setLanguage(Context activity) {
 		/* Set starting language */
-		String locale = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getString(Constants.PREF_LANGUAGE, "en");
+		String locale = PreferenceManager.getDefaultSharedPreferences(activity).getString(Constants.PREF_LANGUAGE, "en");
 		setLanguage(activity, locale);
 	}
 
 	public static void setAlternativeLanguagePreferences(Context activity, String lang, boolean val) {
 		/* Set Alternative Language Novels preferences */
-		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext());
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity);
 
 		// write
 		SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putBoolean(lang, val);
 		editor.commit(); // save change
+	}
+
+	public static String getImageRoot(Context activity) {
+		String loc = PreferenceManager.getDefaultSharedPreferences(activity).getString(Constants.PREF_IMAGE_SAVE_LOC, "");
+		if (Util.isStringNullOrEmpty(loc)) {
+			Log.w(TAG, "Empty Path, use default path for image storage.");
+			loc = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files";
+		}
+		return loc;
 	}
 }

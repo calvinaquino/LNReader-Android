@@ -45,7 +45,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		Log.d(TAG, "Start Downloading: " + url.toString());
 		InputStream input = null;
 		OutputStream output = null;
-		String filepath = Constants.IMAGE_ROOT + url.getFile();
+		String filepath = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + url.getFile();
 		@SuppressWarnings("deprecation")
 		String decodedUrl = Util.sanitizeFilename(URLDecoder.decode(filepath));
 		Log.d(TAG, "Saving to: " + decodedUrl);

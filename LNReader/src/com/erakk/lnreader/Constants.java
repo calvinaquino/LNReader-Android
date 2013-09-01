@@ -3,7 +3,6 @@ package com.erakk.lnreader;
 import java.util.Date;
 
 import android.graphics.Color;
-import android.os.Environment;
 
 public class Constants {
 
@@ -22,7 +21,8 @@ public class Constants {
 	public static final String EXTRA_P_INDEX = "pIndex";
 	public static final String EXTRA_CALLER_ACTIVITY = "caller_activity";
 
-	public static final String IMAGE_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files";
+	// public static final String IMAGE_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath().toString() +
+	// "/Android/data/" + Constants.class.getPackage().getName() + "/files";
 
 	// public static final int IMAGE_DOWNLOAD_RETRY = 3;
 	// public static final int PAGE_DOWNLOAD_RETRY = 3;
@@ -76,6 +76,7 @@ public class Constants {
 	public static final String PREF_TIMEOUT = "timeout";
 	public static final String PREF_RETRY = "retry";
 	public static final String PREF_INCREASE_RETRY = "increase_retry";
+	public static final String PREF_IMAGE_SAVE_LOC = "save_location";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 

@@ -224,7 +224,7 @@
                 android:key="clear_image_cache"
                 android:summary="@string/clear_cache_summary"
                 android:title="@string/clear_cache_title" />
-            <Preference
+            <EditTextPreference
                 android:key="save_location"
                 android:title="@string/save_location_title" />
             <Preference

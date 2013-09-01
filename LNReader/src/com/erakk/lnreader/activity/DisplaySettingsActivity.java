@@ -64,10 +64,10 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				if (((PreferenceScreen) preference).getDialog() != null) {
 					/* If API Version >= 11 */
 					try {
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-						initializeActionBar((PreferenceScreen) preference);	
-					} else
-						((PreferenceScreen) preference).getDialog().getWindow().getDecorView().setBackgroundDrawable(this.getWindow().getDecorView().getBackground().getConstantState().newDrawable());
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+							initializeActionBar((PreferenceScreen) preference);
+						} else
+							((PreferenceScreen) preference).getDialog().getWindow().getDecorView().setBackgroundDrawable(this.getWindow().getDecorView().getBackground().getConstantState().newDrawable());
 					} catch (NullPointerException e) {
 						Log.e(TAG, "Null Pointer Exception in PreferenceScreen Child.");
 					}
@@ -355,8 +355,34 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			}
 		});
 
-		Preference defaultSaveLocation = findPreference("save_location");
-		defaultSaveLocation.setSummary(String.format(getResources().getString(R.string.download_image_to), Constants.IMAGE_ROOT));
+		final Preference defaultSaveLocation = findPreference("save_location");
+		defaultSaveLocation.setSummary(String.format(getResources().getString(R.string.download_image_to), UIHelper.getImageRoot(this)));
+		defaultSaveLocation.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				String newPath = (String) newValue;
+				if (Util.isStringNullOrEmpty(newPath)) {
+					newPath = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext());
+				}
+				File dir = new File(newPath);
+				if (!dir.exists()) {
+					Log.e(TAG, String.format("Directory %s not exists, trying to create dir.", newPath));
+					boolean result = dir.mkdirs();
+					if (result) {
+						defaultSaveLocation.setSummary(String.format(getResources().getString(R.string.download_image_to), newPath));
+						Log.i(TAG, String.format("Directory %s created.", newPath));
+						return true;
+					} else {
+						Log.e(TAG, String.format("Directory %s cannot be created.", newPath));
+						return false;
+					}
+				} else {
+					defaultSaveLocation.setSummary(String.format(getResources().getString(R.string.download_image_to), newPath));
+					return true;
+				}
+			}
+		});
 
 		Preference defaultDbLocation = findPreference("db_location");
 		defaultDbLocation.setSummary(String.format(getResources().getString(R.string.novel_database_to), DBHelper.getDbPath(this)));
@@ -550,13 +576,14 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	}
 
 	private void clearImages() {
+		final String imageRoot = UIHelper.getImageRoot(this);
 		UIHelper.createYesNoDialog(this, getResources().getString(R.string.clear_image_question), getResources().getString(R.string.clear_image_question2), new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				if (which == DialogInterface.BUTTON_POSITIVE) {
 					Toast.makeText(getApplicationContext(), "Clearing Images...", Toast.LENGTH_SHORT).show();
-					DeleteRecursive(new File(Constants.IMAGE_ROOT));
+					DeleteRecursive(new File(imageRoot));
 					Toast.makeText(getApplicationContext(), "Image cache cleared!", Toast.LENGTH_SHORT).show();
 				}
 			}

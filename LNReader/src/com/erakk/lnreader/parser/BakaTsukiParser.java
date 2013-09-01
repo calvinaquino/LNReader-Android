@@ -24,6 +24,8 @@ import org.jsoup.select.Elements;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
@@ -824,7 +826,7 @@ public class BakaTsukiParser {
 		content.setImages(images);
 
 		// clean up the text
-		String cleanedText = text.replace("src=\"/project/images/", "src=\"file://" + Constants.IMAGE_ROOT + "/project/images/");
+		String cleanedText = text.replace("src=\"/project/images/", "src=\"file://" + UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + "/project/images/");
 		// Log.d("Result", cleanedText);
 		content.setContent(cleanedText);
 
