@@ -94,8 +94,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			dialog.getActionBar().setDisplayHomeAsUpEnabled(true);
 
 			// Apply custom home button area click listener to close the PreferenceScreen because PreferenceScreens are
-			// dialogs which swallow
-			// events instead of passing to the activity
+			// dialogs which swallow events instead of passing to the activity
 			// Related Issue: https://code.google.com/p/android/issues/detail?id=4611
 			android.view.View homeBtn = dialog.findViewById(android.R.id.home);
 
@@ -137,9 +136,85 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		super.onCreate(savedInstanceState);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
-		// This man is deprecated but but we may want to be able to run on older
-		// API
+		// This man is deprecated but but we may want to be able to run on older API
 		addPreferencesFromResource(R.xml.preferences);
+
+		generalPreferences();
+
+		updatePreferences();
+
+		readingPreferences();
+
+		storagePreferences();
+
+		// TOS activity
+		Preference tos = findPreference("tos");
+		tos.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				try {
+					Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
+					intent.putExtra(Constants.EXTRA_PAGE, getResources().getString(R.string.copyright));
+					startActivity(intent);
+				} catch (Exception e) {
+					Log.e(TAG, getResources().getString(R.string.not_copyright), e);
+				}
+				return false;
+			}
+		});
+
+		// App Version
+		Preference appVersion = findPreference("app_version");
+		String version = "N/A";
+		try {
+			version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName + " (" + getPackageManager().getPackageInfo(getPackageName(), 0).versionCode + ")";
+		} catch (NameNotFoundException e) {
+			Log.e(TAG, "Cannot get version.", e);
+		}
+		appVersion.setSummary(version);
+
+		// Credits activity
+		Preference credits = findPreference("credits");
+		credits.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				try {
+					Intent intent = new Intent(getApplicationContext(), DisplayCreditActivity.class);
+					startActivity(intent);
+				} catch (Exception e) {
+					Log.e(TAG, getResources().getString(R.string.title_activity_display_credit), e);
+				}
+				return false;
+			}
+		});
+
+		// non preferences setup
+		LNReaderApplication.getInstance().setUpdateServiceListener(this);
+		isInverted = getColorPreferences();
+	}
+
+	@SuppressWarnings("deprecation")
+	private void generalPreferences() {
+		// UI Selection
+		final Preference uiMode = findPreference("ui_selection");
+		final String[] uiSelectionArray = getResources().getStringArray(R.array.uiSelection);
+		int uiSelectionValue = UIHelper.GetIntFromPreferences(Constants.PREF_UI_SELECTION, 0);
+		uiMode.setSummary(String.format(getResources().getString(R.string.selected_mode), uiSelectionArray[uiSelectionValue]));
+		uiMode.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				int uiSelectionValue = Util.tryParseInt(newValue.toString(), 0);
+				uiMode.setSummary(String.format(getResources().getString(R.string.selected_mode), uiSelectionArray[uiSelectionValue]));
+				return true;
+			}
+		});
+
+		setApplicationLanguage();
+
+		setAlternateLanguageList();
 
 		// Invert Color
 		Preference invertColors = findPreference(Constants.PREF_INVERT_COLOR);
@@ -152,43 +227,178 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			}
 		});
 
-		/*
-		 * A section to change Application Language
-		 * 
-		 * @freedomofkeima
-		 */
-		final Preference changeLanguages = findPreference(Constants.PREF_LANGUAGE);
-		final String[] languageSelectionArray = getResources().getStringArray(R.array.languageSelection);
-		final String[] localeArray = getResources().getStringArray(R.array.languageSelectionValues);
-		String languageSelectionValue = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getString(Constants.PREF_LANGUAGE, "en");
-
-		// construct the hash map with locale as the key and language as the
-		// value
-		final HashMap<String, String> langDict = new HashMap<String, String>();
-		for (int i = 0; i < languageSelectionArray.length; i++) {
-			langDict.put(localeArray[i], languageSelectionArray[i]);
-		}
-
-		// check if key exist, else fall back to en
-		if (langDict.containsKey(languageSelectionValue)) {
-			changeLanguages.setSummary(String.format(getResources().getString(R.string.selected_language), langDict.get(languageSelectionValue)));
-		} else {
-			changeLanguages.setSummary(String.format(getResources().getString(R.string.selected_language), langDict.get("en")));
-		}
-
-		changeLanguages.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+		// Orientation Selection
+		final Preference orientation = findPreference(Constants.PREF_ORIENTATION);
+		final String[] orientationArray = getResources().getStringArray(R.array.orientationSelection);
+		int orientationIntervalValue = UIHelper.GetIntFromPreferences(Constants.PREF_ORIENTATION, 0);
+		orientation.setSummary(String.format(getResources().getString(R.string.orientation_summary), orientationArray[orientationIntervalValue]));
+		orientation.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				String newLocale = newValue.toString();
-				UIHelper.setLanguage(context, newLocale);
-				LNReaderApplication.getInstance().restartApplication();
+				int orientationIntervalValue = Util.tryParseInt(newValue.toString(), 0);
+				MyScheduleReceiver.reschedule(orientationIntervalValue);
+				orientation.setSummary(String.format(getResources().getString(R.string.orientation_summary), orientationArray[orientationIntervalValue]));
+				setOrientation();
+				return true;
+			}
+		});
+	}
+
+	@SuppressWarnings("deprecation")
+	private void updatePreferences() {
+		// Update Interval
+		final Preference updatesInterval = findPreference(Constants.PREF_UPDATE_INTERVAL);
+		final String[] updateIntervalArray = getResources().getStringArray(R.array.updateInterval);
+		int updatesIntervalValue = UIHelper.GetIntFromPreferences(Constants.PREF_UPDATE_INTERVAL, 0);
+		updatesInterval.setSummary(String.format(getResources().getString(R.string.update_interval_summary), updateIntervalArray[updatesIntervalValue]));
+		updatesInterval.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				int updatesIntervalInt = Util.tryParseInt(newValue.toString(), 0);
+				MyScheduleReceiver.reschedule(updatesIntervalInt);
+				updatesInterval.setSummary(String.format(getResources().getString(R.string.update_interval_summary), updateIntervalArray[updatesIntervalInt]));
 				return true;
 			}
 		});
 
-		/* End of language section */
+		// Run Updates
+		Preference runUpdates = findPreference(Constants.PREF_RUN_UPDATES);
+		runUpdates.setSummary(String.format(getResources().getString(R.string.last_run), runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES, getResources().getString(R.string.none)), runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES_STATUS, getResources().getString(R.string.unknown))));
+		runUpdates.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
+			@Override
+			public boolean onPreferenceClick(Preference p) {
+				runUpdate();
+				return true;
+			}
+		});
+		// Time out
+		final Preference timeout = findPreference(Constants.PREF_TIMEOUT);
+		int timeoutValue = UIHelper.GetIntFromPreferences(Constants.PREF_TIMEOUT, 60);
+		timeout.setSummary(String.format(getResources().getString(R.string.pref_timeout_summary), timeoutValue));
+		timeout.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				int timeoutValue = Util.tryParseInt(newValue.toString(), 60);
+				timeout.setSummary(String.format(getResources().getString(R.string.pref_timeout_summary), timeoutValue));
+				return true;
+			}
+		});
+
+		// Retry
+		final Preference retry = findPreference(Constants.PREF_RETRY);
+		int retryValue = UIHelper.GetIntFromPreferences(Constants.PREF_RETRY, 3);
+		retry.setSummary(String.format(getResources().getString(R.string.pref_retry_summary), retryValue));
+		retry.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				int retryValue = Util.tryParseInt(newValue.toString(), 3);
+				retry.setSummary(String.format(getResources().getString(R.string.pref_retry_summary), retryValue));
+				return true;
+			}
+		});
+	}
+
+	@SuppressWarnings("deprecation")
+	private void readingPreferences() {
+
+		// Scrolling Size
+		final Preference scrollingSize = findPreference(Constants.PREF_SCROLL_SIZE);
+		int scrollingSizeValue = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5);
+		scrollingSize.setSummary(String.format(getResources().getString(R.string.scroll_size_summary2), scrollingSizeValue));
+		scrollingSize.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				int scrollingSizeValue = Util.tryParseInt(newValue.toString(), 5);
+				scrollingSize.setSummary(String.format(getResources().getString(R.string.scroll_size_summary2), scrollingSizeValue));
+				return true;
+			}
+		});
+
+		setCssPreferences();
+	}
+
+	@SuppressWarnings("deprecation")
+	private void storagePreferences() {
+		// Clear DB
+		Preference clearDatabase = findPreference("clear_database");
+		clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference p) {
+				clearDB();
+				return true;
+			}
+		});
+
+		// Backup DB
+		Preference backupDatabase = findPreference("backup_database");
+		backupDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference p) {
+				try {
+					copyDB(true);
+				} catch (IOException e) {
+					Log.e(TAG, "Error when backing up DB", e);
+				}
+				return true;
+			}
+		});
+
+		// Restore DB
+		Preference restoreDatabase = findPreference("restore_database");
+		restoreDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference p) {
+				try {
+					copyDB(false);
+				} catch (IOException e) {
+					Log.e(TAG, "Error when restoring DB", e);
+				}
+				return true;
+			}
+		});
+
+		// Clear Image
+		Preference clearImages = findPreference("clear_image_cache");
+		clearImages.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference p) {
+				clearImages();
+				return true;
+			}
+		});
+
+		// Image Location
+		final Preference defaultSaveLocation = findPreference("save_location");
+		defaultSaveLocation.setSummary(String.format(getResources().getString(R.string.download_image_to), UIHelper.getImageRoot(this)));
+		defaultSaveLocation.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				String newPath = (String) newValue;
+				boolean result = checkImageStoragePath(newPath);
+				if (result)
+					defaultSaveLocation.setSummary(String.format(getResources().getString(R.string.download_image_to), newPath));
+				return result;
+			}
+		});
+
+		// DB Location
+		Preference defaultDbLocation = findPreference("db_location");
+		defaultDbLocation.setSummary(String.format(getResources().getString(R.string.novel_database_to), DBHelper.getDbPath(this)));
+	}
+
+	@SuppressWarnings("deprecation")
+	private void setAlternateLanguageList() {
 		/*
 		 * A section to change Alternative Languages list
 		 * 
@@ -258,182 +468,51 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			}
 		});
 		/* End of alternative languages list section */
+	}
 
-		Preference clearDatabase = findPreference("clear_database");
-		clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+	@SuppressWarnings("deprecation")
+	private void setApplicationLanguage() {
+		/*
+		 * A section to change Application Language
+		 * 
+		 * @freedomofkeima
+		 */
+		final Preference changeLanguages = findPreference(Constants.PREF_LANGUAGE);
+		final String[] languageSelectionArray = getResources().getStringArray(R.array.languageSelection);
+		final String[] localeArray = getResources().getStringArray(R.array.languageSelectionValues);
+		String languageSelectionValue = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getString(Constants.PREF_LANGUAGE, "en");
 
-			@Override
-			public boolean onPreferenceClick(Preference p) {
-				clearDB();
-				return true;
-			}
-		});
-
-		Preference backupDatabase = findPreference("backup_database");
-		backupDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-			@Override
-			public boolean onPreferenceClick(Preference p) {
-				try {
-					copyDB(true);
-				} catch (IOException e) {
-					Log.e(TAG, "Error when backing up DB", e);
-				}
-				return true;
-			}
-		});
-
-		Preference restoreDatabase = findPreference("restore_database");
-		restoreDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-			@Override
-			public boolean onPreferenceClick(Preference p) {
-				try {
-					copyDB(false);
-				} catch (IOException e) {
-					Log.e(TAG, "Error when restoring DB", e);
-				}
-				return true;
-			}
-		});
-
-		Preference clearImages = findPreference("clear_image_cache");
-		clearImages.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-			@Override
-			public boolean onPreferenceClick(Preference p) {
-				clearImages();
-				return true;
-			}
-		});
-
-		final Preference updatesInterval = findPreference(Constants.PREF_UPDATE_INTERVAL);
-		final String[] updateIntervalArray = getResources().getStringArray(R.array.updateInterval);
-		int updatesIntervalValue = UIHelper.GetIntFromPreferences(Constants.PREF_UPDATE_INTERVAL, 0);
-		updatesInterval.setSummary(String.format(getResources().getString(R.string.update_interval_summary), updateIntervalArray[updatesIntervalValue]));
-		updatesInterval.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				int updatesIntervalInt = Util.tryParseInt(newValue.toString(), 0);
-				MyScheduleReceiver.reschedule(updatesIntervalInt);
-				updatesInterval.setSummary(String.format(getResources().getString(R.string.update_interval_summary), updateIntervalArray[updatesIntervalInt]));
-				return true;
-			}
-		});
-
-		Preference runUpdates = findPreference(Constants.PREF_RUN_UPDATES);
-		runUpdates.setSummary(String.format(getResources().getString(R.string.last_run), runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES, getResources().getString(R.string.none)), runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES_STATUS, getResources().getString(R.string.unknown))));
-		runUpdates.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-			@Override
-			public boolean onPreferenceClick(Preference p) {
-				runUpdate();
-				return true;
-			}
-		});
-
-		Preference appVersion = findPreference("app_version");
-		String version = "N/A";
-		try {
-			version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName + " (" + getPackageManager().getPackageInfo(getPackageName(), 0).versionCode + ")";
-		} catch (NameNotFoundException e) {
+		// construct the hash map with locale as the key and language as the
+		// value
+		final HashMap<String, String> langDict = new HashMap<String, String>();
+		for (int i = 0; i < languageSelectionArray.length; i++) {
+			langDict.put(localeArray[i], languageSelectionArray[i]);
 		}
-		appVersion.setSummary(version);
 
-		final Preference uiMode = findPreference("ui_selection");
-		final String[] uiSelectionArray = getResources().getStringArray(R.array.uiSelection);
-		int uiSelectionValue = UIHelper.GetIntFromPreferences(Constants.PREF_UI_SELECTION, 0);
-		uiMode.setSummary(String.format(getResources().getString(R.string.selected_mode), uiSelectionArray[uiSelectionValue]));
-		uiMode.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+		// check if key exist, else fall back to en
+		if (langDict.containsKey(languageSelectionValue)) {
+			changeLanguages.setSummary(String.format(getResources().getString(R.string.selected_language), langDict.get(languageSelectionValue)));
+		} else {
+			changeLanguages.setSummary(String.format(getResources().getString(R.string.selected_language), langDict.get("en")));
+		}
+
+		changeLanguages.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				int uiSelectionValue = Util.tryParseInt(newValue.toString(), 0);
-				uiMode.setSummary(String.format(getResources().getString(R.string.selected_mode), uiSelectionArray[uiSelectionValue]));
+				String newLocale = newValue.toString();
+				UIHelper.setLanguage(context, newLocale);
+				LNReaderApplication.getInstance().restartApplication();
 				return true;
 			}
 		});
 
-		final Preference defaultSaveLocation = findPreference("save_location");
-		defaultSaveLocation.setSummary(String.format(getResources().getString(R.string.download_image_to), UIHelper.getImageRoot(this)));
-		defaultSaveLocation.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+		/* End of language section */
+	}
 
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				String newPath = (String) newValue;
-				if (Util.isStringNullOrEmpty(newPath)) {
-					newPath = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext());
-				}
-				File dir = new File(newPath);
-				if (!dir.exists()) {
-					Log.e(TAG, String.format("Directory %s not exists, trying to create dir.", newPath));
-					boolean result = dir.mkdirs();
-					if (result) {
-						defaultSaveLocation.setSummary(String.format(getResources().getString(R.string.download_image_to), newPath));
-						Log.i(TAG, String.format("Directory %s created.", newPath));
-						return true;
-					} else {
-						Log.e(TAG, String.format("Directory %s cannot be created.", newPath));
-						return false;
-					}
-				} else {
-					defaultSaveLocation.setSummary(String.format(getResources().getString(R.string.download_image_to), newPath));
-					return true;
-				}
-			}
-		});
-
-		Preference defaultDbLocation = findPreference("db_location");
-		defaultDbLocation.setSummary(String.format(getResources().getString(R.string.novel_database_to), DBHelper.getDbPath(this)));
-
-		Preference tos = findPreference("tos");
-		tos.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				try {
-					Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
-					intent.putExtra(Constants.EXTRA_PAGE, getResources().getString(R.string.copyright));
-					startActivity(intent);
-				} catch (Exception e) {
-					Log.e(TAG, getResources().getString(R.string.not_copyright), e);
-				}
-				return false;
-			}
-		});
-
-		Preference credits = findPreference("credits");
-		credits.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				try {
-					Intent intent = new Intent(getApplicationContext(), DisplayCreditActivity.class);
-					startActivity(intent);
-				} catch (Exception e) {
-					Log.e(TAG, getResources().getString(R.string.title_activity_display_credit), e);
-				}
-				return false;
-			}
-		});
-
-		final Preference scrollingSize = findPreference(Constants.PREF_SCROLL_SIZE);
-		int scrollingSizeValue = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5);
-		scrollingSize.setSummary(String.format(getResources().getString(R.string.scroll_size_summary2), scrollingSizeValue));
-		scrollingSize.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				int scrollingSizeValue = Util.tryParseInt(newValue.toString(), 5);
-				scrollingSize.setSummary(String.format(getResources().getString(R.string.scroll_size_summary2), scrollingSizeValue));
-				return true;
-			}
-		});
-
-		LNReaderApplication.getInstance().setUpdateServiceListener(this);
-		isInverted = getColorPreferences();
-
+	@SuppressWarnings("deprecation")
+	@SuppressLint("SdCardPath")
+	private void setCssPreferences() {
 		/************************************************************
 		 * CSS Layout Behaviours 1. When user's css sheet is used, disable the
 		 * force justify, linespace and margin preferences 2. When about to use
@@ -523,51 +602,28 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				return true;
 			}
 		});
+	}
 
-		// Orientation Selection
-		final Preference orientation = findPreference(Constants.PREF_ORIENTATION);
-		final String[] orientationArray = getResources().getStringArray(R.array.orientationSelection);
-		int orientationIntervalValue = UIHelper.GetIntFromPreferences(Constants.PREF_ORIENTATION, 0);
-		orientation.setSummary(String.format(getResources().getString(R.string.orientation_summary), orientationArray[orientationIntervalValue]));
-		orientation.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				int orientationIntervalValue = Util.tryParseInt(newValue.toString(), 0);
-				MyScheduleReceiver.reschedule(orientationIntervalValue);
-				orientation.setSummary(String.format(getResources().getString(R.string.orientation_summary), orientationArray[orientationIntervalValue]));
-				setOrientation();
+	protected boolean checkImageStoragePath(String newPath) {
+		if (Util.isStringNullOrEmpty(newPath)) {
+			newPath = UIHelper.getImageRoot(this);
+		}
+		File dir = new File(newPath);
+		if (!dir.exists()) {
+			Log.e(TAG, String.format("Directory %s not exists, trying to create dir.", newPath));
+			boolean result = dir.mkdirs();
+			if (result) {
+				Log.i(TAG, String.format("Directory %s created.", newPath));
 				return true;
+			} else {
+				String message = String.format("Directory %s cannot be created.", newPath);
+				Log.e(TAG, message);
+				Toast.makeText(this, String.format("Directory %s cannot be created.", newPath), Toast.LENGTH_SHORT).show();
+				return false;
 			}
-		});
-
-		// time out
-		final Preference timeout = findPreference(Constants.PREF_TIMEOUT);
-		int timeoutValue = UIHelper.GetIntFromPreferences(Constants.PREF_TIMEOUT, 60);
-		timeout.setSummary(String.format(getResources().getString(R.string.pref_timeout_summary), timeoutValue));
-		timeout.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				int timeoutValue = Util.tryParseInt(newValue.toString(), 60);
-				timeout.setSummary(String.format(getResources().getString(R.string.pref_timeout_summary), timeoutValue));
-				return true;
-			}
-		});
-
-		// Retry
-		final Preference retry = findPreference(Constants.PREF_RETRY);
-		int retryValue = UIHelper.GetIntFromPreferences(Constants.PREF_RETRY, 3);
-		retry.setSummary(String.format(getResources().getString(R.string.pref_retry_summary), retryValue));
-		retry.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				int retryValue = Util.tryParseInt(newValue.toString(), 3);
-				retry.setSummary(String.format(getResources().getString(R.string.pref_retry_summary), retryValue));
-				return true;
-			}
-		});
+		} else {
+			return true;
+		}
 	}
 
 	private void setOrientation() {

@@ -430,6 +430,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		return super.onKeyUp(keyCode, event);
 	}
 
+	@SuppressWarnings("deprecation")
 	@SuppressLint("NewApi")
 	private void showSearchBox() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
