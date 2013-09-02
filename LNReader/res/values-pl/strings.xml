@@ -101,8 +101,8 @@
     <string name="lock_horizontal_summary">Orientacja horyzontalna</string>
     <string name="lock_horizontal_title">Zablokuj na horyzontalnej</string>
     <string name="auto_download_chapter_summary">Wybór automatycznie dodaje rozdział do pobierania, o ile nie został już pobrany.</string>
-    <string name="auto_download_chapter_title">Dotknij aby pobrać</string>
-    <string name="alphabet_order_summary">Alfabetyczne sortowanie powieści.</string>
+    <string name="auto_download_chapter_title">Dotknięcie uruchamia pobieranie</string>
+    <string name="alphabet_order_summary">Alfabetyczne sortowanie powieści</string>
     <string name="alphabet_order_title">Kolejność alfabetyczna</string>
     <string name="show_missing_summary">Pokaż brakujący rozdział (Oznaczone kolorem czerwonym).</string>
     <string name="show_missing_title">Pokaż brakujący rozdział</string>
@@ -222,6 +222,6 @@
     <string name="pref_timeout_title">Przerwano</string>
     <string name="pref_retry_title">Próby pobierania</string>
     <string name="pref_retry_summary">Ilość prób pobierania: %1$s razy</string>
-    <string name="increase_retry_title">Increase Timeout if Failed</string>
-    <string name="increase_retry_summary">Increase timeout when error occured (doubled for each failure).</string>
+    <string name="increase_retry_title">Wydłużenie przerwy pomiędzy próbami pobierania</string>
+    <string name="increase_retry_summary">W razie przerwania pobierania, czas między wznowieniem ulega podwojeniu.</string>
 </resources>
