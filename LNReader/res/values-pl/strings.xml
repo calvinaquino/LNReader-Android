@@ -222,6 +222,6 @@
     <string name="pref_timeout_title">Przerwano</string>
     <string name="pref_retry_title">Próby pobierania</string>
     <string name="pref_retry_summary">Ilość prób pobierania: %1$s razy</string>
-    <string name="increase_retry_title">Wydłużenie przerwy pomiędzy próbami pobierania</string>
+    <string name="increase_retry_title">Wydłużenie czasu pomiędzy próbami pobierania</string>
     <string name="increase_retry_summary">W razie przerwania pobierania, czas między wznowieniem ulega podwojeniu.</string>
 </resources>
