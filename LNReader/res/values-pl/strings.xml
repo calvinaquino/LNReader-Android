@@ -226,4 +226,6 @@
     <string name="increase_retry_summary">W razie przerwania pobierania, czas między wznowieniem ulega podwojeniu.</string>
     <string name="aggresive_title_clean_up_title">Aggresive Book Title Clean Up</string>
     <string name="aggresive_title_clean_up_summary">Enable aggresive book title clean up (remove everything after bracket / \'(\' )</string>
+    <string name="use_https_title">Use HTTPS</string>
+    <string name="use_https_summary">Use HTTPS when connecting to Baka-Tsuki.</string>
 </resources>

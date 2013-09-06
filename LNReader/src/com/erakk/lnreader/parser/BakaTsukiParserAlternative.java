@@ -148,7 +148,7 @@ public class BakaTsukiParserAlternative {
 				Element link = element.select("a").first();
 				PageModel page = new PageModel();
 				page.setParent(category);
-				String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL, "");
+				String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL_HTTPS, "").replace(Constants.BASE_URL, "");
 				page.setPage(tempPage);
 				page.setLanguage(language);
 				page.setType(PageModel.TYPE_NOVEL);
@@ -461,7 +461,7 @@ public class BakaTsukiParserAlternative {
 			// Log.d(TAG, "Found external link for " + p.getTitle() + ": " + link.attr("href"));
 		} else {
 			p.setExternal(false);
-			String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL, "");
+			String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL_HTTPS, "").replace(Constants.BASE_URL, "");
 			p.setPage(tempPage);
 		}
 		return p;
@@ -721,7 +721,7 @@ public class BakaTsukiParserAlternative {
 		for (Iterator<Element> i = imageElements.iterator(); i.hasNext();) {
 			ImageModel image = new ImageModel();
 			Element imageElement = i.next();
-			String urlStr = imageElement.attr("src").replace("/project/", Constants.BASE_URL + "/project/");
+			String urlStr = imageElement.attr("src").replace("/project/", UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/");
 			String name = urlStr.substring(urlStr.lastIndexOf("/"));
 			image.setName(name);
 			try {
@@ -754,10 +754,10 @@ public class BakaTsukiParserAlternative {
 		String imageUrl = fullMedia.select("a").first().attr("href");
 
 		try {
-			image.setUrl(new URL(Constants.BASE_URL + imageUrl));
+			image.setUrl(new URL(UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + imageUrl));
 		} catch (MalformedURLException e) {
 			// shouldn't happened
-			Log.e(TAG, "Invalid URL: " + Constants.BASE_URL + imageUrl, e);
+			Log.e(TAG, "Invalid URL: " + UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + imageUrl, e);
 		}
 		return image;
 	}
@@ -770,7 +770,7 @@ public class BakaTsukiParserAlternative {
 			String href = link.attr("href");
 			if (href.contains("/project/index.php?title=File:")) {
 				if (!href.startsWith("http"))
-					href = Constants.BASE_URL + href;
+					href = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + href;
 				result.add(href);
 			}
 		}

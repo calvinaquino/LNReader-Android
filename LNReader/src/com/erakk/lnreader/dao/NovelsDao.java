@@ -182,7 +182,7 @@ public class NovelsDao {
 				// now get the novel list
 				list = new ArrayList<PageModel>();
 
-				String url = Constants.BASE_URL + "/project";
+				String url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project";
 				int retry = 0;
 				while (retry < getRetry()) {
 					try {
@@ -302,7 +302,7 @@ public class NovelsDao {
 
 		// get teaser list
 		ArrayList<PageModel> list = null;
-		String url = Constants.BASE_URL + "/project/index.php?title=Category:Teasers";
+		String url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?title=Category:Teasers";
 		int retry = 0;
 		while (retry < getRetry()) {
 			try {
@@ -404,7 +404,7 @@ public class NovelsDao {
 
 		// get teaser list
 		ArrayList<PageModel> list = null;
-		String url = Constants.BASE_URL + "/project/index.php?title=Category:Original";
+		String url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?title=Category:Original";
 		int retry = 0;
 		while (retry < getRetry()) {
 			try {
@@ -512,7 +512,7 @@ public class NovelsDao {
 		ArrayList<PageModel> list = null;
 		String url = null;
 		if (language != null)
-			url = Constants.BASE_URL + "/project/index.php?title=" + AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo();
+			url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?title=" + AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo();
 		int retry = 0;
 		while (retry < getRetry()) {
 			try {
@@ -714,7 +714,7 @@ public class NovelsDao {
 					notifier.onCallback(new CallbackEventData("Downloading novel details page for: " + page.getPage()));
 				}
 				String encodedTitle = Util.UrlEncode(page.getPage());
-				String fullUrl = Constants.BASE_URL + "/project/index.php?action=render&title=" + encodedTitle;
+				String fullUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?action=render&title=" + encodedTitle;
 				Response response = Jsoup.connect(fullUrl).timeout(getTimeout(retry)).execute();
 				Document doc = response.parse();
 				/*
@@ -838,7 +838,7 @@ public class NovelsDao {
 	 */
 	public ArrayList<PageModel> getUpdateInfo(ArrayList<PageModel> pageModels, ICallbackNotifier notifier) throws Exception {
 		ArrayList<PageModel> resultPageModel = new ArrayList<PageModel>();
-		String baseUrl = Constants.BASE_URL + "/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=";
+		String baseUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=";
 		int i = 0;
 		int retry = 0;
 		while (i < pageModels.size()) {
@@ -979,7 +979,7 @@ public class NovelsDao {
 		Document doc = null;
 		while (retry < getRetry()) {
 			try {
-				String encodedUrl = Constants.BASE_URL + "/project/api.php?action=parse&format=xml&prop=text|images&redirects=yes&page=" + Util.UrlEncode(page.getPage());
+				String encodedUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/api.php?action=parse&format=xml&prop=text|images&redirects=yes&page=" + Util.UrlEncode(page.getPage());
 				Response response = Jsoup.connect(encodedUrl).timeout(getTimeout(retry)).execute();
 				doc = response.parse();
 				content = BakaTsukiParser.ParseNovelContent(doc, page);
@@ -1137,7 +1137,7 @@ public class NovelsDao {
 			throw new BakaReaderException("No Network Connectifity", BakaReaderException.NO_NETWORK_CONNECTIFITY);
 		String url = image.getName();
 		if (!url.startsWith("http"))
-			url = Constants.BASE_URL + url;
+			url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + url;
 
 		if (notifier != null) {
 			notifier.onCallback(new CallbackEventData("Parsing File Page: " + url));

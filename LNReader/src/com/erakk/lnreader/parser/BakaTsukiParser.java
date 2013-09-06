@@ -146,7 +146,7 @@ public class BakaTsukiParser {
 				Element novel = i.next();
 				Element link = novel.select("a").first();
 				PageModel page = new PageModel();
-				String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL, "");
+				String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL_HTTPS, "").replace(Constants.BASE_URL, "");
 				int anchorIndex = tempPage.indexOf("#");
 				if (anchorIndex > -1) {
 					tempPage = tempPage.substring(0, anchorIndex);
@@ -214,7 +214,7 @@ public class BakaTsukiParser {
 				Element link = element.select("a").first();
 				PageModel page = new PageModel();
 				page.setParent("Category:Teasers");
-				String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL, "");
+				String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL_HTTPS, "").replace(Constants.BASE_URL, "");
 				page.setPage(tempPage);
 				page.setLanguage(Constants.LANG_ENGLISH);
 				page.setType(PageModel.TYPE_NOVEL);
@@ -249,7 +249,7 @@ public class BakaTsukiParser {
 				Element link = element.select("a").first();
 				PageModel page = new PageModel();
 				page.setParent("Category:Original");
-				String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL, "");
+				String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL_HTTPS, "").replace(Constants.BASE_URL, "");
 				page.setPage(tempPage);
 				page.setLanguage(Constants.LANG_ENGLISH);
 				page.setType(PageModel.TYPE_NOVEL);
@@ -564,7 +564,7 @@ public class BakaTsukiParser {
 			// Log.d(TAG, "Found external link for " + p.getTitle() + ": " + link.attr("href"));
 		} else {
 			p.setExternal(false);
-			String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL, "");
+			String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL_HTTPS, "").replace(Constants.BASE_URL, "");
 			p.setPage(tempPage);
 		}
 		return p;
@@ -829,7 +829,7 @@ public class BakaTsukiParser {
 		for (Iterator<Element> i = imageElements.iterator(); i.hasNext();) {
 			ImageModel image = new ImageModel();
 			Element imageElement = i.next();
-			String urlStr = imageElement.attr("src").replace("/project/", Constants.BASE_URL + "/project/");
+			String urlStr = imageElement.attr("src").replace("/project/", UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/");
 			String name = urlStr.substring(urlStr.lastIndexOf("/"));
 			image.setName(name);
 			try {
@@ -862,10 +862,10 @@ public class BakaTsukiParser {
 		String imageUrl = fullMedia.select("a").first().attr("href");
 
 		try {
-			image.setUrl(new URL(Constants.BASE_URL + imageUrl));
+			image.setUrl(new URL(UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + imageUrl));
 		} catch (MalformedURLException e) {
 			// shouldn't happened
-			Log.e(TAG, "Invalid URL: " + Constants.BASE_URL + imageUrl, e);
+			Log.e(TAG, "Invalid URL: " + UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + imageUrl, e);
 		}
 		return image;
 	}
@@ -878,7 +878,7 @@ public class BakaTsukiParser {
 			String href = link.attr("href");
 			if (href.contains("/project/index.php?title=File:")) {
 				if (!href.startsWith("http"))
-					href = Constants.BASE_URL + href;
+					href = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + href;
 				result.add(href);
 			}
 		}

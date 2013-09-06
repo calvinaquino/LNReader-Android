@@ -283,4 +283,12 @@ public class UIHelper {
 		}
 		return loc;
 	}
+
+	public static String getBaseUrl(Context activity) {
+		boolean useHttps = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_USE_HTTPS, false);
+		if (useHttps)
+			return Constants.BASE_URL_HTTPS;
+		else
+			return Constants.BASE_URL;
+	}
 }
