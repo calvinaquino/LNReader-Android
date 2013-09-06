@@ -176,7 +176,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			return true;
 		case R.id.menu_refresh_chapter_list:
 			executeTask(page, true);
-			Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), getResources().getString(R.string.refreshing_detail), Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.invert_colors:
 			UIHelper.ToggleColorPref(this);
@@ -272,7 +272,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			 * Implement code to clear this volume cache
 			 */
 			BookModel bookClear = novelCol.getBookCollections().get(groupPosition);
-			Toast.makeText(this, getResources().getString(R.string.clear_this_volume) + ": " + bookClear.getTitle(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getResources().getString(R.string.toast_clear_volume, bookClear.getTitle()), Toast.LENGTH_SHORT).show();
 			dao.deleteBookCache(bookClear);
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
@@ -308,7 +308,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			 * Implement code to clear this chapter cache
 			 */
 			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
-			Toast.makeText(this, getResources().getString(R.string.clear_this_chapter) + ": " + chapter.getTitle(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getResources().getString(R.string.toast_clear_chapter, chapter.getTitle()), Toast.LENGTH_SHORT).show();
 			dao.deleteChapterCache(chapter);
 
 			bookModelAdapter.notifyDataSetChanged();
@@ -322,7 +322,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			chapter.setFinishedRead(!chapter.isFinishedRead());
 			dao.updatePageModel(chapter);
 			bookModelAdapter.notifyDataSetChanged();
-			Toast.makeText(this, "Toggle Read", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getResources().getString(R.string.toast_toggle_read), Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.delete_volume:
 
@@ -330,7 +330,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			 * Implement code to delete this volume cache
 			 */
 			BookModel bookDel = novelCol.getBookCollections().get(groupPosition);
-			Toast.makeText(this, getResources().getString(R.string.delete_this_volume) + ": " + bookDel.getTitle(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getResources().getString(R.string.delete_this_volume, bookDel.getTitle()), Toast.LENGTH_SHORT).show();
 			dao.deleteBooks(bookDel);
 			novelCol.getBookCollections().remove(groupPosition);
 			bookModelAdapter.notifyDataSetChanged();
@@ -341,7 +341,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			 * Implement code to delete this chapter cache
 			 */
 			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
-			Toast.makeText(this, getResources().getString(R.string.delete_this_chapter) + ": " + chapter.getTitle(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getResources().getString(R.string.delete_this_chapter, chapter.getTitle()), Toast.LENGTH_SHORT).show();
 			dao.deleteNovelContent(chapter);
 			dao.deletePage(chapter);
 			novelCol.getBookCollections().get(groupPosition).getChapterCollection().remove(chapter);
@@ -409,15 +409,15 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 				exists = true;
 				Toast.makeText(this, getResources().getString(R.string.download_on_queue), Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(this, getResources().getString(R.string.downloading) + name + ".", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getResources().getString(R.string.toast_downloading, name), Toast.LENGTH_SHORT).show();
 				LNReaderApplication.getInstance().addDownload(id, name);
 			}
 		} else if (type == 1) {
 			Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show();
 		} else if (type == 2) {
-			String message = String.format("%s %s's download finished!", page.getTitle(), LNReaderApplication.getInstance().getDownloadDescription(id));
+			String message = getResources().getString(R.string.toast_download_finish, page.getTitle(), LNReaderApplication.getInstance().getDownloadDescription(id));
 			if (hasError)
-				message = String.format("%s %s's download finished with error(s)!", page.getTitle(), LNReaderApplication.getInstance().getDownloadDescription(id));
+				message = getResources().getString(R.string.toast_download_finish_with_error, page.getTitle(), LNReaderApplication.getInstance().getDownloadDescription(id));
 			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 			LNReaderApplication.getInstance().removeDownload(id);
 		}
@@ -521,9 +521,9 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 							@Override
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 								if (isChecked) {
-									Toast.makeText(getApplicationContext(), getResources().getString(R.string.added_to_watchlist) + ": " + page.getTitle(), Toast.LENGTH_SHORT).show();
+									Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_add_watch, page.getTitle()), Toast.LENGTH_SHORT).show();
 								} else {
-									Toast.makeText(getApplicationContext(), getResources().getString(R.string.removed_from_watchlist) + ": " + page.getTitle(), Toast.LENGTH_SHORT).show();
+									Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_remove_watch, page.getTitle()), Toast.LENGTH_SHORT).show();
 								}
 								// update the db!
 								page.setWatched(isChecked);
@@ -535,7 +535,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 						ImageView ImageViewCover = (ImageView) synopsis.findViewById(R.id.cover);
 						if (novelCol.getCoverBitmap() == null) {
 							// IN app test, is returning empty bitmap
-							Toast.makeText(getApplicationContext(), "Bitmap empty", Toast.LENGTH_LONG).show();
+							Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_err_bitmap_empty), Toast.LENGTH_LONG).show();
 						} else {
 
 							if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && getStrechCoverPreference()) {

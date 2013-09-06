@@ -22,18 +22,8 @@ public class Constants {
 	public static final String EXTRA_P_INDEX = "pIndex";
 	public static final String EXTRA_CALLER_ACTIVITY = "caller_activity";
 
-	// public static final String IMAGE_ROOT = Environment.getExternalStorageDirectory().getAbsolutePath().toString() +
-	// "/Android/data/" + Constants.class.getPackage().getName() + "/files";
-
-	// public static final int IMAGE_DOWNLOAD_RETRY = 3;
-	// public static final int PAGE_DOWNLOAD_RETRY = 3;
-
 	public static final String NOVEL_BOOK_DIVIDER = "%NOVEL_BOOK_DIVIDER%";
 	public static final int CHECK_INTERVAL = 7;
-
-	// public static final int TIMEOUT = 60000;
-
-	public static final String TAG = "LNReader";
 
 	// Shared Preferences keys
 	public static final String PREF_FIRST_RUN = "first_run";

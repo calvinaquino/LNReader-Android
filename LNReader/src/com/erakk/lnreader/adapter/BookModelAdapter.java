@@ -211,10 +211,8 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		ViewGroup container = (ViewGroup) view.findViewById(R.id.novel_volume_container);
 
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-		int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics()); // Converts
-																																	// 8dp
-																																	// into
-																																	// px
+		// Converts 8dp into px
+		int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics());
 
 		ImageView ivHasUpdates = new ImageView(context);
 		ivHasUpdates.setImageResource(R.drawable.ic_update_avaliable);

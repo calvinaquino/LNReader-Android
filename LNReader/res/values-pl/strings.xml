@@ -228,4 +228,17 @@
     <string name="aggresive_title_clean_up_summary">Enable aggresive book title clean up (remove everything after bracket / \'(\' )</string>
     <string name="use_https_title">Use HTTPS</string>
     <string name="use_https_summary">Use HTTPS when connecting to Baka-Tsuki.</string>
+    <string name="error_parsing_url">Error when parsing url: %1$s</string>
+    <string name="refreshing_detail">Refreshing Details...</string>
+    <string name="toast_clear_volume">Clear this Volume: %1$s</string>
+    <string name="toast_mark_volume">Mark Volume as Read</string>
+    <string name="toast_clear_chapter">Clear this Chapter: %1$s</string>
+    <string name="toast_toggle_read">Toggle Read</string>
+    <string name="toast_download_on_queue">Download already on queue.</string>
+    <string name="toast_downloading">Downloading %1$s.</string>
+    <string name="toast_download_finish">%1$s %2$s\'s download finished!</string>
+    <string name="toast_download_finish_with_error">%1$s %2$s\'s download finished with error(s)!</string>
+    <string name="toast_add_watch">Added to watch list: %1$s</string>
+    <string name="toast_remove_watch">Removed from watch list: %1$s</string>
+    <string name="toast_err_bitmap_empty">Bitmap empty</string>
 </resources>

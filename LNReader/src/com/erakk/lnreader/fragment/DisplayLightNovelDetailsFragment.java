@@ -130,7 +130,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
 				startActivity(browserIntent);
 			} catch (Exception ex) {
-				String message = "Error when parsing url: " + chapter.getPage();
+				String message = String.format(getResources().getString(R.string.error_parsing_url), chapter.getPage());
 				Log.e(TAG, message, ex);
 				Toast.makeText(getSherlockActivity(), message, Toast.LENGTH_SHORT).show();
 			}
@@ -164,7 +164,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		case R.id.menu_refresh_chapter_list:
 			Log.d(TAG, "Refreshing Details");
 			executeTask(page, true);
-			Toast.makeText(getSherlockActivity(), "Refreshing Details...", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getSherlockActivity(), getResources().getString(R.string.refreshing_detail), Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.menu_details_download_all:
 			/*
@@ -250,7 +250,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			 * Implement code to clear this volume cache
 			 */
 			BookModel bookClear = novelCol.getBookCollections().get(groupPosition);
-			Toast.makeText(getSherlockActivity(), "Clear this Volume: " + bookClear.getTitle(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(getSherlockActivity(), String.format(getResources().getString(R.string.toast_clear_volume), bookClear.getTitle()), Toast.LENGTH_SHORT).show();
 			dao.deleteBookCache(bookClear);
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
@@ -259,7 +259,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			/*
 			 * Implement code to mark entire volume as read
 			 */
-			Toast.makeText(getSherlockActivity(), "Mark Volume as Read", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_mark_volume), Toast.LENGTH_SHORT).show();
 			BookModel book2 = novelCol.getBookCollections().get(groupPosition);
 			for (Iterator<PageModel> iPage = book2.getChapterCollection().iterator(); iPage.hasNext();) {
 				PageModel page = iPage.next();
@@ -286,7 +286,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			 * Implement code to clear this chapter cache
 			 */
 			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
-			Toast.makeText(getSherlockActivity(), "Clear this Chapter: " + chapter.getTitle(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(getSherlockActivity(), String.format(getResources().getString(R.string.toast_clear_chapter), chapter.getTitle()), Toast.LENGTH_SHORT).show();
 			dao.deleteChapterCache(chapter);
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
@@ -299,7 +299,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			chapter.setFinishedRead(!chapter.isFinishedRead());
 			dao.updatePageModel(chapter);
 			bookModelAdapter.notifyDataSetChanged();
-			Toast.makeText(getSherlockActivity(), "Toggle Read", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_toggle_read), Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.delete_volume:
 
@@ -307,6 +307,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			 * Implement code to delete this volume cache
 			 */
 			BookModel bookDel = novelCol.getBookCollections().get(groupPosition);
+			Toast.makeText(getSherlockActivity(), getResources().getString(R.string.delete_this_volume, bookDel.getTitle()), Toast.LENGTH_SHORT).show();
 			dao.deleteBooks(bookDel);
 			novelCol.getBookCollections().remove(groupPosition);
 			bookModelAdapter.notifyDataSetChanged();
@@ -317,6 +318,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			 * Implement code to delete this chapter cache
 			 */
 			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
+			Toast.makeText(getSherlockActivity(), getResources().getString(R.string.delete_this_chapter, chapter.getTitle()), Toast.LENGTH_SHORT).show();
 			dao.deleteNovelContent(chapter);
 			dao.deletePage(chapter);
 			novelCol.getBookCollections().get(groupPosition).getChapterCollection().remove(chapter);
@@ -381,9 +383,9 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			if (type == 0) {
 				if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
 					exists = true;
-					Toast.makeText(getSherlockActivity(), "Download already on queue.", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_download_on_queue), Toast.LENGTH_SHORT).show();
 				} else {
-					Toast.makeText(getSherlockActivity(), "Downloading " + name + ".", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_downloading, name), Toast.LENGTH_SHORT).show();
 					LNReaderApplication.getInstance().addDownload(id, name);
 				}
 			} else if (type == 1) {
@@ -391,9 +393,9 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			} else if (type == 2) {
 				String downloadDescription = LNReaderApplication.getInstance().getDownloadDescription(id);
 				if (downloadDescription != null) {
-					String message = String.format("%s %s's download finished!", page.getTitle(), downloadDescription);
+					String message = getResources().getString(R.string.toast_download_finish, page.getTitle(), downloadDescription);
 					if (hasError)
-						message = String.format("%s %s's download finished with error(s)!", page.getTitle(), downloadDescription);
+						message = getResources().getString(R.string.toast_download_finish_with_error, page.getTitle(), downloadDescription);
 					Toast.makeText(getSherlockActivity(), message, Toast.LENGTH_SHORT).show();
 				}
 				LNReaderApplication.getInstance().removeDownload(id);
@@ -497,9 +499,9 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 							@Override
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 								if (isChecked) {
-									Toast.makeText(getSherlockActivity(), "Added to watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
+									Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_add_watch, page.getTitle()), Toast.LENGTH_SHORT).show();
 								} else {
-									Toast.makeText(getSherlockActivity(), "Removed from watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
+									Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_remove_watch, page.getTitle()), Toast.LENGTH_SHORT).show();
 								}
 								// update the db!
 								page.setWatched(isChecked);
@@ -511,7 +513,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 						ImageView ImageViewCover = (ImageView) synopsis.findViewById(R.id.cover);
 						if (novelCol.getCoverBitmap() == null) {
 							// IN app test, is returning empty bitmap
-							Toast.makeText(getSherlockActivity(), "Bitmap empty", Toast.LENGTH_LONG).show();
+							Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_err_bitmap_empty), Toast.LENGTH_LONG).show();
 						} else {
 
 							if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && getStrechCoverPreference()) {
