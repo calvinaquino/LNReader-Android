@@ -56,8 +56,8 @@ public class DisplayOriginalListFragment extends SherlockListFragment implements
 	private LoadOriginalsTask task = null;
 	private DownloadNovelDetailsTask downloadTask = null;
 	private AddNovelTask addTask = null;
-	// private ProgressDialog dialog;
 	String touchedForDownload;
+	ListView listView = null;
 
 	private TextView loadingText;
 	private ProgressBar loadingBar;
@@ -86,7 +86,7 @@ public class DisplayOriginalListFragment extends SherlockListFragment implements
 
 		getSherlockActivity().setTitle("Light Novels: Original");
 
-		// if(adapter != null) adapter.notifyDataSetChanged();
+		listView = getListView();
 		return view;
 	}
 
@@ -307,23 +307,17 @@ public class DisplayOriginalListFragment extends SherlockListFragment implements
 
 	@Override
 	public void toggleProgressBar(boolean show) {
-		// if(show) {
-		// dialog = ProgressDialog.show(this, "Originals List", "Loading. Please wait...", true);
-		// dialog.getWindow().setGravity(Gravity.CENTER);
-		// dialog.setCanceledOnTouchOutside(true);
-		// }
-		// else {
-		// dialog.dismiss();
-		// }
 		if (show) {
 			loadingText.setText("Loading List, please wait...");
 			loadingText.setVisibility(TextView.VISIBLE);
 			loadingBar.setVisibility(ProgressBar.VISIBLE);
-			getListView().setVisibility(ListView.GONE);
+			if (listView != null)
+				listView.setVisibility(ListView.GONE);
 		} else {
 			loadingText.setVisibility(TextView.GONE);
 			loadingBar.setVisibility(ProgressBar.GONE);
-			getListView().setVisibility(ListView.VISIBLE);
+			if (listView != null)
+				listView.setVisibility(ListView.VISIBLE);
 		}
 	}
 

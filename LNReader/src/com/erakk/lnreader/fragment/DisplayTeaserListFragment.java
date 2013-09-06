@@ -56,8 +56,8 @@ public class DisplayTeaserListFragment extends SherlockListFragment implements I
 	private LoadTeasersTask task = null;
 	private DownloadNovelDetailsTask downloadTask = null;
 	private AddNovelTask addTask = null;
-	// private ProgressDialog dialog;
 	String touchedForDownload;
+	ListView listView = null;
 
 	private TextView loadingText;
 	private ProgressBar loadingBar;
@@ -86,6 +86,7 @@ public class DisplayTeaserListFragment extends SherlockListFragment implements I
 		// if(adapter != null) adapter.notifyDataSetChanged();
 
 		getSherlockActivity().setTitle("Light Novels: Teasers");
+		listView = getListView();
 		return view;
 	}
 
@@ -299,23 +300,17 @@ public class DisplayTeaserListFragment extends SherlockListFragment implements I
 
 	@Override
 	public void toggleProgressBar(boolean show) {
-		// if(show) {
-		// dialog = ProgressDialog.show(this, "Teaser List", "Loading. Please wait...", true);
-		// dialog.getWindow().setGravity(Gravity.CENTER);
-		// dialog.setCanceledOnTouchOutside(true);
-		// }
-		// else {
-		// dialog.dismiss();
-		// }
 		if (show) {
 			loadingText.setText("Loading List, please wait...");
 			loadingText.setVisibility(TextView.VISIBLE);
 			loadingBar.setVisibility(ProgressBar.VISIBLE);
-			getListView().setVisibility(ListView.GONE);
+			if (listView != null)
+				listView.setVisibility(ListView.GONE);
 		} else {
 			loadingText.setVisibility(TextView.GONE);
 			loadingBar.setVisibility(ProgressBar.GONE);
-			getListView().setVisibility(ListView.VISIBLE);
+			if (listView != null)
+				listView.setVisibility(ListView.VISIBLE);
 		}
 	}
 
