@@ -558,7 +558,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 					expandList.setAdapter(bookModelAdapter);
 				} catch (Exception e2) {
 					Log.e(TAG, "Error when setting up chapter list: " + e2.getMessage(), e2);
-					Toast.makeText(DisplayLightNovelDetailsActivity.this, e2.getClass().toString() + ": " + e2.getMessage(), Toast.LENGTH_SHORT).show();
+					Toast.makeText(DisplayLightNovelDetailsActivity.this, getResources().getString(R.string.error_setting_chapter_list, e2.getMessage()), Toast.LENGTH_SHORT).show();
 				}
 				Log.d(TAG, "Loaded: " + novelCol.getPage());
 			}
