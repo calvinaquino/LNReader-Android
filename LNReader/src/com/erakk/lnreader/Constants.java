@@ -77,6 +77,7 @@ public class Constants {
 	public static final String PREF_RETRY = "retry";
 	public static final String PREF_INCREASE_RETRY = "increase_retry";
 	public static final String PREF_IMAGE_SAVE_LOC = "save_location";
+	public static final String PREF_AGGRESIVE_TITLE_CLEAN_UP = "aggresive_title_clean_up";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 

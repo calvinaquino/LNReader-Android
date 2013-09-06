@@ -21,6 +21,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
@@ -368,14 +369,19 @@ public class BakaTsukiParser {
 	 * @return
 	 */
 	private static String sanitize(String title, boolean isAggresive) {
+		Log.d(TAG, "Before: " + title);
 		title = title.replaceAll("<.+?>", "") // Strip tags
 				.replaceAll("\\[.+?\\]", "") // Strip [___]s
-				.replaceAll("- PDF", "").replaceAll("\\(.*PDF.*\\)", "") // Strip (PDF)
+				.replaceAll("- PDF", "").replaceAll("\\(PDF\\)", "") // Strip (PDF)
 				.replaceAll("- (Full Text)", "").replaceAll("- \\(.*Full Text.*\\)", ""); // Strip - (Full Text)
-		if (isAggresive)
-			title = title.replaceAll("^(.+?)[(\\[].*$", "$1"); // Leaves only the text before brackets (might be a bit
-																// too aggressive);
-
+		Log.d(TAG, "After: " + title);
+		if (isAggresive) {
+			if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_AGGRESIVE_TITLE_CLEAN_UP, true)) {
+				// Leaves only the text before brackets (might be a bit too aggressive)
+				title = title.replaceAll("^(.+?)[(\\[].*$", "$1");
+				Log.d(TAG, "After Aggresive: " + title);
+			}
+		}
 		return title.trim();
 	}
 
@@ -476,7 +482,10 @@ public class BakaTsukiParser {
 	public static int processH3(NovelCollectionModel novel, ArrayList<BookModel> books, Element bookElement, int bookOrder) {
 		// Log.d(TAG, "Found: " +bookElement.text());
 		BookModel book = new BookModel();
-		book.setTitle(sanitize(bookElement.text(), true));
+		if (bookElement.html().contains("href"))
+			book.setTitle(sanitize(bookElement.text(), true));
+		else
+			book.setTitle(sanitize(bookElement.text(), false));
 		book.setOrder(bookOrder);
 		ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
 		String parent = novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle();
@@ -582,7 +591,12 @@ public class BakaTsukiParser {
 			else if (bookElement.tagName() == "p") {
 				// Log.d(TAG, "Found: " + bookElement.text());
 				BookModel book = new BookModel();
-				book.setTitle(sanitize(bookElement.text(), true));
+
+				if (bookElement.html().contains("href"))
+					// title contains link
+					book.setTitle(sanitize(bookElement.text(), true));
+				else
+					book.setTitle(sanitize(bookElement.text(), false));
 				book.setOrder(bookOrder);
 				ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
 				String parent = novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle();
@@ -647,7 +661,11 @@ public class BakaTsukiParser {
 			else if (bookElement.tagName() == "ul" || bookElement.tagName() == "dl") {
 				// Log.d(TAG, "Found: " +bookElement.text());
 				BookModel book = new BookModel();
-				book.setTitle(sanitize(h2.text(), true));
+				if (h2.html().contains("href"))
+					// title contains link
+					book.setTitle(sanitize(h2.text(), true));
+				else
+					book.setTitle(sanitize(h2.text(), false));
 				book.setOrder(bookOrder);
 				ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
 				String parent = novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle();

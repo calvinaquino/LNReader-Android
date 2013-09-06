@@ -226,4 +226,6 @@
     <string name="pref_retry_summary">Times to retry before giving up: %1$s time(s)</string>
     <string name="increase_retry_title">Increase Timeout if Failed</string>
     <string name="increase_retry_summary">Increase timeout when error occured (doubled for each failure).</string>
+    <string name="aggresive_title_clean_up_title">Aggresive Book Title Clean Up</string>
+    <string name="aggresive_title_clean_up_summary">Enable aggresive book title clean up (remove everything after bracket / \'(\' )</string>
 </resources>

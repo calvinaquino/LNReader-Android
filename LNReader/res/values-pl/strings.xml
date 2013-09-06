@@ -224,4 +224,6 @@
     <string name="pref_retry_summary">Ilość prób pobierania: %1$s razy</string>
     <string name="increase_retry_title">Wydłużenie czasu pomiędzy próbami pobierania</string>
     <string name="increase_retry_summary">W razie przerwania pobierania, czas między wznowieniem ulega podwojeniu.</string>
+    <string name="aggresive_title_clean_up_title">Aggresive Book Title Clean Up</string>
+    <string name="aggresive_title_clean_up_summary">Enable aggresive book title clean up (remove everything after bracket / \'(\' )</string>
 </resources>
