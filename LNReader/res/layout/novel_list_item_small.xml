@@ -58,6 +58,6 @@
         android:checked="false"
         android:focusable="false"
         android:gravity="center"
-        android:layout_marginRight="20dp" />
+        android:layout_marginRight="25dp" />
 
 </LinearLayout>

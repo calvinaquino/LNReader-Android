@@ -64,7 +64,7 @@
         android:id="@+id/novel_is_watched"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="25dp"
         android:button="@android:drawable/btn_star"
         android:checked="false"
         android:focusable="false"
