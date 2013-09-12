@@ -80,13 +80,13 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		super.onCreateView(inflater, container, savedInstanceState);
 		View view = inflater.inflate(R.layout.activity_display_light_novel_list, container, false);
 
 		loadingText = (TextView) view.findViewById(R.id.emptyList);
 		loadingBar = (ProgressBar) view.findViewById(R.id.empttListProgress);
 		getSherlockActivity().setTitle("Light Novels");
 
-		listView = getListView();
 		return view;
 	}
 
@@ -105,6 +105,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 		updateContent(false, onlyWatched);
 
 		registerForContextMenu(getListView());
+		listView = getListView();
 	}
 
 	@Override

@@ -275,12 +275,20 @@ public class UIHelper {
 		editor.commit(); // save change
 	}
 
+	/**
+	 * Get image root path, remove '/' from the last character.
+	 * 
+	 * @param activity
+	 * @return
+	 */
 	public static String getImageRoot(Context activity) {
 		String loc = PreferenceManager.getDefaultSharedPreferences(activity).getString(Constants.PREF_IMAGE_SAVE_LOC, "");
 		if (Util.isStringNullOrEmpty(loc)) {
 			Log.w(TAG, "Empty Path, use default path for image storage.");
 			loc = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files";
 		}
+		if (loc.endsWith("/"))
+			loc = loc.substring(0, loc.length() - 1);
 		return loc;
 	}
 

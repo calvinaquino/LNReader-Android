@@ -305,6 +305,10 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 		downloadTask = new DownloadNovelDetailsTask(this);
 		String key = null;
 		if (novels != null) {
+			if (novels.size() == 0) {
+				Log.w(TAG, getResources().getString(R.string.error_empty_download_array));
+				return;
+			}
 			key = DisplayAlternativeNovelListActivity.TAG + ":" + novels.get(0).getPage();
 			if (novels.size() > 1)
 				key = AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategory();

@@ -79,6 +79,7 @@ public class DisplayOriginalListFragment extends SherlockListFragment implements
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		super.onCreateView(inflater, container, savedInstanceState);
 		View view = inflater.inflate(R.layout.activity_display_light_novel_list, container, false);
 
 		loadingText = (TextView) view.findViewById(R.id.emptyList);
@@ -86,7 +87,6 @@ public class DisplayOriginalListFragment extends SherlockListFragment implements
 
 		getSherlockActivity().setTitle("Light Novels: Original");
 
-		listView = getListView();
 		return view;
 	}
 
@@ -100,6 +100,7 @@ public class DisplayOriginalListFragment extends SherlockListFragment implements
 		 ****************************************************/
 		registerForContextMenu(getListView());
 		updateContent(false);
+		listView = getListView();
 	}
 
 	@Override

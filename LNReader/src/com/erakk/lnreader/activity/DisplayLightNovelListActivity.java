@@ -364,8 +364,10 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 	@SuppressLint("NewApi")
 	private void executeDownloadTask(ArrayList<PageModel> novels) {
 		downloadTask = new DownloadNovelDetailsTask(this);
-		if (novels == null || novels.size() == 0)
+		if (novels == null || novels.size() == 0) {
+			Log.w(TAG, getResources().getString(R.string.error_empty_download_array));
 			return;
+		}
 		String key = DisplayLightNovelDetailsActivity.TAG + ":" + novels.get(0).getPage();
 		if (novels.size() > 1) {
 			key = DisplayLightNovelDetailsActivity.TAG + ":All_Novels";

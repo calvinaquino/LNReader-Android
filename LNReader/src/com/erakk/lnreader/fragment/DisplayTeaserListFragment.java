@@ -79,6 +79,7 @@ public class DisplayTeaserListFragment extends SherlockListFragment implements I
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		super.onCreateView(inflater, container, savedInstanceState);
 		View view = inflater.inflate(R.layout.activity_display_light_novel_list, container, false);
 
 		loadingText = (TextView) view.findViewById(R.id.emptyList);
@@ -86,7 +87,7 @@ public class DisplayTeaserListFragment extends SherlockListFragment implements I
 		// if(adapter != null) adapter.notifyDataSetChanged();
 
 		getSherlockActivity().setTitle("Light Novels: Teasers");
-		listView = getListView();
+
 		return view;
 	}
 
@@ -96,6 +97,7 @@ public class DisplayTeaserListFragment extends SherlockListFragment implements I
 
 		updateContent(false);
 		registerForContextMenu(getListView());
+		listView = getListView();
 	}
 
 	@Override

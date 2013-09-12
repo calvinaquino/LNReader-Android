@@ -3,11 +3,9 @@
  */
 package com.erakk.lnreader.parser;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,7 +19,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
@@ -278,7 +275,7 @@ public class BakaTsukiParser {
 		novel.setPage(page.getPage());
 		novel.setPageModel(page);
 
-		String redirected = redirectedFrom(doc, page);
+		String redirected = CommonParser.redirectedFrom(doc, page);
 		novel.setRedirectTo(redirected);
 
 		parseNovelSynopsis(doc, novel);
@@ -343,48 +340,6 @@ public class BakaTsukiParser {
 		return page;
 	}
 
-	/**
-	 * Check if the page is redirected. Return null if not.
-	 * 
-	 * @param doc
-	 * @param page
-	 * @return
-	 */
-	private static String redirectedFrom(Document doc, PageModel page) {
-		if (page.getRedirectedTo() != null) {
-			try {
-				return URLEncoder.encode(page.getRedirectedTo().replace(" ", "_"), "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				Log.e(TAG, "Error when encoding redirected pages", e);
-				return null;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Sanitizes a title by removing unnecessary stuff.
-	 * 
-	 * @param title
-	 * @return
-	 */
-	private static String sanitize(String title, boolean isAggresive) {
-		Log.d(TAG, "Before: " + title);
-		title = title.replaceAll("<.+?>", "") // Strip tags
-				.replaceAll("\\[.+?\\]", "") // Strip [___]s
-				.replaceAll("- PDF", "").replaceAll("\\(PDF\\)", "") // Strip (PDF)
-				.replaceAll("- (Full Text)", "").replaceAll("- \\(.*Full Text.*\\)", ""); // Strip - (Full Text)
-		Log.d(TAG, "After: " + title);
-		if (isAggresive) {
-			if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_AGGRESIVE_TITLE_CLEAN_UP, true)) {
-				// Leaves only the text before brackets (might be a bit too aggressive)
-				title = title.replaceAll("^(.+?)[(\\[].*$", "$1");
-				Log.d(TAG, "After Aggresive: " + title);
-			}
-		}
-		return title.trim();
-	}
-
 	private static void parseNovelChapters(Document doc, NovelCollectionModel novel) {
 		// Log.d(TAG, "Start parsing book collections for " + novel.getPage());
 		// parse the collection
@@ -444,7 +399,7 @@ public class BakaTsukiParser {
 		}
 		// Log.d(TAG, "Complete parsing book collections: " + books.size());
 
-		novel.setBookCollections(validateNovelBooks(books));
+		novel.setBookCollections(CommonParser.validateNovelBooks(books));
 	}
 
 	/***
@@ -483,9 +438,9 @@ public class BakaTsukiParser {
 		// Log.d(TAG, "Found: " +bookElement.text());
 		BookModel book = new BookModel();
 		if (bookElement.html().contains("href"))
-			book.setTitle(sanitize(bookElement.text(), true));
+			book.setTitle(CommonParser.sanitize(bookElement.text(), true));
 		else
-			book.setTitle(sanitize(bookElement.text(), false));
+			book.setTitle(CommonParser.sanitize(bookElement.text(), false));
 		book.setOrder(bookOrder);
 		ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
 		String parent = novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle();
@@ -550,7 +505,7 @@ public class BakaTsukiParser {
 	 */
 	private static PageModel processA(String title, String parent, int chapterOrder, Element link) {
 		PageModel p = new PageModel();
-		p.setTitle(sanitize(title, false));
+		p.setTitle(CommonParser.sanitize(title, false));
 		p.setParent(parent);
 		p.setType(PageModel.TYPE_CONTENT);
 		p.setOrder(chapterOrder);
@@ -594,9 +549,9 @@ public class BakaTsukiParser {
 
 				if (bookElement.html().contains("href"))
 					// title contains link
-					book.setTitle(sanitize(bookElement.text(), true));
+					book.setTitle(CommonParser.sanitize(bookElement.text(), true));
 				else
-					book.setTitle(sanitize(bookElement.text(), false));
+					book.setTitle(CommonParser.sanitize(bookElement.text(), false));
 				book.setOrder(bookOrder);
 				ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
 				String parent = novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle();
@@ -663,9 +618,9 @@ public class BakaTsukiParser {
 				BookModel book = new BookModel();
 				if (h2.html().contains("href"))
 					// title contains link
-					book.setTitle(sanitize(h2.text(), true));
+					book.setTitle(CommonParser.sanitize(h2.text(), true));
 				else
-					book.setTitle(sanitize(h2.text(), false));
+					book.setTitle(CommonParser.sanitize(h2.text(), false));
 				book.setOrder(bookOrder);
 				ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
 				String parent = novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle();
@@ -686,48 +641,6 @@ public class BakaTsukiParser {
 			}
 		} while (walkBook);
 		return books;
-	}
-
-	private static ArrayList<BookModel> validateNovelBooks(ArrayList<BookModel> books) {
-		ArrayList<BookModel> validatedBooks = new ArrayList<BookModel>();
-		int bookOrder = 0;
-		for (Iterator<BookModel> iBooks = books.iterator(); iBooks.hasNext();) {
-			BookModel book = iBooks.next();
-			BookModel validatedBook = new BookModel();
-
-			ArrayList<PageModel> validatedChapters = validateNovelChapters(book);
-
-			// check if have any chapters
-			if (validatedChapters.size() > 0) {
-				validatedBook = book;
-				validatedBook.setChapterCollection(validatedChapters);
-				validatedBook.setOrder(bookOrder);
-				validatedBooks.add(validatedBook);
-				// Log.d("validateNovelBooks", "Adding: " + validatedBook.getTitle() + " order: " +
-				// validatedBook.getOrder());
-				++bookOrder;
-			}
-		}
-		return validatedBooks;
-	}
-
-	private static ArrayList<PageModel> validateNovelChapters(BookModel book) {
-		ArrayList<PageModel> chapters = book.getChapterCollection();
-		ArrayList<PageModel> validatedChapters = new ArrayList<PageModel>();
-		int chapterOrder = 0;
-		for (Iterator<PageModel> iChapter = chapters.iterator(); iChapter.hasNext();) {
-			PageModel chapter = iChapter.next();
-
-			if (!(chapter.getPage().contains("redlink=1") || // missing page
-					chapter.getPage().contains("User:") || // user page
-			chapter.getPage().contains("Special:BookSources") // ISBN handler
-			)) {
-				chapter.setOrder(chapterOrder);
-				validatedChapters.add(chapter);
-				++chapterOrder;
-			}
-		}
-		return validatedChapters;
 	}
 
 	private static String parseNovelCover(Document doc, NovelCollectionModel novel) {
@@ -843,10 +756,7 @@ public class BakaTsukiParser {
 		}
 		content.setImages(images);
 
-		// clean up the text
-		String cleanedText = text.replace("src=\"/project/images/", "src=\"file://" + UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + "/project/images/");
-		// Log.d("Result", cleanedText);
-		content.setContent(cleanedText);
+		content.setContent(CommonParser.replaceImagePath(text));
 
 		content.setLastXScroll(0);
 		content.setLastYScroll(0);

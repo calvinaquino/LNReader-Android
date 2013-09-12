@@ -242,4 +242,5 @@
     <string name="toast_remove_watch">Removed from watch list: %1$s</string>
     <string name="toast_err_bitmap_empty">Bitmap empty</string>
     <string name="error_setting_chapter_list">Error when setting up chapter list: %1$s</string>
+    <string name="error_empty_download_array">No item to be added into Download List</string>
 </resources>

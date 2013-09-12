@@ -285,6 +285,10 @@ public class DisplayOriginalListActivity extends SherlockListActivity implements
 	private void executeDownloadTask(ArrayList<PageModel> novels) {
 		downloadTask = new DownloadNovelDetailsTask(this);
 		String key = DisplayOriginalListActivity.TAG + ":" + novels.get(0).getPage();
+		if (novels == null || novels.size() == 0) {
+			Log.w(TAG, getResources().getString(R.string.error_empty_download_array));
+			return;
+		}
 		if (novels.size() > 1) {
 			key = DisplayOriginalListActivity.TAG + ":All_Original";
 		}

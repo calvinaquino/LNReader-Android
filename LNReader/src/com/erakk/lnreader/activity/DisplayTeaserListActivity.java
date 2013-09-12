@@ -283,6 +283,10 @@ public class DisplayTeaserListActivity extends SherlockListActivity implements I
 	private void executeDownloadTask(ArrayList<PageModel> novels) {
 		downloadTask = new DownloadNovelDetailsTask(this);
 		String key = DisplayTeaserListActivity.TAG + ":" + novels.get(0).getPage();
+		if (novels == null || novels.size() == 0) {
+			Log.w(TAG, getResources().getString(R.string.error_empty_download_array));
+			return;
+		}
 		if (novels.size() > 1) {
 			key = DisplayTeaserListActivity.TAG + ":All_Teasers";
 		}
