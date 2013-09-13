@@ -45,7 +45,7 @@
                 android:key="alphabet_order"
                 android:summary="@string/alphabet_order_summary"
                 android:title="@string/alphabet_order_title" />
-            <CheckBoxPreference
+            <CheckBoxPreference android:defaultValue="false" android:summary="@string/hide_empty_volume_summary" android:key="hide_empty_volume" android:title="@string/hide_empty_volume_title" /><CheckBoxPreference
                 android:defaultValue="true"
                 android:key="show_missing"
                 android:summary="@string/show_missing_summary"
@@ -163,9 +163,7 @@
                 android:defaultValue="true"
                 android:key="enable_bookmark"
                 android:summary="@string/enable_bookmark_summary"
-                android:title="@string/enable_bookmark_title" />
-
-            <PreferenceScreen android:title="@string/css_layout_title" >
+                android:title="@string/enable_bookmark_title" /><PreferenceScreen android:title="@string/css_layout_title" >
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:key="use_custom_css"
@@ -206,6 +204,7 @@
                     android:summary="@string/margin_summary"
                     android:title="@string/margin_title" />
             </PreferenceScreen>
+            
         </PreferenceScreen>
         <PreferenceScreen
             android:key="storage_category"

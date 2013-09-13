@@ -70,6 +70,7 @@ public class Constants {
 	public static final String PREF_IMAGE_SAVE_LOC = "save_location";
 	public static final String PREF_AGGRESIVE_TITLE_CLEAN_UP = "aggresive_title_clean_up";
 	public static final String PREF_USE_HTTPS = "use_https";
+	public static final String PREF_HIDE_EMPTY_VOLUME = "hide_empty_volume";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 

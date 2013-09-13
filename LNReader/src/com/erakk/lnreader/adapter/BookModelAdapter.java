@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -68,10 +69,8 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		ViewGroup container = (ViewGroup) view.findViewById(R.id.novel_chapter_container);
 
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-		int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics()); // Converts
-																																	// 8dp
-																																	// into
-																																	// px
+		// Converts 8dp into px
+		int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics());
 
 		ImageView ivFinishedReading = new ImageView(context);
 		ivFinishedReading.setImageResource(R.drawable.ic_finished_reading);
@@ -202,9 +201,16 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public View getGroupView(int groupPosition, boolean isLastChild, View view, ViewGroup parent) {
-		BookModel group = getGroup(groupPosition);
 		LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		view = inf.inflate(R.layout.expandvolume_list_item, null);
+
+		BookModel group = getGroup(groupPosition);
+		ArrayList<PageModel> chapterList = group.getChapterCollection();
+		boolean isHideEmptyVolume = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_HIDE_EMPTY_VOLUME, false);
+		if (isHideEmptyVolume && (chapterList == null || chapterList.size() == 0)) {
+			return new FrameLayout(context);
+		}
+
 		TextView tv = (TextView) view.findViewById(R.id.novel_volume);
 		tv.setText(group.getTitle());
 
@@ -220,7 +226,6 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		ivHasUpdates.setPadding(padding, padding, padding, padding);
 		ivHasUpdates.setLayoutParams(params);
 
-		ArrayList<PageModel> chapterList = group.getChapterCollection();
 		// check if any chapter has updates
 		for (PageModel pageModel : chapterList) {
 			if (NovelsDao.getInstance().isContentUpdated(pageModel)) {
