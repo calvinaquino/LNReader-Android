@@ -174,9 +174,11 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 			if (!Util.isStringNullOrEmpty(imageModel.getPath())) {
 				imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
 				String imageUrl = "file:///" + Util.sanitizeFilename(imageModel.getPath());
+				imageUrl = imageUrl.replace("file:////", "file:///");
 				imgWebView.loadUrl(imageUrl);
 				String title = imageModel.getName();
 				setTitle(title.substring(title.lastIndexOf("/")));
+				Toast.makeText(this, String.format("Loaded: %s", imageUrl), Toast.LENGTH_SHORT).show();
 				Log.d("LoadImageTask", "Loaded: " + imageUrl);
 			} else {
 				Log.e(TAG, "Cannot get the image path.");
