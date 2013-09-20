@@ -43,6 +43,7 @@ import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.model.UpdateInfoModel;
 import com.erakk.lnreader.parser.BakaTsukiParser;
 import com.erakk.lnreader.parser.BakaTsukiParserAlternative;
+import com.erakk.lnreader.parser.CommonParser;
 
 /**
  * @author Nandaka
@@ -633,7 +634,7 @@ public class NovelsDao {
 				PageModel pageModel = null;
 				String lang = page.getLanguage();
 				if (lang != null)
-					pageModel = BakaTsukiParserAlternative.parsePageAPI(page, response.parse(), fullUrl);
+					pageModel = CommonParser.parsePageAPI(page, response.parse(), fullUrl);
 				pageModel.setFinishedRead(page.isFinishedRead());
 				pageModel.setWatched(page.isWatched());
 
@@ -871,7 +872,7 @@ public class NovelsDao {
 					String url = baseUrl + titles;
 					Response response = Jsoup.connect(url).timeout(getTimeout(retry)).execute();
 					Document doc = response.parse();
-					ArrayList<PageModel> updatedPageModels = BakaTsukiParser.parsePageAPI(checkedPageModel, doc, url);
+					ArrayList<PageModel> updatedPageModels = CommonParser.parsePageAPI(checkedPageModel, doc, url);
 					resultPageModel.addAll(updatedPageModels);
 					break;
 				} catch (EOFException eof) {

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.erakk.lnreader"
     android:installLocation="auto"
-    android:versionCode="20130915"
+    android:versionCode="20130920"
     android:versionName="1.1.9-beta" >
 
     <uses-sdk

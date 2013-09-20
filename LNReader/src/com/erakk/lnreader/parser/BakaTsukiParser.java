@@ -5,14 +5,9 @@ package com.erakk.lnreader.parser;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -39,88 +34,6 @@ import com.erakk.lnreader.model.PageModel;
 public class BakaTsukiParser {
 
 	private static final String TAG = BakaTsukiParser.class.toString();
-
-	/**
-	 * parse page info from Wiki API
-	 * 
-	 * @param pageModel
-	 *            page name
-	 * @param doc
-	 *            parsed page for given pageName
-	 * @return PageModel status, no parent and type defined
-	 */
-	public static PageModel parsePageAPI(PageModel pageModel, Document doc, String url) throws Exception {
-		ArrayList<PageModel> temp = new ArrayList<PageModel>();
-		temp.add(pageModel);
-		temp = parsePageAPI(temp, doc, url);
-		return temp.get(0);
-	}
-
-	/**
-	 * parse pages info from Wiki API
-	 * 
-	 * @param pageModels
-	 *            ArrayList of pages
-	 * @param doc
-	 *            parsed page for given pages
-	 * @return PageModel status, no parent and type defined
-	 */
-	public static ArrayList<PageModel> parsePageAPI(ArrayList<PageModel> pageModels, Document doc, String url) throws Exception {
-		Elements normalized = doc.select("n");
-		Elements redirects = doc.select("r");
-		// Log.d(TAG, "parsePageAPI redirected size: " + redirects.size());
-		Elements pages = doc.select("page");
-		Log.d(TAG, "parsePageAPI pages size: " + pages.size());
-
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
-		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-		for (int i = 0; i < pageModels.size(); ++i) {
-			PageModel temp = pageModels.get(i);
-
-			String to = URLDecoder.decode(temp.getPage(), "utf-8");
-			Log.d(TAG, "parsePageAPI source: " + to);
-
-			// get normalized value for this page
-			Elements nElements = normalized.select("n[from=" + to + "]");
-			if (nElements != null && nElements.size() > 0) {
-				Element nElement = nElements.first();
-				to = nElement.attr("to");
-				Log.d(TAG, "parsePageAPI normalized: " + to);
-			}
-
-			// check redirects
-			if (redirects != null && redirects.size() > 0) {
-				Elements rElements = redirects.select("r[from=" + to + "]");
-				if (rElements != null && rElements.size() > 0) {
-					Element rElement = rElements.first();
-					to = rElement.attr("to");
-					temp.setRedirectedTo(to);
-					Log.i(TAG, "parsePageAPI redirected: " + to);
-				}
-			}
-
-			Element pElement = pages.select("page[title=" + to + "]").first();
-			if (pElement == null) {
-				Log.w(TAG, "parsePageAPI " + temp.getPage() + ": No Info, please check the url: " + url);
-			} else if (!pElement.hasAttr("missing")) {
-				// parse date
-				String tempDate = pElement.attr("touched");
-				if (!Util.isStringNullOrEmpty(tempDate)) {
-					Date lastUpdate = formatter.parse(tempDate);
-					temp.setLastUpdate(lastUpdate);
-					temp.setMissing(false);
-					Log.i(TAG, "parsePageAPI " + temp.getPage() + " Last Update: " + temp.getLastUpdate());
-				} else {
-					Log.w(TAG, "parsePageAPI " + temp.getPage() + " No Last Update Information!");
-				}
-			} else {
-				temp.setMissing(true);
-				Log.w(TAG, "parsePageAPI missing page info: " + to);
-			}
-		}
-		return pageModels;
-	}
 
 	/**
 	 * @param doc
