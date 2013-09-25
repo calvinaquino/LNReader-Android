@@ -710,9 +710,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		wv.getSettings().setSupportZoom(getZoomPreferences());
 		wv.getSettings().setBuiltInZoomControls(getZoomPreferences());
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			wv.getSettings().setDisplayZoomControls(getZoomControlPreferences());
-		}
+		wv.setDisplayZoomControl(getZoomControlPreferences());
 
 		wv.getSettings().setLoadWithOverviewMode(true);
 		// wv.getSettings().setUseWideViewPort(true);

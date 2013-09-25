@@ -50,10 +50,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		imgWebView.setBackgroundColor(0);
 
 		imgWebView.getSettings().setBuiltInZoomControls(getZoomPreferences());
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			imgWebView.getSettings().setDisplayZoomControls(getZoomControlPreferences());
-		}
+		imgWebView.setDisplayZoomControl(getZoomControlPreferences());
 
 		Intent intent = getIntent();
 		url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
