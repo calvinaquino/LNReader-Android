@@ -288,6 +288,9 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 	@Override
 	public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
 		boolean exists = false;
+		if (!this.isAdded() || this.isDetached())
+			return exists;
+
 		String name = touchedForDownload;
 		if (type == 0) {
 			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {

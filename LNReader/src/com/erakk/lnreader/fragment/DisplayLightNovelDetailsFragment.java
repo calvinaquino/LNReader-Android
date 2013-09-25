@@ -378,6 +378,9 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 	@Override
 	public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
 		boolean exists = false;
+		if (!this.isAdded() || this.isDetached())
+			return exists;
+
 		if (page != null && !Util.isStringNullOrEmpty(page.getTitle())) {
 			String name = page.getTitle() + " " + touchedForDownload;
 			if (type == 0) {
