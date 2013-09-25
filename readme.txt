@@ -24,7 +24,13 @@ LINE-ENDINGS & SOURCE ENCODING CONFIG
 * Eclipse Config:
   - http://stackoverflow.com/questions/1886185/eclipse-and-windows-newlines
 
+FAQ
+====================================================
+Q1: I cannot load the Main Novel List/empty novel list!
+A1: Try to disable the AdBlocker/Firewall.
 
+Q2: The last updated date is showing 43 years ago!
+A2: Try to disable the AdBlocker/Firewall.
 
 (Old Version 20130106)
 TASK LIST - Version 1.1.0 beta build 31
