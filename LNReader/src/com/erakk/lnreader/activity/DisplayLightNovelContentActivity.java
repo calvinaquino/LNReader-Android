@@ -374,7 +374,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		case R.id.menu_downloads_list:
 			Intent downloadsItent = new Intent(this, DownloadListActivity.class);
 			startActivity(downloadsItent);
-			;
 			return true;
 		case android.R.id.home:
 			finish();

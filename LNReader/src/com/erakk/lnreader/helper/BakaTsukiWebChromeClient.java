@@ -1,5 +1,7 @@
 package com.erakk.lnreader.helper;
 
+import java.lang.ref.WeakReference;
+
 import android.util.Log;
 import android.view.View;
 import android.webkit.ConsoleMessage;
@@ -21,15 +23,19 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 	private static final String SCROLL_EVENT = "SCROLL_EVENT";
 	private static final String LOAD_COMPLETE_EVENT = "LOAD_COMPLETE_EVENT";
 	private int oldScrollY = 0;
-	private DisplayLightNovelContentActivity caller;
-	
+	protected WeakReference<DisplayLightNovelContentActivity> activityRef;
+
 	public BakaTsukiWebChromeClient(DisplayLightNovelContentActivity caller) {
 		super();
-		this.caller = caller;
+		this.activityRef = new WeakReference<DisplayLightNovelContentActivity>(caller);
 	}
-	
+
 	@Override
-	public boolean onConsoleMessage (ConsoleMessage consoleMessage) {
+	public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+		final DisplayLightNovelContentActivity caller = activityRef.get();
+		if (caller == null)
+			return false;
+
 		try {
 			if (consoleMessage.message().startsWith(HIGHLIGHT_EVENT)) {
 				Log.d(TAG, "Highlight Event");
@@ -50,7 +56,7 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 					Log.e(TAG, "Error when parsing pIndex: " + ex.getMessage(), ex);
 				}
 			} else if (consoleMessage.message().startsWith(SCROLL_EVENT)) {
-				//Log.d(TAG, "Scroll Event");
+				// Log.d(TAG, "Scroll Event");
 				String data[] = consoleMessage.message().split(":");
 				if (data.length > 1 && data[1] != null) {
 					caller.updateLastLine(Integer.parseInt(data[1]));
@@ -67,9 +73,8 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 						}
 					}
 					oldScrollY = newScrollY;
-				}
-				else if(consoleMessage.message().startsWith(LOAD_COMPLETE_EVENT)) {
-					caller.notifyLoadComplete();				
+				} else if (consoleMessage.message().startsWith(LOAD_COMPLETE_EVENT)) {
+					caller.notifyLoadComplete();
 				}
 			} else {
 				Log.d(TAG, "Console: " + consoleMessage.lineNumber() + ":" + consoleMessage.message());
@@ -79,25 +84,27 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 		}
 		return true;
 	}
-	
+
 	@Override
-	public boolean onJsAlert (WebView view, String url, String message, JsResult result) {
+	public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
 		Log.d(TAG, "JSAlert: " + message);
 		return true;
 	}
-	
+
 	@Override
 	public void onProgressChanged(WebView view, int progress) {
 		Log.d(TAG, "Progress: " + progress);
-		ProgressBar progressBar = (ProgressBar) caller.findViewById(R.id.progressBar1);
-		if(progressBar != null) {
-			if(progress < 100) {
-				progressBar.setVisibility(View.VISIBLE);
-				progressBar.setProgress(progress);
-			}
-			else {
-				progressBar.setVisibility(View.GONE);
+		final DisplayLightNovelContentActivity caller = activityRef.get();
+		if (caller != null) {
+			ProgressBar progressBar = (ProgressBar) caller.findViewById(R.id.progressBar1);
+			if (progressBar != null) {
+				if (progress < 100) {
+					progressBar.setVisibility(View.VISIBLE);
+					progressBar.setProgress(progress);
+				} else {
+					progressBar.setVisibility(View.GONE);
+				}
 			}
 		}
-   }
+	}
 }
