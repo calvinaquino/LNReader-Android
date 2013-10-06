@@ -55,7 +55,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 	private LoadNovelsTask task = null;
 	private DownloadNovelDetailsTask downloadTask = null;
 	private AddNovelTask addTask = null;
-	// private ProgressDialog dialog;
+
 	private boolean isInverted;
 	private boolean onlyWatched = false;
 	String touchedForDownload;
@@ -75,9 +75,6 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 		registerForContextMenu(getListView());
 		onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
 
-		// Encapsulated in updateContent
-		updateContent(false, onlyWatched);
-
 		if (onlyWatched) {
 			setTitle(getResources().getString(R.string.watched_light_novels));
 		} else {
@@ -85,6 +82,9 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 		}
 		registerForContextMenu(getListView());
 		isInverted = getColorPreferences();
+
+		// Encapsulated in updateContent
+		updateContent(false, onlyWatched);
 	}
 
 	@Override
@@ -412,18 +412,11 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 
 	@Override
 	public void toggleProgressBar(boolean show) {
-		// if(show) {
-		// dialog = ProgressDialog.show(this, "Novel List", "Loading. Please wait...", true);
-		// dialog.getWindow().setGravity(Gravity.CENTER);
-		// dialog.setCanceledOnTouchOutside(true);
-		// }
-		// else {
-		// dialog.dismiss();
-		// }
 		if (show) {
 			loadingText.setText("Loading List, please wait...");
 			loadingText.setVisibility(TextView.VISIBLE);
 			loadingBar.setVisibility(ProgressBar.VISIBLE);
+			loadingBar.setIndeterminate(true);
 			getListView().setVisibility(ListView.GONE);
 		} else {
 			loadingText.setVisibility(TextView.GONE);
@@ -434,8 +427,6 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 
 	@Override
 	public void setMessageDialog(ICallbackEventData message) {
-		// if(dialog.isShowing())
-		// dialog.setMessage(message.getMessage());
 		if (loadingText.getVisibility() == TextView.VISIBLE)
 			loadingText.setText(message.getMessage());
 	}

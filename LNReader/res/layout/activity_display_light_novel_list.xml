@@ -19,6 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/emptyList"
+        android:indeterminate="true"
         android:visibility="gone" />
 	<TextView
         android:id="@+id/emptyList"

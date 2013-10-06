@@ -100,7 +100,7 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 		Log.d(TAG, "Progress: " + progress);
 		final DisplayLightNovelContentActivity caller = activityRef.get();
 		if (caller != null) {
-			ProgressBar progressBar = (ProgressBar) caller.findViewById(R.id.progressBar1);
+			ProgressBar progressBar = (ProgressBar) caller.findViewById(R.id.loadProgress);
 			if (progressBar != null) {
 				if (progress < 100) {
 					progressBar.setVisibility(View.VISIBLE);

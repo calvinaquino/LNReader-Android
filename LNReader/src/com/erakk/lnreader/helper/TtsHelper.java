@@ -158,9 +158,6 @@ public class TtsHelper implements OnInitListener {
 					}
 				});
 			}
-
-			Toast.makeText(LNReaderApplication.getInstance(), "TTS ready", Toast.LENGTH_LONG).show();
-
 		} else {
 			Toast.makeText(LNReaderApplication.getInstance(), "TTS init failed", Toast.LENGTH_LONG).show();
 			if (listener != null) {

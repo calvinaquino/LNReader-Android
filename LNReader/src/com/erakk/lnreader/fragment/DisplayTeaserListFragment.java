@@ -95,9 +95,9 @@ public class DisplayTeaserListFragment extends SherlockListFragment implements I
 	public void onStart() {
 		super.onStart();
 
-		updateContent(false);
 		registerForContextMenu(getListView());
 		listView = getListView();
+		updateContent(false);
 	}
 
 	@Override

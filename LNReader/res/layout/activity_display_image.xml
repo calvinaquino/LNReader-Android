@@ -4,24 +4,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
+    <ProgressBar
+        android:id="@+id/loadProgress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="6dip"
+        android:visibility="gone" />
+	<TextView
+        android:id="@+id/emptyList"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:paddingLeft="50dp"
+        android:paddingRight="50dp"
+        android:layout_centerInParent="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="@string/task_loading"
+        android:visibility="gone" />
     <com.erakk.lnreader.helper.NonLeakingWebView
         android:id="@+id/webViewImage"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
-
-    <!-- <ProgressBar
-        android:id="@+id/progressBar2"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
-
-    <TextView
-        android:id="@+id/loading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/progressBar2"
-        android:layout_centerHorizontal="true"
-        android:text="@string/loading" /> -->
     
 </RelativeLayout>

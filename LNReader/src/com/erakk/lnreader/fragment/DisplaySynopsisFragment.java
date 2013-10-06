@@ -1,7 +1,6 @@
 package com.erakk.lnreader.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -9,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +15,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +44,9 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 
 	private LoadNovelDetailsTask task = null;
 	private PageModel page;
-	private ProgressDialog dialog;
+
+	private TextView loadingText;
+	private ProgressBar loadingBar;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -56,13 +57,15 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 		// Get intent and message
 		page = new PageModel();
 		page.setPage(getArguments().getString(Constants.EXTRA_PAGE));
-		// page.setTitle(intent.getStringExtra(Constants.EXTRA_TITLE));
 
 		try {
 			page = NovelsDao.getInstance(getSherlockActivity()).getPageModel(page, null);
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting Page Model for " + page.getPage(), e);
 		}
+
+		loadingText = (TextView) view.findViewById(R.id.emptyList);
+		loadingBar = (ProgressBar) view.findViewById(R.id.empttListProgress);
 
 		executeTask(page, false);
 
@@ -106,16 +109,21 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 	@Override
 	public void toggleProgressBar(boolean show) {
 		if (show) {
-			dialog = ProgressDialog.show(getSherlockActivity(), "Novel Details", "Loading. Please wait...", true);
-			dialog.getWindow().setGravity(Gravity.CENTER);
-			dialog.setCanceledOnTouchOutside(true);
+			loadingText.setText("Loading List, please wait...");
+			loadingText.setVisibility(TextView.VISIBLE);
+			loadingBar.setVisibility(ProgressBar.VISIBLE);
+			loadingBar.setIndeterminate(true);
 		} else {
-			dialog.dismiss();
+			loadingText.setVisibility(TextView.GONE);
+			loadingBar.setVisibility(ProgressBar.GONE);
+
 		}
 	}
 
 	@Override
 	public void setMessageDialog(ICallbackEventData message) {
+		if (loadingText.getVisibility() == TextView.VISIBLE)
+			loadingText.setText(message.getMessage());
 	}
 
 	@Override

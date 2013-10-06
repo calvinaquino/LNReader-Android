@@ -1,16 +1,15 @@
 package com.erakk.lnreader.activity;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.AsyncTask.Status;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Gravity;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -34,7 +33,9 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 	private NonLeakingWebView imgWebView;
 	private LoadImageTask task;
 	private String url;
-	private ProgressDialog dialog;
+
+	private TextView loadingText;
+	private ProgressBar loadingBar;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -52,8 +53,12 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		imgWebView.getSettings().setBuiltInZoomControls(getZoomPreferences());
 		imgWebView.setDisplayZoomControl(getZoomControlPreferences());
 
+		loadingText = (TextView) findViewById(R.id.emptyList);
+		loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
+
 		Intent intent = getIntent();
 		url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
+
 		executeTask(url, false);
 	}
 
@@ -70,25 +75,35 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 
 	@SuppressLint("NewApi")
 	private void executeTask(String url, boolean refresh) {
+		imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
 		task = new LoadImageTask(refresh, this);
 		String key = TAG + ":" + url;
-		if (LNReaderApplication.getInstance().addTask(key, task)) {
+		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
+		if (isAdded) {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new String[] { url });
 			else
 				task.execute(new String[] { url });
+		} else {
+			LoadImageTask tempTask = (LoadImageTask) LNReaderApplication.getInstance().getTask(key);
+			if (tempTask != null) {
+				task = tempTask;
+				task.owner = this;
+			}
+			toggleProgressBar(true);
 		}
 	}
 
 	@Override
 	protected void onStop() {
-		// check running task
-		if (task != null) {
-			if (!(task.getStatus() == Status.FINISHED)) {
-				Toast.makeText(this, getResources().getString(R.string.cancel_task) + task.toString(), Toast.LENGTH_SHORT).show();
-				task.cancel(true);
-			}
-		}
+		// // check running task
+		// if (task != null) {
+		// if (!(task.getStatus() == Status.FINISHED)) {
+		// Toast.makeText(this, getResources().getString(R.string.cancel_task) + task.toString(),
+		// Toast.LENGTH_SHORT).show();
+		// task.cancel(true);
+		// }
+		// }
 		super.onStop();
 	}
 
@@ -109,7 +124,6 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 			/*
 			 * Implement code to refresh image content
 			 */
-			// refresh = true;
 			executeTask(url, true);
 			return true;
 		case R.id.menu_downloads_list:
@@ -126,34 +140,37 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 	@Override
 	public void toggleProgressBar(boolean show) {
 		if (show) {
-			dialog = ProgressDialog.show(this, getResources().getString(R.string.display_image), getResources().getString(R.string.loading_image), false);
-			dialog.getWindow().setGravity(Gravity.CENTER);
-			dialog.setCanceledOnTouchOutside(true);
+			loadingText.setText("Loading image, please wait...");
+			loadingText.setVisibility(TextView.VISIBLE);
+			loadingBar.setVisibility(ProgressBar.VISIBLE);
+			// imgWebView.setVisibility(ListView.GONE);
 		} else {
-			dialog.dismiss();
+			loadingText.setVisibility(TextView.GONE);
+			loadingBar.setVisibility(ProgressBar.GONE);
+			// imgWebView.setVisibility(ListView.VISIBLE);
 		}
 	}
 
 	@Override
 	public void setMessageDialog(ICallbackEventData message) {
-		if (dialog != null && dialog.isShowing()) {
-			ICallbackEventData data = message;
-			dialog.setMessage(data.getMessage());
+		if (loadingText.getVisibility() == TextView.VISIBLE) {
+			loadingText.setText(message.getMessage());
 
-			if (data.getClass() == DownloadCallbackEventData.class) {
-				DownloadCallbackEventData downloadData = (DownloadCallbackEventData) data;
+			if (message.getClass() == DownloadCallbackEventData.class) {
+				DownloadCallbackEventData downloadData = (DownloadCallbackEventData) message;
 				int percent = downloadData.getPercentage();
-				synchronized (dialog) {
+				synchronized (this) {
 					if (percent > -1) {
-						// somehow doesn't works....
-						dialog.setIndeterminate(false);
-						dialog.setSecondaryProgress(percent);
-						dialog.setMax(100);
-						dialog.setProgress(percent);
-						dialog.setMessage(data.getMessage());
+						// android progress bar bug
+						// see: http://stackoverflow.com/a/4352073
+						loadingBar.setIndeterminate(false);
+						loadingBar.setMax(100);
+						loadingBar.setProgress(percent);
+						loadingBar.setProgress(0);
+						loadingBar.setProgress(percent);
+						loadingBar.setMax(100);
 					} else {
-						dialog.setIndeterminate(true);
-						dialog.setMessage(data.getMessage());
+						loadingBar.setIndeterminate(true);
 					}
 				}
 			}
@@ -169,10 +186,11 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		if (e == null) {
 			ImageModel imageModel = (ImageModel) result.getResult();
 			if (!Util.isStringNullOrEmpty(imageModel.getPath())) {
-				imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
 				String imageUrl = "file:///" + Util.sanitizeFilename(imageModel.getPath());
 				imageUrl = imageUrl.replace("file:////", "file:///");
-				imgWebView.loadUrl(imageUrl);
+				imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
+				if (imgWebView != null)
+					imgWebView.loadUrl(imageUrl);
 				String title = imageModel.getName();
 				setTitle(title.substring(title.lastIndexOf("/")));
 				Toast.makeText(this, String.format("Loaded: %s", imageUrl), Toast.LENGTH_SHORT).show();

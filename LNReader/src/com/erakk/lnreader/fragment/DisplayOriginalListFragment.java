@@ -99,8 +99,8 @@ public class DisplayOriginalListFragment extends SherlockListFragment implements
 		 * they are used, hence, put in the onStart() method
 		 ****************************************************/
 		registerForContextMenu(getListView());
-		updateContent(false);
 		listView = getListView();
+		updateContent(false);
 	}
 
 	@Override

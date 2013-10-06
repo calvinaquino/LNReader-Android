@@ -72,10 +72,10 @@ public class DisplayTeaserListActivity extends SherlockListActivity implements I
 		loadingBar = (ProgressBar) findViewById(R.id.empttListProgress);
 
 		registerForContextMenu(getListView());
-		updateContent(false);
 
 		setTitle("Light Novels: Teasers");
 		isInverted = getColorPreferences();
+		updateContent(false);
 	}
 
 	@Override

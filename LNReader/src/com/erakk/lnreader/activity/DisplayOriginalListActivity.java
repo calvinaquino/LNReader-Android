@@ -72,10 +72,10 @@ public class DisplayOriginalListActivity extends SherlockListActivity implements
 		loadingBar = (ProgressBar) findViewById(R.id.empttListProgress);
 
 		registerForContextMenu(getListView());
-		updateContent(false);
 
 		setTitle("Light Novels: Original");
 		isInverted = getColorPreferences();
+		updateContent(false);
 	}
 
 	@Override

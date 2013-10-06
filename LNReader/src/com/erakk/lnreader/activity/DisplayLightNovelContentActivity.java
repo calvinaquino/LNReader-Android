@@ -8,9 +8,7 @@ import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,12 +21,13 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,7 +65,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	private AlertDialog tocMenu = null;
 	private PageModelAdapter jumpAdapter = null;
 	private BookmarkModelAdapter bookmarkAdapter = null;
-	private ProgressDialog dialog;
+
 	private NonLeakingWebView webView;
 	private ImageButton goTop;
 	private ImageButton goBottom;
@@ -81,6 +80,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	Handler mHandler = new Handler();
 
 	private TtsHelper tts;
+	private TextView loadingText;
+	private ProgressBar loadingBar;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -130,6 +131,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		};
 
 		tts = new TtsHelper(this, this);
+		loadingText = (TextView) findViewById(R.id.emptyList);
+		loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
 	}
 
 	private MenuItem menuSpeak;
@@ -137,12 +140,14 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	@Override
 	public void onInit(int status) {
-		if (status == 1) {
-			menuSpeak.setEnabled(true);
-			menuPause.setEnabled(true);
-		} else {
-			menuSpeak.setEnabled(false);
-			menuPause.setEnabled(false);
+		if (menuSpeak != null && menuPause != null) {
+			if (status == 1) {
+				menuSpeak.setEnabled(true);
+				menuPause.setEnabled(true);
+			} else {
+				menuSpeak.setEnabled(false);
+				menuPause.setEnabled(false);
+			}
 		}
 	}
 
@@ -755,28 +760,23 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	@Override
 	public void setMessageDialog(ICallbackEventData message) {
-		if (dialog.isShowing())
-			dialog.setMessage(message.getMessage());
+		if (loadingText.getVisibility() == TextView.VISIBLE)
+			loadingText.setText(message.getMessage());
 	}
 
 	@Override
 	public void toggleProgressBar(boolean show) {
 		synchronized (this) {
 			if (show) {
-				dialog = ProgressDialog.show(this, getResources().getString(R.string.title_activity_display_novel_content), "Loading. Please wait...", true);
-				dialog.getWindow().setGravity(Gravity.CENTER);
-				dialog.setCanceledOnTouchOutside(true);
-				dialog.setOnCancelListener(new OnCancelListener() {
-
-					@Override
-					public void onCancel(DialogInterface dialog) {
-						NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
-						if (webView != null)
-							webView.loadData("<p style='background: black; color: white;'>Task still loading...</p>", "text/html", "utf-8");
-					}
-				});
+				loadingText.setText("Loading content, please wait...");
+				loadingText.setVisibility(TextView.VISIBLE);
+				loadingBar.setVisibility(ProgressBar.VISIBLE);
+				loadingBar.setIndeterminate(true);
+				webView.setVisibility(ListView.GONE);
 			} else {
-				dialog.dismiss();
+				loadingText.setVisibility(TextView.GONE);
+				loadingBar.setVisibility(ProgressBar.GONE);
+				webView.setVisibility(ListView.VISIBLE);
 			}
 		}
 	}

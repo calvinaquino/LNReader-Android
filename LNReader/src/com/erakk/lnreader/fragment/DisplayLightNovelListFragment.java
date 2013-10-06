@@ -101,11 +101,11 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 
 		onlyWatched = getSherlockActivity().getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
 
-		// Encapsulated in updateContent
-		updateContent(false, onlyWatched);
-
 		registerForContextMenu(getListView());
 		listView = getListView();
+
+		// Encapsulated in updateContent
+		updateContent(false, onlyWatched);
 	}
 
 	@Override

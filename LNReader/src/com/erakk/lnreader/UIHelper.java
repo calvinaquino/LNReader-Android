@@ -65,7 +65,7 @@ public class UIHelper {
 			if (actionBar != null)
 				actionBar.setDisplayHomeAsUpEnabled(enable);
 		}
-		CheckScreenRotation(activity);
+		// CheckScreenRotation(activity);
 		CheckKeepAwake(activity);
 	}
 
@@ -96,6 +96,7 @@ public class UIHelper {
 	 *            layout to use
 	 */
 	public static void SetTheme(Activity activity, Integer layoutId) {
+		CheckScreenRotation(activity);
 		if (PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
 			activity.setTheme(R.style.AppTheme2);
 		} else {
@@ -152,8 +153,6 @@ public class UIHelper {
 				activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
 			}
 
-			// activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-			// WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 		} else {

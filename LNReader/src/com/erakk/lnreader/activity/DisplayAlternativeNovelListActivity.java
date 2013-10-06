@@ -59,7 +59,7 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 	private AddNovelTask addTask = null;
 	private boolean isInverted;
 	private String language = null;
-	String touchedForDownload;
+	private String touchedForDownload;
 
 	private TextView loadingText;
 	private ProgressBar loadingBar;
@@ -81,10 +81,11 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 			language = savedInstanceState.getString("LANG");
 
 		registerForContextMenu(getListView());
-		updateContent(false);
 
 		setTitle("Light Novels: " + language);
 		isInverted = getColorPreferences();
+
+		updateContent(false);
 	}
 
 	@Override

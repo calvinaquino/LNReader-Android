@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -18,7 +15,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.View;
@@ -29,6 +25,8 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,9 +62,8 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 	private DownloadNovelContentTask downloadTask = null;
 	private LoadNovelDetailsTask task = null;
 
-	private ProgressDialog dialog;
-	private TextView txtLoading;
-
+	private TextView loadingText;
+	private ProgressBar loadingBar;
 	private String touchedForDownload;
 
 	@Override
@@ -94,9 +91,8 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			Log.e(TAG, "Error when getting Page Model for " + page.getPage(), e);
 		}
 
-		executeTask(page, false);
-
-		txtLoading = (TextView) view.findViewById(R.id.txtLoading);
+		loadingText = (TextView) view.findViewById(R.id.emptyList);
+		loadingBar = (ProgressBar) view.findViewById(R.id.empttListProgress);
 
 		// setup listener
 		expandList = (ExpandableListView) view.findViewById(R.id.chapter_list);
@@ -118,6 +114,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 
 		setHasOptionsMenu(true);
 
+		executeTask(page, false);
 		return view;
 	}
 
@@ -418,28 +415,22 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 	@Override
 	public void toggleProgressBar(boolean show) {
 		if (show) {
-			dialog = ProgressDialog.show(getSherlockActivity(), "Novel Details", "Loading. Please wait...", true);
-			dialog.getWindow().setGravity(Gravity.CENTER);
-			dialog.setCanceledOnTouchOutside(true);
-			dialog.setOnCancelListener(new OnCancelListener() {
-
-				@Override
-				public void onCancel(DialogInterface dialog) {
-					if (novelCol == null) {
-						txtLoading.setVisibility(View.VISIBLE);
-					}
-				}
-			});
+			loadingText.setText("Loading List, please wait...");
+			loadingText.setVisibility(TextView.VISIBLE);
+			loadingBar.setVisibility(ProgressBar.VISIBLE);
+			expandList.setVisibility(ListView.GONE);
 		} else {
-			dialog.dismiss();
+			loadingText.setVisibility(TextView.GONE);
+			loadingBar.setVisibility(ProgressBar.GONE);
+			expandList.setVisibility(ListView.VISIBLE);
 		}
 	}
 
 	@Override
 	public void setMessageDialog(ICallbackEventData message) {
-		// if(dialog.isShowing())
-		// dialog.setMessage(message.getMessage());
-		// LNReaderApplication.getInstance().updateDownload(page.getTitle(), 5);
+		if (loadingText.getVisibility() == View.VISIBLE) {
+			loadingText.setText(message.getMessage());
+		}
 	}
 
 	@Override
@@ -549,8 +540,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			Log.e(TAG, message, e);
 			Toast.makeText(getSherlockActivity(), message, Toast.LENGTH_SHORT).show();
 		}
-
-		txtLoading.setVisibility(View.GONE);
+		toggleProgressBar(false);
 	}
 
 	private boolean getDownloadTouchPreference() {
