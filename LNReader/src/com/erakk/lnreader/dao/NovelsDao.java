@@ -1298,12 +1298,12 @@ public class NovelsDao {
 	}
 
 	private int getRetry() {
-		return UIHelper.GetIntFromPreferences(Constants.PREF_RETRY, 3);
+		return UIHelper.getIntFromPreferences(Constants.PREF_RETRY, 3);
 	}
 
 	private int getTimeout(int retry) {
 		boolean increaseRetry = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_INCREASE_RETRY, false);
-		int timeout = UIHelper.GetIntFromPreferences(Constants.PREF_TIMEOUT, 60) * 1000;
+		int timeout = UIHelper.getIntFromPreferences(Constants.PREF_TIMEOUT, 60) * 1000;
 		if (increaseRetry) {
 			timeout = timeout * (retry + 1);
 		}

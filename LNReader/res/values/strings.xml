@@ -245,4 +245,11 @@
     <string name="error_empty_download_array">No item to be added into Download List</string>
     <string name="hide_empty_volume_title">Hide Empty Volume</string>
     <string name="hide_empty_volume_summary">Hide empty volume from the Novel Details list.</string>
+    <string name="pref_tts">Text-To-Speech</string>
+    <string name="tts_pitch_title">Pitch</string>
+    <string name="tts_pitch_summary">Default value is 1.0, current value %1$s.</string>
+    <string name="tts_reading_speed_title">Reading Speed</string>
+    <string name="tts_reading_speed_summary">Default value is 1.0, current value %1$s.</string>
+    <string name="tts_whitespace_delay_title">Paragraph Delay</string>
+    <string name="tts_whitespace_delay_summary">Delay between paragraph in ms (default is 500ms), current value %1$sms</string>
 </resources>

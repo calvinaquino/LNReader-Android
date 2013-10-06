@@ -200,7 +200,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		// UI Selection
 		final Preference uiMode = findPreference("ui_selection");
 		final String[] uiSelectionArray = getResources().getStringArray(R.array.uiSelection);
-		int uiSelectionValue = UIHelper.GetIntFromPreferences(Constants.PREF_UI_SELECTION, 0);
+		int uiSelectionValue = UIHelper.getIntFromPreferences(Constants.PREF_UI_SELECTION, 0);
 		uiMode.setSummary(String.format(getResources().getString(R.string.selected_mode), uiSelectionArray[uiSelectionValue]));
 		uiMode.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
@@ -230,7 +230,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		// Orientation Selection
 		final Preference orientation = findPreference(Constants.PREF_ORIENTATION);
 		final String[] orientationArray = getResources().getStringArray(R.array.orientationSelection);
-		int orientationIntervalValue = UIHelper.GetIntFromPreferences(Constants.PREF_ORIENTATION, 0);
+		int orientationIntervalValue = UIHelper.getIntFromPreferences(Constants.PREF_ORIENTATION, 0);
 		orientation.setSummary(String.format(getResources().getString(R.string.orientation_summary), orientationArray[orientationIntervalValue]));
 		orientation.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
@@ -250,7 +250,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		// Update Interval
 		final Preference updatesInterval = findPreference(Constants.PREF_UPDATE_INTERVAL);
 		final String[] updateIntervalArray = getResources().getStringArray(R.array.updateInterval);
-		int updatesIntervalValue = UIHelper.GetIntFromPreferences(Constants.PREF_UPDATE_INTERVAL, 0);
+		int updatesIntervalValue = UIHelper.getIntFromPreferences(Constants.PREF_UPDATE_INTERVAL, 0);
 		updatesInterval.setSummary(String.format(getResources().getString(R.string.update_interval_summary), updateIntervalArray[updatesIntervalValue]));
 		updatesInterval.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
@@ -276,7 +276,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		});
 		// Time out
 		final Preference timeout = findPreference(Constants.PREF_TIMEOUT);
-		int timeoutValue = UIHelper.GetIntFromPreferences(Constants.PREF_TIMEOUT, 60);
+		int timeoutValue = UIHelper.getIntFromPreferences(Constants.PREF_TIMEOUT, 60);
 		timeout.setSummary(String.format(getResources().getString(R.string.pref_timeout_summary), timeoutValue));
 		timeout.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
@@ -290,7 +290,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 		// Retry
 		final Preference retry = findPreference(Constants.PREF_RETRY);
-		int retryValue = UIHelper.GetIntFromPreferences(Constants.PREF_RETRY, 3);
+		int retryValue = UIHelper.getIntFromPreferences(Constants.PREF_RETRY, 3);
 		retry.setSummary(String.format(getResources().getString(R.string.pref_retry_summary), retryValue));
 		retry.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
@@ -308,7 +308,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 		// Scrolling Size
 		final Preference scrollingSize = findPreference(Constants.PREF_SCROLL_SIZE);
-		int scrollingSizeValue = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5);
+		int scrollingSizeValue = UIHelper.getIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5);
 		scrollingSize.setSummary(String.format(getResources().getString(R.string.scroll_size_summary2), scrollingSizeValue));
 		scrollingSize.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
@@ -321,6 +321,62 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		});
 
 		setCssPreferences();
+
+		setTtsPreferences();
+	}
+
+	@SuppressWarnings("deprecation")
+	private void setTtsPreferences() {
+		final Preference ttsPitch = findPreference(Constants.PREF_TTS_PITCH);
+		float ttsPitchVal = UIHelper.getFloatFromPreferences(Constants.PREF_TTS_PITCH, 1.0f);
+		ttsPitch.setSummary(getResources().getString(R.string.tts_pitch_summary, ttsPitchVal));
+		ttsPitch.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				try {
+					float val = Float.parseFloat(newValue.toString());
+					ttsPitch.setSummary(getResources().getString(R.string.tts_pitch_summary, val));
+				} catch (NumberFormatException ex) {
+					return false;
+				}
+				return true;
+			}
+		});
+
+		final Preference ttsSpeechRate = findPreference(Constants.PREF_TTS_SPEECH_RATE);
+		float ttsSpeechRateVal = UIHelper.getFloatFromPreferences(Constants.PREF_TTS_SPEECH_RATE, 1.0f);
+		ttsSpeechRate.setSummary(getResources().getString(R.string.tts_reading_speed_summary, ttsSpeechRateVal));
+		ttsSpeechRate.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				try {
+					float val = Float.parseFloat(newValue.toString());
+					ttsSpeechRate.setSummary(getResources().getString(R.string.tts_reading_speed_summary, val));
+				} catch (NumberFormatException ex) {
+					return false;
+				}
+				return true;
+			}
+		});
+
+		final Preference ttsDelay = findPreference(Constants.PREF_TTS_DELAY);
+		float ttsDelayVal = UIHelper.getIntFromPreferences(Constants.PREF_TTS_DELAY, 500);
+		ttsDelay.setSummary(getResources().getString(R.string.tts_whitespace_delay_summary, ttsDelayVal));
+		ttsDelay.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				try {
+					int val = Integer.parseInt(newValue.toString());
+					ttsDelay.setSummary(getResources().getString(R.string.tts_whitespace_delay_summary, val));
+				} catch (NumberFormatException ex) {
+					return false;
+				}
+				return true;
+			}
+		});
 	}
 
 	@SuppressWarnings("deprecation")

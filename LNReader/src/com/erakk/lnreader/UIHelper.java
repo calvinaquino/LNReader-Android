@@ -34,7 +34,7 @@ public class UIHelper {
 	private static final String TAG = UIHelper.class.toString();
 
 	public static void CheckScreenRotation(Activity activity) {
-		switch (GetIntFromPreferences(Constants.PREF_ORIENTATION, 0)) {
+		switch (getIntFromPreferences(Constants.PREF_ORIENTATION, 0)) {
 		case 0:
 			activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 			break;
@@ -192,10 +192,19 @@ public class UIHelper {
 		editor.commit();
 	}
 
-	public static int GetIntFromPreferences(String key, int defaultValue) {
+	public static int getIntFromPreferences(String key, int defaultValue) {
 		String value = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getString(key, "");
 		try {
 			return Integer.parseInt(value);
+		} catch (NumberFormatException ex) {
+			return defaultValue;
+		}
+	}
+
+	public static float getFloatFromPreferences(String key, float defaultValue) {
+		String value = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getString(key, "");
+		try {
+			return Float.parseFloat(value);
 		} catch (NumberFormatException ex) {
 			return defaultValue;
 		}

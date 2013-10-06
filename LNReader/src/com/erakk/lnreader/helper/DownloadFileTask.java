@@ -72,7 +72,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 
 		URLConnection connection = url.openConnection();
 
-		int timeout = UIHelper.GetIntFromPreferences(Constants.PREF_TIMEOUT, 60) * 1000;
+		int timeout = UIHelper.getIntFromPreferences(Constants.PREF_TIMEOUT, 60) * 1000;
 		connection.setConnectTimeout(timeout);
 		connection.setReadTimeout(timeout);
 		connection.connect();
@@ -93,7 +93,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 			}
 		}
 		if (download) {
-			for (int i = 0; i < UIHelper.GetIntFromPreferences(Constants.PREF_RETRY, 3); ++i) {
+			for (int i = 0; i < UIHelper.getIntFromPreferences(Constants.PREF_RETRY, 3); ++i) {
 				try {
 					boolean increase_retry = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_INCREASE_RETRY, false);
 					if (increase_retry) {
@@ -131,7 +131,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 					if (total > 0)
 						break;
 				} catch (Exception ex) {
-					if (i > UIHelper.GetIntFromPreferences(Constants.PREF_RETRY, 3)) {
+					if (i > UIHelper.getIntFromPreferences(Constants.PREF_RETRY, 3)) {
 						Log.e(TAG, "Failed to download: " + url.toString(), ex);
 						throw ex;
 					} else {

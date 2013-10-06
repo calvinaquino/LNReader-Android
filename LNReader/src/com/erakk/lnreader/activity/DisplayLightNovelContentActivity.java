@@ -5,11 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Locale;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -26,7 +21,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.Gravity;
@@ -54,6 +48,7 @@ import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.BakaTsukiWebChromeClient;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
 import com.erakk.lnreader.helper.NonLeakingWebView;
+import com.erakk.lnreader.helper.TtsHelper;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.BookmarkModel;
@@ -85,7 +80,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	Runnable hideTop;
 	Handler mHandler = new Handler();
 
-	private TextToSpeech tts;
+	private TtsHelper tts;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -134,54 +129,17 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			}
 		};
 
-		tts = new TextToSpeech(this, this);
+		tts = new TtsHelper(this, this);
 	}
 
 	private MenuItem menuSpeak;
 
 	@Override
 	public void onInit(int status) {
-		if (status == TextToSpeech.SUCCESS) {
-			int result = tts.setLanguage(Locale.US);
-
-			if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-				Toast.makeText(LNReaderApplication.getInstance(), "TTS not supported", Toast.LENGTH_LONG).show();
-			}
+		if (status == 1)
 			menuSpeak.setEnabled(true);
-			// tts.setPitch((float) 0.8);
-			// tts.setSpeechRate((float) 0.9);
-			Toast.makeText(LNReaderApplication.getInstance(), "TTS ready", Toast.LENGTH_LONG).show();
-
-		} else {
-			Toast.makeText(LNReaderApplication.getInstance(), "TTS init failed", Toast.LENGTH_LONG).show();
+		else
 			menuSpeak.setEnabled(false);
-		}
-	}
-
-	public void speak(String html) {
-		Document doc = Jsoup.parse(html);
-		Elements elements = doc.body().select("*:not(.editsection)");
-		parseText(elements);
-	}
-
-	private void parseText(Elements elements) {
-		for (org.jsoup.nodes.Element el : elements) {
-			if (el.parent().hasClass("editsection"))
-				continue;
-			if (isWhiteSpace(el.tagName()))
-				tts.playSilence(100, TextToSpeech.QUEUE_ADD, null);
-			tts.speak(el.ownText(), TextToSpeech.QUEUE_ADD, null);
-		}
-	}
-
-	String[] WHITE_SPACE_NODES = { "br", "p", "h1", "h2", "h3", "h4", "h5" };
-
-	private boolean isWhiteSpace(String node) {
-		for (String s : WHITE_SPACE_NODES) {
-			if (node.equals(s))
-				return true;
-		}
-		return false;
 	}
 
 	@Override
@@ -193,8 +151,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			webView.destroy();
 		}
 		if (tts != null) {
-			tts.stop();
-			tts.shutdown();
+			tts.dispose();
 		}
 		super.onDestroy();
 	}
@@ -462,7 +419,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		boolean useVolumeRocker = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_VOLUME_FOR_SCROLL, false);
 		if (useVolumeRocker) {
-			int scrollSize = UIHelper.GetIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5) * 100;
+			int scrollSize = UIHelper.getIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5) * 100;
 
 			boolean invertScroll = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_SCROLL, false);
 			if (invertScroll)
@@ -536,9 +493,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	public void jumpTo(PageModel page) {
 		setLastReadState();
-		if (tts.isSpeaking()) {
-			tts.stop();
-		}
+		tts.stop();
 		if (page.isExternal() && !getHandleExternalLinkPreferences()) {
 			try {
 				Uri url = Uri.parse(page.getPage());
@@ -984,5 +939,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		css.append("\nbody {margin: " + getMarginPreferences() + "% !important;}\n");
 
 		return css.toString();
+	}
+
+	public void speak(String html) {
+		if (tts != null) {
+			tts.speak(html, content.getLastYScroll());
+		}
 	}
 }
