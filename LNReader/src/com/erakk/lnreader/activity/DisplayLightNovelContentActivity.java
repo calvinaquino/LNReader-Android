@@ -133,13 +133,17 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	}
 
 	private MenuItem menuSpeak;
+	private MenuItem menuPause;
 
 	@Override
 	public void onInit(int status) {
-		if (status == 1)
+		if (status == 1) {
 			menuSpeak.setEnabled(true);
-		else
+			menuPause.setEnabled(true);
+		} else {
 			menuSpeak.setEnabled(false);
+			menuPause.setEnabled(false);
+		}
 	}
 
 	@Override
@@ -305,6 +309,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			}
 		}
 		menuSpeak = menu.findItem(R.id.menu_speak);
+		menuPause = menu.findItem(R.id.menu_pause_tts);
 		return true;
 	}
 
@@ -395,7 +400,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			startActivity(downloadsItent);
 			return true;
 		case R.id.menu_speak:
-			webView.loadUrl("javascript:doSpeak()");
+			tts.start(webView, content.getLastYScroll());
+			return true;
+		case R.id.menu_pause_tts:
+			tts.pause();
 			return true;
 		case android.R.id.home:
 			finish();
