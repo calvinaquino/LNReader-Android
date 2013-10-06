@@ -2,7 +2,6 @@ package com.erakk.lnreader.helper;
 
 import java.lang.ref.WeakReference;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.net.Uri;
 import android.preference.PreferenceManager;
@@ -16,7 +15,6 @@ import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
 
-@TargetApi(11)
 public class BakaTsukiWebViewClient extends WebViewClient {
 	private static final String TAG = BakaTsukiWebViewClient.class.toString();
 	protected WeakReference<DisplayLightNovelContentActivity> activityRef;

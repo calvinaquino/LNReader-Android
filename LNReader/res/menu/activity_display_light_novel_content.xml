@@ -1,34 +1,56 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_settings"
-        android:orderInCategory="100"
-        android:title="@string/menu_settings" />
-    <item android:id="@+id/menu_refresh_chapter_content" 
-        android:orderInCategory="96"
-        android:title="@string/content_refresh" />
-    <item android:id="@+id/invert_colors"
-        android:orderInCategory="95"
-        android:title="@string/invert_colors" />
-    <item android:id="@+id/menu_chapter_previous"
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_chapter_previous"
         android:orderInCategory="1"
-        android:title="@string/content_previous" 
-        android:showAsAction="ifRoom"/>
-    <item android:id="@+id/menu_chapter_next"
-        android:orderInCategory="2" 
-        android:title="@string/content_next" 
-        android:showAsAction="ifRoom"/>
-    <item android:id="@+id/menu_chapter_toc"
-        android:orderInCategory="3" 
-        android:title="@string/content_toc"></item>
-    <item android:id="@+id/menu_search"
-        android:orderInCategory="4" 
-        android:title="@string/content_search"></item>
-    <item android:id="@+id/menu_bookmarks_here"
-        android:orderInCategory="97" 
-        android:title="@string/content_bookmark"></item>
-    <item android:id="@+id/menu_bookmarks" 
+        android:showAsAction="ifRoom"
+        android:title="@string/content_previous"/>
+    <item
+        android:id="@+id/menu_chapter_next"
+        android:orderInCategory="2"
+        android:showAsAction="ifRoom"
+        android:title="@string/content_next"/>
+    <item
+        android:id="@+id/menu_chapter_toc"
+        android:orderInCategory="3"
+        android:title="@string/content_toc">
+    </item>
+    <item
+        android:id="@+id/menu_search"
+        android:orderInCategory="4"
+        android:title="@string/content_search">
+    </item>
+    <item
+        android:id="@+id/menu_speak"
+        android:orderInCategory="5"
+        android:title="Speak"
+        android:enabled="false">
+    </item>
+    <item
+        android:id="@+id/invert_colors"
+        android:orderInCategory="95"
+        android:title="@string/invert_colors"/>
+    <item
+        android:id="@+id/menu_refresh_chapter_content"
+        android:orderInCategory="96"
+        android:title="@string/content_refresh"/>
+    <item
+        android:id="@+id/menu_bookmarks_here"
+        android:orderInCategory="97"
+        android:title="@string/content_bookmark">
+    </item>
+    <item
+        android:id="@+id/menu_bookmarks"
         android:orderInCategory="98"
-        android:title="@string/bookmarks"></item>
-    <item android:id="@+id/menu_downloads_list"
+        android:title="@string/bookmarks">
+    </item>
+    <item
+        android:id="@+id/menu_downloads_list"
         android:orderInCategory="99"
-        android:title="@string/download_list" />
+        android:title="@string/download_list"/>
+    <item
+        android:id="@+id/menu_settings"
+        android:orderInCategory="100"
+        android:title="@string/menu_settings"/>
+
 </menu>

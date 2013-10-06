@@ -50,10 +50,12 @@ public class MainActivity extends SherlockActivity {
 			// Show copyrights
 			new AlertDialog.Builder(this).setTitle(getResources().getString(R.string.terms_of_use)).setMessage(getResources().getString(R.string.bakatsuki_message) + getString(R.string.bakatsuki_copyrights) + "\n\nBy clicking \"I Agree\" below, you confirm that you have read the TLG Translation Common Agreement in it's entirety.").setPositiveButton(getResources().getString(R.string.agree), new OnClickListener() {
 
+				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					setFirstRun();
 				}
 			}).setNegativeButton(getResources().getString(R.string.disagree), new OnClickListener() {
+				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					finish();
 				}
@@ -93,24 +95,22 @@ public class MainActivity extends SherlockActivity {
 	}
 
 	@Override
-	public void onBackPressed(){
+	public void onBackPressed() {
 		// always exit if pressing back on Main Activity.
 		finish();
 	}
 
 	public void openNovelList(View view) {
 		String ui = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_UI_SELECTION, "0");
-		if(ui.equalsIgnoreCase("0")) {
+		if (ui.equalsIgnoreCase("0")) {
 			Intent intent = new Intent(this, DisplayNovelPagerActivity.class);
 			intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
 			startActivity(intent);
-		}
-		else if (ui.equalsIgnoreCase("1")) {
+		} else if (ui.equalsIgnoreCase("1")) {
 			Intent intent = new Intent(this, TestDisplayNovelActivity.class);
 			intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
 			startActivity(intent);
-		}
-		else if (ui.equalsIgnoreCase("2")) {
+		} else if (ui.equalsIgnoreCase("2")) {
 			Intent intent = new Intent(this, TestDisplayNovelActivityTwo.class);
 			intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
 			startActivity(intent);
@@ -178,7 +178,7 @@ public class MainActivity extends SherlockActivity {
 	}
 
 	/* Open An activity to select alternative language */
-	public void openAlternativeNovelList(View view){
+	public void openAlternativeNovelList(View view) {
 		selectAlternativeLanguage();
 	}
 
@@ -186,32 +186,32 @@ public class MainActivity extends SherlockActivity {
 	 * Create a dialog for alternative language selection
 	 */
 
-	public void selectAlternativeLanguage(){
+	public void selectAlternativeLanguage() {
 
 		/* Counts number of selected Alternative Language */
 		int selection = 0;
 
 		/* Checking number of selected languages */
-    	Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
-    	while (it.hasNext()){
-    		AlternativeLanguageInfo info = it.next().getValue();
- 		   if (PreferenceManager.getDefaultSharedPreferences(
- 					LNReaderApplication.getInstance().getApplicationContext())
- 					.getBoolean(info.getLanguage(), true)) selection++;
-    		it.remove();
-    	}
+		Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
+		while (it.hasNext()) {
+			AlternativeLanguageInfo info = it.next().getValue();
+			if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(info.getLanguage(), true))
+				selection++;
+			it.remove();
+		}
 
-		if (selection == 0){
+		if (selection == 0) {
 			/* Build an AlertDialog */
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
 			/* Title for AlertDialog */
 			alertDialogBuilder.setMessage(getResources().getString(R.string.no_selected_language));
 			alertDialogBuilder.setCancelable(false);
-			alertDialogBuilder.setPositiveButton(getResources().getString(R.string.cancel),new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog,int id) {
+			alertDialogBuilder.setPositiveButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int id) {
 					dialog.dismiss();
 				}
-			  });
+			});
 			/* Create alert dialog */
 			AlertDialog alertDialog = alertDialogBuilder.create();
 			alertDialog.show();

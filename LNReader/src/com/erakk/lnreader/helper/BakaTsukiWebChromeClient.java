@@ -22,6 +22,7 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 	private static final String REMOVE = "clear";
 	private static final String SCROLL_EVENT = "SCROLL_EVENT";
 	private static final String LOAD_COMPLETE_EVENT = "LOAD_COMPLETE_EVENT";
+	private static final String SPEAK_EVENT = "SPEAK_EVENT";
 	private int oldScrollY = 0;
 	protected WeakReference<DisplayLightNovelContentActivity> activityRef;
 
@@ -73,9 +74,12 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 						}
 					}
 					oldScrollY = newScrollY;
-				} else if (consoleMessage.message().startsWith(LOAD_COMPLETE_EVENT)) {
-					caller.notifyLoadComplete();
 				}
+			} else if (consoleMessage.message().startsWith(LOAD_COMPLETE_EVENT)) {
+				caller.notifyLoadComplete();
+			} else if (consoleMessage.message().startsWith(SPEAK_EVENT)) {
+				String data[] = consoleMessage.message().split(":", 2);
+				caller.speak(data[1]);
 			} else {
 				Log.d(TAG, "Console: " + consoleMessage.lineNumber() + ":" + consoleMessage.message());
 			}

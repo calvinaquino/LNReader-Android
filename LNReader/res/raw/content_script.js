@@ -73,3 +73,8 @@ function findPos(obj) {
 function toogleEnableBookmark(enable) {
 	isBookmarkEnabled = enable;
 }
+
+function doSpeak() {
+	var text = document.getElementsByTagName('body')[0].innerHTML;
+	console.log("SPEAK_EVENT:" + text);
+}

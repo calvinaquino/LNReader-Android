@@ -5,6 +5,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Locale;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -21,6 +26,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -56,7 +63,7 @@ import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelContentTask;
 
-public class DisplayLightNovelContentActivity extends SherlockActivity implements IAsyncTaskOwner {
+public class DisplayLightNovelContentActivity extends SherlockActivity implements IAsyncTaskOwner, OnInitListener {
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
 	public NovelContentModel content;
 	private NovelCollectionModel novelDetails;
@@ -77,6 +84,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	Runnable hideBottom;
 	Runnable hideTop;
 	Handler mHandler = new Handler();
+
+	private TextToSpeech tts;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -124,18 +133,70 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				goTop.setVisibility(ImageButton.GONE);
 			}
 		};
-		// Android Studio Config Commit Test
+
+		tts = new TextToSpeech(this, this);
+	}
+
+	private MenuItem menuSpeak;
+
+	@Override
+	public void onInit(int status) {
+		if (status == TextToSpeech.SUCCESS) {
+			int result = tts.setLanguage(Locale.US);
+
+			if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+				Toast.makeText(LNReaderApplication.getInstance(), "TTS not supported", Toast.LENGTH_LONG).show();
+			}
+			menuSpeak.setEnabled(true);
+			// tts.setPitch((float) 0.8);
+			// tts.setSpeechRate((float) 0.9);
+			Toast.makeText(LNReaderApplication.getInstance(), "TTS ready", Toast.LENGTH_LONG).show();
+
+		} else {
+			Toast.makeText(LNReaderApplication.getInstance(), "TTS init failed", Toast.LENGTH_LONG).show();
+			menuSpeak.setEnabled(false);
+		}
+	}
+
+	public void speak(String html) {
+		Document doc = Jsoup.parse(html);
+		Elements elements = doc.body().select("*:not(.editsection)");
+		parseText(elements);
+	}
+
+	private void parseText(Elements elements) {
+		for (org.jsoup.nodes.Element el : elements) {
+			if (el.parent().hasClass("editsection"))
+				continue;
+			if (isWhiteSpace(el.tagName()))
+				tts.playSilence(100, TextToSpeech.QUEUE_ADD, null);
+			tts.speak(el.ownText(), TextToSpeech.QUEUE_ADD, null);
+		}
+	}
+
+	String[] WHITE_SPACE_NODES = { "br", "p", "h1", "h2", "h3", "h4", "h5" };
+
+	private boolean isWhiteSpace(String node) {
+		for (String s : WHITE_SPACE_NODES) {
+			if (node.equals(s))
+				return true;
+		}
+		return false;
 	}
 
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();
 		if (webView != null) {
 			RelativeLayout rootView = (RelativeLayout) findViewById(R.id.rootView);
 			rootView.removeView(webView);
 			webView.removeAllViews();
 			webView.destroy();
 		}
+		if (tts != null) {
+			tts.stop();
+			tts.shutdown();
+		}
+		super.onDestroy();
 	}
 
 	@Override
@@ -286,6 +347,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				menu.findItem(R.id.menu_chapter_previous).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 			}
 		}
+		menuSpeak = menu.findItem(R.id.menu_speak);
 		return true;
 	}
 
@@ -374,6 +436,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		case R.id.menu_downloads_list:
 			Intent downloadsItent = new Intent(this, DownloadListActivity.class);
 			startActivity(downloadsItent);
+			return true;
+		case R.id.menu_speak:
+			webView.loadUrl("javascript:doSpeak()");
 			return true;
 		case android.R.id.home:
 			finish();
@@ -471,6 +536,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	public void jumpTo(PageModel page) {
 		setLastReadState();
+		if (tts.isSpeaking()) {
+			tts.stop();
+		}
 		if (page.isExternal() && !getHandleExternalLinkPreferences()) {
 			try {
 				Uri url = Uri.parse(page.getPage());
