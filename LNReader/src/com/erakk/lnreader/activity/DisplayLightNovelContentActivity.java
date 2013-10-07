@@ -47,6 +47,7 @@ import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.BakaTsukiWebChromeClient;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
 import com.erakk.lnreader.helper.NonLeakingWebView;
+import com.erakk.lnreader.helper.OnCompleteListener;
 import com.erakk.lnreader.helper.TtsHelper;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
@@ -57,7 +58,7 @@ import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelContentTask;
 
-public class DisplayLightNovelContentActivity extends SherlockActivity implements IAsyncTaskOwner, OnInitListener {
+public class DisplayLightNovelContentActivity extends SherlockActivity implements IAsyncTaskOwner, OnInitListener, OnCompleteListener {
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
 	public NovelContentModel content;
 	private NovelCollectionModel novelDetails;
@@ -130,7 +131,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			}
 		};
 
-		tts = new TtsHelper(this, this);
+		tts = new TtsHelper(this, this, this);
 		loadingText = (TextView) findViewById(R.id.emptyList);
 		loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
 	}
@@ -952,6 +953,18 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	public void speak(String html) {
 		if (tts != null) {
 			tts.speak(html, content.getLastYScroll());
+		}
+	}
+
+	@Override
+	public void onComplete(Object i) {
+		if (true && webView != null) {
+			Log.d(TAG, "Auto Scroll to: " + i.toString());
+			try {
+				webView.loadUrl("javascript:goToParagraph(" + i.toString() + ", true)");
+			} catch (Exception ex) {
+				Log.e(TAG, ex.getMessage(), ex);
+			}
 		}
 	}
 }

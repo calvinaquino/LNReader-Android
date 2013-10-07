@@ -1,5 +1,5 @@
 var pCollections = document.getElementsByTagName("p");
-
+	
 window.onscroll = function scroll () {
 	var element = document.elementFromPoint(window.pageXOffset, window.pageYOffset);
 	var i = 0;
@@ -53,9 +53,14 @@ function highlightBookmark() {
 }
 
 /* Scroll to given paragraph index */
-function goToParagraph(index) {
+function goToParagraph(index, useSmoothScroll) {
 	if(index != undefined && index > 0) {
-		window.scroll(0, findPos(pCollections[index]));
+		if(useSmoothScroll) {
+			var top = window.pageYOffset || document.documentElement.scrollTop;
+			animate(document.body, "scrollTop", "", top, findPos(pCollections[index]), 500, true);
+		} else {
+			window.scroll(0, findPos(pCollections[index]));
+		}
 	}
 }
 
@@ -77,4 +82,21 @@ function toogleEnableBookmark(enable) {
 function doSpeak() {
 	var text = document.getElementsByTagName('body')[0].innerHTML;
 	console.log("SPEAK_EVENT:" + text);
+}
+
+/* helper function for smooth scrolling
+ * http://stackoverflow.com/a/17733311 */
+function animate(elem, style, unit, from, to, time, prop) {
+    if( !elem) return;
+    var start = new Date().getTime(),
+        timer = setInterval(function() {
+            var step = Math.min(1,(new Date().getTime()-start)/time);
+            if (prop) {
+                elem[style] = (from+step*(to-from))+unit;
+            } else {
+                elem.style[style] = (from+step*(to-from))+unit;
+            }
+            if( step == 1) clearInterval(timer);
+        },25);
+    elem.style[style] = from+unit;
 }

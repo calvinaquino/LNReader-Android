@@ -9,7 +9,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Activity;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
@@ -30,17 +30,21 @@ public class TtsHelper implements OnInitListener {
 	private final OnInitListener listener;
 	private int whiteSpaceDelay = 500;
 	private int currentQueueIndex = 0;
-	private final ArrayList<String> queue;
+	private final ArrayList<SpeakValue> queue;
 	private boolean isPaused = false;
 	private int startId;
+	private final OnCompleteListener onCompleteListener;
+	private final Activity context;
 
 	private static final String SILENCE = "%SILENCE%";
 
-	public TtsHelper(Context context, OnInitListener listener) {
+	public TtsHelper(Activity context, OnInitListener listener, OnCompleteListener onComplete) {
 		tts = new TextToSpeech(context, this);
 		this.listener = listener;
+		this.onCompleteListener = onComplete;
+		this.context = context;
 
-		queue = new ArrayList<String>();
+		queue = new ArrayList<SpeakValue>();
 		currentQueueIndex = 0;
 	}
 
@@ -90,23 +94,36 @@ public class TtsHelper implements OnInitListener {
 	}
 
 	private void speakFromQueue() {
-		String val = queue.get(currentQueueIndex);
+		SpeakValue val = queue.get(currentQueueIndex);
 
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "ID:" + currentQueueIndex);
 
-		if (val.equals(SILENCE)) {
+		if (val.Val.equals(SILENCE)) {
 			tts.playSilence(whiteSpaceDelay, TextToSpeech.QUEUE_FLUSH, params);
-		} else
-			tts.speak(val, TextToSpeech.QUEUE_FLUSH, params);
+		} else {
+			tts.speak(val.Val, TextToSpeech.QUEUE_FLUSH, params);
+		}
+
+		++currentQueueIndex;
 	}
 
 	private void onComplete(String utteranceId) {
+		final SpeakValue s = queue.get(currentQueueIndex);
+		if (onCompleteListener != null && context != null) {
+			context.runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+					onCompleteListener.onComplete(s.ID);
+
+				}
+			});
+		}
 		if (isPaused) {
 			Log.d(TAG, "Paused!");
 			return;
 		}
-		++currentQueueIndex;
 		speakFromQueue();
 	}
 
@@ -202,12 +219,19 @@ public class TtsHelper implements OnInitListener {
 			if (el.parent().hasClass("editsection"))
 				continue;
 			if (isWhiteSpace(el.tagName())) {
-				// tts.playSilence(whiteSpaceDelay, TextToSpeech.QUEUE_ADD, null);
-				queue.add(SILENCE);
+				SpeakValue s = new SpeakValue();
+				s.Val = SILENCE;
+				s.ID = "";
+				queue.add(s);
 			}
 
-			queue.add(el.ownText());
-			// tts.speak(el.ownText(), TextToSpeech.QUEUE_ADD, null);
+			SpeakValue val = new SpeakValue();
+			val.Val = el.ownText();
+			if (el.hasAttr("id"))
+				val.ID = el.attr("id");
+			else
+				val.ID = "";
+			queue.add(val);
 		}
 	}
 
@@ -219,4 +243,8 @@ public class TtsHelper implements OnInitListener {
 		return false;
 	}
 
+	private class SpeakValue {
+		public String Val;
+		public String ID;
+	}
 }
