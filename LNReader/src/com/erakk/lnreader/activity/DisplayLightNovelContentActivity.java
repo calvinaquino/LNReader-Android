@@ -134,22 +134,20 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		tts = new TtsHelper(this, this, this);
 		loadingText = (TextView) findViewById(R.id.emptyList);
 		loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
-	}
 
-	private MenuItem menuSpeak;
-	private MenuItem menuPause;
+	}
 
 	@Override
 	public void onInit(int status) {
-		if (menuSpeak != null && menuPause != null) {
-			if (status == 1) {
-				menuSpeak.setEnabled(true);
-				menuPause.setEnabled(true);
-			} else {
-				menuSpeak.setEnabled(false);
-				menuPause.setEnabled(false);
-			}
-		}
+		// if (menuSpeak != null && menuPause != null) {
+		// if (status == TextToSpeech.SUCCESS) {
+		// menuSpeak.setEnabled(true);
+		// menuPause.setEnabled(true);
+		// } else {
+		// menuSpeak.setEnabled(false);
+		// menuPause.setEnabled(false);
+		// }
+		// }
 	}
 
 	@Override
@@ -220,6 +218,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			if (pos > 0)
 				pos = pos - 1;
 			wv.loadUrl("javascript:goToParagraph(" + pos + ")");
+		}
+
+		if (tts != null) {
+			tts.initConfig();
 		}
 		Log.d(TAG, "onResume Completed");
 	}
@@ -314,8 +316,17 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				menu.findItem(R.id.menu_chapter_previous).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 			}
 		}
-		menuSpeak = menu.findItem(R.id.menu_speak);
-		menuPause = menu.findItem(R.id.menu_pause_tts);
+
+		MenuItem menuSpeak = menu.findItem(R.id.menu_speak);
+		MenuItem menuPause = menu.findItem(R.id.menu_pause_tts);
+
+		if (tts != null && tts.IsTtsInitSuccess()) {
+			menuSpeak.setEnabled(true);
+			menuPause.setEnabled(!tts.isPaused());
+		} else {
+			menuSpeak.setEnabled(false);
+			menuPause.setEnabled(false);
+		}
 		return true;
 	}
 
@@ -713,26 +724,29 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	private String prepareJavaScript(int lastPos, ArrayList<BookmarkModel> bookmarks) {
 		String script = "<script type='text/javascript'>";
 		String js = LNReaderApplication.getInstance().ReadCss(R.raw.content_script);
-		js = "var bookmarkCol = [%bookmarks%];" + js;
-		js = "var lastPos = %lastpos%;" + js;
-		js = "var isBookmarkEnabled = " + getBookmarkPreferences() + ";" + js;
 
+		String bookmarkEnabledJs = String.format("var isBookmarkEnabled = %s;", getBookmarkPreferences());
+
+		String bookmarkJs = "var bookmarkCol = [%s];";
 		if (bookmarks != null && bookmarks.size() > 0) {
 			ArrayList<Integer> list = new ArrayList<Integer>();
 			for (BookmarkModel bookmark : bookmarks) {
 				list.add(bookmark.getpIndex());
 			}
-			js = js.replace("%bookmarks%", Util.join(list, ","));
+			bookmarkJs = String.format(bookmarkJs, Util.join(list, ","));
 		} else {
-			js = js.replace("%bookmarks%", "");
+			bookmarkJs = String.format(bookmarkJs, "");
 		}
+
+		String lastPosJs = "var lastPos = %s;";
 		if (lastPos > 0) {
-			js = js.replace("%lastpos%", "" + lastPos);
+			lastPosJs = String.format(lastPosJs, lastPos);
 			Log.d(TAG, "Last Position: " + lastPos);
 		} else {
-			js = js.replace("%lastpos%", "-1");
+			lastPosJs = String.format(lastPosJs, "0");
 		}
-		script += js;
+
+		script += bookmarkEnabledJs + "\n" + bookmarkJs + "\n" + lastPosJs + "\n" + js;
 		script += "</script>";
 
 		return script;
@@ -860,6 +874,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	public void notifyLoadComplete() {
 		isLoaded = true;
+		if (webView != null && content != null) {
+			Log.d(TAG, "notifyLoadComplete(): Move to the saved pos: " + content.getLastYScroll());
+			webView.loadUrl("javascript:goToParagraph(" + content.getLastYScroll() + ")");
+		}
 	}
 
 	private boolean getUseCustomCSS() {
@@ -958,7 +976,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	@Override
 	public void onComplete(Object i) {
-		if (true && webView != null) {
+		if (true && webView != null && i != null) {
 			Log.d(TAG, "Auto Scroll to: " + i.toString());
 			try {
 				webView.loadUrl("javascript:goToParagraph(" + i.toString() + ", true)");

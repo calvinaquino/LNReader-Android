@@ -327,6 +327,16 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 	@SuppressWarnings("deprecation")
 	private void setTtsPreferences() {
+		final Preference ttsEngine = findPreference(Constants.PREF_TTS_ENGINE);
+		ttsEngine.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				loadTTSEngineSettings();
+				return true;
+			}
+		});
+
 		final Preference ttsPitch = findPreference(Constants.PREF_TTS_PITCH);
 		float ttsPitchVal = UIHelper.getFloatFromPreferences(Constants.PREF_TTS_PITCH, 1.0f);
 		ttsPitch.setSummary(getResources().getString(R.string.tts_pitch_summary, ttsPitchVal));
@@ -377,6 +387,17 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				return true;
 			}
 		});
+	}
+
+	private void loadTTSEngineSettings() {
+		try {
+			Intent intent = new Intent(android.provider.Settings.ACTION_SETTINGS);
+			intent.putExtra(EXTRA_SHOW_FRAGMENT, "com.android.settings.tts.TextToSpeechSettings");
+			intent.putExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, intent.getExtras());
+			startActivityForResult(intent, 0);
+		} catch (Exception ex) {
+			startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
+		}
 	}
 
 	@SuppressWarnings("deprecation")

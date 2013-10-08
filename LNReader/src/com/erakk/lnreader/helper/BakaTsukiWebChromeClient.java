@@ -76,6 +76,7 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 					oldScrollY = newScrollY;
 				}
 			} else if (consoleMessage.message().startsWith(LOAD_COMPLETE_EVENT)) {
+				Log.d(TAG, "Console: " + consoleMessage.lineNumber() + ":" + consoleMessage.message());
 				caller.notifyLoadComplete();
 			} else if (consoleMessage.message().startsWith(SPEAK_EVENT)) {
 				String data[] = consoleMessage.message().split(":", 2);

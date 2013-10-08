@@ -1,48 +1,26 @@
 var pCollections = document.getElementsByTagName("p");
-	
-window.onscroll = function scroll () {
-	var element = document.elementFromPoint(window.pageXOffset, window.pageYOffset);
-	var i = 0;
-    for (i = 0; i < pCollections.length; ++i) {
-		if(findPos(pCollections[i]) >= window.pageYOffset) {
-			console.log("SCROLL_EVENT:" + pCollections[i].id);
-			break;
-		}
-	}	
-};
-
-function setup() {
-	/* Assign id to p tag */
-	var i = 0;
-    for (i = 0; i < pCollections.length; ++i) {
-		pCollections[i].id = "" + i;
-	}
-    highlightBookmark();
-    goToParagraph(lastPos);
-    console.log("LOAD_COMPLETE_EVENT:" + pCollections.length);
-}
 
 /* Handle touch event for bookmark highlighting */
 function toogleHighlight(element, ev) {
-	if(!isBookmarkEnabled) return;
-    var mode = "";
-    var target = event.srcElement || event.target;
+    if (!isBookmarkEnabled) {
+        return;
+    }
+    var mode = "", target = event.srcElement || event.target;
 
     if ("p" === target.nodeName.toLowerCase()) {
         if (target.className.indexOf("highlighted") === -1) {
             target.className = target.className + " highlighted";
-			mode = "highlighted";
+            mode = "highlighted";
+        } else {
+            target.className = target.className.replace(" highlighted", "");
+            mode = "clear";
         }
-        else {
-			target.className = target.className.replace(" highlighted", "");
-			mode = "clear";
-		}
     }
-    
-    if(target.id != undefined && target.id != "") {
-    	var excerpt = target.innerText || target.textContent || target.innerHTML;
-		console.log("HIGHLIGHT_EVENT:" + target.id + ":" + mode + ":" + excerpt);
-	}
+
+    if (target.id !== undefined && target.id !== "") {
+        var excerpt = target.innerText || target.textContent || target.innerHTML;
+        console.log("HIGHLIGHT_EVENT:" + target.id + ":" + mode + ":" + excerpt);
+    }
 }
 
 /* Highlight given bookmarks */
@@ -53,15 +31,19 @@ function highlightBookmark() {
 }
 
 /* Scroll to given paragraph index */
+function goToParagraph(index) {
+	goToParagraph(index, false);
+}
+
 function goToParagraph(index, useSmoothScroll) {
-	if(index != undefined && index > 0) {
-		if(useSmoothScroll) {
-			var top = window.pageYOffset || document.documentElement.scrollTop;
-			animate(document.body, "scrollTop", "", top, findPos(pCollections[index]), 500, true);
-		} else {
-			window.scroll(0, findPos(pCollections[index]));
-		}
-	}
+    if (index != undefined && index > 0) {
+        if (useSmoothScroll) {
+            var top = window.pageYOffset || document.documentElement.scrollTop;
+            animate(document.body, "scrollTop", "", top, findPos(pCollections[index]), 500, true);
+        } else {
+            window.scroll(0, findPos(pCollections[index]));
+        }
+    }
 }
 
 /* Helper method to get paragraph position */
@@ -76,27 +58,50 @@ function findPos(obj) {
 }
 
 function toogleEnableBookmark(enable) {
-	isBookmarkEnabled = enable;
+    isBookmarkEnabled = enable;
 }
 
 function doSpeak() {
-	var text = document.getElementsByTagName('body')[0].innerHTML;
-	console.log("SPEAK_EVENT:" + text);
+    var text = document.getElementsByTagName('body')[0].innerHTML;
+    console.log("SPEAK_EVENT:" + text);
 }
 
 /* helper function for smooth scrolling
  * http://stackoverflow.com/a/17733311 */
 function animate(elem, style, unit, from, to, time, prop) {
-    if( !elem) return;
-    var start = new Date().getTime(),
-        timer = setInterval(function() {
-            var step = Math.min(1,(new Date().getTime()-start)/time);
+    if (!elem) return;
+    var start = new Date().getTime();
+    var timer = setInterval(function() {
+            var step = Math.min(1, (new Date().getTime() - start) / time);
             if (prop) {
-                elem[style] = (from+step*(to-from))+unit;
+                elem[style] = (from + step * (to - from)) + unit;
             } else {
-                elem.style[style] = (from+step*(to-from))+unit;
+                elem.style[style] = (from + step * (to - from)) + unit;
             }
-            if( step == 1) clearInterval(timer);
-        },25);
-    elem.style[style] = from+unit;
+            if (step == 1) clearInterval(timer);
+        }, 25);
+    elem.style[style] = from + unit;
+}
+
+window.onscroll = function scroll() {
+    var element = document.elementFromPoint(window.pageXOffset, window.pageYOffset);
+    var i = 0;
+    for (i = 0; i < pCollections.length; i++) {
+        if (findPos(pCollections[i]) >= window.pageYOffset) {
+            console.log("SCROLL_EVENT:" + pCollections[i].id);
+            break;
+        }
+    }
+};
+
+function setup() {
+    /* Assign id to p tag */
+    var i = 0;
+    for (i = 0; i < pCollections.length; i++) {
+        pCollections[i].id = "" + i;
+    }
+    highlightBookmark();
+    goToParagraph(lastPos);
+    setTimeout(function() { goToParagraph(lastPos); }, 500);
+    console.log("LOAD_COMPLETE_EVENT:" + pCollections.length + ":" + lastPos);
 }

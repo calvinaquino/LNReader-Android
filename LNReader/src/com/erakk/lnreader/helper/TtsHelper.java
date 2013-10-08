@@ -1,14 +1,16 @@
 package com.erakk.lnreader.helper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
@@ -35,6 +37,7 @@ public class TtsHelper implements OnInitListener {
 	private int startId;
 	private final OnCompleteListener onCompleteListener;
 	private final Activity context;
+	private boolean isTtsInitSuccess = false;
 
 	private static final String SILENCE = "%SILENCE%";
 
@@ -46,6 +49,10 @@ public class TtsHelper implements OnInitListener {
 
 		queue = new ArrayList<SpeakValue>();
 		currentQueueIndex = 0;
+	}
+
+	public boolean IsTtsInitSuccess() {
+		return isTtsInitSuccess;
 	}
 
 	public boolean isReady() {
@@ -94,92 +101,110 @@ public class TtsHelper implements OnInitListener {
 	}
 
 	private void speakFromQueue() {
-		SpeakValue val = queue.get(currentQueueIndex);
+		if (queue != null && queue.size() > currentQueueIndex) {
+			SpeakValue val = queue.get(currentQueueIndex);
 
-		HashMap<String, String> params = new HashMap<String, String>();
-		params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "ID:" + currentQueueIndex);
+			HashMap<String, String> params = new HashMap<String, String>();
+			params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "ID:" + currentQueueIndex);
 
-		if (val.Val.equals(SILENCE)) {
-			tts.playSilence(whiteSpaceDelay, TextToSpeech.QUEUE_FLUSH, params);
-		} else {
-			tts.speak(val.Val, TextToSpeech.QUEUE_FLUSH, params);
+			if (val.Val.equals(SILENCE)) {
+				tts.playSilence(whiteSpaceDelay, TextToSpeech.QUEUE_FLUSH, params);
+			} else {
+				tts.speak(val.Val, TextToSpeech.QUEUE_FLUSH, params);
+			}
+
+			++currentQueueIndex;
 		}
-
-		++currentQueueIndex;
 	}
 
 	private void onComplete(String utteranceId) {
-		final SpeakValue s = queue.get(currentQueueIndex);
-		if (onCompleteListener != null && context != null) {
-			context.runOnUiThread(new Runnable() {
+		synchronized (this) {
+			if (queue != null && queue.size() > currentQueueIndex) {
+				final SpeakValue s = queue.get(currentQueueIndex);
+				if (onCompleteListener != null && context != null) {
+					context.runOnUiThread(new Runnable() {
 
-				@Override
-				public void run() {
-					onCompleteListener.onComplete(s.ID);
+						@Override
+						public void run() {
+							onCompleteListener.onComplete(s.ID);
 
+						}
+					});
 				}
-			});
+			}
+			if (isPaused) {
+				Log.d(TAG, "Paused!");
+				return;
+			}
+			speakFromQueue();
 		}
-		if (isPaused) {
-			Log.d(TAG, "Paused!");
-			return;
-		}
-		speakFromQueue();
 	}
 
-	@Override
-	@SuppressLint("NewApi")
-	@SuppressWarnings("deprecation")
-	public void onInit(int status) {
-		if (status == TextToSpeech.SUCCESS) {
-			int result = tts.setLanguage(Locale.US);
+	public void initConfig() {
+		if (tts != null) {
+			// int result = tts.setLanguage(Locale.US);
 			tts.setPitch(UIHelper.getFloatFromPreferences(Constants.PREF_TTS_PITCH, 1.0f));
 			tts.setSpeechRate(UIHelper.getFloatFromPreferences(Constants.PREF_TTS_SPEECH_RATE, 1.0f));
 			whiteSpaceDelay = UIHelper.getIntFromPreferences(Constants.PREF_TTS_DELAY, 500);
 
-			if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-				Toast.makeText(LNReaderApplication.getInstance(), "TTS not supported", Toast.LENGTH_LONG).show();
-			}
+			// if (result == TextToSpeech.LANG_MISSING_DATA) {
+			// Toast.makeText(LNReaderApplication.getInstance(), "TTS not supported", Toast.LENGTH_LONG).show();
+			// }
+		}
+	}
+
+	@Override
+	public void onInit(int status) {
+		if (status == TextToSpeech.SUCCESS) {
+			Log.d(TAG, "TTS init success");
 			if (listener != null) {
-				listener.onInit(1);
+				listener.onInit(status);
 			}
+			initConfig();
 
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
-				tts.setOnUtteranceCompletedListener(new OnUtteranceCompletedListener() {
-
-					@Override
-					public void onUtteranceCompleted(String utteranceId) {
-						Log.d(TAG, "Completed: " + utteranceId);
-						onComplete(utteranceId);
-					}
-				});
-			} else {
-				tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-
-					@Override
-					public void onStart(String utteranceId) {
-						// TODO Auto-generated method stub
-
-					}
-
-					@Override
-					public void onError(String utteranceId) {
-						// TODO Auto-generated method stub
-
-					}
-
-					@Override
-					public void onDone(String utteranceId) {
-						Log.d(TAG, "Completed v15: " + utteranceId);
-						onComplete(utteranceId);
-					}
-				});
-			}
+			setupOnCompleteListener();
+			isTtsInitSuccess = true;
 		} else {
-			Toast.makeText(LNReaderApplication.getInstance(), "TTS init failed", Toast.LENGTH_LONG).show();
+			String message = "TTS init failed, status: " + status;
+			Log.w(TAG, message);
+			Toast.makeText(LNReaderApplication.getInstance(), message, Toast.LENGTH_LONG).show();
 			if (listener != null) {
-				listener.onInit(0);
+				listener.onInit(status);
 			}
+			isTtsInitSuccess = false;
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public void setupOnCompleteListener() {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+			tts.setOnUtteranceCompletedListener(new OnUtteranceCompletedListener() {
+
+				@Override
+				public void onUtteranceCompleted(String utteranceId) {
+					Log.d(TAG, "Completed: " + utteranceId);
+					onComplete(utteranceId);
+				}
+			});
+		} else {
+			tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+
+				@Override
+				public void onStart(String utteranceId) {
+					Log.d(TAG, "Start v15: " + utteranceId);
+				}
+
+				@Override
+				public void onError(String utteranceId) {
+					Log.e(TAG, "Error v15: " + utteranceId);
+				}
+
+				@Override
+				public void onDone(String utteranceId) {
+					Log.d(TAG, "Completed v15: " + utteranceId);
+					onComplete(utteranceId);
+				}
+			});
 		}
 	}
 
@@ -191,6 +216,7 @@ public class TtsHelper implements OnInitListener {
 	}
 
 	public void speak(String html, int startId) {
+		Log.d(TAG, "Start Speaking from: " + startId);
 		this.startId = startId;
 		Document doc = Jsoup.parse(html);
 		Elements elements = doc.body().select("*:not(.editsection)");
@@ -198,13 +224,16 @@ public class TtsHelper implements OnInitListener {
 		speakFromQueue();
 	}
 
+	private static final Set<String> FORMATTING_ELEMENTS = new HashSet<String>(Arrays.asList(new String[] { "i", "b", "u", "sup" }));
+
 	private void parseText(Elements elements, int startId) {
 		Log.d(TAG, "Start ID:" + startId);
 		boolean isSkip = true;
 		if (startId == 0)
 			isSkip = false;
 
-		for (org.jsoup.nodes.Element el : elements) {
+		for (int idx = 0; idx < elements.size(); idx++) {
+			Element el = elements.get(idx);
 			if (el.hasAttr("id") && isSkip) {
 				try {
 					int id = Integer.parseInt(el.attr("id"));
@@ -221,17 +250,42 @@ public class TtsHelper implements OnInitListener {
 			if (isWhiteSpace(el.tagName())) {
 				SpeakValue s = new SpeakValue();
 				s.Val = SILENCE;
-				s.ID = "";
+				s.ID = null;
 				queue.add(s);
 			}
 
 			SpeakValue val = new SpeakValue();
-			val.Val = el.ownText();
+			// check if have children element for formatting
+			boolean hasFormattingChild = false;
+			for (Element child : el.children()) {
+				if (FORMATTING_ELEMENTS.contains(child.tagName().toLowerCase())) {
+					hasFormattingChild = true;
+					break;
+				}
+			}
+
+			if (hasFormattingChild) {
+				Log.d(TAG, "Got formatting text: " + el.html());
+				val.Val = el.text();
+				Log.d(TAG, "Use text: " + el.text());
+				removeAllChildren(el, elements);
+				idx--;
+			} else {
+				val.Val = el.ownText();
+			}
+
 			if (el.hasAttr("id"))
 				val.ID = el.attr("id");
 			else
-				val.ID = "";
+				val.ID = null;
+
 			queue.add(val);
+		}
+	}
+
+	private void removeAllChildren(Element el, Elements elements) {
+		for (Element child : el.getAllElements()) {
+			elements.remove(child);
 		}
 	}
 
