@@ -139,15 +139,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	@Override
 	public void onInit(int status) {
-		// if (menuSpeak != null && menuPause != null) {
-		// if (status == TextToSpeech.SUCCESS) {
-		// menuSpeak.setEnabled(true);
-		// menuPause.setEnabled(true);
-		// } else {
-		// menuSpeak.setEnabled(false);
-		// menuPause.setEnabled(false);
-		// }
-		// }
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			invalidateOptionsMenu();
+		else
+			supportInvalidateOptionsMenu();
 	}
 
 	@Override
@@ -317,17 +312,21 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			}
 		}
 
+		setupTTSMenu(menu);
+		return true;
+	}
+
+	private void setupTTSMenu(Menu menu) {
 		MenuItem menuSpeak = menu.findItem(R.id.menu_speak);
 		MenuItem menuPause = menu.findItem(R.id.menu_pause_tts);
 
-		if (tts != null && tts.IsTtsInitSuccess()) {
-			menuSpeak.setEnabled(true);
+		if (tts != null) {
+			menuSpeak.setEnabled(tts.IsTtsInitSuccess());
 			menuPause.setEnabled(!tts.isPaused());
 		} else {
 			menuSpeak.setEnabled(false);
 			menuPause.setEnabled(false);
 		}
-		return true;
 	}
 
 	@Override

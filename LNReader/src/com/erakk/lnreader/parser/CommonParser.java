@@ -231,4 +231,21 @@ public class CommonParser {
 		}
 		return pageModels;
 	}
+
+	public static String getImageFilePageFromImageUrl(String imageUrl) {
+		String pageUrl = "";
+		// http://www.baka-tsuki.org/project/images/4/4a/Bakemonogatari_Up.png
+		// http://www.baka-tsuki.org/project/images/thumb/4/4a/Bakemonogatari_Up.png/200px-Bakemonogatari_Up.png
+		// http://www.baka-tsuki.org/project/index.php?title=File:Bakemonogatari_Up.png
+		String[] tokens = imageUrl.split("/");
+		if (imageUrl.contains("/thumb/")) {
+			// from thumbnail
+			pageUrl = tokens[8];
+		} else {
+			// from full page
+			pageUrl = tokens[7];
+		}
+		pageUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance()) + "/project/index.php?title=File:" + pageUrl;
+		return pageUrl;
+	}
 }

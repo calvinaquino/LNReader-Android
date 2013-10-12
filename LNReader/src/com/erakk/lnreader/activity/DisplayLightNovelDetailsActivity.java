@@ -1,5 +1,6 @@
 package com.erakk.lnreader.activity;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -18,6 +19,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -44,6 +46,7 @@ import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
+import com.erakk.lnreader.parser.CommonParser;
 import com.erakk.lnreader.task.DownloadNovelContentTask;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelDetailsTask;
@@ -531,6 +534,13 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 							// IN app test, is returning empty bitmap
 							Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_err_bitmap_empty), Toast.LENGTH_LONG).show();
 						} else {
+							ImageViewCover.setOnClickListener(new OnClickListener() {
+
+								@Override
+								public void onClick(View v) {
+									handleCoverClick(novelCol.getCoverUrl());
+								}
+							});
 
 							if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && getStrechCoverPreference()) {
 								Drawable coverDrawable = new BitmapDrawable(getResources(), novelCol.getCoverBitmap());
@@ -542,7 +552,10 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 								ImageViewCover.getLayoutParams().height = finalHeight;
 								ImageViewCover.getLayoutParams().width = screenWidth;
 							} else {
+								Log.d(TAG, "Non Stretch");
 								ImageViewCover.setImageBitmap(novelCol.getCoverBitmap());
+								ImageViewCover.getLayoutParams().height = novelCol.getCoverBitmap().getHeight();
+								ImageViewCover.getLayoutParams().width = novelCol.getCoverBitmap().getWidth();
 							}
 						}
 
@@ -562,6 +575,13 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		}
 
 		toggleProgressBar(false);
+	}
+
+	private void handleCoverClick(URL coverUrl) {
+		String bigCoverUrl = CommonParser.getImageFilePageFromImageUrl(coverUrl.toString());
+		Intent intent = new Intent(this, DisplayImageActivity.class);
+		intent.putExtra(Constants.EXTRA_IMAGE_URL, bigCoverUrl);
+		startActivity(intent);
 	}
 
 	private boolean getColorPreferences() {

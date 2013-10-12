@@ -36,12 +36,14 @@ function goToParagraph(index) {
 }
 
 function goToParagraph(index, useSmoothScroll) {
+	var targetPost = findPos(pCollections[index]);
+	var currPos = window.pageYOffset || document.documentElement.scrollTop;
+	
     if (index != undefined && index > 0) {
         if (useSmoothScroll) {
-            var top = window.pageYOffset || document.documentElement.scrollTop;
-            animate(document.body, "scrollTop", "", top, findPos(pCollections[index]), 500, true);
+            animate(document.body, "scrollTop", "", currPos, targetPost, 500, true);
         } else {
-            window.scroll(0, findPos(pCollections[index]));
+            window.scroll(currPos, targetPost);
         }
     }
 }
@@ -102,6 +104,6 @@ function setup() {
     }
     highlightBookmark();
     goToParagraph(lastPos);
-    setTimeout(function() { goToParagraph(lastPos); }, 500);
+    setTimeout(function() { goToParagraph(lastPos); }, 1000);
     console.log("LOAD_COMPLETE_EVENT:" + pCollections.length + ":" + lastPos);
 }

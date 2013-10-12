@@ -157,9 +157,6 @@ public class TtsHelper implements OnInitListener {
 	public void onInit(int status) {
 		if (status == TextToSpeech.SUCCESS) {
 			Log.d(TAG, "TTS init success");
-			if (listener != null) {
-				listener.onInit(status);
-			}
 			initConfig();
 
 			setupOnCompleteListener();
@@ -168,10 +165,11 @@ public class TtsHelper implements OnInitListener {
 			String message = "TTS init failed, status: " + status;
 			Log.w(TAG, message);
 			Toast.makeText(LNReaderApplication.getInstance(), message, Toast.LENGTH_LONG).show();
-			if (listener != null) {
-				listener.onInit(status);
-			}
 			isTtsInitSuccess = false;
+
+		}
+		if (listener != null) {
+			listener.onInit(status);
 		}
 	}
 
