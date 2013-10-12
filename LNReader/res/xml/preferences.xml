@@ -208,6 +208,7 @@
                     <Preference android:key="tts_engine" android:summary="@string/pref_tts_engine_summary" android:title="@string/pref_tts_engine_title"/><EditTextPreference android:title="@string/tts_pitch_title" android:key="tts_pitch" android:defaultValue="1.0" android:summary="@string/tts_pitch_summary"/>
                     <EditTextPreference android:key="tts_reading_speed" android:title="@string/tts_reading_speed_title" android:defaultValue="1.0" android:summary="@string/tts_reading_speed_summary"/>
                     <EditTextPreference android:key="tts_whitespace_delay" android:title="@string/tts_whitespace_delay_title" android:defaultValue="500" android:summary="@string/tts_whitespace_delay_summary"/>
+                    <CheckBoxPreference android:key="tts_stop_on_lost_focus" android:summary="@string/tts_stop_on_lost_focus_summary" android:title="@string/tts_stop_on_lost_focus_title" android:defaultValue="true"/>
                     
                 </PreferenceScreen>
             

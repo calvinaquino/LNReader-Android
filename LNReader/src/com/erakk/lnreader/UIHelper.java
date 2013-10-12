@@ -307,4 +307,29 @@ public class UIHelper {
 		else
 			return Constants.BASE_URL;
 	}
+
+	/* PREFERENCES HELPER */
+	public static boolean getColorPreferences(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_INVERT_COLOR, true);
+	}
+
+	public static boolean getDownloadTouchPreference(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_DOWNLOAD_TOUCH, false);
+	}
+
+	public static boolean getStrechCoverPreference(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_STRETCH_COVER, false);
+	}
+
+	public static boolean getZoomPreferences(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_ZOOM_ENABLED, false);
+	}
+
+	public static boolean getZoomControlPreferences(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_SHOW_ZOOM_CONTROL, false);
+	}
+
+	public static boolean getDynamicButtonsPreferences(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_ENABLE_WEBVIEW_BUTTONS, false);
+	}
 }

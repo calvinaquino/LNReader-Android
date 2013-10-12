@@ -25,7 +25,8 @@
     <string name="novel_chapter">Novel Chapter</string>
     <string name="novel_chapter_dl">(DL)</string>
     <string name="list_empty">List is Empty</string>
-    <string name="service_name">LNReader Update</string>
+    <string name="service_name">LNReader Update Service</string>
+    <string name="tts_service_name">LNReader TTS Service</string>
     <string name="hint_search">Search</string>
     <string name="teasers">Teaser List</string>
     <string name="search">Search</string>
@@ -254,4 +255,6 @@
     <string name="tts_whitespace_delay_summary">Delay between paragraph in ms (default is 500ms), current value %1$sms</string>
     <string name="pref_tts_engine_title">TTS Engine</string>
     <string name="pref_tts_engine_summary">Open Android Settings for TTS selection.</string>
+    <string name="tts_stop_on_lost_focus_title">Stop on Lost Focus</string>
+    <string name="tts_stop_on_lost_focus_summary">Stop the currently playing utterance when lost focus (on background). If the activity is destroyed, it will always stop.</string>
 </resources>

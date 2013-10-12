@@ -43,7 +43,7 @@ public class MainActivity extends SherlockActivity {
 			UIHelper.SetTheme(this, R.layout.activity_main_no_tab);
 		}
 		UIHelper.SetActionBarDisplayHomeAsUp(this, false);
-		isInverted = getColorPreferences();
+		isInverted = UIHelper.getColorPreferences(this);
 		setIconColor();
 
 		if (isFirstRun()) {
@@ -73,7 +73,7 @@ public class MainActivity extends SherlockActivity {
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		if (isInverted != getColorPreferences()) {
+		if (isInverted != UIHelper.getColorPreferences(this)) {
 			UIHelper.Recreate(this);
 			setIconColor();
 		}
@@ -230,10 +230,6 @@ public class MainActivity extends SherlockActivity {
 			ImageButton btn = (ImageButton) rightMenu.getChildAt(i);
 			btn.setImageDrawable(UIHelper.setColorFilter(btn.getDrawable()));
 		}
-	}
-
-	private boolean getColorPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 
 	private boolean isFirstRun() {

@@ -11,7 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
@@ -36,22 +36,20 @@ public class TtsHelper implements OnInitListener {
 	private boolean isPaused = false;
 	private int startId;
 	private final OnCompleteListener onCompleteListener;
-	private final Activity context;
 	private boolean isTtsInitSuccess = false;
 
 	private static final String SILENCE = "%SILENCE%";
 
-	public TtsHelper(Activity context, OnInitListener listener, OnCompleteListener onComplete) {
+	public TtsHelper(Context context, OnInitListener listener, OnCompleteListener onComplete) {
 		tts = new TextToSpeech(context, this);
 		this.listener = listener;
 		this.onCompleteListener = onComplete;
-		this.context = context;
 
 		queue = new ArrayList<SpeakValue>();
 		currentQueueIndex = 0;
 	}
 
-	public boolean IsTtsInitSuccess() {
+	public boolean isTtsInitSuccess() {
 		return isTtsInitSuccess;
 	}
 
@@ -120,17 +118,8 @@ public class TtsHelper implements OnInitListener {
 	private void onComplete(String utteranceId) {
 		synchronized (this) {
 			if (queue != null && queue.size() > currentQueueIndex) {
-				final SpeakValue s = queue.get(currentQueueIndex);
-				if (onCompleteListener != null && context != null) {
-					context.runOnUiThread(new Runnable() {
-
-						@Override
-						public void run() {
-							onCompleteListener.onComplete(s.ID);
-
-						}
-					});
-				}
+				SpeakValue s = queue.get(currentQueueIndex);
+				onCompleteListener.onComplete(s.ID);
 			}
 			if (isPaused) {
 				Log.d(TAG, "Paused!");
@@ -142,14 +131,9 @@ public class TtsHelper implements OnInitListener {
 
 	public void initConfig() {
 		if (tts != null) {
-			// int result = tts.setLanguage(Locale.US);
 			tts.setPitch(UIHelper.getFloatFromPreferences(Constants.PREF_TTS_PITCH, 1.0f));
 			tts.setSpeechRate(UIHelper.getFloatFromPreferences(Constants.PREF_TTS_SPEECH_RATE, 1.0f));
 			whiteSpaceDelay = UIHelper.getIntFromPreferences(Constants.PREF_TTS_DELAY, 500);
-
-			// if (result == TextToSpeech.LANG_MISSING_DATA) {
-			// Toast.makeText(LNReaderApplication.getInstance(), "TTS not supported", Toast.LENGTH_LONG).show();
-			// }
 		}
 	}
 

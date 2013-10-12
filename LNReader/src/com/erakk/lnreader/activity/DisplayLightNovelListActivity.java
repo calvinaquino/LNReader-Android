@@ -81,7 +81,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 			setTitle(getResources().getString(R.string.light_novels));
 		}
 		registerForContextMenu(getListView());
-		isInverted = getColorPreferences();
+		isInverted = UIHelper.getColorPreferences(this);
 
 		// Encapsulated in updateContent
 		updateContent(false, onlyWatched);
@@ -131,7 +131,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		if (isInverted != getColorPreferences()) {
+		if (isInverted != UIHelper.getColorPreferences(this)) {
 			UIHelper.Recreate(this);
 		}
 		if (adapter != null)
@@ -323,7 +323,6 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 				task = tempTask;
 				task.owner = this;
 			}
-			// This
 			toggleProgressBar(true);
 		}
 	}
@@ -359,6 +358,14 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 		double tot = total;
 		double result = (cur / tot) * 100;
 		LNReaderApplication.getInstance().updateDownload(id, (int) result, messString);
+		if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
+			loadingBar.setIndeterminate(false);
+			loadingBar.setMax(total);
+			loadingBar.setProgress(current);
+			loadingBar.setProgress(0);
+			loadingBar.setProgress(current);
+			loadingBar.setMax(total);
+		}
 	}
 
 	@SuppressLint("NewApi")
@@ -500,9 +507,5 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
 			Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
-	}
-
-	private boolean getColorPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 }

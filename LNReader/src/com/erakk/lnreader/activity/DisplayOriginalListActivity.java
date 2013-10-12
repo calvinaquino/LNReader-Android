@@ -55,7 +55,6 @@ public class DisplayOriginalListActivity extends SherlockListActivity implements
 	private LoadOriginalsTask task = null;
 	private DownloadNovelDetailsTask downloadTask = null;
 	private AddNovelTask addTask = null;
-	// private ProgressDialog dialog;
 	private boolean isInverted;
 	String touchedForDownload;
 
@@ -74,7 +73,7 @@ public class DisplayOriginalListActivity extends SherlockListActivity implements
 		registerForContextMenu(getListView());
 
 		setTitle("Light Novels: Original");
-		isInverted = getColorPreferences();
+		isInverted = UIHelper.getColorPreferences(this);
 		updateContent(false);
 	}
 
@@ -108,7 +107,7 @@ public class DisplayOriginalListActivity extends SherlockListActivity implements
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		if (isInverted != getColorPreferences()) {
+		if (isInverted != UIHelper.getColorPreferences(this)) {
 			UIHelper.Recreate(this);
 		}
 		if (adapter != null)
@@ -332,14 +331,6 @@ public class DisplayOriginalListActivity extends SherlockListActivity implements
 
 	@Override
 	public void toggleProgressBar(boolean show) {
-		// if(show) {
-		// dialog = ProgressDialog.show(this, "Originals List", "Loading. Please wait...", true);
-		// dialog.getWindow().setGravity(Gravity.CENTER);
-		// dialog.setCanceledOnTouchOutside(true);
-		// }
-		// else {
-		// dialog.dismiss();
-		// }
 		if (show) {
 			loadingText.setText("Loading List, please wait...");
 			loadingText.setVisibility(TextView.VISIBLE);
@@ -354,8 +345,6 @@ public class DisplayOriginalListActivity extends SherlockListActivity implements
 
 	@Override
 	public void setMessageDialog(ICallbackEventData message) {
-		// if(dialog.isShowing())
-		// dialog.setMessage(message.getMessage());
 		if (loadingText.getVisibility() == TextView.VISIBLE)
 			loadingText.setText(message.getMessage());
 	}
@@ -405,16 +394,20 @@ public class DisplayOriginalListActivity extends SherlockListActivity implements
 		}
 	}
 
-	private boolean getColorPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
-	}
-
 	@Override
 	public void updateProgress(String id, int current, int total, String messString) {
 		double cur = current;
 		double tot = total;
 		double result = (cur / tot) * 100;
 		LNReaderApplication.getInstance().updateDownload(id, (int) result, messString);
+		if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
+			loadingBar.setIndeterminate(false);
+			loadingBar.setMax(total);
+			loadingBar.setProgress(current);
+			loadingBar.setProgress(0);
+			loadingBar.setProgress(current);
+			loadingBar.setMax(total);
+		}
 	}
 
 	@Override

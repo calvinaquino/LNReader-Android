@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -44,14 +44,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		UIHelper.SetTheme(this, R.layout.activity_display_image);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
-		imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
-		imgWebView.getSettings().setAllowFileAccess(true);
-		imgWebView.getSettings().setLoadWithOverviewMode(true);
-		imgWebView.getSettings().setUseWideViewPort(true);
-		imgWebView.setBackgroundColor(0);
-
-		imgWebView.getSettings().setBuiltInZoomControls(getZoomPreferences());
-		imgWebView.setDisplayZoomControl(getZoomControlPreferences());
+		setupWebView();
 
 		loadingText = (TextView) findViewById(R.id.emptyList);
 		loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
@@ -60,6 +53,23 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
 
 		executeTask(url, false);
+	}
+
+	public void setupWebView() {
+		imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
+		imgWebView.getSettings().setAllowFileAccess(true);
+		imgWebView.getSettings().setLoadWithOverviewMode(true);
+		imgWebView.getSettings().setUseWideViewPort(true);
+		imgWebView.setBackgroundColor(0);
+
+		imgWebView.getSettings().setBuiltInZoomControls(UIHelper.getZoomPreferences(this));
+		imgWebView.setDisplayZoomControl(UIHelper.getZoomControlPreferences(this));
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		setupWebView();
 	}
 
 	@Override
@@ -208,21 +218,19 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 
 	@Override
 	public void updateProgress(String id, int current, int total, String messString) {
-		// TODO Auto-generated method stub
-
+		if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
+			loadingBar.setIndeterminate(false);
+			loadingBar.setMax(total);
+			loadingBar.setProgress(current);
+			loadingBar.setProgress(0);
+			loadingBar.setProgress(current);
+			loadingBar.setMax(total);
+		}
 	}
 
 	@Override
 	public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	private boolean getZoomPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ZOOM_ENABLED, false);
-	}
-
-	private boolean getZoomControlPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_SHOW_ZOOM_CONTROL, false);
 	}
 }

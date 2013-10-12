@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
@@ -46,7 +45,7 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
 		lam = new LocalActivityManager(this, false);
 		lam.dispatchCreate(savedInstanceState);
 		tabHost.setup(lam);
-		isInverted = getColorPreferences();
+		isInverted = UIHelper.getColorPreferences(this);
 
 		// First Tab - Normal Novels
 		TabSpec firstSpec = tabHost.newTabSpec(MAIN_SPEC);
@@ -104,7 +103,7 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		if (isInverted != getColorPreferences()) {
+		if (isInverted != UIHelper.getColorPreferences(this)) {
 			UIHelper.Recreate(this);
 		}
 	}
@@ -121,10 +120,6 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
 
 	public static TabHost getMainTabHost() {
 		return tabHost;
-	}
-
-	private boolean getColorPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 
 	// Option Menu related

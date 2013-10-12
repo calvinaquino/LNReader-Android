@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.ListView;
 
@@ -29,7 +28,7 @@ public class DisplayBookmarkActivity extends SherlockListActivity {
 		UIHelper.SetTheme(this, R.layout.activity_display_bookmark);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
-		isInverted = getColorPreferences();
+		isInverted = UIHelper.getColorPreferences(this);
 		setTitle(getResources().getString(R.string.bookmarks));
 		getBookmarks();
 	}
@@ -49,7 +48,7 @@ public class DisplayBookmarkActivity extends SherlockListActivity {
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		if (isInverted != getColorPreferences()) {
+		if (isInverted != UIHelper.getColorPreferences(this)) {
 			UIHelper.Recreate(this);
 		}
 		if (adapter != null)
@@ -101,9 +100,5 @@ public class DisplayBookmarkActivity extends SherlockListActivity {
 		intent.putExtra(Constants.EXTRA_PAGE, page.getPage());
 		intent.putExtra(Constants.EXTRA_P_INDEX, page.getpIndex());
 		startActivity(intent);
-	}
-
-	private boolean getColorPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 }

@@ -11,6 +11,7 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookmarkModel;
@@ -64,7 +65,7 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 					Log.d("SCROLL", "" + data[0] + " " + data[1]);
 					int newScrollY = Integer.parseInt(data[1]);
 
-					if (caller.getDynamicButtons()) {
+					if (UIHelper.getDynamicButtonsPreferences(caller)) {
 						if (oldScrollY < newScrollY) {
 							caller.toggleTopButton(false);
 							caller.toggleBottomButton(true);

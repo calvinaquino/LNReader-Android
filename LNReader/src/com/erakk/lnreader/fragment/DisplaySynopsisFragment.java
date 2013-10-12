@@ -1,15 +1,18 @@
 package com.erakk.lnreader.fragment;
 
+import java.net.URL;
+
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -24,6 +27,7 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.activity.DisplayImageActivity;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
@@ -31,6 +35,7 @@ import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
+import com.erakk.lnreader.parser.CommonParser;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelDetailsTask;
 
@@ -99,6 +104,14 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 		double tot = total;
 		double result = (cur / tot) * 100;
 		LNReaderApplication.getInstance().updateDownload(id, (int) result, message);
+		if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
+			loadingBar.setIndeterminate(false);
+			loadingBar.setMax(total);
+			loadingBar.setProgress(current);
+			loadingBar.setProgress(0);
+			loadingBar.setProgress(current);
+			loadingBar.setMax(total);
+		}
 	}
 
 	@Override
@@ -198,8 +211,14 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 						// IN app test, is returning empty bitmap
 						Toast.makeText(getSherlockActivity(), "Bitmap empty", Toast.LENGTH_LONG).show();
 					} else {
+						ImageViewCover.setOnClickListener(new OnClickListener() {
 
-						if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && getStrechCoverPreference()) {
+							@Override
+							public void onClick(View v) {
+								handleCoverClick(novelCol.getCoverUrl());
+							}
+						});
+						if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && UIHelper.getStrechCoverPreference(getSherlockActivity())) {
 							Drawable coverDrawable = new BitmapDrawable(getResources(), novelCol.getCoverBitmap());
 							int coverHeight = novelCol.getCoverBitmap().getHeight();
 							int coverWidth = novelCol.getCoverBitmap().getWidth();
@@ -210,6 +229,8 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 							ImageViewCover.getLayoutParams().width = screenWidth;
 						} else {
 							ImageViewCover.setImageBitmap(novelCol.getCoverBitmap());
+							ImageViewCover.getLayoutParams().height = novelCol.getCoverBitmap().getHeight();
+							ImageViewCover.getLayoutParams().width = novelCol.getCoverBitmap().getWidth();
 						}
 					}
 
@@ -225,7 +246,10 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 		}
 	}
 
-	private boolean getStrechCoverPreference() {
-		return PreferenceManager.getDefaultSharedPreferences(getSherlockActivity()).getBoolean(Constants.PREF_STRETCH_COVER, false);
+	private void handleCoverClick(URL coverUrl) {
+		String bigCoverUrl = CommonParser.getImageFilePageFromImageUrl(coverUrl.toString());
+		Intent intent = new Intent(getSherlockActivity(), DisplayImageActivity.class);
+		intent.putExtra(Constants.EXTRA_IMAGE_URL, bigCoverUrl);
+		startActivity(intent);
 	}
 }

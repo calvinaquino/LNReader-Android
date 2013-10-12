@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.erakk.lnreader"
     android:installLocation="auto"
-    android:versionCode="20131012"
-    android:versionName="1.1.10-beta" >
+    android:versionCode="20131013"
+    android:versionName="1.1.10" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -83,15 +83,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.erakk.lnreader.activity.DisplayLightNovelListActivity" />
         </activity>
-        <!--
-        <activity
-            android:name="com.erakk.lnreader.activity.DisplaySynopsisActivity"
-            android:label="@string/title_activity_display_synopsys" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.erakk.lnreader.activity.DisplayLightNovelListActivity" />
-        </activity>
-        -->
         <activity
             android:name="com.erakk.lnreader.activity.DisplayLightNovelContentActivity"
             android:label="@string/title_activity_display_novel_content" 
@@ -173,11 +164,12 @@
         </activity>
 
         <service
-            android:name="com.erakk.lnreader.service.UpdateService"
+            android:name="com.erakk.lnreader.service.TtsService"
             android:icon="@drawable/ic_launcher"
-            android:label="@string/service_name"
+            android:label="@string/tts_service_name"
             android:process="" >
         </service>
+        
 
         <receiver android:name="com.erakk.lnreader.service.MyScheduleReceiver" >
             <intent-filter>

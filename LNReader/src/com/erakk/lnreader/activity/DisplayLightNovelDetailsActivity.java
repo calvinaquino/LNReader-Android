@@ -101,7 +101,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		});
 
 		setTitle(page.getTitle());
-		isInverted = getColorPreferences();
+		isInverted = UIHelper.getColorPreferences(this);
 
 		loadingText = (TextView) findViewById(R.id.emptyList);
 		loadingBar = (ProgressBar) findViewById(R.id.empttListProgress);
@@ -123,7 +123,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 				Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 			}
 		} else {
-			if (chapter.isExternal() || chapter.isDownloaded() || !getDownloadTouchPreference()) {
+			if (chapter.isExternal() || chapter.isDownloaded() || !UIHelper.getDownloadTouchPreference(this)) {
 				Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
 				intent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
 				startActivity(intent);
@@ -137,7 +137,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		if (isInverted != getColorPreferences()) {
+		if (isInverted != UIHelper.getColorPreferences(this)) {
 			UIHelper.Recreate(this);
 		}
 		if (bookModelAdapter != null) {
@@ -433,6 +433,14 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		double tot = total;
 		double result = (cur / tot) * 100;
 		LNReaderApplication.getInstance().updateDownload(id, (int) result, message);
+		if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
+			loadingBar.setIndeterminate(false);
+			loadingBar.setMax(total);
+			loadingBar.setProgress(current);
+			loadingBar.setProgress(0);
+			loadingBar.setProgress(current);
+			loadingBar.setMax(total);
+		}
 	}
 
 	@Override
@@ -542,7 +550,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 								}
 							});
 
-							if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && getStrechCoverPreference()) {
+							if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && UIHelper.getStrechCoverPreference(this)) {
 								Drawable coverDrawable = new BitmapDrawable(getResources(), novelCol.getCoverBitmap());
 								int coverHeight = novelCol.getCoverBitmap().getHeight();
 								int coverWidth = novelCol.getCoverBitmap().getWidth();
@@ -583,17 +591,4 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		intent.putExtra(Constants.EXTRA_IMAGE_URL, bigCoverUrl);
 		startActivity(intent);
 	}
-
-	private boolean getColorPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
-	}
-
-	private boolean getDownloadTouchPreference() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_DOWNLOAD_TOUCH, false);
-	}
-
-	private boolean getStrechCoverPreference() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_STRETCH_COVER, false);
-	}
-
 }

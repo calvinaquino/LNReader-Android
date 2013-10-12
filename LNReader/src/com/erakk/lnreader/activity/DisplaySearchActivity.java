@@ -54,7 +54,7 @@ public class DisplaySearchActivity extends SherlockActivity {
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
 		setTitle(getResources().getString(R.string.search));
-		isInverted = getColorPreferences();
+		isInverted = UIHelper.getColorPreferences(this);
 
 		final EditText search = (EditText) findViewById(R.id.searchText);
 		search.addTextChangedListener(new TextWatcher() {
@@ -260,13 +260,9 @@ public class DisplaySearchActivity extends SherlockActivity {
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		if (isInverted != getColorPreferences()) {
+		if (isInverted != UIHelper.getColorPreferences(this)) {
 			UIHelper.Recreate(this);
 		}
-	}
-
-	private boolean getColorPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 
 	@Override

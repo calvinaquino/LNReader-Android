@@ -318,6 +318,14 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 		double tot = total;
 		double result = (cur / tot) * 100;
 		LNReaderApplication.getInstance().updateDownload(id, (int) result, messString);
+		if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
+			loadingBar.setIndeterminate(false);
+			loadingBar.setMax(total);
+			loadingBar.setProgress(current);
+			loadingBar.setProgress(0);
+			loadingBar.setProgress(current);
+			loadingBar.setMax(total);
+		}
 	}
 
 	@SuppressLint("NewApi")

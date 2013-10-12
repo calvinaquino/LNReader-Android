@@ -8,9 +8,12 @@ import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -18,6 +21,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
@@ -48,13 +52,14 @@ import com.erakk.lnreader.helper.BakaTsukiWebChromeClient;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
 import com.erakk.lnreader.helper.NonLeakingWebView;
 import com.erakk.lnreader.helper.OnCompleteListener;
-import com.erakk.lnreader.helper.TtsHelper;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.BookmarkModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
+import com.erakk.lnreader.service.TtsService;
+import com.erakk.lnreader.service.TtsService.TtsBinder;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelContentTask;
 
@@ -73,16 +78,16 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	private BakaTsukiWebViewClient client;
 	private boolean restored;
 	private AlertDialog bookmarkMenu = null;
-	boolean isFullscreen;
+	private boolean isFullscreen;
+	private boolean isPageLoaded = false;
 
-	boolean dynamicButtonsEnabled;
-	Runnable hideBottom;
-	Runnable hideTop;
-	Handler mHandler = new Handler();
+	private Runnable hideBottom;
+	private Runnable hideTop;
+	private final Handler mHandler = new Handler();
 
-	private TtsHelper tts;
 	private TextView loadingText;
 	private ProgressBar loadingBar;
+	private TtsBinder ttsBinder = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -131,7 +136,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			}
 		};
 
-		tts = new TtsHelper(this, this, this);
+		setupTtsService();
 		loadingText = (TextView) findViewById(R.id.emptyList);
 		loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
 
@@ -153,9 +158,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			webView.removeAllViews();
 			webView.destroy();
 		}
-		if (tts != null) {
-			tts.dispose();
-		}
+		unbindService(mConnection);
 		super.onDestroy();
 	}
 
@@ -175,8 +178,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	@Override
 	public void onResume() {
 		super.onResume();
-
-		dynamicButtonsEnabled = getDynamicButtonsPreferences();
 
 		if (isFullscreen != getFullscreenPreferences()) {
 			UIHelper.Recreate(this);
@@ -215,8 +216,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			wv.loadUrl("javascript:goToParagraph(" + pos + ")");
 		}
 
-		if (tts != null) {
-			tts.initConfig();
+		if (ttsBinder != null) {
+			ttsBinder.initConfig();
 		}
 		Log.d(TAG, "onResume Completed");
 	}
@@ -226,6 +227,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		super.onPause();
 
 		setLastReadState();
+		if (ttsBinder != null && getTtsStopOnPause()) {
+			ttsBinder.stop();
+		}
 		Log.d(TAG, "onPause Completed");
 	}
 
@@ -316,19 +320,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		return true;
 	}
 
-	private void setupTTSMenu(Menu menu) {
-		MenuItem menuSpeak = menu.findItem(R.id.menu_speak);
-		MenuItem menuPause = menu.findItem(R.id.menu_pause_tts);
-
-		if (tts != null) {
-			menuSpeak.setEnabled(tts.IsTtsInitSuccess());
-			menuPause.setEnabled(!tts.isPaused());
-		} else {
-			menuSpeak.setEnabled(false);
-			menuPause.setEnabled(false);
-		}
-	}
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -416,10 +407,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			startActivity(downloadsItent);
 			return true;
 		case R.id.menu_speak:
-			tts.start(webView, content.getLastYScroll());
+			ttsBinder.start(webView, content.getLastYScroll());
 			return true;
 		case R.id.menu_pause_tts:
-			tts.pause();
+			ttsBinder.pause();
 			return true;
 		case android.R.id.home:
 			finish();
@@ -517,7 +508,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	public void jumpTo(PageModel page) {
 		setLastReadState();
-		tts.stop();
+		if (ttsBinder != null)
+			ttsBinder.stop();
 		if (page.isExternal() && !getHandleExternalLinkPreferences()) {
 			try {
 				Uri url = Uri.parse(page.getPage());
@@ -635,7 +627,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		if (pageModel.isExternal()) {
 			loadExternalUrl(pageModel);
 		} else {
-			isLoaded = false;
+			isPageLoaded = false;
 			task = new LoadNovelContentTask(refresh, this);
 			String key = TAG + ":" + pageModel.getPage();
 			boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
@@ -757,10 +749,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 		wv.getSettings().setAllowFileAccess(true);
 
-		wv.getSettings().setSupportZoom(getZoomPreferences());
-		wv.getSettings().setBuiltInZoomControls(getZoomPreferences());
+		wv.getSettings().setSupportZoom(UIHelper.getZoomPreferences(this));
+		wv.getSettings().setBuiltInZoomControls(UIHelper.getZoomPreferences(this));
 
-		wv.setDisplayZoomControl(getZoomControlPreferences());
+		wv.setDisplayZoomControl(UIHelper.getZoomControlPreferences(this));
 
 		wv.getSettings().setLoadWithOverviewMode(true);
 		// wv.getSettings().setUseWideViewPort(true);
@@ -768,7 +760,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		wv.setBackgroundColor(0);
 		wv.getSettings().setJavaScriptEnabled(true);
 
-		if (isLoaded)
+		if (isPageLoaded)
 			wv.loadUrl("javascript:toogleEnableBookmark(" + getBookmarkPreferences() + ")");
 	}
 
@@ -808,38 +800,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		toggleProgressBar(false);
 	}
 
-	private boolean getShowImagesPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(Constants.PREF_SHOW_IMAGE, true);
-	}
-
-	private boolean getColorPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
-	}
-
-	private boolean getZoomPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ZOOM_ENABLED, false);
-	}
-
-	private boolean getZoomControlPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_SHOW_ZOOM_CONTROL, false);
-	}
-
-	private boolean getFullscreenPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_FULSCREEN, false);
-	}
-
-	private boolean getBookmarkPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ENABLE_BOOKMARK, true);
-	}
-
-	private boolean getDynamicButtonsPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ENABLE_WEBVIEW_BUTTONS, false);
-	}
-
-	public boolean getDynamicButtons() {
-		return dynamicButtonsEnabled;
-	}
-
 	public void refreshBookmarkData() {
 		if (bookmarkAdapter != null)
 			bookmarkAdapter.refreshData();
@@ -861,6 +821,14 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	@Override
 	public void updateProgress(String id, int current, int total, String messString) {
 		Log.d(TAG, "Progress of " + id + ": " + messString + " (" + current + "/" + total + ")");
+		if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
+			loadingBar.setIndeterminate(false);
+			loadingBar.setMax(total);
+			loadingBar.setProgress(current);
+			loadingBar.setProgress(0);
+			loadingBar.setProgress(current);
+			loadingBar.setMax(total);
+		}
 	}
 
 	@Override
@@ -869,14 +837,25 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		return false;
 	}
 
-	boolean isLoaded = false;
-
 	public void notifyLoadComplete() {
-		isLoaded = true;
+		isPageLoaded = true;
 		if (webView != null && content != null) {
 			Log.d(TAG, "notifyLoadComplete(): Move to the saved pos: " + content.getLastYScroll());
 			webView.loadUrl("javascript:goToParagraph(" + content.getLastYScroll() + ")");
 		}
+	}
+
+	/* PREFERENCES */
+	private boolean getShowImagesPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(Constants.PREF_SHOW_IMAGE, true);
+	}
+
+	private boolean getFullscreenPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_FULSCREEN, false);
+	}
+
+	private boolean getBookmarkPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ENABLE_BOOKMARK, true);
 	}
 
 	private boolean getUseCustomCSS() {
@@ -897,6 +876,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	private float getMarginPreferences() {
 		return Float.parseFloat(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_MARGINS, "5"));
+	}
+
+	private boolean getTtsStopOnPause() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_TTS_TTS_STOP_ON_LOST_FOCUS, true);
 	}
 
 	/**
@@ -948,7 +931,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 		// Default CSS start here
 		int styleId = -1;
-		if (getColorPreferences()) {
+		if (UIHelper.getColorPreferences(this)) {
 			styleId = R.raw.style_dark;
 			// Log.d("CSS", "CSS = dark");
 		} else {
@@ -967,21 +950,83 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		return css.toString();
 	}
 
+	/* TTS Section */
+	private final DisplayLightNovelContentActivity callingCtx = this;
+	private final ServiceConnection mConnection = new ServiceConnection() {
+
+		private TtsService ttsService = null;
+
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder binder) {
+			ttsBinder = (TtsBinder) binder;
+			ttsService = ttsBinder.getService();
+			Log.d(TAG, "TTS onServiceConnected");
+			ttsService.setOnCompleteListener(callingCtx);
+			ttsService.setOnInitListener(callingCtx);
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName className) {
+			ttsService = null;
+			Log.d(TAG, "TTS onServiceDisconnected");
+		}
+	};
+
+	public void setupTtsService() {
+		Log.d(TAG, "Binding TTS Service");
+		Intent serviceIntent = new Intent(this, TtsService.class);
+		this.bindService(serviceIntent, mConnection, Context.BIND_AUTO_CREATE);
+	}
+
+	public void unbindTtsService() {
+		if (mConnection != null) {
+			try {
+				unbindService(mConnection);
+				Log.i(TAG, "Unbind service done.");
+			} catch (Exception ex) {
+				Log.e(TAG, "Failed to unbind.", ex);
+			}
+		}
+	}
+
 	public void speak(String html) {
-		if (tts != null) {
-			tts.speak(html, content.getLastYScroll());
+		if (ttsBinder != null) {
+			ttsBinder.speak(html, content.getLastYScroll());
+		}
+	}
+
+	private void setupTTSMenu(Menu menu) {
+		MenuItem menuSpeak = menu.findItem(R.id.menu_speak);
+		MenuItem menuPause = menu.findItem(R.id.menu_pause_tts);
+
+		if (ttsBinder != null) {
+			menuSpeak.setEnabled(ttsBinder.IsTtsInitSuccess());
+			menuPause.setEnabled(!ttsBinder.isPaused());
+		} else {
+			menuSpeak.setEnabled(false);
+			menuPause.setEnabled(false);
 		}
 	}
 
 	@Override
 	public void onComplete(Object i) {
-		if (true && webView != null && i != null) {
-			Log.d(TAG, "Auto Scroll to: " + i.toString());
-			try {
-				webView.loadUrl("javascript:goToParagraph(" + i.toString() + ", true)");
-			} catch (Exception ex) {
-				Log.e(TAG, ex.getMessage(), ex);
-			}
+		if (i != null) {
+			final String index = i.toString();
+			this.runOnUiThread(new Runnable() {
+
+				@Override
+				public void run() {
+
+					if (true && webView != null && index != null) {
+						Log.d(TAG, "Auto Scroll to: " + index);
+						try {
+							webView.loadUrl("javascript:goToParagraph(" + index + ", true)");
+						} catch (Exception ex) {
+							Log.e(TAG, ex.getMessage(), ex);
+						}
+					}
+				}
+			});
 		}
 	}
 }
