@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.erakk.lnreader"
     android:installLocation="auto"
-    android:versionCode="20131013"
-    android:versionName="1.1.10" >
+    android:versionCode="20131014"
+    android:versionName="1.1.10b" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -169,7 +169,12 @@
             android:label="@string/tts_service_name"
             android:process="" >
         </service>
-        
+        <service
+            android:name="com.erakk.lnreader.service.UpdateService"
+            android:icon="@drawable/ic_launcher"
+            android:label="@string/tts_service_name"
+            android:process="" >
+        </service>
 
         <receiver android:name="com.erakk.lnreader.service.MyScheduleReceiver" >
             <intent-filter>
