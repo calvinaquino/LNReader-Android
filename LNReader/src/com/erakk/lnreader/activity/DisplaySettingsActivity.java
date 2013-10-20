@@ -1,7 +1,6 @@
 package com.erakk.lnreader.activity;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -9,14 +8,15 @@ import java.util.Map.Entry;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -37,19 +37,20 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.service.MyScheduleReceiver;
+import com.erakk.lnreader.task.CopyDBTask;
+import com.erakk.lnreader.task.ZipFilesTask;
 
 public class DisplaySettingsActivity extends SherlockPreferenceActivity implements ICallbackNotifier {
 	private static final String TAG = DisplaySettingsActivity.class.toString();
 	private boolean isInverted;
-	private ProgressDialog dialog = null;
-
-	Context context;
+	//Context context;
 
 	/**************************************************************
 	 * The onPreferenceTreeClick method's sole purpose is to deal with the known
@@ -131,7 +132,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	@SuppressLint("SdCardPath")
 	@SuppressWarnings("deprecation")
 	public void onCreate(Bundle savedInstanceState) {
-		context = this;
+		//context = this;
 		UIHelper.SetTheme(this, null);
 		super.onCreate(savedInstanceState);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
@@ -414,31 +415,23 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		});
 
 		// Backup DB
-		Preference backupDatabase = findPreference("backup_database");
+		Preference backupDatabase = findPreference(Constants.PREF_BACKUP_DB);
 		backupDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
 			@Override
 			public boolean onPreferenceClick(Preference p) {
-				try {
-					copyDB(true);
-				} catch (IOException e) {
-					Log.e(TAG, "Error when backing up DB", e);
-				}
+				copyDB(true, Constants.PREF_BACKUP_DB);
 				return true;
 			}
 		});
 
 		// Restore DB
-		Preference restoreDatabase = findPreference("restore_database");
+		Preference restoreDatabase = findPreference(Constants.PREF_RESTORE_DB);
 		restoreDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
 			@Override
 			public boolean onPreferenceClick(Preference p) {
-				try {
-					copyDB(false);
-				} catch (IOException e) {
-					Log.e(TAG, "Error when restoring DB", e);
-				}
+				copyDB(false, Constants.PREF_RESTORE_DB);
 				return true;
 			}
 		});
@@ -455,7 +448,8 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		});
 
 		// Image Location
-		final Preference defaultSaveLocation = findPreference("save_location");
+		final EditTextPreference defaultSaveLocation = (EditTextPreference) findPreference("save_location");
+		defaultSaveLocation.setText(UIHelper.getImageRoot(this));
 		defaultSaveLocation.setSummary(String.format(getResources().getString(R.string.download_image_to), UIHelper.getImageRoot(this)));
 		defaultSaveLocation.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
@@ -472,13 +466,44 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		// DB Location
 		Preference defaultDbLocation = findPreference("db_location");
 		defaultDbLocation.setSummary(String.format(getResources().getString(R.string.novel_database_to), DBHelper.getDbPath(this)));
+
+		// Backup Thumbs
+		Preference backupThumbs = findPreference(Constants.PREF_BACKUP_THUMB_IMAGES);
+		backupThumbs.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				backupThumbs();
+				return true;
+			}
+		});
+	}
+
+	@SuppressLint("InlinedApi")
+	protected void copyDB(boolean makeBackup, String source) {
+		CopyDBTask task = new CopyDBTask(makeBackup, this, source);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		else
+			task.execute();
+	}
+
+	@SuppressLint("InlinedApi")
+	private void backupThumbs() {
+		String zipName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_thumbs.zip";
+		String thumbRootPath = UIHelper.getImageRoot(this) + "/project/images/thumb";
+		ZipFilesTask task = new ZipFilesTask(zipName, thumbRootPath, this, Constants.PREF_BACKUP_THUMB_IMAGES);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		else
+			task.execute();
 	}
 
 	@SuppressWarnings("deprecation")
 	private void setAlternateLanguageList() {
 		/*
 		 * A section to change Alternative Languages list
-		 * 
+		 *
 		 * @freedomofkeima
 		 */
 		Preference selectAlternativeLanguage = findPreference("select_alternative_language");
@@ -498,60 +523,68 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference p) {
-				final String[] languageChoice = new String[AlternativeLanguageInfo.getAlternativeLanguageInfo().size()];
-				Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
-				int j = 0;
-				while (it.hasNext()) {
-					AlternativeLanguageInfo info = it.next().getValue();
-					languageChoice[j] = info.getLanguage();
-					j++;
-					it.remove();
-				}
-				/* Show checkBox to screen */
-				AlertDialog.Builder builder = new AlertDialog.Builder(context);
-				builder.setTitle(getResources().getString(R.string.alternative_language_title));
-				builder.setMultiChoiceItems(languageChoice, languageStatus, new DialogInterface.OnMultiChoiceClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialogInterface, int item, boolean state) {
-					}
-				});
-				builder.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int id) {
-						SparseBooleanArray Checked = ((AlertDialog) dialog).getListView().getCheckedItemPositions();
-						/* Save all choices to Shared Preferences */
-						Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
-						int j = 0;
-						while (it.hasNext()) {
-							AlternativeLanguageInfo info = it.next().getValue();
-							UIHelper.setAlternativeLanguagePreferences(context, info.getLanguage(), Checked.get(j));
-							j++;
-							it.remove();
-						}
-						recreateUI();
-					}
-				});
-				builder.setPositiveButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-
-					@Override
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				});
-				builder.create().show();
+				showLanguageSelection(languageStatus);
 				return true;
 			}
 		});
 		/* End of alternative languages list section */
 	}
 
+	private void showLanguageSelection(boolean[] languageStatus) {
+		final String[] languageChoice = new String[AlternativeLanguageInfo.getAlternativeLanguageInfo().size()];
+		Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
+		int j = 0;
+		while (it.hasNext()) {
+			AlternativeLanguageInfo info = it.next().getValue();
+			languageChoice[j] = info.getLanguage();
+			j++;
+			it.remove();
+		}
+		/* Show checkBox to screen */
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(getResources().getString(R.string.alternative_language_title));
+		builder.setMultiChoiceItems(languageChoice, languageStatus, new DialogInterface.OnMultiChoiceClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialogInterface, int item, boolean state) {
+			}
+		});
+		builder.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+				setLanguageSelectionOKDialog(dialog);
+			}
+		});
+		builder.setPositiveButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.cancel();
+			}
+		});
+		builder.create().show();
+	}
+
+	private void setLanguageSelectionOKDialog(DialogInterface dialog) {
+		SparseBooleanArray Checked = ((AlertDialog) dialog).getListView().getCheckedItemPositions();
+		/* Save all choices to Shared Preferences */
+		Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
+		int j = 0;
+		while (it.hasNext()) {
+			AlternativeLanguageInfo info = it.next().getValue();
+			UIHelper.setAlternativeLanguagePreferences(this, info.getLanguage(), Checked.get(j));
+			j++;
+			it.remove();
+		}
+		recreateUI();
+	}
+
 	@SuppressWarnings("deprecation")
 	private void setApplicationLanguage() {
 		/*
 		 * A section to change Application Language
-		 * 
+		 *
 		 * @freedomofkeima
 		 */
 		final Preference changeLanguages = findPreference(Constants.PREF_LANGUAGE);
@@ -577,14 +610,18 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				String newLocale = newValue.toString();
-				UIHelper.setLanguage(context, newLocale);
-				LNReaderApplication.getInstance().restartApplication();
+				handleLanguageChange(newValue);
 				return true;
 			}
 		});
 
 		/* End of language section */
+	}
+
+	private void handleLanguageChange(Object newValue) {
+		String newLocale = newValue.toString();
+		UIHelper.setLanguage(this, newLocale);
+		LNReaderApplication.getInstance().restartApplication();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -737,20 +774,6 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		}).show();
 	}
 
-	private void copyDB(boolean makeBackup) throws IOException {
-		dialog = ProgressDialog.show(this, getResources().getString(R.string.database_manager), getResources().getString(R.string.database_backup_create), true, true);
-		String filePath = NovelsDao.getInstance(getApplicationContext()).copyDB(getApplicationContext(), makeBackup);
-		if (filePath == "null") {
-			Toast.makeText(getApplicationContext(), getResources().getString(R.string.database_not_found), Toast.LENGTH_SHORT).show();
-		} else {
-			if (makeBackup)
-				Toast.makeText(getApplicationContext(), "Database backup created at " + filePath + "", Toast.LENGTH_SHORT).show();
-			else
-				Toast.makeText(getApplicationContext(), "Database backup restored!", Toast.LENGTH_SHORT).show();
-		}
-		dialog.dismiss();
-	}
-
 	@SuppressWarnings("deprecation")
 	private void runUpdate() {
 		LNReaderApplication.getInstance().runUpdateService(true, this);
@@ -798,8 +821,15 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	@Override
 	@SuppressWarnings("deprecation")
 	public void onCallback(ICallbackEventData message) {
-		Preference runUpdates = findPreference(Constants.PREF_RUN_UPDATES);
-		runUpdates.setSummary("Status: " + message.getMessage());
+		CallbackEventData msg = (CallbackEventData) message;
+		if(Util.isStringNullOrEmpty(msg.getSource())) {
+			Preference runUpdates = findPreference(Constants.PREF_RUN_UPDATES);
+			runUpdates.setSummary("Status: " + message.getMessage());
+		}
+		else {
+			Preference pref = findPreference(msg.getSource());
+			pref.setSummary("Status: " + message.getMessage());
+		}
 	}
 
 	private void recreateUI() {

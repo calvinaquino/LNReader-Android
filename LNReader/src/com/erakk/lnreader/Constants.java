@@ -77,6 +77,9 @@ public class Constants {
 	public static final String PREF_TTS_ENGINE = "tts_engine";
 	public static final String PREF_TTS_TTS_STOP_ON_LOST_FOCUS = "tts_stop_on_lost_focus";
 	public static final String PREF_AUTO_DOWNLOAD_UPDATED_CHAPTER = "auto_download_updated_chapter";
+	public static final String PREF_BACKUP_THUMB_IMAGES = "backup_thumb_images";
+	public static final String PREF_BACKUP_DB = "backup_database";
+	public static final String PREF_RESTORE_DB = "restore_database";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 
@@ -112,5 +115,7 @@ public class Constants {
 
 	/* You just need to add a new alternative language here and in AlternativeLanguageInfo -> initSingleton */
 	public static final String[] languageList = { Constants.LANG_ENGLISH, Constants.LANG_FRENCH, Constants.LANG_BAHASA_INDONESIA, Constants.LANG_POLISH };
+	public static final int BUFFER = 1024;
+
 
 }
