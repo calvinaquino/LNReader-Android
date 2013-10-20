@@ -245,4 +245,19 @@
     <string name="error_empty_download_array">Brak materiałów do Pobierania</string>
     <string name="hide_empty_volume_title">Ukryj puste tomy</string>
     <string name="hide_empty_volume_summary">Ukrywa puste tomy z listy tomów powieści.</string>
+    <string name="pref_tts">TEXT-TO-Speech</string>
+    <string name="tts_pitch_title">Głośność</string>
+    <string name="tts_pitch_summary">Domyślna wartość to 1.0, obecna wartość to %1$s.</string>
+    <string name="tts_reading_speed_title">Prędkość czytania</string>
+    <string name="tts_reading_speed_summary">Domyślna wartość to 1.0, obecna wartość to %1$s.</string>
+    <string name="tts_whitespace_delay_title">Opuźnienie pomiędzy akapitami</string>
+    <string name="tts_whitespace_delay_summary">Opuźnienie pomiędzy akapitami w ms (domyślnie 500ms), obecna wartość %1$sms</string>
+    <string name="pref_tts_engine_title">TTS Engine</string>
+    <string name="pref_tts_engine_summary">Otwórz ustawienia Androida by wybrać aplikację TTS.</string>
+    <string name="tts_stop_on_lost_focus_title">Zatrzymanie w tle</string>
+    <string name="tts_stop_on_lost_focus_summary">Zatrzymuje czytanie jeśli apka przejdzie w działanie w tle. Zatrzymuje się zawsze przy zatrzymaniu apki..</string>
+    <string name="auto_download_updated_chapter_title">Automatyczne uaktualnianie rozdziałów</string>
+    <string name="auto_download_updated_chapter_summary">Automatycznie pobiera uaktualnienia powieści z listy obserwowanych</string>
+    <string name="backup_thumb_images_title">Kopia okładek</string>
+    <string name="backup_thumb_images_summary">Tworzy kopię zapasową okładek na karcie SDCard.</string>
 </resources>
