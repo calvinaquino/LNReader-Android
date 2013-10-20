@@ -203,7 +203,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	public boolean isContentUpdated(SQLiteDatabase db, PageModel page) {
 		// Log.d(TAG, "isContentUpdated is called by: " + page.getPage());
-		String sql = "select case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE + " then 1 else 0 end " + " from " + TABLE_PAGE + " join " + TABLE_NOVEL_CONTENT + " using (" + COLUMN_PAGE + ") " + "where " + COLUMN_PAGE + " = ? ";
+		String sql = "select case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
+				     "       then 1 else 0 end " + " from " + TABLE_PAGE +
+				     " join " + TABLE_NOVEL_CONTENT + " using (" + COLUMN_PAGE + ") " +
+				     " where " + COLUMN_PAGE + " = ? "+
+			         "   and " + TABLE_PAGE + "." + COLUMN_IS_MISSING + " != 1 ";
 		Cursor cursor = rawQuery(db, sql, new String[] { page.getPage() });
 		try {
 			cursor.moveToFirst();
@@ -219,7 +223,17 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	public int isNovelUpdated(SQLiteDatabase db, PageModel novelPage) {
-		String sql = "select r.page, sum(r.hasUpdates) " + "from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + "            , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE + "                   then 1 else 0 end as hasUpdates " + "       from " + TABLE_NOVEL_DETAILS + "       join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE + "       join " + TABLE_PAGE + " on " + TABLE_PAGE + "." + COLUMN_PARENT + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE + "       join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE + "       where " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = ? " + ") r group by r.page ";
+		String sql = "select r.page, sum(r.hasUpdates) " +
+	                 "from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE +
+	                 "                , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
+	                 "                  then 1 else 0 end as hasUpdates " +
+	                 "       from " + TABLE_NOVEL_DETAILS +
+	                 "       join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE +
+	                 "       join " + TABLE_PAGE + " on " + TABLE_PAGE + "." + COLUMN_PARENT + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE +
+	                 "       join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE +
+	                 "       where " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = ? " +
+	                 "         and " + TABLE_PAGE + "." + COLUMN_IS_MISSING + " != 1 " +
+	                 ") r group by r.page ";
 		Cursor cursor = rawQuery(db, sql, new String[] { novelPage.getPage() });
 		try {
 			cursor.moveToFirst();
@@ -264,14 +278,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	public ArrayList<PageModel> getAllNovels(SQLiteDatabase db, boolean alphOrder) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
-
-		String sql = "select * from " + TABLE_PAGE + " left join ( select " + COLUMN_PAGE + ", sum(UPDATESCOUNT) from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + "            , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE + "                   then 1 else 0 end as UPDATESCOUNT " + "       from " + TABLE_NOVEL_DETAILS + "       join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE + "       join " + TABLE_PAGE + " on " + TABLE_PAGE + "." + COLUMN_PARENT + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE + "       join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE + " ) group by " + COLUMN_PAGE + ") r on " + TABLE_PAGE + "." + COLUMN_PAGE + " = r." + COLUMN_PAGE + " where " + COLUMN_PARENT + " = ? ";
-		if (alphOrder)
-			sql += " ORDER BY " + COLUMN_TITLE;
-		else
-			sql += " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE;
-
-		Cursor cursor = rawQuery(db, sql, new String[] { Constants.ROOT_NOVEL });
+		Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder)
+				                   , new String[] { Constants.ROOT_NOVEL });
 		try {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
@@ -288,14 +296,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	public ArrayList<PageModel> getAllTeaser(SQLiteDatabase db, boolean alphOrder) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
-
-		String sql = "select * from " + TABLE_PAGE + " left join ( select " + COLUMN_PAGE + ", sum(UPDATESCOUNT) from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + "            , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE + "                   then 1 else 0 end as UPDATESCOUNT " + "       from " + TABLE_NOVEL_DETAILS + "       join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE + "       join " + TABLE_PAGE + " on " + TABLE_PAGE + "." + COLUMN_PARENT + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE + "       join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE + " ) group by " + COLUMN_PAGE + ") r on " + TABLE_PAGE + "." + COLUMN_PAGE + " = r." + COLUMN_PAGE + " where " + COLUMN_PARENT + " = ? ";
-		if (alphOrder)
-			sql += " ORDER BY " + COLUMN_TITLE;
-		else
-			sql += " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE;
-
-		Cursor cursor = rawQuery(db, sql, new String[] { "Category:Teasers" });
+		Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder)
+				                   , new String[] { "Category:Teasers" });
 		try {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
@@ -312,14 +314,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	public ArrayList<PageModel> getAllOriginal(SQLiteDatabase db, boolean alphOrder) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
-
-		String sql = "select * from " + TABLE_PAGE + " left join ( select " + COLUMN_PAGE + ", sum(UPDATESCOUNT) from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + "            , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE + "                   then 1 else 0 end as UPDATESCOUNT " + "       from " + TABLE_NOVEL_DETAILS + "       join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE + "       join " + TABLE_PAGE + " on " + TABLE_PAGE + "." + COLUMN_PARENT + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE + "       join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE + " ) group by " + COLUMN_PAGE + ") r on " + TABLE_PAGE + "." + COLUMN_PAGE + " = r." + COLUMN_PAGE + " where " + COLUMN_PARENT + " = ? ";
-		if (alphOrder)
-			sql += " ORDER BY " + COLUMN_TITLE;
-		else
-			sql += " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE;
-
-		Cursor cursor = rawQuery(db, sql, new String[] { "Category:Original" });
+		Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder)
+				                   , new String[] { "Category:Original" });
 		try {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
@@ -336,35 +332,73 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	public ArrayList<PageModel> getAllAlternative(SQLiteDatabase db, boolean alphOrder, String language) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
+		if (language != null) {
+			Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder)
+					                   , new String[] { AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo() });
 
-		String sql = "select * from " + TABLE_PAGE + " left join ( select " + COLUMN_PAGE + ", sum(UPDATESCOUNT) from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + "            , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE + "                   then 1 else 0 end as UPDATESCOUNT " + "       from " + TABLE_NOVEL_DETAILS + "       join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE + "       join " + TABLE_PAGE + " on " + TABLE_PAGE + "." + COLUMN_PARENT + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE + "       join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE + " ) group by " + COLUMN_PAGE + ") r on " + TABLE_PAGE + "." + COLUMN_PAGE + " = r." + COLUMN_PAGE + " where " + COLUMN_PARENT + " = ? ";
+			try {
+				cursor.moveToFirst();
+				while (!cursor.isAfterLast()) {
+					PageModel page = PageModelHelper.cursorToPageModel(cursor);
+					pages.add(page);
+					cursor.moveToNext();
+				}
+			} finally {
+				if (cursor != null)
+					cursor.close();
+			}
+		}
+		return pages;
+	}
+
+	private String getNovelListQuery(boolean alphOrder) {
+		String sql = "select * from " + TABLE_PAGE +
+				     " left join ( select " + COLUMN_PAGE + ", sum(UPDATESCOUNT) " +
+				     "             from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE +
+				     "                         , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
+				     "                           then 1 else 0 end as UPDATESCOUNT " +
+				     "                    from " + TABLE_NOVEL_DETAILS +
+				     "                    join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE +
+				     "                    join " + TABLE_PAGE + " on " + TABLE_PAGE + "." + COLUMN_PARENT + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE +
+				     "                    join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE + " " +
+				     "             ) group by " + COLUMN_PAGE +
+				     " ) r on " + TABLE_PAGE + "." + COLUMN_PAGE + " = r." + COLUMN_PAGE +
+				     " where " + COLUMN_PARENT + " = ? ";
 		if (alphOrder)
 			sql += " ORDER BY " + COLUMN_TITLE;
 		else
 			sql += " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE;
-		Cursor cursor = null;
 
-		if (language != null)
-			cursor = rawQuery(db, sql, new String[] { AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo() });
-
-		try {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				PageModel page = PageModelHelper.cursorToPageModel(cursor);
-				pages.add(page);
-				cursor.moveToNext();
-			}
-		} finally {
-			if (cursor != null)
-				cursor.close();
-		}
-		return pages;
+		return sql;
 	}
 
 	public ArrayList<PageModel> getAllWatchedNovel(SQLiteDatabase db, boolean alphOrder) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
 
-		String sql = "select * from " + TABLE_PAGE + " left join ( select " + COLUMN_PAGE + ", sum(UPDATESCOUNT) from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + "            , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE + "                   then 1 else 0 end as UPDATESCOUNT " + "       from " + TABLE_NOVEL_DETAILS + "       join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE + "       join " + TABLE_PAGE + " on " + TABLE_PAGE + "." + COLUMN_PARENT + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE + "       join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE + " ) group by " + COLUMN_PAGE + ") r on " + TABLE_PAGE + "." + COLUMN_PAGE + " = r." + COLUMN_PAGE + " where " + COLUMN_PARENT + " in ('" + Constants.ROOT_NOVEL + "', 'Category:Teasers', 'Category:Original', 'Category:Indonesian') and  " + TABLE_PAGE + "." + COLUMN_IS_WATCHED + " = ? ";
+		ArrayList<String> parents = new ArrayList<String>();
+		parents.add("'" + Constants.ROOT_NOVEL + "'");
+		parents.add("'Category:Teasers'");
+		parents.add("'Category:Original'");
+		for(AlternativeLanguageInfo info : AlternativeLanguageInfo.getAlternativeLanguageInfo().values()) {
+			parents.add("'" + info.getCategoryInfo() + "'");
+		}
+
+		String sql = "select * " +
+				     " from " + TABLE_PAGE +
+				     " left join ( select " + COLUMN_PAGE +
+				     "                  , sum(UPDATESCOUNT) " +
+				     "             from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE +
+				     "                         , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
+				     "                           then 1 else 0 end as UPDATESCOUNT " +
+				     "                    from " + TABLE_NOVEL_DETAILS +
+				     "                    join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE +
+				     "                    join " + TABLE_PAGE + " on " + TABLE_PAGE + "." + COLUMN_PARENT + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE +
+  				     "                                           and " + TABLE_PAGE + "." + COLUMN_IS_MISSING + " != 1 " +
+				     "                    join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE + " " +
+				     "             ) group by " + COLUMN_PAGE +
+				     " ) r on " + TABLE_PAGE + "." + COLUMN_PAGE + " = r." + COLUMN_PAGE +
+				     " where " + COLUMN_PARENT + " in (" + Util.join(parents, ", ") + ") " +
+				     "   and  " + TABLE_PAGE + "." + COLUMN_IS_WATCHED + " = ? ";
 		if (alphOrder)
 			sql += " ORDER BY " + COLUMN_TITLE;
 		else
@@ -386,7 +420,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	/*
-	 * To avoid android.database.sqlite.SQLiteException: unable to close due to unfinalised statements
+	 * To avoid android.database.sqlite.SQLiteException: unable to close due to unfinalized statements
 	 */
 	public Cursor rawQuery(SQLiteDatabase db, String sql, String[] values) {
 		Object lock = new Object();
