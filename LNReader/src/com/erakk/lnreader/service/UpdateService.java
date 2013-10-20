@@ -2,7 +2,6 @@ package com.erakk.lnreader.service;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
@@ -77,7 +76,7 @@ public class UpdateService extends Service {
 			editor.putString(Constants.PREF_RUN_UPDATES_STATUS, "");
 			editor.commit();
 
-			GetUpdatedChaptersTask task = new GetUpdatedChaptersTask();
+			GetUpdatedChaptersTask task = new GetUpdatedChaptersTask(GetAutoDownloadUpdatedChapterPreferences());
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			else
@@ -86,6 +85,10 @@ public class UpdateService extends Service {
 			// add on Download List
 			LNReaderApplication.getInstance().addDownload(TAG, "Update Service");
 		}
+	}
+
+	private boolean GetAutoDownloadUpdatedChapterPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_AUTO_DOWNLOAD_UPDATED_CHAPTER, false);
 	}
 
 	public class MyBinder extends Binder {
@@ -249,6 +252,11 @@ public class UpdateService extends Service {
 
 	public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>> implements ICallbackNotifier {
 		private int lastProgress;
+		private final boolean autoDownloadUpdatedContent;
+
+		public GetUpdatedChaptersTask(boolean autoDownloadUpdatedContent) {
+			this.autoDownloadUpdatedContent = autoDownloadUpdatedContent;
+		}
 
 		@Override
 		protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(Void... arg0) {
@@ -315,55 +323,16 @@ public class UpdateService extends Service {
 			if (watchedNovels != null) {
 				double total = watchedNovels.size() + 1;
 				double current = 0;
-				for (Iterator<PageModel> iNovels = watchedNovels.iterator(); iNovels.hasNext();) {
-					// get last update date from internet
-					PageModel novel = iNovels.next();
-					if (callback != null)
-						callback.onCallback(new CallbackEventData("Checking: " + novel.getTitle()));
-					PageModel updatedNovel = dao.getPageModelFromInternet(novel.getPageModel(), callback);
+				for (PageModel watchedNovel : watchedNovels) {
+					ArrayList<PageModel> updatedChapters = processWatchedNovel(watchedNovel, callback);
+					updatesTotal.addAll(updatedChapters);
 
-					// different timestamp
-					if (force || !novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
-						if (force) {
-							Log.i(TAG, "Force Mode: " + novel.getPage());
-						} else {
-							Log.d(TAG, "Different Timestamp for: " + novel.getPage());
-							Log.d(TAG, "old: " + novel.getLastUpdate().toString() + " != " + updatedNovel.getLastUpdate().toString());
-						}
-						ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, callback).getFlattedChapterList();
-
-						if (callback != null)
-							callback.onCallback(new CallbackEventData("Getting updated chapters: " + novel.getTitle()));
-						NovelCollectionModel updatedNovelDetails = dao.getNovelDetailsFromInternet(novel, callback);
-						if (updatedNovelDetails != null) {
-							ArrayList<PageModel> updates = updatedNovelDetails.getFlattedChapterList();
-
-							Log.d(TAG, "Starting size: " + updates.size());
-							// compare the chapters!
-							for (int i = 0; i < novelDetailsChapters.size(); ++i) {
-								PageModel oldChapter = novelDetailsChapters.get(i);
-								for (int j = 0; j < updates.size(); j++) {
-									PageModel newChapter = updates.get(j);
-									if (callback != null)
-										callback.onCallback(new CallbackEventData("Checking: " + oldChapter.getTitle() + " ==> " + newChapter.getTitle()));
-									// check if the same page
-									if (newChapter.getPage().compareTo(oldChapter.getPage()) == 0) {
-										// check if last update date is newer
-										if (newChapter.getLastUpdate().getTime() > oldChapter.getLastUpdate().getTime()) {
-											newChapter.setUpdated(true);
-											Log.i(TAG, "Found updated chapter: " + newChapter.getTitle());
-										} else {
-											updates.remove(newChapter);
-											Log.i(TAG, "No Update for Chapter: " + newChapter.getTitle());
-										}
-										break;
-									}
-								}
-							}
-							Log.d(TAG, "End size: " + updates.size());
-							updatesTotal.addAll(updates);
+					if(autoDownloadUpdatedContent) {
+						for(PageModel chapter : updatedChapters) {
+							downloadUpdatedChapter(chapter, callback);
 						}
 					}
+
 					lastProgress = (int) (++current / total * 100);
 					Log.d(TAG, "Progress: " + lastProgress);
 				}
@@ -373,6 +342,66 @@ public class UpdateService extends Service {
 			Log.i(TAG, "Found updates: " + updatesTotal.size());
 
 			return updatesTotal;
+		}
+
+		private void downloadUpdatedChapter(PageModel chapter, ICallbackNotifier callback) throws Exception {
+			Log.i(TAG, "Downloading updated content for: " + chapter.getPage());
+			NovelsDao dao = NovelsDao.getInstance();
+			dao.getNovelContentFromInternet(chapter, callback);
+		}
+
+		private ArrayList<PageModel> processWatchedNovel(PageModel novel, ICallbackNotifier callback) throws Exception {
+			ArrayList<PageModel> updatedWatchedNovel = new ArrayList<PageModel>();
+			NovelsDao dao = NovelsDao.getInstance();
+
+			// get last update date from internet
+			if (callback != null)
+				callback.onCallback(new CallbackEventData("Checking: " + novel.getTitle()));
+			PageModel updatedNovel = dao.getPageModelFromInternet(novel.getPageModel(), callback);
+
+			// different timestamp
+			if (force || !novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
+				if (force) {
+					Log.i(TAG, "Force Mode: " + novel.getPage());
+				} else {
+					Log.d(TAG, "Different Timestamp for: " + novel.getPage());
+					Log.d(TAG, "old: " + novel.getLastUpdate().toString() + " != " + updatedNovel.getLastUpdate().toString());
+				}
+				ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, callback).getFlattedChapterList();
+
+				if (callback != null)
+					callback.onCallback(new CallbackEventData("Getting updated chapters: " + novel.getTitle()));
+				NovelCollectionModel updatedNovelDetails = dao.getNovelDetailsFromInternet(novel, callback);
+				if (updatedNovelDetails != null) {
+					ArrayList<PageModel> updates = updatedNovelDetails.getFlattedChapterList();
+
+					Log.d(TAG, "Starting size: " + updates.size());
+					// compare the chapters!
+					for (int i = 0; i < novelDetailsChapters.size(); ++i) {
+						PageModel oldChapter = novelDetailsChapters.get(i);
+						for (int j = 0; j < updates.size(); j++) {
+							PageModel newChapter = updates.get(j);
+							if (callback != null)
+								callback.onCallback(new CallbackEventData("Checking: " + oldChapter.getTitle() + " ==> " + newChapter.getTitle()));
+							// check if the same page
+							if (newChapter.getPage().compareTo(oldChapter.getPage()) == 0) {
+								// check if last update date is newer
+								if (newChapter.getLastUpdate().getTime() > oldChapter.getLastUpdate().getTime()) {
+									newChapter.setUpdated(true);
+									Log.i(TAG, "Found updated chapter: " + newChapter.getTitle());
+								} else {
+									updates.remove(newChapter);
+									Log.i(TAG, "No Update for Chapter: " + newChapter.getTitle());
+								}
+								break;
+							}
+						}
+					}
+					Log.d(TAG, "End size: " + updates.size());
+					updatedWatchedNovel.addAll(updates);
+				}
+			}
+			return updatedWatchedNovel;
 		}
 
 		private ArrayList<PageModel> getUpdatedNovelList(ICallbackNotifier callback) throws Exception {

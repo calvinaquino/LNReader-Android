@@ -76,6 +76,7 @@ public class Constants {
 	public static final String PREF_TTS_DELAY = "tts_whitespace_delay";
 	public static final String PREF_TTS_ENGINE = "tts_engine";
 	public static final String PREF_TTS_TTS_STOP_ON_LOST_FOCUS = "tts_stop_on_lost_focus";
+	public static final String PREF_AUTO_DOWNLOAD_UPDATED_CHAPTER = "auto_download_updated_chapter";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 

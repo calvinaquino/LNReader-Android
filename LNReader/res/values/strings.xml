@@ -257,4 +257,6 @@
     <string name="pref_tts_engine_summary">Open Android Settings for TTS selection.</string>
     <string name="tts_stop_on_lost_focus_title">Stop on Lost Focus</string>
     <string name="tts_stop_on_lost_focus_summary">Stop the currently playing utterance when lost focus (on background). If the activity is destroyed, it will always stop.</string>
+    <string name="auto_download_updated_chapter_title">Auto Download Updated Chapter</string>
+    <string name="auto_download_updated_chapter_summary">Download the updated chapter contents from the Watched Novels.</string>
 </resources>
