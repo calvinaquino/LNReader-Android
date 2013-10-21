@@ -261,4 +261,8 @@
     <string name="auto_download_updated_chapter_summary">Download the updated chapter contents from the Watched Novels.</string>
     <string name="backup_thumb_images_title">Backup Thumb Images</string>
     <string name="backup_thumb_images_summary">Backup thumbnail images to SDCard.</string>
+    <string name="restore_thumb_images_title">Restore Thumb Images</string>
+    <string name="restore_thumb_images_summary">Restore thumb images from zip file in SDCard.</string>
+    <string name="relink_images_title">Relink Thumb Images</string>
+    <string name="relink_images_summary">Update thumb images path to the current save location.</string>
 </resources>

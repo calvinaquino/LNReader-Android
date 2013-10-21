@@ -47,7 +47,7 @@ import com.erakk.lnreader.parser.CommonParser;
 
 /**
  * @author Nandaka
- *
+ * 
  */
 public class NovelsDao {
 	private static final String TAG = NovelsDao.class.toString();
@@ -560,7 +560,7 @@ public class NovelsDao {
 	/**
 	 * Get page model from db. If autoDownload = true, get the pageModel from
 	 * internet if not exists.
-	 *
+	 * 
 	 * @param page
 	 * @param notifier
 	 * @param autoDownload
@@ -585,7 +585,7 @@ public class NovelsDao {
 
 	/**
 	 * Get page model from db. Get the pageModel from internet if not exists.
-	 *
+	 * 
 	 * @param page
 	 * @param notifier
 	 * @return
@@ -597,7 +597,7 @@ public class NovelsDao {
 
 	/**
 	 * Return pageModel, null if not exist.
-	 *
+	 * 
 	 * @param page
 	 * @param notifier
 	 * @return
@@ -831,7 +831,7 @@ public class NovelsDao {
 	/***
 	 * Bulk update page info through wiki API - LastUpdateInfo. - Redirected. -
 	 * Missing flag.
-	 *
+	 * 
 	 * @param pageModels
 	 * @param notifier
 	 * @return
@@ -942,6 +942,20 @@ public class NovelsDao {
 				db.close();
 			}
 		}
+	}
+
+	public ArrayList<PageModel> getAllContentPageModel() {
+		ArrayList<PageModel> result = null;
+		synchronized (dbh) {
+			// get from db
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			try {
+				result = PageModelHelper.getAllContentPageModel(db);
+			} finally {
+				db.close();
+			}
+		}
+		return result;
 	}
 
 	/*
@@ -1093,7 +1107,7 @@ public class NovelsDao {
 
 	/**
 	 * Get image from db, if not exist will try to download from internet
-	 *
+	 * 
 	 * @param image
 	 * @param notifier
 	 * @return
@@ -1127,7 +1141,7 @@ public class NovelsDao {
 
 	/**
 	 * Get image from internet from File:xxx
-	 *
+	 * 
 	 * @param page
 	 * @param notifier
 	 * @return

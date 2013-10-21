@@ -229,14 +229,14 @@
                 android:key="restore_database"
                 android:summary="@string/restore_database_summary"
                 android:title="@string/restore_database_title" />
-            <Preference android:key="backup_thumb_images" android:title="@string/backup_thumb_images_title" android:summary="@string/backup_thumb_images_summary"/><Preference
+            <Preference android:key="backup_thumb_images" android:title="@string/backup_thumb_images_title" android:summary="@string/backup_thumb_images_summary"/><Preference android:title="@string/restore_thumb_images_title" android:summary="@string/restore_thumb_images_summary" android:key="restore_thumb_images"/><Preference
                 android:key="clear_image_cache"
                 android:summary="@string/clear_cache_summary"
                 android:title="@string/clear_cache_title" />
             <EditTextPreference
                 android:key="save_location"
                 android:title="@string/save_location_title" />
-            <Preference
+            <Preference android:title="@string/relink_images_title" android:summary="@string/relink_images_summary" android:key="relink_images"/><Preference
                 android:key="db_location"
                 android:title="@string/db_location_title" />
 
@@ -244,6 +244,8 @@
                 android:key="download_big_image"
                 android:summary="@string/download_big_image_summary"
                 android:title="@string/download_big_image_title" />
+            
+            
             
         </PreferenceScreen>
     </PreferenceCategory>

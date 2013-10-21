@@ -1,8 +1,6 @@
 package com.erakk.lnreader.task;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -12,15 +10,15 @@ import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.helper.Util;
 
-public class ZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> implements ICallbackNotifier {
-	private static final String TAG = ZipFilesTask.class.toString();
+public class UnZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> implements ICallbackNotifier {
+	private static final String TAG = UnZipFilesTask.class.toString();
 	private final String zipName;
 	private final String rootPath;
 	private final ICallbackNotifier callback;
 	private final String source;
 	private boolean hasError = false;
 
-	public ZipFilesTask(String zipName, String rootPath, ICallbackNotifier callback, String source) {
+	public UnZipFilesTask(String zipName, String rootPath, ICallbackNotifier callback, String source) {
 		this.zipName = zipName;
 		this.rootPath = rootPath;
 		this.callback = callback;
@@ -33,17 +31,14 @@ public class ZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> impl
 	}
 
 	@Override
-	protected Void doInBackground(Void... params) {
-		// get thumb images
-		publishProgress(new CallbackEventData("Getting files..."));
-		List<File> filenames = Util.getListFiles(new File(rootPath), this);
-		// zip the files
+	protected Void doInBackground(Void... arg0) {
+		// unzip the files
 		try {
-			publishProgress(new CallbackEventData("Zipping files..."));
-			Util.zipFiles(filenames, zipName, rootPath, this);
+			publishProgress(new CallbackEventData("UnZipping files..."));
+			Util.unzipFiles(zipName, rootPath, this);
 		} catch (IOException e) {
-			Log.e(TAG, "Failed to zip files.", e);
-			publishProgress(new CallbackEventData("Failed to zip files: " + e.getMessage()));
+			Log.e(TAG, "Failed to unzip files.", e);
+			publishProgress(new CallbackEventData("Failed to unzip files: " + e.getMessage()));
 			hasError = true;
 		}
 		return null;
@@ -59,7 +54,7 @@ public class ZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> impl
 	@Override
 	protected void onPostExecute(Void result) {
 		if (!hasError) {
-			String message = "Completed zipping " + rootPath + " to: " + zipName;
+			String message = "Completed unzipping " + zipName + " to: " + rootPath;
 			Log.d(TAG, message);
 			if (callback != null)
 				callback.onCallback(new CallbackEventData(message, source));

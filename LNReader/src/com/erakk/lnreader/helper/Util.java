@@ -4,8 +4,10 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
@@ -15,11 +17,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 
 public class Util {
@@ -28,7 +32,7 @@ public class Util {
 
 	/**
 	 * Show date/time difference in words.
-	 *
+	 * 
 	 * @param date
 	 * @return
 	 */
@@ -65,7 +69,7 @@ public class Util {
 
 	/**
 	 * Copy file
-	 *
+	 * 
 	 * @param src
 	 * @param dst
 	 * @throws IOException
@@ -87,7 +91,7 @@ public class Util {
 
 	/**
 	 * http://stackoverflow.com/questions/6350158/check-arraylist-for-instance-of-object
-	 *
+	 * 
 	 * @param arrayList
 	 * @param clazz
 	 * @return
@@ -103,7 +107,7 @@ public class Util {
 
 	/**
 	 * Join collection with given separator into string.
-	 *
+	 * 
 	 * @param s
 	 * @param delimiter
 	 * @return
@@ -158,8 +162,8 @@ public class Util {
 			if (file.isDirectory()) {
 				String message = "Getting files from: " + file.getAbsolutePath();
 				Log.d(TAG, message);
-				//if(callback != null)
-				//	callback.onCallback(new CallbackEventData(message));
+				// if(callback != null)
+				// callback.onCallback(new CallbackEventData(message));
 				inFiles.addAll(getListFiles(file, callback));
 			} else {
 				inFiles.add(file);
@@ -175,7 +179,7 @@ public class Util {
 		byte data[] = new byte[Constants.BUFFER];
 		int fileCount = 1;
 		int total = filenames.size();
-        Log.d(TAG, "Start zipping to: " + zipFile);
+		Log.d(TAG, "Start zipping to: " + zipFile);
 		for (File file : filenames) {
 			String absPath = file.getAbsolutePath();
 			String message = String.format("Zipping %s [%s of %s]", absPath, fileCount, total);
@@ -191,7 +195,57 @@ public class Util {
 			origin.close();
 			++fileCount;
 		}
-        out.close();
-        Log.d(TAG, "Completed zipping to: " + zipFile);
+		out.close();
+		Log.d(TAG, "Completed zipping to: " + zipFile);
+	}
+
+	public static void unzipFiles(String zipName, String rootPath, ICallbackNotifier callback) throws FileNotFoundException, IOException {
+		InputStream is = new FileInputStream(zipName);
+		ZipInputStream zis = new ZipInputStream(new BufferedInputStream(is));
+		ZipEntry ze;
+		byte[] buffer = new byte[Constants.BUFFER];
+		int count;
+
+		Log.d(TAG, "Start unzipping: " + zipName + " to: " + rootPath);
+		// create root path
+		File root = new File(rootPath);
+		root.mkdirs();
+
+		int fileCount = 1;
+		while ((ze = zis.getNextEntry()) != null) {
+			String filename = rootPath + ze.getName();
+
+			// Need to create directories if not exists, or
+			// it will generate an Exception...
+			if (ze.isDirectory()) {
+				Log.d(TAG, "Creating dir1: " + filename);
+				File fmd = new File(filename);
+				fmd.mkdirs();
+				continue;
+			}
+			// check if target dir exist
+			String dir = filename.substring(0, filename.lastIndexOf("/"));
+			File rootDir = new File(dir);
+			if (!rootDir.exists()) {
+				Log.d(TAG, "Creating dir2: " + dir);
+				rootDir.mkdirs();
+			}
+
+			Log.d(TAG, "Unzipping: " + filename);
+			if (callback != null)
+				callback.onCallback(new CallbackEventData("Unzipping #" + fileCount + ": " + filename));
+			FileOutputStream fout = new FileOutputStream(filename);
+
+			while ((count = zis.read(buffer)) != -1) {
+				fout.write(buffer, 0, count);
+			}
+
+			fout.close();
+			zis.closeEntry();
+			++fileCount;
+		}
+
+		zis.close();
+		Log.d(TAG, "Completed unzipping to: " + zipName);
 	}
 }

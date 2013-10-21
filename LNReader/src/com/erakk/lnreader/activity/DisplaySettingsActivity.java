@@ -45,12 +45,15 @@ import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.service.MyScheduleReceiver;
 import com.erakk.lnreader.task.CopyDBTask;
+import com.erakk.lnreader.task.RelinkImagesTask;
+import com.erakk.lnreader.task.UnZipFilesTask;
 import com.erakk.lnreader.task.ZipFilesTask;
 
 public class DisplaySettingsActivity extends SherlockPreferenceActivity implements ICallbackNotifier {
 	private static final String TAG = DisplaySettingsActivity.class.toString();
 	private boolean isInverted;
-	//Context context;
+
+	// Context context;
 
 	/**************************************************************
 	 * The onPreferenceTreeClick method's sole purpose is to deal with the known
@@ -132,7 +135,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	@SuppressLint("SdCardPath")
 	@SuppressWarnings("deprecation")
 	public void onCreate(Bundle savedInstanceState) {
-		//context = this;
+		// context = this;
 		UIHelper.SetTheme(this, null);
 		super.onCreate(savedInstanceState);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
@@ -477,10 +480,53 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				return true;
 			}
 		});
+
+		// Restore Thumbs
+		Preference restoreThumbs = findPreference(Constants.PREF_RESTORE_THUMB_IMAGES);
+		restoreThumbs.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				restoreThumbs();
+				return true;
+			}
+		});
+
+		// relink thumbs
+		Preference relinkThumbs = findPreference(Constants.PREF_RELINK_THUMB_IMAGES);
+		relinkThumbs.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				relinkThumbs();
+				return true;
+			}
+		});
 	}
 
 	@SuppressLint("InlinedApi")
-	protected void copyDB(boolean makeBackup, String source) {
+	private void relinkThumbs() {
+		String rootPath = UIHelper.getImageRoot(this);
+		RelinkImagesTask task = new RelinkImagesTask(rootPath, this, Constants.PREF_RELINK_THUMB_IMAGES);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		else
+			task.execute();
+	}
+
+	@SuppressLint("InlinedApi")
+	private void restoreThumbs() {
+		String zipName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_thumbs.zip";
+		String thumbRootPath = UIHelper.getImageRoot(this) + "/project/images/thumb";
+		UnZipFilesTask task = new UnZipFilesTask(zipName, thumbRootPath, this, Constants.PREF_RESTORE_THUMB_IMAGES);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		else
+			task.execute();
+	}
+
+	@SuppressLint("InlinedApi")
+	private void copyDB(boolean makeBackup, String source) {
 		CopyDBTask task = new CopyDBTask(makeBackup, this, source);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -503,7 +549,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	private void setAlternateLanguageList() {
 		/*
 		 * A section to change Alternative Languages list
-		 *
+		 * 
 		 * @freedomofkeima
 		 */
 		Preference selectAlternativeLanguage = findPreference("select_alternative_language");
@@ -584,7 +630,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	private void setApplicationLanguage() {
 		/*
 		 * A section to change Application Language
-		 *
+		 * 
 		 * @freedomofkeima
 		 */
 		final Preference changeLanguages = findPreference(Constants.PREF_LANGUAGE);
@@ -822,11 +868,10 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	@SuppressWarnings("deprecation")
 	public void onCallback(ICallbackEventData message) {
 		CallbackEventData msg = (CallbackEventData) message;
-		if(Util.isStringNullOrEmpty(msg.getSource())) {
+		if (Util.isStringNullOrEmpty(msg.getSource())) {
 			Preference runUpdates = findPreference(Constants.PREF_RUN_UPDATES);
 			runUpdates.setSummary("Status: " + message.getMessage());
-		}
-		else {
+		} else {
 			Preference pref = findPreference(msg.getSource());
 			pref.setSummary("Status: " + message.getMessage());
 		}

@@ -23,15 +23,14 @@ public class NovelContentModelHelper {
 	private static DBHelper helper = NovelsDao.getInstance().getDBHelper();
 
 	// New column should be appended as the last column
-	public static final String DATABASE_CREATE_NOVEL_CONTENT = "create table if not exists "
-		      + DBHelper.TABLE_NOVEL_CONTENT + "(" + DBHelper.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
-								 				    + DBHelper.COLUMN_CONTENT + " text not null, "					// 1
-						      						+ DBHelper.COLUMN_PAGE + " text unique not null, "				// 2
-								  				    + DBHelper.COLUMN_LAST_X + " integer, "							// 3
-								  				    + DBHelper.COLUMN_LAST_Y + " integer, "							// 4
-								  				    + DBHelper.COLUMN_ZOOM + " double, "							// 5
-								  				    + DBHelper.COLUMN_LAST_UPDATE + " integer, "					// 6
-								  				    + DBHelper.COLUMN_LAST_CHECK + " integer);";					// 7
+	public static final String DATABASE_CREATE_NOVEL_CONTENT = "create table if not exists " + DBHelper.TABLE_NOVEL_CONTENT + "(" + DBHelper.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " // 0
+			+ DBHelper.COLUMN_CONTENT + " text not null, " // 1
+			+ DBHelper.COLUMN_PAGE + " text unique not null, " // 2
+			+ DBHelper.COLUMN_LAST_X + " integer, " // 3
+			+ DBHelper.COLUMN_LAST_Y + " integer, " // 4
+			+ DBHelper.COLUMN_ZOOM + " double, " // 5
+			+ DBHelper.COLUMN_LAST_UPDATE + " integer, " // 6
+			+ DBHelper.COLUMN_LAST_CHECK + " integer);"; // 7
 
 	public static NovelContentModel cursorToNovelContent(Cursor cursor) {
 		NovelContentModel content = new NovelContentModel();
@@ -41,8 +40,8 @@ public class NovelContentModelHelper {
 		content.setLastXScroll(cursor.getInt(3));
 		content.setLastYScroll(cursor.getInt(4));
 		content.setLastZoom(cursor.getDouble(5));
-		content.setLastUpdate(new Date(cursor.getLong(6)*1000));
-		content.setLastCheck(new Date(cursor.getLong(7)*1000));
+		content.setLastUpdate(new Date(cursor.getLong(6) * 1000));
+		content.setLastCheck(new Date(cursor.getLong(7) * 1000));
 		return content;
 	}
 
@@ -51,22 +50,22 @@ public class NovelContentModelHelper {
 	 */
 
 	public static NovelContentModel getNovelContent(SQLiteDatabase db, String page) {
-		//Log.d(TAG, "Selecting Novel Content: " + page);
+		// Log.d(TAG, "Selecting Novel Content: " + page);
 		NovelContentModel content = null;
 
-		Cursor cursor = helper.rawQuery(db, "select * from " + DBHelper.TABLE_NOVEL_CONTENT
-										 + " where " + DBHelper.COLUMN_PAGE + " = ? ", new String[] {page});
+		Cursor cursor = helper.rawQuery(db, "select * from " + DBHelper.TABLE_NOVEL_CONTENT + " where " + DBHelper.COLUMN_PAGE + " = ? ", new String[] { page });
 		try {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
 				content = cursorToNovelContent(cursor);
-				//Log.d(TAG, "Found: " + content.getPage() + " id: " + content.getId());
+				// Log.d(TAG, "Found: " + content.getPage() + " id: " + content.getId());
 				break;
 			}
-		} finally{
-			if(cursor != null) cursor.close();
+		} finally {
+			if (cursor != null)
+				cursor.close();
 		}
-		if(content == null) {
+		if (content == null) {
 			Log.w(TAG, "Not Found Novel Content: " + page);
 		}
 		return content;
@@ -84,40 +83,38 @@ public class NovelContentModelHelper {
 		cv.put(DBHelper.COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 
 		NovelContentModel temp = getNovelContent(db, content.getPage());
-		if(temp == null){
+		if (temp == null) {
 			cv.put(DBHelper.COLUMN_LAST_X, "" + content.getLastXScroll());
 			cv.put(DBHelper.COLUMN_LAST_Y, "" + content.getLastYScroll());
 
-			//Log.d(TAG, "Inserting Novel Content: " + content.getPage());
-			if(content.getLastUpdate() == null)
+			// Log.d(TAG, "Inserting Novel Content: " + content.getPage());
+			if (content.getLastUpdate() == null)
 				cv.put(DBHelper.COLUMN_LAST_UPDATE, 0);
 			else
 				cv.put(DBHelper.COLUMN_LAST_UPDATE, "" + (int) (content.getLastUpdate().getTime() / 1000));
 			long id = helper.insertOrThrow(db, DBHelper.TABLE_NOVEL_CONTENT, null, cv);
-			Log.i(TAG, "Novel Content Inserted, New id: "  + id);
-		}
-		else {
-			if(content.isUpdatingFromInternet()) {
+			Log.i(TAG, "Novel Content Inserted, New id: " + id);
+		} else {
+			if (content.isUpdatingFromInternet()) {
 				cv.put(DBHelper.COLUMN_LAST_X, "" + temp.getLastXScroll());
 				cv.put(DBHelper.COLUMN_LAST_Y, "" + temp.getLastYScroll());
-			}
-			else {
+			} else {
 				cv.put(DBHelper.COLUMN_LAST_X, "" + content.getLastXScroll());
 				cv.put(DBHelper.COLUMN_LAST_Y, "" + content.getLastYScroll());
 			}
 
-			//Log.d(TAG, "Updating Novel Content: " + content.getPage() + " id: " + temp.getId());
-			if(content.getLastUpdate() == null)
+			// Log.d(TAG, "Updating Novel Content: " + content.getPage() + " id: " + temp.getId());
+			if (content.getLastUpdate() == null)
 				cv.put(DBHelper.COLUMN_LAST_UPDATE, "" + (int) (temp.getLastUpdate().getTime() / 1000));
 			else
 				cv.put(DBHelper.COLUMN_LAST_UPDATE, "" + (int) (content.getLastUpdate().getTime() / 1000));
-			int result = helper.update(db, DBHelper.TABLE_NOVEL_CONTENT, cv, DBHelper.COLUMN_ID + " = ? ", new String[] {"" + temp.getId()});
-			Log.i(TAG, "Novel Content:" + content.getPage() + " Updated, Affected Row: "  + result);
+			int result = helper.update(db, DBHelper.TABLE_NOVEL_CONTENT, cv, DBHelper.COLUMN_ID + " = ? ", new String[] { "" + temp.getId() });
+			Log.i(TAG, "Novel Content:" + content.getPage() + " Updated, Affected Row: " + result);
 		}
 
 		// update the pageModel
 		PageModel pageModel = content.getPageModel();
-		if(pageModel != null) {
+		if (pageModel != null) {
 			pageModel.setDownloaded(true);
 			pageModel = PageModelHelper.insertOrUpdatePageModel(db, pageModel, false);
 		}
@@ -131,8 +128,8 @@ public class NovelContentModelHelper {
 	 */
 
 	public static boolean deleteNovelContent(SQLiteDatabase db, NovelContentModel content) {
-		if(content != null && content.getId() > 0) {
-			int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT, DBHelper.COLUMN_ID + " = ?", new String[]{"" + content.getId()});
+		if (content != null && content.getId() > 0) {
+			int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT, DBHelper.COLUMN_ID + " = ?", new String[] { "" + content.getId() });
 			Log.w(TAG, "NovelContent Deleted: " + result);
 			return result > 0 ? true : false;
 		}
@@ -140,8 +137,8 @@ public class NovelContentModelHelper {
 	}
 
 	public static boolean deleteNovelContent(SQLiteDatabase db, PageModel ref) {
-		if(ref != null && !Util.isStringNullOrEmpty(ref.getPage())) {
-			int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT, DBHelper.COLUMN_PAGE + " = ?", new String[]{"" + ref.getPage()});
+		if (ref != null && !Util.isStringNullOrEmpty(ref.getPage())) {
+			int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT, DBHelper.COLUMN_PAGE + " = ?", new String[] { "" + ref.getPage() });
 			Log.w(TAG, "NovelContent Deleted: " + result);
 			return result > 0 ? true : false;
 		}
