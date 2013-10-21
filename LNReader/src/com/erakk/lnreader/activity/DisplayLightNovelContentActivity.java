@@ -15,6 +15,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -637,7 +638,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				else
 					task.execute(new PageModel[] { pageModel });
 			} else {
-				webView.loadData("<p style='background: black; color: white;'>" + getResources().getString(R.string.background_task_load) + "</p>", "text/html", "utf-8");
+				if (UIHelper.getColorPreferences(this))
+					webView.loadData("<p style='background: black; color: white;'>" + getResources().getString(R.string.background_task_load) + "</p>", "text/html", "utf-8");
+				else
+					webView.loadData("<p style='background: white; color: black;'>" + getResources().getString(R.string.background_task_load) + "</p>", "text/html", "utf-8");
 				LoadNovelContentTask tempTask = (LoadNovelContentTask) LNReaderApplication.getInstance().getTask(key);
 				if (tempTask != null) {
 					task = tempTask;
@@ -766,8 +770,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	@Override
 	public void setMessageDialog(ICallbackEventData message) {
-		if (loadingText.getVisibility() == TextView.VISIBLE)
+		if (loadingText.getVisibility() == TextView.VISIBLE) {
 			loadingText.setText(message.getMessage());
+			loadingText.setBackgroundColor(Color.BLACK);
+		}
 	}
 
 	@Override
