@@ -241,7 +241,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int orientationIntervalValue = Util.tryParseInt(newValue.toString(), 0);
-				MyScheduleReceiver.reschedule(orientationIntervalValue);
+				// MyScheduleReceiver.reschedule(orientationIntervalValue);
 				orientation.setSummary(String.format(getResources().getString(R.string.orientation_summary), orientationArray[orientationIntervalValue]));
 				setOrientation();
 				return true;
@@ -261,7 +261,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int updatesIntervalInt = Util.tryParseInt(newValue.toString(), 0);
-				MyScheduleReceiver.reschedule(updatesIntervalInt);
+				MyScheduleReceiver.reschedule(preference.getContext(), updatesIntervalInt);
 				updatesInterval.setSummary(String.format(getResources().getString(R.string.update_interval_summary), updateIntervalArray[updatesIntervalInt]));
 				return true;
 			}
@@ -560,7 +560,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		while (it.hasNext()) {
 			AlternativeLanguageInfo info = it.next().getValue();
 			/* Default value of unregistered Alternative language = false (preventing too much tabs) */
-			languageStatus[j] = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(info.getLanguage(), false);
+			languageStatus[j] = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(info.getLanguage(), false);
 			j++;
 			it.remove();
 		}
@@ -636,7 +636,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		final Preference changeLanguages = findPreference(Constants.PREF_LANGUAGE);
 		final String[] languageSelectionArray = getResources().getStringArray(R.array.languageSelection);
 		final String[] localeArray = getResources().getStringArray(R.array.languageSelectionValues);
-		String languageSelectionValue = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getString(Constants.PREF_LANGUAGE, "en");
+		String languageSelectionValue = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LANGUAGE, "en");
 
 		// construct the hash map with locale as the key and language as the
 		// value

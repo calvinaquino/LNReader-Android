@@ -19,7 +19,6 @@ import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.AlternativeLanguageInfo;
-import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 
@@ -67,7 +66,7 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
 		Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
 		while (it.hasNext()) {
 			AlternativeLanguageInfo info = it.next().getValue();
-			boolean isChosen = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(info.getLanguage(), true);
+			boolean isChosen = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(info.getLanguage(), true);
 			if (isChosen) {
 				Choice.add(info.getLanguage());
 				Log.d("Language Added: ", info.getLanguage());

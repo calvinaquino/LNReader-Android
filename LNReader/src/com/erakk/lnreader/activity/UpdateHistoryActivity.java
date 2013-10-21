@@ -38,6 +38,7 @@ public class UpdateHistoryActivity extends SherlockActivity {
 		updateListView = (ListView) findViewById(R.id.update_list);
 		updateListView.setOnItemClickListener(new OnItemClickListener() {
 
+			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 				UpdateInfoModel item = updateList.get(arg2);
 				openChapter(item);
@@ -48,58 +49,61 @@ public class UpdateHistoryActivity extends SherlockActivity {
 
 	private void openChapter(UpdateInfoModel item) {
 		Intent intent = null;
-		if(item.getUpdateType() == UpdateType.NewNovel) {
-			intent = new Intent(getApplicationContext(), DisplayLightNovelDetailsActivity.class);
+		if (item.getUpdateType() == UpdateType.NewNovel) {
+			intent = new Intent(this, DisplayLightNovelDetailsActivity.class);
 			intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
 		}
 		else if (item.getUpdateType() == UpdateType.New ||
-				 item.getUpdateType() == UpdateType.Updated ||
-				 item.getUpdateType() == UpdateType.UpdateTos ) {
-			intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
-	        intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
+				item.getUpdateType() == UpdateType.Updated ||
+				item.getUpdateType() == UpdateType.UpdateTos) {
+			intent = new Intent(this, DisplayLightNovelContentActivity.class);
+			intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
 		}
 
-		if(intent != null) startActivity(intent);
+		if (intent != null)
+			startActivity(intent);
 	}
 
 	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.activity_update_history, menu);
-        return true;
-    }
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getSupportMenuInflater().inflate(R.menu.activity_update_history, menu);
+		return true;
+	}
 
 	@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        	case R.id.menu_settings:
-        		Intent settingsIntent = new Intent(this, DisplaySettingsActivity.class);
-            	startActivity(settingsIntent);
-    			return true;
-        	case R.id.menu_clear_all:
-        		NovelsDao.getInstance(this).deleteAllUpdateHistory();
-        		updateContent();
-    			return true;
-        	case R.id.menu_clear_selected:
-        		for (UpdateInfoModel updateInfo : updateList) {
-					if(updateInfo.isSelected()) NovelsDao.getInstance().deleteUpdateHistory(updateInfo);
-				}
-        		updateContent();
-    			return true;
-            case android.R.id.home:
-        		Intent intent = getIntent();
-        		String caller = intent.getStringExtra(Constants.EXTRA_CALLER_ACTIVITY);
-        		if(caller!= null && caller.equalsIgnoreCase(UpdateService.class.toString())) {
-        			Intent mainIntent = new Intent(this, MainActivity.class);
-        			startActivity(mainIntent);
-        			finish();
-        		}
-        		else super.onBackPressed();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_settings:
+			Intent settingsIntent = new Intent(this, DisplaySettingsActivity.class);
+			startActivity(settingsIntent);
+			return true;
+		case R.id.menu_clear_all:
+			NovelsDao.getInstance(this).deleteAllUpdateHistory();
+			updateContent();
+			return true;
+		case R.id.menu_clear_selected:
+			for (UpdateInfoModel updateInfo : updateList) {
+				if (updateInfo.isSelected())
+					NovelsDao.getInstance().deleteUpdateHistory(updateInfo);
+			}
+			updateContent();
+			return true;
+		case android.R.id.home:
+			Intent intent = getIntent();
+			String caller = intent.getStringExtra(Constants.EXTRA_CALLER_ACTIVITY);
+			if (caller != null && caller.equalsIgnoreCase(UpdateService.class.toString())) {
+				Intent mainIntent = new Intent(this, MainActivity.class);
+				startActivity(mainIntent);
+				finish();
+			}
+			else
+				super.onBackPressed();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
 
-	public void updateContent () {
+	public void updateContent() {
 		try {
 			updateList = NovelsDao.getInstance(this).getAllUpdateHistory();
 			int resourceId = R.layout.update_list_item;

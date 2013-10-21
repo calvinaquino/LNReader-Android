@@ -152,7 +152,7 @@ public class DisplayOriginalListActivity extends SherlockListActivity implements
 		 * Implement code to refresh novel list
 		 */
 		updateContent(true);
-		Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "Refreshing", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -390,7 +390,7 @@ public class DisplayOriginalListActivity extends SherlockListActivity implements
 			}
 		} else {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
-			Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
+			Toast.makeText(this, e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
 

@@ -23,7 +23,6 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 
@@ -169,7 +168,7 @@ public class MainActivity extends SherlockActivity {
 	public void jumpLastRead(View view) {
 		String lastReadPage = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LAST_READ, "");
 		if (lastReadPage.length() > 0) {
-			Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
+			Intent intent = new Intent(this, DisplayLightNovelContentActivity.class);
 			intent.putExtra(Constants.EXTRA_PAGE, lastReadPage);
 			startActivity(intent);
 		} else {
@@ -195,7 +194,7 @@ public class MainActivity extends SherlockActivity {
 		Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
 		while (it.hasNext()) {
 			AlternativeLanguageInfo info = it.next().getValue();
-			if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(info.getLanguage(), true))
+			if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(info.getLanguage(), true))
 				selection++;
 			it.remove();
 		}

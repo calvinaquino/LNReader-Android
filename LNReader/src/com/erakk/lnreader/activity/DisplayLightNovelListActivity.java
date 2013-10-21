@@ -179,7 +179,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 	public void refreshList() {
 		boolean onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
 		updateContent(true, onlyWatched);
-		Toast.makeText(getApplicationContext(), "Refreshing", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "Refreshing", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -505,7 +505,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 			}
 		} else {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
-			Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
+			Toast.makeText(this, e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
 }

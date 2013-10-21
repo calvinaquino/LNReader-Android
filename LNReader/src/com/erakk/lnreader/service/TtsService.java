@@ -20,7 +20,7 @@ public class TtsService extends Service implements OnInitListener, OnCompleteLis
 	private OnCompleteListener onComplete;
 
 	public void OnCreate() {
-		tts = new TtsHelper(getApplicationContext(), this, this);
+		tts = new TtsHelper(this, this, this);
 	}
 
 	public void setOnInitListener(OnInitListener onInit) {
@@ -35,7 +35,7 @@ public class TtsService extends Service implements OnInitListener, OnCompleteLis
 	public IBinder onBind(Intent intent) {
 		Log.d(TAG, "TTS Service onBind");
 		if (tts == null) {
-			tts = new TtsHelper(getApplicationContext(), this, this);
+			tts = new TtsHelper(this, this, this);
 		}
 		return mBinder;
 	}

@@ -233,7 +233,7 @@ public class UIHelper {
 	 * @param targetIv
 	 */
 	public static ImageView setColorFilter(ImageView targetIv) {
-		if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
+		if (PreferenceManager.getDefaultSharedPreferences(targetIv.getContext()).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
 			targetIv.setColorFilter(Constants.COLOR_UNREAD);
 		} else {
 			targetIv.setColorFilter(Constants.COLOR_UNREAD_DARK);

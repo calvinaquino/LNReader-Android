@@ -27,7 +27,7 @@ public class DownloadListActivity extends SherlockActivity {
 		super.onCreate(savedInstanceState);
 		UIHelper.SetTheme(this, R.layout.activity_download_list);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
-		//setContentView(R.layout.activity_download_list);
+		// setContentView(R.layout.activity_download_list);
 		instance = this;
 		downloadListView = (ListView) findViewById(R.id.download_list);
 		downloadList = LNReaderApplication.getInstance().getDownloadList();
@@ -52,10 +52,10 @@ public class DownloadListActivity extends SherlockActivity {
 		return downloadList.size();
 	}
 
-	public void updateContent () {
+	public void updateContent() {
 		try {
 			int resourceId = R.layout.download_list_item;
-			adapter = new DownloadListAdapter(getApplicationContext(), resourceId, downloadList);
+			adapter = new DownloadListAdapter(this, resourceId, downloadList);
 			downloadListView.setAdapter(adapter);
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);

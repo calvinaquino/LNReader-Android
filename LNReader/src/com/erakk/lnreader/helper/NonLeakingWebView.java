@@ -43,21 +43,21 @@ public class NonLeakingWebView extends WebView {
 	}
 
 	public NonLeakingWebView(Context context) {
-		super(context.getApplicationContext());
+		super(context);
 		if (!isInEditMode()) {
 			setWebViewClient(new MyWebViewClient((Activity) context));
 		}
 	}
 
 	public NonLeakingWebView(Context context, AttributeSet attrs) {
-		super(context.getApplicationContext(), attrs);
+		super(context, attrs);
 		if (!isInEditMode()) {
 			setWebViewClient(new MyWebViewClient((Activity) context));
 		}
 	}
 
 	public NonLeakingWebView(Context context, AttributeSet attrs, int defStyle) {
-		super(context.getApplicationContext(), attrs, defStyle);
+		super(context, attrs, defStyle);
 		if (!isInEditMode()) {
 			setWebViewClient(new MyWebViewClient((Activity) context));
 		}

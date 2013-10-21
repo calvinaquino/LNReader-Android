@@ -96,7 +96,7 @@ public class DisplayBookmarkActivity extends SherlockListActivity {
 		// Get the item that was clicked
 		BookmarkModel page = adapter.getItem(position);
 		// Create new intent
-		Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
+		Intent intent = new Intent(this, DisplayLightNovelContentActivity.class);
 		intent.putExtra(Constants.EXTRA_PAGE, page.getPage());
 		intent.putExtra(Constants.EXTRA_P_INDEX, page.getpIndex());
 		startActivity(intent);

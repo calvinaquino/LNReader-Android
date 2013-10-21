@@ -337,7 +337,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			if (content != null) {
 				try {
 					executeTask(content.getPageModel(), true);
-					// Toast.makeText(getApplicationContext(), "Refreshing",
+					// Toast.makeText(this, "Refreshing",
 					// Toast.LENGTH_SHORT).show();
 				} catch (Exception e) {
 					Log.e(TAG, "Cannot get current chapter.", e);
@@ -363,7 +363,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 					if (prev != null) {
 						jumpTo(prev);
 					} else {
-						Toast.makeText(getApplicationContext(), getResources().getString(R.string.first_available_chapter), Toast.LENGTH_SHORT).show();
+						Toast.makeText(this, getResources().getString(R.string.first_available_chapter), Toast.LENGTH_SHORT).show();
 					}
 				} catch (Exception e) {
 					Log.e(TAG, "Cannot get previous chapter.", e);
@@ -381,7 +381,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 					if (next != null) {
 						jumpTo(next);
 					} else {
-						Toast.makeText(getApplicationContext(), getResources().getString(R.string.last_available_chapter), Toast.LENGTH_SHORT).show();
+						Toast.makeText(this, getResources().getString(R.string.last_available_chapter), Toast.LENGTH_SHORT).show();
 					}
 				} catch (Exception e) {
 					Log.e(TAG, "Cannot get next chapter.", e);
@@ -487,7 +487,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		try {
 			Method m = NonLeakingWebView.class.getMethod("setFindIsUp", Boolean.TYPE);
 			m.invoke(webView, true);
-		} catch (Exception ignored) {
+		} catch (NoSuchMethodException me) {
+		} catch (Exception e) {
+			Log.e(TAG, "Error when searching", e);
 		}
 	}
 
@@ -671,7 +673,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			PageModel pageModel = content.getPageModel();
 
 			if (content.getLastUpdate().getTime() != pageModel.getLastUpdate().getTime())
-				Toast.makeText(getApplicationContext(), getResources().getString(R.string.content_may_updated) + ": " + content.getLastUpdate().toString() + " != " + pageModel.getLastUpdate().toString(), Toast.LENGTH_LONG).show();
+				Toast.makeText(this, getResources().getString(R.string.content_may_updated) + ": " + content.getLastUpdate().toString() + " != " + pageModel.getLastUpdate().toString(), Toast.LENGTH_LONG).show();
 
 			// load the contents here
 			final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
@@ -801,7 +803,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			setContent(loadedContent);
 		} else {
 			Log.e(TAG, "Error when loading novel content: " + e.getMessage(), e);
-			Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
 		toggleProgressBar(false);
 	}
@@ -853,7 +855,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	/* PREFERENCES */
 	private boolean getShowImagesPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(Constants.PREF_SHOW_IMAGE, true);
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_SHOW_IMAGE, true);
 	}
 
 	private boolean getFullscreenPreferences() {
@@ -930,7 +932,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 						Log.e(TAG, "Error when reading Custom CSS: " + cssPath, e);
 					}
 				} else {
-					Toast.makeText(getApplicationContext(), getResources().getString(R.string.css_layout_not_exist), Toast.LENGTH_SHORT).show();
+					Toast.makeText(this, getResources().getString(R.string.css_layout_not_exist), Toast.LENGTH_SHORT).show();
 				}
 			}
 		}

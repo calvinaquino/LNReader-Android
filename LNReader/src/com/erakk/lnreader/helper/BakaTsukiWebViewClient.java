@@ -77,7 +77,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 			}
 
 			if (!isInternalPages) {
-				boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(caller.getApplicationContext()).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
+				boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(caller).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
 				if (useInternalWebView) {
 					PageModel pageModel = new PageModel();
 					pageModel.setPage(url);

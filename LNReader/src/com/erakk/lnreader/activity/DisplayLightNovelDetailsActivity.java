@@ -110,7 +110,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 	}
 
 	private void loadChapter(PageModel chapter) {
-		boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
+		boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
 
 		if (chapter.isExternal() && !useInternalWebView) {
 			try {
@@ -124,7 +124,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			}
 		} else {
 			if (chapter.isExternal() || chapter.isDownloaded() || !UIHelper.getDownloadTouchPreference(this)) {
-				Intent intent = new Intent(getApplicationContext(), DisplayLightNovelContentActivity.class);
+				Intent intent = new Intent(this, DisplayLightNovelContentActivity.class);
 				intent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
 				startActivity(intent);
 			} else {
@@ -180,7 +180,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			return true;
 		case R.id.menu_refresh_chapter_list:
 			executeTask(page, true);
-			Toast.makeText(getApplicationContext(), getResources().getString(R.string.refreshing_detail), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getResources().getString(R.string.refreshing_detail), Toast.LENGTH_SHORT).show();
 			return true;
 		case R.id.invert_colors:
 			UIHelper.ToggleColorPref(this);
@@ -525,22 +525,14 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 
 							@Override
 							public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-								if (isChecked) {
-									Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_add_watch, page.getTitle()), Toast.LENGTH_SHORT).show();
-								} else {
-									Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_remove_watch, page.getTitle()), Toast.LENGTH_SHORT).show();
-								}
-								// update the db!
-								page.setWatched(isChecked);
-								NovelsDao dao = NovelsDao.getInstance(getApplicationContext());
-								dao.updatePageModel(page);
+								updateWatchStatus(isChecked, page);
 							}
 						});
 
 						ImageView ImageViewCover = (ImageView) synopsis.findViewById(R.id.cover);
 						if (novelCol.getCoverBitmap() == null) {
 							// IN app test, is returning empty bitmap
-							Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_err_bitmap_empty), Toast.LENGTH_LONG).show();
+							Toast.makeText(this, getResources().getString(R.string.toast_err_bitmap_empty), Toast.LENGTH_LONG).show();
 						} else {
 							ImageViewCover.setOnClickListener(new OnClickListener() {
 
@@ -579,10 +571,22 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			}
 		} else {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
-			Toast.makeText(getApplicationContext(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
 
 		toggleProgressBar(false);
+	}
+
+	private void updateWatchStatus(boolean isChecked, PageModel page) {
+		if (isChecked) {
+			Toast.makeText(this, getResources().getString(R.string.toast_add_watch, page.getTitle()), Toast.LENGTH_SHORT).show();
+		} else {
+			Toast.makeText(this, getResources().getString(R.string.toast_remove_watch, page.getTitle()), Toast.LENGTH_SHORT).show();
+		}
+		// update the db!
+		page.setWatched(isChecked);
+		NovelsDao dao = NovelsDao.getInstance(this);
+		dao.updatePageModel(page);
 	}
 
 	private void handleCoverClick(URL coverUrl) {

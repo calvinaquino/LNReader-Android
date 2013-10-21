@@ -153,11 +153,11 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 			loadingText.setText("Loading image, please wait...");
 			loadingText.setVisibility(TextView.VISIBLE);
 			loadingBar.setVisibility(ProgressBar.VISIBLE);
-			// imgWebView.setVisibility(ListView.GONE);
+			imgWebView.setVisibility(View.GONE);
 		} else {
 			loadingText.setVisibility(TextView.GONE);
 			loadingBar.setVisibility(ProgressBar.GONE);
-			// imgWebView.setVisibility(ListView.VISIBLE);
+			imgWebView.setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -207,11 +207,11 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 				Log.d("LoadImageTask", "Loaded: " + imageUrl);
 			} else {
 				Log.e(TAG, "Cannot get the image path.");
-				Toast.makeText(getApplicationContext(), "Cannot load the image.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "Cannot load the image.", Toast.LENGTH_SHORT).show();
 			}
 		} else {
 			Log.e(TAG, "Cannot load image.", e);
-			Toast.makeText(getApplicationContext(), e.getClass() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, e.getClass() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
 		// LNReaderApplication.getInstance().removeTask(TAG + ":" + url);
 	}
