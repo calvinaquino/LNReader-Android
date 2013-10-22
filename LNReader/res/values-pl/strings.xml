@@ -260,4 +260,8 @@
     <string name="auto_download_updated_chapter_summary">Automatycznie pobiera uaktualnienia powieści z listy obserwowanych</string>
     <string name="backup_thumb_images_title">Kopia okładek</string>
     <string name="backup_thumb_images_summary">Tworzy kopię zapasową okładek na karcie SDCard.</string>
+    <string name="restore_thumb_images_title">Przywracanie okładek</string>
+    <string name="restore_thumb_images_summary">Przywraca okładki z pliku .zip z karty SD.</string>
+    <string name="relink_images_title">Zmiana lokalizacji okładek</string>
+    <string name="relink_images_summary">Aktualizuje ścieźkę do pliku z okładkami.</string>
 </resources>
