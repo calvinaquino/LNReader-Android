@@ -36,7 +36,6 @@ import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
-import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.task.AddNovelTask;
@@ -400,37 +399,36 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 	}
 
 	@Override
-	public void getResult(AsyncTaskResult<?> result) {
+	public void getResult(AsyncTaskResult<?> result, Class<?> t) {
 		Exception e = result.getError();
 		if (e == null) {
 			// from LoadNovelsTask
-			if (Util.isInstanceOf((ArrayList<?>) result.getResult(), PageModel.class)) {
-				@SuppressWarnings("unchecked")
-				ArrayList<PageModel> list = (ArrayList<PageModel>) result.getResult();
+			if (t == PageModel[].class) {
+				PageModel[] list = (PageModel[]) result.getResult();
 				Log.d("WatchList", "result ok");
-				if (list != null) {
-					Log.d("WatchList", "result not empty");
-					// if (refreshOnly) {
+				if (list != null && list.length > 0) {
 					adapter.clear();
-					// refreshOnly = false;
-					// }
 					adapter.addAll(list);
 					toggleProgressBar(false);
 
 					// Show message if watch list is empty
-					if (list.size() == 0 && onlyWatched) {
+					if (list.length == 0 && onlyWatched) {
 
 						Log.d("WatchList", "result set message empty");
 						loadingText.setVisibility(TextView.VISIBLE);
 						loadingText.setText("Watch List is empty.");
 					}
+				} else {
+					toggleProgressBar(false);
+					loadingText.setVisibility(TextView.VISIBLE);
+					loadingText.setText("List is empty.");
+					Log.w(TAG, "Empty ArrayList!");
 				}
 			}
 			// from DownloadNovelDetailsTask
-			else if (Util.isInstanceOf((ArrayList<?>) result.getResult(), NovelCollectionModel.class)) {
+			else if (t == NovelCollectionModel[].class) {
 				setMessageDialog(new CallbackEventData("Download complete."));
-				@SuppressWarnings("unchecked")
-				ArrayList<NovelCollectionModel> list = (ArrayList<NovelCollectionModel>) result.getResult();
+				NovelCollectionModel[] list = (NovelCollectionModel[]) result.getResult();
 				for (NovelCollectionModel novelCol : list) {
 					try {
 						PageModel page = novelCol.getPageModel();
@@ -451,20 +449,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 				adapter.notifyDataSetChanged();
 				toggleProgressBar(false);
 			} else {
-				if (result.getResult() instanceof ArrayList) {
-					// Empty ArrayList.
-					if (((ArrayList<?>) result.getResult()).size() == 0) {
-						toggleProgressBar(false);
-						loadingText.setVisibility(TextView.VISIBLE);
-						loadingText.setText("List is empty.");
-						Log.w(TAG, "Empty ArrayList!");
-
-					} else {
-						Log.e(TAG, "Unknown ArrayList!");
-					}
-				} else {
-					Log.e(TAG, "Uknown ResultType!");
-				}
+				Log.e(TAG, "Unknown ResultType: " + t.getName());
 			}
 		} else {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);

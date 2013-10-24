@@ -796,11 +796,16 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	}
 
 	@Override
-	public void getResult(AsyncTaskResult<?> result) {
+	public void getResult(AsyncTaskResult<?> result, Class<?> t) {
 		Exception e = result.getError();
 		if (e == null) {
-			NovelContentModel loadedContent = (NovelContentModel) result.getResult();
-			setContent(loadedContent);
+			if (t == NovelContentModel.class) {
+				NovelContentModel loadedContent = (NovelContentModel) result.getResult();
+				setContent(loadedContent);
+			}
+			else {
+				Log.w(TAG, "Unexpected result: " + t.getName());
+			}
 		} else {
 			Log.e(TAG, "Error when loading novel content: " + e.getMessage(), e);
 			Toast.makeText(this, e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();

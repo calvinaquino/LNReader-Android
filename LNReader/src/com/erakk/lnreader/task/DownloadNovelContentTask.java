@@ -84,7 +84,7 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
 
 	@Override
 	protected void onPostExecute(AsyncTaskResult<NovelContentModel[]> result) {
-		owner.getResult(result);
+		owner.getResult(result, NovelContentModel[].class);
 		owner.downloadListSetup(this.taskId, null, 2, result.getError() != null ? true : false);
 	}
 }

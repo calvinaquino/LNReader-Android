@@ -15,28 +15,29 @@ public class LoadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEventDat
 	private static final String TAG = LoadNovelDetailsTask.class.toString();
 	private boolean refresh = false;
 	public volatile IAsyncTaskOwner owner;
-	
+
 	public LoadNovelDetailsTask(boolean refresh, IAsyncTaskOwner owner) {
 		super();
 		this.owner = owner;
 		this.refresh = refresh;
 	}
-	
+
+	@Override
 	public void onCallback(ICallbackEventData message) {
 		publishProgress(message);
 	}
-	
+
 	@Override
-	protected void onPreExecute (){
+	protected void onPreExecute() {
 		// executed on UI thread.
 		owner.toggleProgressBar(true);
 	}
-	
+
 	@Override
 	protected AsyncTaskResult<NovelCollectionModel> doInBackground(PageModel... arg0) {
 		PageModel page = arg0[0];
 		try {
-			if(refresh) {
+			if (refresh) {
 				publishProgress(new CallbackEventData("Refreshing chapter list..."));
 				NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetailsFromInternet(page, this);
 				return new AsyncTaskResult<NovelCollectionModel>(novelCol);
@@ -51,15 +52,14 @@ public class LoadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEventDat
 			return new AsyncTaskResult<NovelCollectionModel>(e);
 		}
 	}
-	
+
 	@Override
-	protected void onProgressUpdate (ICallbackEventData... values){
+	protected void onProgressUpdate(ICallbackEventData... values) {
 		owner.setMessageDialog(values[0]);
 	}
-	
+
 	@Override
 	protected void onPostExecute(AsyncTaskResult<NovelCollectionModel> result) {
-		owner.getResult(result);
-		owner.toggleProgressBar(false);
-	}		
+		owner.getResult(result, NovelCollectionModel.class);
+	}
 }

@@ -35,7 +35,6 @@ import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
-import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.task.AddNovelTask;
@@ -439,21 +438,20 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 	}
 
 	@Override
-	public void getResult(AsyncTaskResult<?> result) {
+	public void getResult(AsyncTaskResult<?> result, Class<?> t) {
 		Exception e = result.getError();
 		if (e == null) {
 			// from LoadNovelsTask
-			if (Util.isInstanceOf((ArrayList<?>) result.getResult(), PageModel.class)) {
-				@SuppressWarnings("unchecked")
-				ArrayList<PageModel> list = (ArrayList<PageModel>) result.getResult();
-				if (list != null) {
+			if (t == PageModel[].class) {
+				PageModel[] list = (PageModel[]) result.getResult();
+				if (list != null && list.length > 0) {
 					adapter.clear();
 					adapter.addAll(list);
 					toggleProgressBar(false);
 
 					// Show message if watch list is empty
 					if (onlyWatched) {
-						if (list.size() == 0) {
+						if (list.length == 0) {
 							Log.d("WatchList", "result set message empty");
 							TextView tv = (TextView) findViewById(R.id.emptyList);
 							tv.setVisibility(TextView.VISIBLE);
@@ -461,47 +459,40 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 						}
 					}
 				}
+				else {
+					TextView tv = (TextView) findViewById(R.id.emptyList);
+					tv.setVisibility(TextView.VISIBLE);
+					tv.setText("List is empty.");
+					Log.w(TAG, "Empty ArrayList!");
+				}
 			}
 			// from DownloadNovelDetailsTask
-			else if (Util.isInstanceOf((ArrayList<?>) result.getResult(), NovelCollectionModel.class)) {
+			else if (t == NovelCollectionModel[].class) {
 				setMessageDialog(new CallbackEventData("Download complete."));
-				@SuppressWarnings("unchecked")
-				ArrayList<NovelCollectionModel> list = (ArrayList<NovelCollectionModel>) result.getResult();
-				for (NovelCollectionModel novelCol : list) {
-					try {
-						PageModel page = novelCol.getPageModel();
-						boolean found = false;
-						for (PageModel temp : adapter.data) {
-							if (temp.getPage().equalsIgnoreCase(page.getPage())) {
-								found = true;
-								break;
+				NovelCollectionModel[] list = (NovelCollectionModel[]) result.getResult();
+				if (list.length > 0) {
+					for (NovelCollectionModel novelCol : list) {
+						try {
+							PageModel page = novelCol.getPageModel();
+							boolean found = false;
+							for (PageModel temp : adapter.data) {
+								if (temp.getPage().equalsIgnoreCase(page.getPage())) {
+									found = true;
+									break;
+								}
 							}
+							if (!found) {
+								adapter.data.add(page);
+							}
+						} catch (Exception e1) {
+							Log.e(TAG, e1.getClass().toString() + ": " + e1.getMessage(), e1);
 						}
-						if (!found) {
-							adapter.data.add(page);
-						}
-					} catch (Exception e1) {
-						Log.e(TAG, e1.getClass().toString() + ": " + e1.getMessage(), e1);
 					}
 				}
 				adapter.notifyDataSetChanged();
 				toggleProgressBar(false);
 			} else {
-				if (result.getResult() instanceof ArrayList) {
-					// Empty ArrayList.
-					if (((ArrayList<?>) result.getResult()).size() == 0) {
-						toggleProgressBar(false);
-						TextView tv = (TextView) findViewById(R.id.emptyList);
-						tv.setVisibility(TextView.VISIBLE);
-						tv.setText("List is empty.");
-						Log.w(TAG, "Empty ArrayList!");
-
-					} else {
-						Log.e(TAG, "Unknown ArrayList!");
-					}
-				} else {
-					Log.e(TAG, "Uknown ResultType!");
-				}
+				Log.e(TAG, "Unknown ResultType: " + t.getName());
 			}
 		} else {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);

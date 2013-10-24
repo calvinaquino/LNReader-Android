@@ -13,7 +13,7 @@ import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 
-public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEventData, AsyncTaskResult<ArrayList<NovelCollectionModel>>> implements ICallbackNotifier {
+public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEventData, AsyncTaskResult<NovelCollectionModel[]>> implements ICallbackNotifier {
 	public volatile IAsyncTaskOwner owner;
 	private int currentPart = 0;
 	private int totalParts = 0;
@@ -40,7 +40,7 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 	}
 
 	@Override
-	protected AsyncTaskResult<ArrayList<NovelCollectionModel>> doInBackground(PageModel... params) {
+	protected AsyncTaskResult<NovelCollectionModel[]> doInBackground(PageModel... params) {
 		ArrayList<NovelCollectionModel> result = new ArrayList<NovelCollectionModel>();
 		totalParts = params.length;
 		for (PageModel pageModel : params) {
@@ -52,10 +52,10 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 				result.add(novelCol);
 			} catch (Exception e) {
 				Log.e("DownloadNovelDetailsTask", "Failed to download novel details for " + pageModel.getPage() + ": " + e.getMessage(), e);
-				return new AsyncTaskResult<ArrayList<NovelCollectionModel>>(e);
+				return new AsyncTaskResult<NovelCollectionModel[]>(e);
 			}
 		}
-		return new AsyncTaskResult<ArrayList<NovelCollectionModel>>(result);
+		return new AsyncTaskResult<NovelCollectionModel[]>(result.toArray(new NovelCollectionModel[result.size()]));
 	}
 
 	@Override
@@ -66,8 +66,8 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 	}
 
 	@Override
-	protected void onPostExecute(AsyncTaskResult<ArrayList<NovelCollectionModel>> result) {
-		owner.getResult(result);
+	protected void onPostExecute(AsyncTaskResult<NovelCollectionModel[]> result) {
+		owner.getResult(result, NovelCollectionModel[].class);
 		owner.downloadListSetup(this.taskId, null, 2, result.getError() != null ? true : false);
 	}
 }

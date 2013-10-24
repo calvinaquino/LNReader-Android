@@ -467,12 +467,12 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 
 	@Override
 	@SuppressLint("NewApi")
-	public void getResult(AsyncTaskResult<?> result) {
+	public void getResult(AsyncTaskResult<?> result, Class<?> t) {
 		Exception e = result.getError();
 
 		if (e == null) {
 			// from DownloadNovelContentTask
-			if (result.getResult() instanceof NovelContentModel[]) {
+			if (t == NovelContentModel[].class) {
 				NovelContentModel[] content = (NovelContentModel[]) result.getResult();
 				if (content != null) {
 					for (BookModel book : novelCol.getBookCollections()) {
@@ -488,7 +488,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 				}
 			}
 			// from LoadNovelDetailsTask
-			else if (result.getResult() instanceof NovelCollectionModel) {
+			else if (t == NovelCollectionModel.class) {
 				novelCol = (NovelCollectionModel) result.getResult();
 				expandList = (ExpandableListView) findViewById(R.id.chapter_list);
 				// now add the volume and chapter list.

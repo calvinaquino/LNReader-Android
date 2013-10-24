@@ -12,5 +12,5 @@ public interface IAsyncTaskOwner {
 
 	void setMessageDialog(ICallbackEventData message);
 
-	void getResult(AsyncTaskResult<?> result);
+	void getResult(AsyncTaskResult<?> result, Class<?> type);
 }

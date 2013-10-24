@@ -36,7 +36,6 @@ import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.helper.AsyncTaskResult;
-import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.task.AddNovelTask;
@@ -373,13 +372,12 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 	}
 
 	@Override
-	public void getResult(AsyncTaskResult<?> result) {
+	public void getResult(AsyncTaskResult<?> result, Class<?> t) {
 		Exception e = result.getError();
 		if (e == null) {
 			// from LoadNovelsTask
-			if (Util.isInstanceOf((ArrayList<?>) result.getResult(), PageModel.class)) {
-				@SuppressWarnings("unchecked")
-				ArrayList<PageModel> list = (ArrayList<PageModel>) result.getResult();
+			if (t == PageModel[].class) {
+				PageModel[] list = (PageModel[]) result.getResult();
 				if (list != null) {
 					adapter.clear();
 					adapter.addAll(list);
@@ -387,10 +385,9 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 				}
 			}
 			// from DownloadNovelDetailsTask
-			else if (Util.isInstanceOf((ArrayList<?>) result.getResult(), NovelCollectionModel.class)) {
+			else if (t == NovelCollectionModel[].class) {
 				setMessageDialog(new CallbackEventData("Download complete."));
-				@SuppressWarnings("unchecked")
-				ArrayList<NovelCollectionModel> list = (ArrayList<NovelCollectionModel>) result.getResult();
+				NovelCollectionModel[] list = (NovelCollectionModel[]) result.getResult();
 				for (NovelCollectionModel novelCol : list) {
 					try {
 						PageModel page = novelCol.getPageModel();

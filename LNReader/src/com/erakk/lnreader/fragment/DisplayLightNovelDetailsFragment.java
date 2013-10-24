@@ -447,12 +447,12 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 
 	@Override
 	@SuppressLint("NewApi")
-	public void getResult(AsyncTaskResult<?> result) {
+	public void getResult(AsyncTaskResult<?> result, Class<?> t) {
 		Exception e = result.getError();
 
 		if (e == null) {
 			// from DownloadNovelContentTask
-			if (result.getResult() instanceof NovelContentModel[]) {
+			if (t == NovelContentModel[].class) {
 				NovelContentModel[] content = (NovelContentModel[]) result.getResult();
 				if (content != null) {
 					for (BookModel book : novelCol.getBookCollections()) {
@@ -468,7 +468,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 				}
 			}
 			// from LoadNovelDetailsTask
-			else if (result.getResult() instanceof NovelCollectionModel) {
+			else if (t == NovelCollectionModel.class) {
 				novelCol = (NovelCollectionModel) result.getResult();
 				// now add the volume and chapter list.
 				try {
