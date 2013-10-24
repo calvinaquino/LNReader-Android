@@ -15,11 +15,32 @@ import com.erakk.lnreader.model.PageModel;
 public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> implements ICallbackNotifier {
 	private static final String TAG = RelinkImagesTask.class.toString();
 	private final String rootPath;
-	private final ICallbackNotifier callback;
-	private final String source;
+	private ICallbackNotifier callback;
+	private String source;
 	private final boolean hasError = false;
 
-	public RelinkImagesTask(String rootPath, ICallbackNotifier callback, String source) {
+	public static RelinkImagesTask instance;
+
+	public static RelinkImagesTask getInstance() {
+		return instance;
+	}
+
+	public static RelinkImagesTask getInstance(String rootPath, ICallbackNotifier callback, String source) {
+		if (instance == null || instance.getStatus() == Status.FINISHED) {
+			instance = new RelinkImagesTask(rootPath, callback, source);
+		}
+		else {
+			instance.setCallback(callback, source);
+		}
+		return instance;
+	}
+
+	public void setCallback(ICallbackNotifier callback, String source) {
+		this.callback = callback;
+		this.source = source;
+	}
+
+	private RelinkImagesTask(String rootPath, ICallbackNotifier callback, String source) {
 		this.rootPath = rootPath;
 		this.callback = callback;
 		this.source = source;

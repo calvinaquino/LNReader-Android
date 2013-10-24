@@ -160,8 +160,8 @@ public class Util {
 		File[] files = parentDir.listFiles();
 		for (File file : files) {
 			if (file.isDirectory()) {
-				String message = "Getting files from: " + file.getAbsolutePath();
-				Log.d(TAG, message);
+				// String message = "Getting files from: " + file.getAbsolutePath();
+				// Log.d(TAG, message);
 				// if(callback != null)
 				// callback.onCallback(new CallbackEventData(message));
 				inFiles.addAll(getListFiles(file, callback));
@@ -182,8 +182,10 @@ public class Util {
 		Log.d(TAG, "Start zipping to: " + zipFile);
 		for (File file : filenames) {
 			String absPath = file.getAbsolutePath();
-			String message = String.format("Zipping %s [%s of %s]", absPath, fileCount, total);
+			String message = String.format("[%s of %s] Zipping %s", fileCount, total, absPath);
 			Log.d(TAG, message);
+			if (callback != null)
+				callback.onCallback(new CallbackEventData(message));
 			FileInputStream fi = new FileInputStream(file);
 			origin = new BufferedInputStream(fi, Constants.BUFFER);
 			ZipEntry entry = new ZipEntry(absPath.replace(replacedRootPath, ""));

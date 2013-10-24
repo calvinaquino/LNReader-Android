@@ -16,11 +16,32 @@ public class ZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> impl
 	private static final String TAG = ZipFilesTask.class.toString();
 	private final String zipName;
 	private final String rootPath;
-	private final ICallbackNotifier callback;
-	private final String source;
+	private ICallbackNotifier callback;
+	private String source;
 	private boolean hasError = false;
 
-	public ZipFilesTask(String zipName, String rootPath, ICallbackNotifier callback, String source) {
+	public static ZipFilesTask instance;
+
+	public static ZipFilesTask getInstance() {
+		return instance;
+	}
+
+	public static ZipFilesTask getInstance(String zipName, String rootPath, ICallbackNotifier callback, String source) {
+		if (instance == null || instance.getStatus() == Status.FINISHED) {
+			instance = new ZipFilesTask(zipName, rootPath, callback, source);
+		}
+		else {
+			instance.setCallback(callback, source);
+		}
+		return instance;
+	}
+
+	public void setCallback(ICallbackNotifier callback, String source) {
+		this.callback = callback;
+		this.source = source;
+	}
+
+	private ZipFilesTask(String zipName, String rootPath, ICallbackNotifier callback, String source) {
 		this.zipName = zipName;
 		this.rootPath = rootPath;
 		this.callback = callback;
@@ -35,7 +56,7 @@ public class ZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> impl
 	@Override
 	protected Void doInBackground(Void... params) {
 		// get thumb images
-		publishProgress(new CallbackEventData("Getting files..."));
+		publishProgress(new CallbackEventData("Getting files from: " + rootPath));
 		List<File> filenames = Util.getListFiles(new File(rootPath), this);
 		// zip the files
 		try {

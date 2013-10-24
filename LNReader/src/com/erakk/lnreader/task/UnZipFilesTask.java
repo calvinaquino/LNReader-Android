@@ -14,11 +14,32 @@ public class UnZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> im
 	private static final String TAG = UnZipFilesTask.class.toString();
 	private final String zipName;
 	private final String rootPath;
-	private final ICallbackNotifier callback;
-	private final String source;
+	private ICallbackNotifier callback;
+	private String source;
 	private boolean hasError = false;
 
-	public UnZipFilesTask(String zipName, String rootPath, ICallbackNotifier callback, String source) {
+	public static UnZipFilesTask instance;
+
+	public static UnZipFilesTask getInstance() {
+		return instance;
+	}
+
+	public static UnZipFilesTask getInstance(String zipName, String rootPath, ICallbackNotifier callback, String source) {
+		if (instance == null || instance.getStatus() == Status.FINISHED) {
+			instance = new UnZipFilesTask(zipName, rootPath, callback, source);
+		}
+		else {
+			instance.setCallback(callback, source);
+		}
+		return instance;
+	}
+
+	public void setCallback(ICallbackNotifier callback, String source) {
+		this.callback = callback;
+		this.source = source;
+	}
+
+	private UnZipFilesTask(String zipName, String rootPath, ICallbackNotifier callback, String source) {
 		this.zipName = zipName;
 		this.rootPath = rootPath;
 		this.callback = callback;

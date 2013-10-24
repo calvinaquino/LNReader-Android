@@ -13,6 +13,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -480,6 +481,9 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				return true;
 			}
 		});
+		if (ZipFilesTask.getInstance() != null && ZipFilesTask.getInstance().getStatus() == Status.RUNNING) {
+			ZipFilesTask.getInstance().setCallback(this, Constants.PREF_BACKUP_THUMB_IMAGES);
+		}
 
 		// Restore Thumbs
 		Preference restoreThumbs = findPreference(Constants.PREF_RESTORE_THUMB_IMAGES);
@@ -491,6 +495,9 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				return true;
 			}
 		});
+		if (UnZipFilesTask.getInstance() != null && UnZipFilesTask.getInstance().getStatus() == Status.RUNNING) {
+			UnZipFilesTask.getInstance().setCallback(this, Constants.PREF_RESTORE_THUMB_IMAGES);
+		}
 
 		// relink thumbs
 		Preference relinkThumbs = findPreference(Constants.PREF_RELINK_THUMB_IMAGES);
@@ -502,12 +509,15 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				return true;
 			}
 		});
+		if (RelinkImagesTask.getInstance() != null && RelinkImagesTask.getInstance().getStatus() == Status.RUNNING) {
+			RelinkImagesTask.getInstance().setCallback(this, Constants.PREF_RESTORE_THUMB_IMAGES);
+		}
 	}
 
 	@SuppressLint("InlinedApi")
 	private void relinkThumbs() {
 		String rootPath = UIHelper.getImageRoot(this);
-		RelinkImagesTask task = new RelinkImagesTask(rootPath, this, Constants.PREF_RELINK_THUMB_IMAGES);
+		RelinkImagesTask task = RelinkImagesTask.getInstance(rootPath, this, Constants.PREF_RELINK_THUMB_IMAGES);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		else
@@ -516,9 +526,14 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 	@SuppressLint("InlinedApi")
 	private void restoreThumbs() {
+		if (ZipFilesTask.getInstance() != null && ZipFilesTask.getInstance().getStatus() == Status.RUNNING) {
+			Toast.makeText(this, "Please wait until all images are backed-up.", Toast.LENGTH_SHORT).show();
+			return;
+		}
+
 		String zipName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_thumbs.zip";
 		String thumbRootPath = UIHelper.getImageRoot(this) + "/project/images/thumb";
-		UnZipFilesTask task = new UnZipFilesTask(zipName, thumbRootPath, this, Constants.PREF_RESTORE_THUMB_IMAGES);
+		UnZipFilesTask task = UnZipFilesTask.getInstance(zipName, thumbRootPath, this, Constants.PREF_RESTORE_THUMB_IMAGES);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		else
@@ -536,9 +551,14 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 	@SuppressLint("InlinedApi")
 	private void backupThumbs() {
+		if (UnZipFilesTask.getInstance() != null && UnZipFilesTask.getInstance().getStatus() == Status.RUNNING) {
+			Toast.makeText(this, "Please wait until all images are restored.", Toast.LENGTH_SHORT).show();
+			return;
+		}
+
 		String zipName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_thumbs.zip";
 		String thumbRootPath = UIHelper.getImageRoot(this) + "/project/images/thumb";
-		ZipFilesTask task = new ZipFilesTask(zipName, thumbRootPath, this, Constants.PREF_BACKUP_THUMB_IMAGES);
+		ZipFilesTask task = ZipFilesTask.getInstance(zipName, thumbRootPath, this, Constants.PREF_BACKUP_THUMB_IMAGES);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		else
