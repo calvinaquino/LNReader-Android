@@ -264,4 +264,6 @@
     <string name="restore_thumb_images_summary">Przywraca okładki z pliku .zip z karty SD.</string>
     <string name="relink_images_title">Zmiana lokalizacji okładek</string>
     <string name="relink_images_summary">Aktualizuje ścieźkę do pliku z okładkami.</string>
+    <string name="bookmark_order_title">Sortuj zakładki według dat.</string>
+    <string name="bookmark_order_summary">Zakładki zostaną posortowane według daty utworzenia.</string>
 </resources>
