@@ -18,6 +18,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookmarkModel;
@@ -133,10 +134,11 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 
 	public void refreshData() {
 		clear();
-		if (novel != null)
+		if (novel != null) {
 			addAll(NovelsDao.getInstance().getBookmarks(novel));
-		else
-			addAll(NovelsDao.getInstance().getAllBookmarks());
+		} else {
+			addAll(NovelsDao.getInstance().getAllBookmarks(UIHelper.getAllBookmarkOrder(context)));
+		}
 		notifyDataSetChanged();
 		Log.d(TAG, "Refreshing data...");
 	}

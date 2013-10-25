@@ -1255,11 +1255,11 @@ public class NovelsDao {
 		}
 	}
 
-	public ArrayList<BookmarkModel> getAllBookmarks() {
+	public ArrayList<BookmarkModel> getAllBookmarks(boolean isOrderByDate) {
 		ArrayList<BookmarkModel> bookmarks = new ArrayList<BookmarkModel>();
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
-			bookmarks = BookmarkModelHelper.getAllBookmarks(db);
+			bookmarks = BookmarkModelHelper.getAllBookmarks(db, isOrderByDate);
 		}
 		return bookmarks;
 	}

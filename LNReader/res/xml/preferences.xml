@@ -65,6 +65,7 @@
                 android:key="strech_detail_image"
                 android:summary="@string/strech_detail_image_summary"
                 android:title="@string/strech_detail_image_title" />
+            <CheckBoxPreference android:defaultValue="false" android:summary="@string/bookmark_order_summary" android:key="bookmark_order" android:title="@string/bookmark_order_title"/>
         </PreferenceScreen>
         <PreferenceScreen
             android:key="update_category"

@@ -265,4 +265,6 @@
     <string name="restore_thumb_images_summary">Restore thumb images from zip file in SDCard.</string>
     <string name="relink_images_title">Relink Thumb Images</string>
     <string name="relink_images_summary">Update thumb images path to the current save location.</string>
+    <string name="bookmark_order_title">Order Bookmark by Date</string>
+    <string name="bookmark_order_summary">Order bookmark by creation date in descending order if enabled.</string>
 </resources>

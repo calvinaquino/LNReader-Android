@@ -82,6 +82,7 @@ public class Constants {
 	public static final String PREF_RESTORE_DB = "restore_database";
 	public static final String PREF_RESTORE_THUMB_IMAGES = "restore_thumb_images";
 	public static final String PREF_RELINK_THUMB_IMAGES = "relink_images";
+	public static final String PREF_BOOKMARK_ORDER = "bookmark_order";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 

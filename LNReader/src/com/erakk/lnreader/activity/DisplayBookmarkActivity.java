@@ -38,7 +38,7 @@ public class DisplayBookmarkActivity extends SherlockListActivity {
 		if (UIHelper.IsSmallScreen(this)) {
 			resourceId = R.layout.bookmark_list_item;
 		}
-		bookmarks = NovelsDao.getInstance(this).getAllBookmarks();
+		bookmarks = NovelsDao.getInstance(this).getAllBookmarks(UIHelper.getAllBookmarkOrder(this));
 		adapter = new BookmarkModelAdapter(this, resourceId, bookmarks, null);
 		adapter.showPage = true;
 		adapter.showCheckBox = true;
@@ -65,6 +65,10 @@ public class DisplayBookmarkActivity extends SherlockListActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.menu_settings:
+			Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
+			startActivity(launchNewIntent);
+			return true;
 		case R.id.invert_colors:
 			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);

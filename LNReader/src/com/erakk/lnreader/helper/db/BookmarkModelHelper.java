@@ -19,11 +19,11 @@ public class BookmarkModelHelper {
 
 	// New column should be appended as the last column
 	public static final String DATABASE_CREATE_NOVEL_BOOKMARK = "create table if not exists "
-		      + DBHelper.TABLE_NOVEL_BOOKMARK + "(" + DBHelper.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "	// 0
-						      						+ DBHelper.COLUMN_PAGE + " text not null, "						// 1
-								  				    + DBHelper.COLUMN_PARAGRAPH_INDEX + " integer, "				// 2
-								  				    + DBHelper.COLUMN_EXCERPT + " text, "							// 3
-								  				    + DBHelper.COLUMN_CREATE_DATE + " integer);";					// 4
+			+ DBHelper.TABLE_NOVEL_BOOKMARK + "(" + DBHelper.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " // 0
+			+ DBHelper.COLUMN_PAGE + " text not null, " // 1
+			+ DBHelper.COLUMN_PARAGRAPH_INDEX + " integer, " // 2
+			+ DBHelper.COLUMN_EXCERPT + " text, " // 3
+			+ DBHelper.COLUMN_CREATE_DATE + " integer);"; // 4
 
 	public static BookmarkModel cursorToNovelBookmark(Cursor cursor) {
 		BookmarkModel bookmark = new BookmarkModel();
@@ -31,7 +31,7 @@ public class BookmarkModelHelper {
 		bookmark.setPage(cursor.getString(1));
 		bookmark.setpIndex(cursor.getInt(2));
 		bookmark.setExcerpt(cursor.getString(3));
-		bookmark.setCreationDate(new Date(cursor.getLong(4)*1000));
+		bookmark.setCreationDate(new Date(cursor.getLong(4) * 1000));
 		return bookmark;
 	}
 
@@ -39,12 +39,19 @@ public class BookmarkModelHelper {
 	 * Query Stuff
 	 */
 
-	public static ArrayList<BookmarkModel> getAllBookmarks(SQLiteDatabase db) {
+	public static ArrayList<BookmarkModel> getAllBookmarks(SQLiteDatabase db, boolean isOrderByDate) {
 		ArrayList<BookmarkModel> bookmarks = new ArrayList<BookmarkModel>();
 
-		Cursor cursor = helper.rawQuery(db, "select * from " + DBHelper.TABLE_NOVEL_BOOKMARK
-				                   + " order by " + DBHelper.COLUMN_PAGE
-				                   + ", " + DBHelper.COLUMN_PARAGRAPH_INDEX, null);
+		String sql = "select * from " + DBHelper.TABLE_NOVEL_BOOKMARK;
+		if (isOrderByDate) {
+			sql += " order by " + DBHelper.COLUMN_CREATE_DATE + " DESC "
+					+ ", " + DBHelper.COLUMN_PAGE
+					+ ", " + DBHelper.COLUMN_PARAGRAPH_INDEX;
+		} else {
+			sql += " order by " + DBHelper.COLUMN_PAGE
+					+ ", " + DBHelper.COLUMN_PARAGRAPH_INDEX;
+		}
+		Cursor cursor = helper.rawQuery(db, sql, null);
 		try {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
@@ -52,8 +59,9 @@ public class BookmarkModelHelper {
 				bookmarks.add(bookmark);
 				cursor.moveToNext();
 			}
-		} finally{
-			if(cursor != null) cursor.close();
+		} finally {
+			if (cursor != null)
+				cursor.close();
 		}
 
 		return bookmarks;
@@ -63,7 +71,7 @@ public class BookmarkModelHelper {
 		ArrayList<BookmarkModel> bookmarks = new ArrayList<BookmarkModel>();
 
 		Cursor cursor = helper.rawQuery(db, "select * from " + DBHelper.TABLE_NOVEL_BOOKMARK
-										 + " where " + DBHelper.COLUMN_PAGE + " = ? ", new String[] {page.getPage()});
+				+ " where " + DBHelper.COLUMN_PAGE + " = ? ", new String[] { page.getPage() });
 		try {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
@@ -71,8 +79,9 @@ public class BookmarkModelHelper {
 				bookmarks.add(bookmark);
 				cursor.moveToNext();
 			}
-		} finally{
-			if(cursor != null) cursor.close();
+		} finally {
+			if (cursor != null)
+				cursor.close();
 		}
 
 		return bookmarks;
@@ -82,16 +91,17 @@ public class BookmarkModelHelper {
 		BookmarkModel bookmark = null;
 
 		Cursor cursor = helper.rawQuery(db, "select * from " + DBHelper.TABLE_NOVEL_BOOKMARK
-										 + " where " + DBHelper.COLUMN_PAGE + " = ? and " + DBHelper.COLUMN_PARAGRAPH_INDEX + " = ? "
-				                   , new String[] {page, "" + pIndex});
+				+ " where " + DBHelper.COLUMN_PAGE + " = ? and " + DBHelper.COLUMN_PARAGRAPH_INDEX + " = ? "
+				, new String[] { page, "" + pIndex });
 		try {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
 				bookmark = cursorToNovelBookmark(cursor);
 				break;
 			}
-		} finally{
-			if(cursor != null) cursor.close();
+		} finally {
+			if (cursor != null)
+				cursor.close();
 		}
 
 		return bookmark;
@@ -104,12 +114,12 @@ public class BookmarkModelHelper {
 	public static int insertBookmark(SQLiteDatabase db, BookmarkModel bookmark) {
 		BookmarkModel tempBookmark = getBookmark(db, bookmark.getPage(), bookmark.getpIndex());
 
-		if(tempBookmark == null) {
+		if (tempBookmark == null) {
 			ContentValues cv = new ContentValues();
 			cv.put(DBHelper.COLUMN_PAGE, bookmark.getPage());
 			cv.put(DBHelper.COLUMN_PARAGRAPH_INDEX, bookmark.getpIndex());
 			String excerpt = bookmark.getExcerpt();
-			if(excerpt.length() > 200) {
+			if (excerpt.length() > 200) {
 				excerpt = excerpt.substring(0, 197) + "...";
 			}
 			cv.put(DBHelper.COLUMN_EXCERPT, excerpt);
@@ -127,8 +137,8 @@ public class BookmarkModelHelper {
 	 * Delete Stuff
 	 */
 
-	public static int deleteBookmark(SQLiteDatabase db,BookmarkModel bookmark) {
+	public static int deleteBookmark(SQLiteDatabase db, BookmarkModel bookmark) {
 		return helper.delete(db, DBHelper.TABLE_NOVEL_BOOKMARK, DBHelper.COLUMN_PAGE + " = ? and " + DBHelper.COLUMN_PARAGRAPH_INDEX + " = ? "
-				 , new String[] {bookmark.getPage(), "" + bookmark.getpIndex()});
+				, new String[] { bookmark.getPage(), "" + bookmark.getpIndex() });
 	}
 }

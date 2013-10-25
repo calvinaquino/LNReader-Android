@@ -332,4 +332,8 @@ public class UIHelper {
 	public static boolean getDynamicButtonsPreferences(Context ctx) {
 		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_ENABLE_WEBVIEW_BUTTONS, false);
 	}
+
+	public static boolean getAllBookmarkOrder(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_BOOKMARK_ORDER, false);
+	}
 }
