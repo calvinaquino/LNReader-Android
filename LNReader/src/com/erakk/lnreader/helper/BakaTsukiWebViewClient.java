@@ -52,14 +52,24 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 
 						// check if load different page.
 						synchronized (caller.content) {
-							String currentPage = caller.content.getPage(); // caller.getIntent().getStringExtra(Constants.EXTRA_PAGE);
+							String currentPage = caller.content.getPage();
 							if (!currentPage.equalsIgnoreCase(titles2[0])) {
+								Log.d(TAG, "Got different page name: " + titles2[0]);
 								PageModel tempPage = new PageModel();
 								tempPage.setPage(titles2[0]);
-								PageModel pageModel = dao.getPageModel(tempPage, null);
-								caller.jumpTo(pageModel);
-								Log.d(TAG, "Loading : " + pageModel.getPage());
-								// Toast.makeText(context, "Loading: " + titles[1], Toast.LENGTH_SHORT).show();
+								PageModel pageModel = dao.getPageModel(tempPage, null, false);
+								if (pageModel != null) {
+									caller.jumpTo(pageModel);
+									Log.d(TAG, "Loading : " + pageModel.getPage());
+								}
+								else {
+									Log.w(TAG, "PageModel not downloaded yet, most likely not listed in chapter list: " + titles2[0]);
+									tempPage.setTitle(titles2[0]);
+									tempPage.setParent(currentPage);
+									tempPage.setType(PageModel.TYPE_CONTENT);
+									dao.updatePageModel(tempPage);
+									caller.jumpTo(tempPage);
+								}
 							} else {
 								Log.d(TAG, "Already loaded");
 							}
@@ -92,6 +102,10 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 					caller.loadExternalUrl(pageModel);
 
 				} else {
+					// set the intent page to the current page
+					caller.getIntent().removeExtra(Constants.EXTRA_PAGE);
+					caller.getIntent().putExtra(Constants.EXTRA_PAGE, caller.content.getPage());
+
 					// use default handler.
 					caller.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
 				}
