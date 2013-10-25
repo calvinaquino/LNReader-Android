@@ -4,6 +4,7 @@
 package com.erakk.lnreader.dao;
 
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -1035,8 +1036,7 @@ public class NovelsDao {
 				Document imageDoc = Jsoup.parse(content.getContent());
 				ArrayList<String> images = BakaTsukiParser.parseImagesFromContentPage(imageDoc);
 				for (String imageUrl : images) {
-					// ImageModel bigImage = getImageModelFromInternet(image,
-					// notifier);
+					// ImageModel bigImage = getImageModelFromInternet(image, notifier);
 					ImageModel bigImage = new ImageModel();
 					bigImage.setBigImage(true);
 					bigImage.setName(imageUrl);
@@ -1132,10 +1132,19 @@ public class NovelsDao {
 				db.close();
 			}
 		}
+		boolean downloadBigImage = false;
 		if (imageTemp == null) {
-			Log.d(TAG, "Image not found, getting data from internet: " + image.getName());
+			Log.i(TAG, "Image not found in DB, getting data from internet: " + image.getName());
+			downloadBigImage = true;
+		} else if (!new File(imageTemp.getPath()).exists()) {
+			Log.i(TAG, "Image found in DB, but doesn't exists in path: " + imageTemp.getPath());
+			downloadBigImage = true;
+		}
+		if (downloadBigImage) {
+			Log.d(TAG, "Downloading big image from internet: " + image.getName());
 			imageTemp = getImageModelFromInternet(image, notifier);
 		}
+
 		return imageTemp;
 	}
 
