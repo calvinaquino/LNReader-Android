@@ -112,10 +112,10 @@
     <string name="use_internal_webview_title">Użyj podglądu</string>
     <string name="strech_detail_image_summary">Dopasuj rozmiar okładki do wyświetlacza.</string>
     <string name="strech_detail_image_title">Dostosuj okładkę</string>
-    <string name="reading_layout">Wygląd czytnika</string>
-    <string name="show_images_summary">Kontrola wyświetlania obrazów.</string>
+    <string name="reading_layout">Opcje wyglądu</string>
+    <string name="show_images_summary">Włącza wyswietlanie obrazków.</string>
     <string name="show_images_title">Pokaż obrazy</string>
-    <string name="enable_zoom_summary">Włącz zoom w powieściach.</string>
+    <string name="enable_zoom_summary">Włącza opcję zoom w powieściach.</string>
     <string name="enable_zoom_title">Włącz Zoom</string>
     <string name="show_zoom_control_summary">Włącz przycisk Zoom podczas czytania, bez zmieniania powiększenia.</string>
     <string name="show_zoom_control_title">Pokaż opcje Zoom</string>
@@ -124,7 +124,7 @@
     <string name="keep_awake_summary">Ekran aktywny przy wyborze rozdziału.</string>
     <string name="keep_awake_title">Utrzymuj aktywny</string>
     <string name="use_volume_to_scroll_summary">Użyj przycisków głośności do nawigacji.</string>
-    <string name="use_volume_to_scroll_title">Użyj przycisków głośności do nawigacji</string>
+    <string name="use_volume_to_scroll_title">Nawigacja przyciskami głośności</string>
     <string name="scroll_size_summary">Wielkość skoku dla przycisków głośności.</string>
     <string name="scroll_size_summary2">Wielkość skoku dla przycisków głośności (%1$s)</string>
     <string name="scroll_size_title">Wielkość skoku</string>
@@ -219,10 +219,10 @@
     <string name="delete_this_volume">Usuń ten tom</string>
     <string name="delete_this_chapter">Usuń ten rozdział</string>
     <string name="pref_timeout_summary">Przerwanie pobierania po: %1$s sekundach</string>
-    <string name="pref_timeout_title">Przerwano</string>
+    <string name="pref_timeout_title">Przerwanie pobierania</string>
     <string name="pref_retry_title">Próby pobierania</string>
     <string name="pref_retry_summary">Ilość prób pobierania: %1$s razy</string>
-    <string name="increase_retry_title">Wydłużenie czasu pomiędzy próbami pobierania</string>
+    <string name="increase_retry_title">Czas pomiędzy próbami pobierania</string>
     <string name="increase_retry_summary">W razie przerwania pobierania, czas między wznowieniem ulega podwojeniu.</string>
     <string name="aggresive_title_clean_up_title">Pełne czyszczenie powieści</string>
     <string name="aggresive_title_clean_up_summary">Zezwala na pełne czyszczenie zawartości powieści po / \'(\' )</string>
