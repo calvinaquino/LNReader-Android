@@ -144,8 +144,8 @@ public class NovelsDao {
 				try {
 					db = dbh.getReadableDatabase();
 					list = dbh.getAllNovels(db, alphOrder);// dbh.selectAllByColumn(db,
-															// DBHelper.COLUMN_TYPE,
-															// PageModel.TYPE_NOVEL);
+					// DBHelper.COLUMN_TYPE,
+					// PageModel.TYPE_NOVEL);
 				} finally {
 					db.close();
 				}
@@ -1034,7 +1034,7 @@ public class NovelsDao {
 			boolean isDownloadBigImage = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance()).getBoolean(Constants.PREF_DOWLOAD_BIG_IMAGE, false);
 			if (isDownloadBigImage) {
 				Document imageDoc = Jsoup.parse(content.getContent());
-				ArrayList<String> images = BakaTsukiParser.parseImagesFromContentPage(imageDoc);
+				ArrayList<String> images = CommonParser.parseImagesFromContentPage(imageDoc);
 				for (String imageUrl : images) {
 					// ImageModel bigImage = getImageModelFromInternet(image, notifier);
 					ImageModel bigImage = new ImageModel();
@@ -1174,7 +1174,7 @@ public class NovelsDao {
 				Document doc = response.parse();
 
 				// only return the full image url
-				image = BakaTsukiParser.parseImagePage(doc);
+				image = CommonParser.parseImagePage(doc);
 
 				DownloadFileTask downloader = new DownloadFileTask(notifier);
 				image = downloader.downloadImage(image.getUrl());

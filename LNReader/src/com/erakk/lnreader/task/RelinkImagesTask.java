@@ -1,6 +1,12 @@
 package com.erakk.lnreader.task;
 
+import java.io.File;
 import java.util.ArrayList;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -70,8 +76,28 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 					// for now just replace the thumbs
 					// file:///mnt/sdcard/test/project/images/thumb/c/c7/Accel_World_v01_262.jpg/84px-Accel_World_v01_262.jpg
 					// file:///sdcard-ext/.bakareaderex/project/images/thumb/c/c7/Accel_World_v01_262.jpg/84px-Accel_World_v01_262.jpg
-					content.setContent(content.getContent().replaceAll("file:///[\\w/\\.]+/project/images/thumb/", "file:///" + rootPath + "/project/images/thumb/"));
+					//content.setContent(content.getContent().replaceAll("file:///[\\w/\\.]+/project/images/thumb/", "file:///" + rootPath + "/project/images/thumb/"));
+					//NovelsDao.getInstance().updateNovelContent(content);
+
+					Document doc = Jsoup.parse(content.getContent());
+					Elements imageElements = doc.select("img");
+					for(Element image : imageElements) {
+						String imgUrl = image.attr("src");
+						if(imgUrl.startsWith("file:///") && imgUrl.contains("/project/images/thumb/")) {
+							Log.d(TAG, "Found image : " + imgUrl);
+							if(! new File(imgUrl.replace("file:///", "/")).exists()) {
+								Log.d(TAG, "Old image doesn't exists/moved: " + imgUrl);
+								String newUrl = imgUrl.replaceAll("file:///[\\w/\\.]+/project/images/thumb/", "file:///" + rootPath + "/project/images/thumb/");
+								if(new File(newUrl.replace("file:///", "/")).exists()) {
+									Log.d(TAG, "Replace image: " + imgUrl + " ==> " + newUrl);
+									image.attr("src", newUrl);
+								}
+							}
+						}
+					}
+					content.setContent(doc.text());
 					NovelsDao.getInstance().updateNovelContent(content);
+
 				}
 			} catch (Exception e) {
 				message = "Failed to relink image in content: " + page.getPage();

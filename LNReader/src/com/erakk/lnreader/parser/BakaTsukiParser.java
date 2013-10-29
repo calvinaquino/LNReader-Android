@@ -648,27 +648,9 @@ public class BakaTsukiParser {
 		String text = textElement.text();
 
 		// get valid image list
-		// Elements imageElements = doc.select("img");
 		Document imgDoc = Jsoup.parse(text);
-		Elements imageElements = imgDoc.select("img");
-		ArrayList<ImageModel> images = new ArrayList<ImageModel>();
-		for (Iterator<Element> i = imageElements.iterator(); i.hasNext();) {
-			ImageModel image = new ImageModel();
-			Element imageElement = i.next();
-			String urlStr = imageElement.attr("src").replace("/project/", UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/");
-			String name = urlStr.substring(urlStr.lastIndexOf("/"));
-			image.setName(name);
-			try {
-				image.setUrl(new URL(urlStr));
-			} catch (MalformedURLException e) {
-				// shouldn't happened
-				Log.e(TAG, "Invalid URL: " + urlStr, e);
-			}
-			images.add(image);
-			// Log.d("ParseNovelContent", image.getName() + "==>" + image.getUrl().toString());
-		}
+		ArrayList<ImageModel> images = CommonParser.getAllImagesFromContent(imgDoc, UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()));
 		content.setImages(images);
-
 		content.setContent(CommonParser.replaceImagePath(text));
 
 		content.setLastXScroll(0);
@@ -677,36 +659,4 @@ public class BakaTsukiParser {
 		return content;
 	}
 
-	public static ImageModel parseImagePage(Document doc) {
-		ImageModel image = new ImageModel();
-
-		Element mainContent = doc.select("#mw-content-text").first();
-		Element fullMedia = mainContent.select(".fullMedia").first();
-		String imageUrl = fullMedia.select("a").first().attr("href");
-
-		try {
-			image.setUrl(new URL(UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + imageUrl));
-		} catch (MalformedURLException e) {
-			// shouldn't happened
-			Log.e(TAG, "Invalid URL: " + UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + imageUrl, e);
-		}
-		return image;
-	}
-
-	public static ArrayList<String> parseImagesFromContentPage(Document doc) {
-		ArrayList<String> result = new ArrayList<String>();
-
-		Elements links = doc.select("a");
-		for (Element link : links) {
-			String href = link.attr("href");
-			if (href.contains("/project/index.php?title=File:")) {
-				if (!href.startsWith("http"))
-					href = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + href;
-				result.add(href);
-			}
-		}
-
-		Log.d(TAG, "Images Found: " + result.size());
-		return result;
-	}
 }

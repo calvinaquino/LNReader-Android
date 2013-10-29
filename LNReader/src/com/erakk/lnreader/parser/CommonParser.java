@@ -1,6 +1,8 @@
 package com.erakk.lnreader.parser;
 
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
@@ -23,6 +25,7 @@ import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
+import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.PageModel;
 
 public class CommonParser {
@@ -39,6 +42,33 @@ public class CommonParser {
 		String imagePath = "src=\"file://" + UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + "/project/images/";
 		content = content.replace("src=\"/project/images/", imagePath);
 		return content;
+	}
+
+	/**
+	 * Get all img element and update the src from /project/ to rootImagePath/project/
+	 * @param doc
+	 * @param rootImagePath
+	 * @return
+	 */
+	public static ArrayList<ImageModel> getAllImagesFromContent(Document doc, String rootImagePath) {
+		Elements imageElements = doc.select("img");
+		ArrayList<ImageModel> images = new ArrayList<ImageModel>();
+		for (Element imageElement : imageElements) {
+			ImageModel image = new ImageModel();
+			String urlStr = imageElement.attr("src").replace("/project/", rootImagePath + "/project/");
+			//imageElement.attr("src", urlStr);
+			String name = urlStr.substring(urlStr.lastIndexOf("/"));
+			image.setName(name);
+			try {
+				image.setUrl(new URL(urlStr));
+			} catch (MalformedURLException e) {
+				// shouldn't happened
+				Log.e(TAG, "Invalid URL: " + urlStr, e);
+			}
+			images.add(image);
+			// Log.d("ParseNovelContent", image.getName() + "==>" + image.getUrl().toString());
+		}
+		return images;
 	}
 
 	/**
@@ -80,8 +110,8 @@ public class CommonParser {
 
 			if (!(chapter.getPage().contains("redlink=1") || // missing page
 					chapter.getPage().contains("User:") || // user page
-			chapter.getPage().contains("Special:BookSources") // ISBN handler
-			)) {
+					chapter.getPage().contains("Special:BookSources") // ISBN handler
+					)) {
 				chapter.setOrder(chapterOrder);
 				validatedChapters.add(chapter);
 				++chapterOrder;
@@ -232,6 +262,11 @@ public class CommonParser {
 		return pageModels;
 	}
 
+	/**
+	 * Get the url for the big image http://www.baka-tsuki.org/project/index.php?title=File:xxx
+	 * @param imageUrl
+	 * @return
+	 */
 	public static String getImageFilePageFromImageUrl(String imageUrl) {
 		String pageUrl = "";
 		// http://www.baka-tsuki.org/project/images/4/4a/Bakemonogatari_Up.png
@@ -247,5 +282,48 @@ public class CommonParser {
 		}
 		pageUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance()) + "/project/index.php?title=File:" + pageUrl;
 		return pageUrl;
+	}
+
+	/**
+	 * Get the image model from /project/index.php?title=File:xxx
+	 * @param doc
+	 * @return
+	 */
+	public static ImageModel parseImagePage(Document doc) {
+		ImageModel image = new ImageModel();
+
+		Element mainContent = doc.select("#mw-content-text").first();
+		Element fullMedia = mainContent.select(".fullMedia").first();
+		String imageUrl = fullMedia.select("a").first().attr("href");
+
+		try {
+			image.setUrl(new URL(UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + imageUrl));
+		} catch (MalformedURLException e) {
+			// shouldn't happened
+			Log.e(TAG, "Invalid URL: " + UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + imageUrl, e);
+		}
+		return image;
+	}
+
+	/**
+	 * Get all /project/index.php?title=File:xxx from content
+	 * @param doc
+	 * @return
+	 */
+	public static ArrayList<String> parseImagesFromContentPage(Document doc) {
+		ArrayList<String> result = new ArrayList<String>();
+
+		Elements links = doc.select("a");
+		for (Element link : links) {
+			String href = link.attr("href");
+			if (href.contains("/project/index.php?title=File:")) {
+				if (!href.startsWith("http"))
+					href = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + href;
+				result.add(href);
+			}
+		}
+
+		Log.d(TAG, "Images Found: " + result.size());
+		return result;
 	}
 }
