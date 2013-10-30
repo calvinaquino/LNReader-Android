@@ -4,4 +4,5 @@
 <color name="green">#00ff00</color>
 <color name="blue">#0000ff</color>
 <color name="divider">#00BFFF</color>
+<color name="button_press">#00BFFF</color>
 </resources>

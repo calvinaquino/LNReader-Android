@@ -30,9 +30,11 @@
 	            android:minHeight="66dp"
 	            android:minWidth="165dp"
 	            android:onClick="openNovelList"
-	            android:background="@drawable/button"	            
+	            android:background="@drawable/button_states"	            
 	            android:textStyle="bold"
 	            android:textSize="20sp"
+	            android:clickable="true"
+	            android:focusable="true"
 	            android:text="@string/light_novels" />
 	
    	        <Button
@@ -44,9 +46,11 @@
    	            android:minHeight="66dp"
    	            android:minWidth="165dp"
 	            android:onClick="openWatchList"
-	            android:background="@drawable/button"	            
+	            android:background="@drawable/button_states"	            
 	            android:textStyle="bold"
 	            android:textSize="20sp"
+	            android:clickable="true"
+	            android:focusable="true"
 	            android:text="@string/watch_list" />
 	            
 	        <Button
@@ -58,9 +62,11 @@
 	            android:minHeight="66dp"
 	            android:minWidth="165dp"
    	            android:onClick="jumpLastRead"
-	            android:background="@drawable/button"	            
+	            android:background="@drawable/button_states"	            
 	            android:textStyle="bold"
 	            android:textSize="20sp"
+	            android:clickable="true"
+	            android:focusable="true"
    	            android:text="@string/jump_last_read" />	  
    	            
 	        <Button
@@ -73,9 +79,11 @@
 	            android:minHeight="66dp"
 	            android:minWidth="165dp"
 	            android:onClick="openAlternativeNovelList"
-	            android:background="@drawable/button"	            
+	            android:background="@drawable/button_states"	            
 	            android:textStyle="bold"
 	            android:textSize="20sp"
+	            android:clickable="true"
+	            android:focusable="true"
    	            android:text="@string/alternative_language" />		        
 	    </LinearLayout>
 	    
