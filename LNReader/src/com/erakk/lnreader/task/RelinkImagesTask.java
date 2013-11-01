@@ -76,26 +76,30 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 					// for now just replace the thumbs
 					// file:///mnt/sdcard/test/project/images/thumb/c/c7/Accel_World_v01_262.jpg/84px-Accel_World_v01_262.jpg
 					// file:///sdcard-ext/.bakareaderex/project/images/thumb/c/c7/Accel_World_v01_262.jpg/84px-Accel_World_v01_262.jpg
-					//content.setContent(content.getContent().replaceAll("file:///[\\w/\\.]+/project/images/thumb/", "file:///" + rootPath + "/project/images/thumb/"));
-					//NovelsDao.getInstance().updateNovelContent(content);
+					// content.setContent(content.getContent().replaceAll("file:///[\\w/\\.]+/project/images/thumb/",
+					// "file:///" + rootPath + "/project/images/thumb/"));
+					// NovelsDao.getInstance().updateNovelContent(content);
 
 					Document doc = Jsoup.parse(content.getContent());
 					Elements imageElements = doc.select("img");
-					for(Element image : imageElements) {
+					for (Element image : imageElements) {
 						String imgUrl = image.attr("src");
-						if(imgUrl.startsWith("file:///") && imgUrl.contains("/project/images/thumb/")) {
+						if (imgUrl.startsWith("file:///") && imgUrl.contains("/project/images/thumb/")) {
+							String mntImgUrl = imgUrl.replace("file:///", "");
 							Log.d(TAG, "Found image : " + imgUrl);
-							if(! new File(imgUrl.replace("file:///", "/")).exists()) {
-								Log.d(TAG, "Old image doesn't exists/moved: " + imgUrl);
-								String newUrl = imgUrl.replaceAll("file:///[\\w/\\.]+/project/images/thumb/", "file:///" + rootPath + "/project/images/thumb/");
-								if(new File(newUrl.replace("file:///", "/")).exists()) {
+							if (!new File(mntImgUrl).exists()) {
+								Log.d(TAG, "Old image doesn't exists/moved: " + mntImgUrl);
+								String newUrl = imgUrl.replaceAll("file:///[\\w/\\./!$%^&*()_+|~\\={}\\[\\]:\";'<>?,-]+/project/images/thumb/", "file:///" + rootPath + "/project/images/thumb/");
+								String mntNewUrl = newUrl.replace("file:///", "");
+								Log.d(TAG, "Trying to replace with " + mntNewUrl);
+								if (new File(mntNewUrl).exists()) {
 									Log.d(TAG, "Replace image: " + imgUrl + " ==> " + newUrl);
 									image.attr("src", newUrl);
 								}
 							}
 						}
 					}
-					content.setContent(doc.text());
+					content.setContent(doc.html());
 					NovelsDao.getInstance().updateNovelContent(content);
 
 				}
