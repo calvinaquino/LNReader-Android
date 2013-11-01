@@ -11,6 +11,8 @@ import org.jsoup.select.Elements;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -24,6 +26,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 	private ICallbackNotifier callback;
 	private String source;
 	private final boolean hasError = false;
+	private int updated;
 
 	public static RelinkImagesTask instance;
 
@@ -61,9 +64,10 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 	protected Void doInBackground(Void... params) {
 		// get all contents
 		ArrayList<PageModel> pages = NovelsDao.getInstance().getAllContentPageModel();
+		updated = 0;
 		int count = 1;
 		for (PageModel page : pages) {
-			String message = "Relink image in content: " + page.getPage() + " [" + count + " of " + pages.size() + "]";
+			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_progress, page.getPage(), count, pages.size());
 			publishProgress(new CallbackEventData(message));
 
 			try {
@@ -76,9 +80,6 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 					// for now just replace the thumbs
 					// file:///mnt/sdcard/test/project/images/thumb/c/c7/Accel_World_v01_262.jpg/84px-Accel_World_v01_262.jpg
 					// file:///sdcard-ext/.bakareaderex/project/images/thumb/c/c7/Accel_World_v01_262.jpg/84px-Accel_World_v01_262.jpg
-					// content.setContent(content.getContent().replaceAll("file:///[\\w/\\.]+/project/images/thumb/",
-					// "file:///" + rootPath + "/project/images/thumb/"));
-					// NovelsDao.getInstance().updateNovelContent(content);
 
 					Document doc = Jsoup.parse(content.getContent());
 					Elements imageElements = doc.select("img");
@@ -87,14 +88,17 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 						if (imgUrl.startsWith("file:///") && imgUrl.contains("/project/images/thumb/")) {
 							String mntImgUrl = imgUrl.replace("file:///", "");
 							Log.d(TAG, "Found image : " + imgUrl);
+
 							if (!new File(mntImgUrl).exists()) {
 								Log.d(TAG, "Old image doesn't exists/moved: " + mntImgUrl);
 								String newUrl = imgUrl.replaceAll("file:///[\\w/\\./!$%^&*()_+|~\\={}\\[\\]:\";'<>?,-]+/project/images/thumb/", "file:///" + rootPath + "/project/images/thumb/");
 								String mntNewUrl = newUrl.replace("file:///", "");
 								Log.d(TAG, "Trying to replace with " + mntNewUrl);
+
 								if (new File(mntNewUrl).exists()) {
 									Log.d(TAG, "Replace image: " + imgUrl + " ==> " + newUrl);
 									image.attr("src", newUrl);
+									++updated;
 								}
 							}
 						}
@@ -104,7 +108,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 
 				}
 			} catch (Exception e) {
-				message = "Failed to relink image in content: " + page.getPage();
+				message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_error, page.getPage());
 				Log.e(TAG, message, e);
 				publishProgress(new CallbackEventData(message));
 			}
@@ -124,8 +128,8 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 	@Override
 	protected void onPostExecute(Void result) {
 		if (!hasError) {
-			String message = "Completed relink images to: " + rootPath;
-			Log.d(TAG, message);
+			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_complete, rootPath, updated);
+			Log.i(TAG, message);
 			if (callback != null)
 				callback.onCallback(new CallbackEventData(message, source));
 		}

@@ -2,9 +2,12 @@ package com.erakk.lnreader.task;
 
 import java.io.IOException;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -53,13 +56,14 @@ public class UnZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> im
 
 	@Override
 	protected Void doInBackground(Void... arg0) {
+		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		// unzip the files
 		try {
-			publishProgress(new CallbackEventData("UnZipping files..."));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.unzip_files_task_progress)));
 			Util.unzipFiles(zipName, rootPath, this);
 		} catch (IOException e) {
 			Log.e(TAG, "Failed to unzip files.", e);
-			publishProgress(new CallbackEventData("Failed to unzip files: " + e.getMessage()));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.unzip_files_task_error, e.getMessage())));
 			hasError = true;
 		}
 		return null;
@@ -75,7 +79,7 @@ public class UnZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> im
 	@Override
 	protected void onPostExecute(Void result) {
 		if (!hasError) {
-			String message = "Completed unzipping " + zipName + " to: " + rootPath;
+			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.unzip_files_task_complete, zipName, rootPath);
 			Log.d(TAG, message);
 			if (callback != null)
 				callback.onCallback(new CallbackEventData(message, source));

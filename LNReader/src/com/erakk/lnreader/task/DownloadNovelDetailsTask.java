@@ -2,9 +2,12 @@ package com.erakk.lnreader.task;
 
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -41,17 +44,19 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 
 	@Override
 	protected AsyncTaskResult<NovelCollectionModel[]> doInBackground(PageModel... params) {
+		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		ArrayList<NovelCollectionModel> result = new ArrayList<NovelCollectionModel>();
 		totalParts = params.length;
 		for (PageModel pageModel : params) {
 			currentPart++;
 			try {
-				publishProgress(new CallbackEventData("Downloading chapter list for: " + pageModel.getTitle()));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_details_task_progress, pageModel.getTitle())));
 				NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetailsFromInternet(pageModel, this);
 				Log.d("DownloadNovelDetailsTask", "Downloaded: " + novelCol.getPage());
 				result.add(novelCol);
 			} catch (Exception e) {
 				Log.e("DownloadNovelDetailsTask", "Failed to download novel details for " + pageModel.getPage() + ": " + e.getMessage(), e);
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_details_task_error, pageModel.getPage(), e.getMessage())));
 				return new AsyncTaskResult<NovelCollectionModel[]>(e);
 			}
 		}

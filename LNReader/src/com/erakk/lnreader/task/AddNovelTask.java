@@ -1,8 +1,11 @@
 package com.erakk.lnreader.task;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -25,18 +28,21 @@ public class AddNovelTask extends AsyncTask<PageModel, ICallbackEventData, Async
 
 	@Override
 	protected AsyncTaskResult<NovelCollectionModel> doInBackground(PageModel... params) {
+		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		PageModel page = params[0];
 		try {
-			publishProgress(new CallbackEventData("Checking Novel: " + page.getPage()));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.add_novel_task_check, page.getPage())));
 			page = NovelsDao.getInstance().getUpdateInfo(page, this);
-			if (page.isMissing())
-				throw new Exception("Novel doesn't exists: " + page.getPage());
+			if (page.isMissing()) {
+				return new AsyncTaskResult<NovelCollectionModel>(new Exception(ctx.getResources().getString(R.string.add_novel_task_missing, page.getPage())));
+			}
 
 			NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetailsFromInternet(page, this);
 			Log.d("AddNovelTask", "Downloaded: " + novelCol.getPage());
 			return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 		} catch (Exception e) {
 			Log.e("AddNovelTask", e.getClass().toString() + ": " + e.getMessage(), e);
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.add_novel_task_error, page.getPage(), e.getMessage())));
 			return new AsyncTaskResult<NovelCollectionModel>(e);
 		}
 	}

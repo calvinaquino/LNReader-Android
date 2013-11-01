@@ -2,9 +2,12 @@ package com.erakk.lnreader.task;
 
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -37,20 +40,22 @@ public class LoadOriginalsTask extends AsyncTask<Void, ICallbackEventData, Async
 
 	@Override
 	protected AsyncTaskResult<PageModel[]> doInBackground(Void... arg0) {
+		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		// different thread from UI
 		try {
 			ArrayList<PageModel> novels = new ArrayList<PageModel>();
 			if (refreshOnly) {
-				publishProgress(new CallbackEventData("Refreshing Original List"));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_refreshing)));
 				novels = NovelsDao.getInstance().getOriginalFromInternet(this);
 			}
 			else {
-				publishProgress(new CallbackEventData("Loading Original List"));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_loading)));
 				novels = NovelsDao.getInstance().getOriginal(this, alphOrder);
 			}
 			return new AsyncTaskResult<PageModel[]>(novels.toArray(new PageModel[novels.size()]));
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting original list: " + e.getMessage(), e);
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_error, e.getMessage())));
 			return new AsyncTaskResult<PageModel[]>(e);
 		}
 	}

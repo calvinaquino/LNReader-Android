@@ -23,6 +23,8 @@ import java.util.zip.ZipOutputStream;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 
@@ -160,10 +162,6 @@ public class Util {
 		File[] files = parentDir.listFiles();
 		for (File file : files) {
 			if (file.isDirectory()) {
-				// String message = "Getting files from: " + file.getAbsolutePath();
-				// Log.d(TAG, message);
-				// if(callback != null)
-				// callback.onCallback(new CallbackEventData(message));
 				inFiles.addAll(getListFiles(file, callback));
 			} else {
 				inFiles.add(file);
@@ -182,7 +180,7 @@ public class Util {
 		Log.d(TAG, "Start zipping to: " + zipFile);
 		for (File file : filenames) {
 			String absPath = file.getAbsolutePath();
-			String message = String.format("[%s of %s] Zipping %s", fileCount, total, absPath);
+			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.zip_files_task_progress_count, fileCount, total, absPath);
 			Log.d(TAG, message);
 			if (callback != null)
 				callback.onCallback(new CallbackEventData(message));
@@ -234,8 +232,10 @@ public class Util {
 			}
 
 			Log.d(TAG, "Unzipping: " + filename);
-			if (callback != null)
-				callback.onCallback(new CallbackEventData("Unzipping #" + fileCount + ": " + filename));
+			if (callback != null) {
+				String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.unzip_files_task_progress_count, fileCount, filename);
+				callback.onCallback(new CallbackEventData(message));
+			}
 			FileOutputStream fout = new FileOutputStream(filename);
 
 			while ((count = zis.read(buffer)) != -1) {

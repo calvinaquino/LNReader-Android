@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -55,16 +58,20 @@ public class ZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> impl
 
 	@Override
 	protected Void doInBackground(Void... params) {
+		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		// get thumb images
-		publishProgress(new CallbackEventData("Getting files from: " + rootPath));
+		publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.zip_files_task_get_files, rootPath)));
 		List<File> filenames = Util.getListFiles(new File(rootPath), this);
+
+		// TODO: check the total file size?
+
 		// zip the files
 		try {
-			publishProgress(new CallbackEventData("Zipping files..."));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.zip_files_task_zipping_files)));
 			Util.zipFiles(filenames, zipName, rootPath, this);
 		} catch (IOException e) {
 			Log.e(TAG, "Failed to zip files.", e);
-			publishProgress(new CallbackEventData("Failed to zip files: " + e.getMessage()));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.zip_files_task_error, e.getMessage())));
 			hasError = true;
 		}
 		return null;
@@ -80,7 +87,7 @@ public class ZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> impl
 	@Override
 	protected void onPostExecute(Void result) {
 		if (!hasError) {
-			String message = "Completed zipping " + rootPath + " to: " + zipName;
+			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.zip_files_task_complete, rootPath, zipName);
 			Log.d(TAG, message);
 			if (callback != null)
 				callback.onCallback(new CallbackEventData(message, source));

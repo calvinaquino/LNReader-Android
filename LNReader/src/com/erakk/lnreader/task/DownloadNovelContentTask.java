@@ -2,9 +2,12 @@ package com.erakk.lnreader.task;
 
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -44,15 +47,16 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
 
 	@Override
 	protected AsyncTaskResult<NovelContentModel[]> doInBackground(Void... params) {
+		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		ArrayList<Exception> exceptionList = new ArrayList<Exception>();
 		try {
 			NovelContentModel[] contents = new NovelContentModel[chapters.length];
 			for (int i = 0; i < chapters.length; ++i) {
 				currentChapter++;
 				NovelContentModel oldContent = NovelsDao.getInstance().getNovelContent(chapters[i], false, null);
-				String message = String.format("Downloading: %s", chapters[i].getTitle());
+				String message = ctx.getResources().getString(R.string.download_novel_content_task_progress, chapters[i].getTitle());
 				if (oldContent != null) {
-					message = String.format("Updating: %s", chapters[i].getTitle());
+					message = ctx.getResources().getString(R.string.download_novel_content_task_update, chapters[i].getTitle());
 				}
 				Log.i(TAG, message);
 				publishProgress(new CallbackEventData(message));
@@ -62,6 +66,7 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
 					contents[i] = temp;
 				} catch (Exception e) {
 					Log.e(TAG, String.format("Error when downloading: %s", chapters[i].getTitle()), e);
+					publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_content_task_error, e.getMessage())));
 					exceptionList.add(e);
 				}
 
@@ -71,6 +76,8 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
 			}
 			return new AsyncTaskResult<NovelContentModel[]>(contents);
 		} catch (Exception e) {
+			Log.e(TAG, String.format("Error when downloading: %s", chapters[currentChapter].getPage(), e));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_content_task_error, e.getMessage())));
 			return new AsyncTaskResult<NovelContentModel[]>(e);
 		}
 	}

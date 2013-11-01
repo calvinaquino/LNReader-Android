@@ -1,8 +1,11 @@
 package com.erakk.lnreader.task;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -35,20 +38,22 @@ public class LoadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEventDat
 
 	@Override
 	protected AsyncTaskResult<NovelCollectionModel> doInBackground(PageModel... arg0) {
+		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		PageModel page = arg0[0];
 		try {
 			if (refresh) {
-				publishProgress(new CallbackEventData("Refreshing chapter list..."));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_detail_task_refreshing)));
 				NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetailsFromInternet(page, this);
 				return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 			}
 			else {
-				publishProgress(new CallbackEventData("Loading chapter list..."));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_detail_task_loading)));
 				NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetails(page, this);
 				return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 			}
 		} catch (Exception e) {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_detail_task_error, e.getMessage())));
 			return new AsyncTaskResult<NovelCollectionModel>(e);
 		}
 	}

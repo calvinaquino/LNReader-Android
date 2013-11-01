@@ -2,9 +2,12 @@ package com.erakk.lnreader.task;
 
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -43,21 +46,23 @@ public class LoadAlternativeTask extends AsyncTask<Void, ICallbackEventData, Asy
 
 	@Override
 	protected AsyncTaskResult<PageModel[]> doInBackground(Void... arg0) {
+		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		// different thread from UI
 		try {
 			ArrayList<PageModel> novels = new ArrayList<PageModel>();
 			if (refreshOnly) {
-				publishProgress(new CallbackEventData("Refreshing " + language + " List"));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_alt_task_refreshing, language)));
 				novels = NovelsDao.getInstance().getAlternativeFromInternet(this, language);
 
 			}
 			else {
-				publishProgress(new CallbackEventData("Loading " + language + " List"));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_alt_task_loading, language)));
 				NovelsDao.getInstance().getAlternative(this, alphOrder, language);
 			}
 			return new AsyncTaskResult<PageModel[]>(novels.toArray(new PageModel[novels.size()]));
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting " + language + " list: " + e.getMessage(), e);
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_alt_task_error, language, e.getMessage())));
 			return new AsyncTaskResult<PageModel[]>(e);
 		}
 	}

@@ -1,8 +1,11 @@
 package com.erakk.lnreader.task;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
@@ -31,26 +34,24 @@ public class LoadNovelContentTask extends AsyncTask<PageModel, ICallbackEventDat
 	protected void onPreExecute() {
 		// executed on UI thread.
 		owner.toggleProgressBar(true);
-		if (this.refresh) {
-			owner.setMessageDialog(new CallbackEventData("Refreshing..."));
-		}
-		else {
-			owner.setMessageDialog(new CallbackEventData("Loading..."));
-		}
 	}
 
 	@Override
 	protected AsyncTaskResult<NovelContentModel> doInBackground(PageModel... params) {
+		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		try {
 			PageModel p = params[0];
 			if (refresh) {
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_refreshing)));
 				return new AsyncTaskResult<NovelContentModel>(NovelsDao.getInstance().getNovelContentFromInternet(p, this));
 			}
 			else {
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_loading)));
 				return new AsyncTaskResult<NovelContentModel>(NovelsDao.getInstance().getNovelContent(p, true, this));
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting novel content: " + e.getMessage(), e);
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_error, e.getMessage())));
 			return new AsyncTaskResult<NovelContentModel>(e);
 		}
 	}
