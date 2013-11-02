@@ -103,7 +103,8 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			}
 		}
 
-		if (child.isMissing()) {
+		//if (child.isMissing()) {
+		if (child.getPage().contains("redlink=1")) {
 			tv.setTextColor(Constants.COLOR_MISSING);
 		}
 		if (child.isExternal()) {
