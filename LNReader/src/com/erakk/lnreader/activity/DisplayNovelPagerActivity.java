@@ -70,12 +70,12 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
 		tabHost.addTab(firstSpec); // Adding First tab
 		tabHost.addTab(secondSpec); // Adding Second tab
 		tabHost.addTab(thirdSpec); // Adding third tab
-		setTabColor();
+		//setTabColor();
 
 		tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
 			@Override
 			public void onTabChanged(String tabId) {
-				setTabColor();
+				//setTabColor();
 				currentActivity = lam.getActivity(tabId);
 			}
 		});
