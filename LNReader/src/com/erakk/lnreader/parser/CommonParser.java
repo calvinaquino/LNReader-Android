@@ -259,6 +259,9 @@ public class CommonParser {
 				temp.setMissing(true);
 				Log.w(TAG, "parsePageAPI missing page info: " + to);
 			}
+			if (temp.getPage().contains("redlink=1")) {
+				temp.setMissing(true);
+			}
 		}
 		return pageModels;
 	}

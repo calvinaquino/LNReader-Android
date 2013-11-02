@@ -112,7 +112,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 	private void loadChapter(PageModel chapter) {
 		boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
 
-		if (!chapter.getPage().contains("redlink=1")) {
+		if (!chapter.isMissing()) {
 			if (chapter.isExternal() && !useInternalWebView) {
 				try {
 					Uri url = Uri.parse(chapter.getPage());
