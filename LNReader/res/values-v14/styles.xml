@@ -1,6 +1,5 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <style name="AppTheme" parent="@android:style/Theme.Holo.Light.DarkActionBar" >
-        <item name="android:tabWidgetStyle">@style/CustomTabWidget</item>
     </style>
     <style name="CustomTabWidget" parent="@android:style/Widget.TabWidget">
         <item name="android:textColor">#dddddd</item>

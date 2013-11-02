@@ -107,8 +107,9 @@ public class CommonParser {
 		int chapterOrder = 0;
 		for (Iterator<PageModel> iChapter = chapters.iterator(); iChapter.hasNext();) {
 			PageModel chapter = iChapter.next();
-
-			if (!(chapter.getPage().contains("redlink=1") || // missing page
+			
+			// redlink=1 means chapter is missing, commented out to include missing chapters
+			if (!(//chapter.getPage().contains("redlink=1") || // missing page
 					chapter.getPage().contains("User:") || // user page
 					chapter.getPage().contains("Special:BookSources") // ISBN handler
 					)) {
@@ -257,6 +258,9 @@ public class CommonParser {
 			} else {
 				temp.setMissing(true);
 				Log.w(TAG, "parsePageAPI missing page info: " + to);
+			}
+			if (temp.getPage().contains("redlink=1")) {
+				temp.setMissing(true);
 			}
 		}
 		return pageModels;
