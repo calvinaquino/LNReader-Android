@@ -68,6 +68,7 @@ public class LoadOriginalsTask extends AsyncTask<Void, ICallbackEventData, Async
 	@Override
 	protected void onPostExecute(AsyncTaskResult<PageModel[]> result) {
 		// executed on UI thread.
-		owner.getResult(result, PageModel[].class);
+		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_original_task_complete)));
+		owner.onGetResult(result, PageModel[].class);
 	}
 }

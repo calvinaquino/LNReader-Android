@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -372,7 +373,7 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 	}
 
 	@Override
-	public void getResult(AsyncTaskResult<?> result, Class<?> t) {
+	public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
 		Exception e = result.getError();
 		if (e == null) {
 			// from LoadAlternativeTask
@@ -462,5 +463,10 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 			LNReaderApplication.getInstance().removeDownload(id);
 		}
 		return exists;
+	}
+
+	@Override
+	public Context getContext() {
+		return this;
 	}
 }

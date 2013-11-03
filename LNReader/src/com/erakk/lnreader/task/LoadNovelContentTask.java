@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
@@ -38,7 +37,7 @@ public class LoadNovelContentTask extends AsyncTask<PageModel, ICallbackEventDat
 
 	@Override
 	protected AsyncTaskResult<NovelContentModel> doInBackground(PageModel... params) {
-		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
+		Context ctx = owner.getContext();
 		try {
 			PageModel p = params[0];
 			if (refresh) {
@@ -64,6 +63,7 @@ public class LoadNovelContentTask extends AsyncTask<PageModel, ICallbackEventDat
 
 	@Override
 	protected void onPostExecute(AsyncTaskResult<NovelContentModel> result) {
-		owner.getResult(result, NovelContentModel.class);
+		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novel_content_task_complete)));
+		owner.onGetResult(result, NovelContentModel.class);
 	}
 }

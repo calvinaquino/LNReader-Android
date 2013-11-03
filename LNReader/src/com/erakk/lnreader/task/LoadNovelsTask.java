@@ -76,6 +76,11 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
 	@Override
 	protected void onPostExecute(AsyncTaskResult<PageModel[]> result) {
 		// executed on UI thread.
-		owner.getResult(result, PageModel[].class);
+		if (onlyWatched) {
+			owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novels_task_watched_complete)));
+		} else {
+			owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novels_task_complete)));
+		}
+		owner.onGetResult(result, PageModel[].class);
 	}
 }

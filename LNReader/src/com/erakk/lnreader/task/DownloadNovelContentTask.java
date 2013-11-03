@@ -6,7 +6,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
@@ -24,7 +23,6 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
 	private final String taskId;
 
 	public DownloadNovelContentTask(PageModel[] chapters, IAsyncTaskOwner owner) {
-		super();
 		this.chapters = chapters;
 		this.owner = owner;
 		this.taskId = this.toString();
@@ -47,7 +45,7 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
 
 	@Override
 	protected AsyncTaskResult<NovelContentModel[]> doInBackground(Void... params) {
-		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
+		Context ctx = owner.getContext();
 		ArrayList<Exception> exceptionList = new ArrayList<Exception>();
 		try {
 			NovelContentModel[] contents = new NovelContentModel[chapters.length];
@@ -91,7 +89,8 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
 
 	@Override
 	protected void onPostExecute(AsyncTaskResult<NovelContentModel[]> result) {
-		owner.getResult(result, NovelContentModel[].class);
+		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.download_novel_content_task_complete)));
+		owner.onGetResult(result, NovelContentModel[].class);
 		owner.downloadListSetup(this.taskId, null, 2, result.getError() != null ? true : false);
 	}
 }

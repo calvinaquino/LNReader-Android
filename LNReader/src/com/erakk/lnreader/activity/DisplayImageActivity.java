@@ -1,6 +1,7 @@
 package com.erakk.lnreader.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -190,7 +191,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 	}
 
 	@Override
-	public void getResult(AsyncTaskResult<?> result, Class<?> t) {
+	public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
 		if (result == null)
 			return;
 
@@ -240,5 +241,10 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 	public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
 		Log.d(TAG, "Setup of " + id + ": " + toastText + " (type: " + type + ")" + "hasError: " + hasError);
 		return false;
+	}
+
+	@Override
+	public Context getContext() {
+		return this;
 	}
 }

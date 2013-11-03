@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.DownloadCallbackEventData;
@@ -40,7 +39,7 @@ public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTa
 
 	@Override
 	protected AsyncTaskResult<ImageModel> doInBackground(String... params) {
-		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
+		Context ctx = owner.getContext();
 		this.url = params[0];
 		ImageModel image = new ImageModel();
 		image.setName(url);
@@ -75,7 +74,8 @@ public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTa
 
 	@Override
 	protected void onPostExecute(AsyncTaskResult<ImageModel> result) {
-		owner.getResult(result, ImageModel.class);
+		owner.onGetResult(result, ImageModel.class);
 		owner.downloadListSetup(this.taskId, null, 2, result.getError() != null ? true : false);
+		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_image_task_complete)));
 	}
 }

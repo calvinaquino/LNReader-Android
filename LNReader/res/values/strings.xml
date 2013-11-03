@@ -281,22 +281,29 @@
     <string name="unzip_files_task_progress_count">Unzipping #%1$s: %2$s.</string>
     <string name="load_teaser_task_refreshing">Refreshing Teaser List.</string>
     <string name="load_teaser_task_loading">Loading Teaser List.</string>
+    <string name="load_teaser_task_complete">Teaser List loaded.</string>
     <string name="load_teaser_task_error">Error when getting Teaser List: %1$s.</string>
     <string name="load_original_task_refreshing">Refreshing Original List.</string>
     <string name="load_original_task_loading">Loading Original List.</string>
+    <string name="load_original_task_complete">Original List loaded.</string>
     <string name="load_original_task_error">Error when getting Original List: %1$s.</string>
     <string name="load_novels_task_refreshing">Refreshing Novel List.</string>
     <string name="load_novels_task_loading">Loading Novel List.</string>
     <string name="load_novels_task_watched">Loading Watched List.</string>
+    <string name="load_novels_task_complete">Novel List loaded.</string>
+    <string name="load_novels_task_watched_complete">Watched List loaded.</string>
     <string name="load_novels_task_error">Error when getting Novels List: %1$s.</string>
     <string name="load_novel_detail_task_refreshing">Refreshing chapter list...</string>
     <string name="load_novel_detail_task_loading">Loading chapter list...</string>
+    <string name="load_novel_detail_task_complete">Chapter List loaded.</string>
     <string name="load_novel_detail_task_error">Error when getting chapter list: %1$s.</string>
     <string name="load_novel_content_task_refreshing">Refreshing content...</string>
     <string name="load_novel_content_task_loading">Loading content...</string>
+    <string name="load_novel_content_task_complete">Content Loaded.</string>
     <string name="load_novel_content_task_error">Error when getting content: %1$s.</string>    
     <string name="load_image_task_refreshing">Refreshing image...</string>
     <string name="load_image_task_loading">Loading image...</string>
+    <string name="load_image_task_complete">Image loaded.</string>
     <string name="load_image_task_error">Error when getting image: %1$s.</string>
     <string name="load_novel_alt_task_refreshing">Refreshing %1$s List...</string>
     <string name="load_novel_alt_task_loading">Loading %1$s List...</string>
@@ -304,8 +311,10 @@
     <string name="load_novel_alt_task_complete">Loading %1$s List complete.</string>
     <string name="download_novel_details_task_progress">Downloading chapter list for: %1$s.</string>
     <string name="download_novel_details_task_error">Failed to download novel details for: %1$s, error message: %2$s.</string>
+    <string name="download_novel_details_task_complete">Chapter List loaded.</string>
     <string name="download_novel_content_task_progress">Downloading content: %1$s.</string>
     <string name="download_novel_content_task_update">Updating content: %1$s.</string>
+    <string name="download_novel_content_task_complete">Content loaded.</string>
     <string name="download_novel_content_task_error">Failed to download content for: %1$s, error message: %2$s.</string>
     <string name="copy_db_task_backup_error">Error when backing up DB.</string>
     <string name="copy_db_task_restore_error">Error when restoring DB.</string>
@@ -316,4 +325,5 @@
     <string name="add_novel_task_check">Checking Novel: %1$s.</string>
     <string name="add_novel_task_missing">Novel doesn\'t exists: %1$s.</string>
     <string name="add_novel_task_error">Error when adding novel: %1$s, error message: %2$s.</string>
+    <string name="add_novel_task_complete">Novel added.</string>
 </resources>

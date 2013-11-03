@@ -68,6 +68,7 @@ public class LoadTeasersTask extends AsyncTask<Void, ICallbackEventData, AsyncTa
 	@Override
 	protected void onPostExecute(AsyncTaskResult<PageModel[]> result) {
 		// executed on UI thread.
-		owner.getResult(result, PageModel[].class);
+		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_teaser_task_complete)));
+		owner.onGetResult(result, PageModel[].class);
 	}
 }

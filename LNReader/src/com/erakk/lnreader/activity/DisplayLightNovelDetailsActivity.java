@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -469,7 +470,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 
 	@Override
 	@SuppressLint("NewApi")
-	public void getResult(AsyncTaskResult<?> result, Class<?> t) {
+	public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
 		Exception e = result.getError();
 
 		if (e == null) {
@@ -596,5 +597,10 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		Intent intent = new Intent(this, DisplayImageActivity.class);
 		intent.putExtra(Constants.EXTRA_IMAGE_URL, bigCoverUrl);
 		startActivity(intent);
+	}
+
+	@Override
+	public Context getContext() {
+		return this;
 	}
 }
