@@ -65,6 +65,7 @@ public class LoadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEventDat
 
 	@Override
 	protected void onPostExecute(AsyncTaskResult<NovelCollectionModel> result) {
-		owner.getResult(result, NovelCollectionModel.class);
+		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novel_detail_task_complete)));
+		owner.onGetResult(result, NovelCollectionModel.class);
 	}
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -447,7 +448,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 
 	@Override
 	@SuppressLint("NewApi")
-	public void getResult(AsyncTaskResult<?> result, Class<?> t) {
+	public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
 		Exception e = result.getError();
 
 		if (e == null) {
@@ -568,5 +569,13 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		Intent intent = new Intent(getSherlockActivity(), DisplayImageActivity.class);
 		intent.putExtra(Constants.EXTRA_IMAGE_URL, bigCoverUrl);
 		startActivity(intent);
+	}
+
+	@Override
+	public Context getContext() {
+		Context ctx = this.getSherlockActivity();
+		if (ctx == null)
+			return LNReaderApplication.getInstance().getApplicationContext();
+		return ctx;
 	}
 }

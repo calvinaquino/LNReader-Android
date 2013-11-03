@@ -46,7 +46,7 @@ public class LoadAlternativeTask extends AsyncTask<Void, ICallbackEventData, Asy
 
 	@Override
 	protected AsyncTaskResult<PageModel[]> doInBackground(Void... arg0) {
-		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
+		Context ctx = owner.getContext();
 		// different thread from UI
 		try {
 			ArrayList<PageModel> novels = new ArrayList<PageModel>();
@@ -76,6 +76,6 @@ public class LoadAlternativeTask extends AsyncTask<Void, ICallbackEventData, Asy
 	protected void onPostExecute(AsyncTaskResult<PageModel[]> result) {
 		// executed on UI thread.
 		owner.setMessageDialog(new CallbackEventData(LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.load_novel_alt_task_complete, language)));
-		owner.getResult(result, PageModel[].class);
+		owner.onGetResult(result, PageModel[].class);
 	}
 }

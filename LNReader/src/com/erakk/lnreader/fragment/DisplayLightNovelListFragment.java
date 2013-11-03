@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -399,7 +400,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 	}
 
 	@Override
-	public void getResult(AsyncTaskResult<?> result, Class<?> t) {
+	public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
 		Exception e = result.getError();
 		if (e == null) {
 			// from LoadNovelsTask
@@ -454,5 +455,13 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
 			Toast.makeText(getSherlockActivity(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
+	}
+
+	@Override
+	public Context getContext() {
+		Context ctx = this.getSherlockActivity();
+		if (ctx == null)
+			return LNReaderApplication.getInstance().getApplicationContext();
+		return ctx;
 	}
 }

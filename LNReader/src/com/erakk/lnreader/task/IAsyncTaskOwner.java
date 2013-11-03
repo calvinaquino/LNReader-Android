@@ -1,5 +1,7 @@
 package com.erakk.lnreader.task;
 
+import android.content.Context;
+
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 
@@ -12,5 +14,7 @@ public interface IAsyncTaskOwner {
 
 	void setMessageDialog(ICallbackEventData message);
 
-	void getResult(AsyncTaskResult<?> result, Class<?> type);
+	void onGetResult(AsyncTaskResult<?> result, Class<?> type);
+
+	Context getContext();
 }

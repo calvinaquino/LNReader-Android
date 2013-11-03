@@ -796,7 +796,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	}
 
 	@Override
-	public void getResult(AsyncTaskResult<?> result, Class<?> t) {
+	public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
 		Exception e = result.getError();
 		if (e == null) {
 			if (t == NovelContentModel.class) {
@@ -1041,5 +1041,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				}
 			});
 		}
+	}
+
+	@Override
+	public Context getContext() {
+		return this;
 	}
 }
