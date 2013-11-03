@@ -20,6 +20,7 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.helper.BakaReaderException;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.ImageModel;
@@ -643,9 +644,19 @@ public class BakaTsukiParser {
 		content.setPageModel(page);
 
 		Element textElement = doc.select("text").first();
-		if (textElement == null)
-			throw new Exception("Empty content!");
-		String text = textElement.text();
+		String text = "";
+		if (textElement != null) {
+
+			text = textElement.text();
+		} else {
+			textElement = doc.select(".noarticletext").first();
+			if (textElement == null) {
+				Log.d(TAG, "Content: \r\n" + doc.html());
+				throw new BakaReaderException("Empty Content", BakaReaderException.EMPTY_CONTENT);
+			}
+			text = textElement.html();
+			page.setMissing(true);
+		}
 
 		// get valid image list
 		Document imgDoc = Jsoup.parse(text);
@@ -658,5 +669,4 @@ public class BakaTsukiParser {
 		content.setLastZoom(Constants.DISPLAY_SCALE);
 		return content;
 	}
-
 }
