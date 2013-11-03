@@ -5,6 +5,7 @@ public class BakaReaderException extends Exception {
 	public static final int NO_NETWORK_CONNECTIFITY = -1000;
 	public static final int NULL_NOVELDAO = -2000;
 	public static final int EMPTY_IMAGE = -3000;
+	public static final int EMPTY_CONTENT = -4000;
 
 	private final int errorCode;
 

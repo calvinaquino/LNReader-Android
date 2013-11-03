@@ -168,6 +168,9 @@ public class UpdateService extends Service {
 		updateStatus("OK");
 		Toast.makeText(this, "Update Service completed", Toast.LENGTH_SHORT).show();
 		LNReaderApplication.getInstance().updateDownload(TAG, 100, "Update Service completed");
+
+		// remove from download list
+		LNReaderApplication.getInstance().removeDownload(TAG);
 	}
 
 	@SuppressWarnings("deprecation")

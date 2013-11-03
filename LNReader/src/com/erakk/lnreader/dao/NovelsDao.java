@@ -853,7 +853,7 @@ public class NovelsDao {
 			// ++i;
 
 			while (i < pageModels.size() && apiPageCount < 50) {
-				if (pageModels.get(i).isExternal()) {
+				if (pageModels.get(i).isExternal() || pageModels.get(i).isMissing() || pageModels.get(i).getPage().endsWith("&action=edit&redlink=1")) {
 					++i;
 					continue;
 				}
@@ -996,8 +996,20 @@ public class NovelsDao {
 		while (retry < getRetry()) {
 			try {
 				String encodedUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/api.php?action=parse&format=xml&prop=text|images&redirects=yes&page=" + Util.UrlEncode(page.getPage());
-				Response response = Jsoup.connect(encodedUrl).timeout(getTimeout(retry)).execute();
-				doc = response.parse();
+				if (!page.getPage().endsWith("&action=edit&redlink=1")) {
+					Response response = Jsoup.connect(encodedUrl).timeout(getTimeout(retry)).execute();
+					doc = response.parse();
+				}
+				else {
+					Log.w(TAG, "redlink page: " + page.getPage());
+					String titleClean = page.getPage().replace("&action=edit&redlink=1", "");
+					doc = Jsoup.parse("<div class=\"noarticletext\">" +
+							"<p>There is currently no text in this page." +
+							"You can <a href=\"/project/index.php?title=Special:Search/" + titleClean + "\" title=\"Special:Search/" + titleClean + "\">search for this page title</a> in other pages," +
+							"or <span class=\"plainlinks\"><a rel=\"nofollow\" class=\"external text\" href=\"https://www.baka-tsuki.org/project/index.php?title=Special:Log&amp;page=" + titleClean + "\">search the related logs</a></span>." +
+							"</p>" +
+							"</div>");
+				}
 				content = BakaTsukiParser.ParseNovelContent(doc, page);
 				content.setUpdatingFromInternet(true);
 				break;

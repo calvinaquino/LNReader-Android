@@ -32,6 +32,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 		this.autoDownloadUpdatedContent = autoDownloadUpdatedContent;
 		this.service = service;
 		this.notifier = notifier;
+		Log.d(TAG, "Auto Download: " + autoDownloadUpdatedContent);
 	}
 
 	@Override
@@ -61,9 +62,6 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 		// Reschedule for next run
 		MyScheduleReceiver.reschedule(service);
 		service.setRunning(false);
-
-		// remove from download list
-		LNReaderApplication.getInstance().removeDownload(TAG);
 
 		// update last run
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(service.getApplicationContext());
@@ -107,6 +105,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 					for (PageModel chapter : updatedChapters) {
 						downloadUpdatedChapter(chapter, callback);
 					}
+					Log.i(TAG, "Updated Chapter Downloaded: " + updatedChapters.size() + " for: " + watchedNovel.getPage());
 				}
 
 				lastProgress = (int) (++current / total * 100);
@@ -121,8 +120,12 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 	}
 
 	private void downloadUpdatedChapter(PageModel chapter, ICallbackNotifier callback) throws Exception {
-		Log.i(TAG, "Downloading updated content for: " + chapter.getPage());
+		String message = "Downloading updated content for: " + chapter.getPage();
+		Log.i(TAG, message);
 		NovelsDao dao = NovelsDao.getInstance();
+		if (callback != null) {
+			callback.onCallback(new CallbackEventData(message));
+		}
 		dao.getNovelContentFromInternet(chapter, callback);
 	}
 
@@ -162,6 +165,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 						// check if the same page
 						if (newChapter.getPage().compareTo(oldChapter.getPage()) == 0) {
 							// check if last update date is newer
+							// TODO: Nandaka: got some bug on the parse api, so check if not equal.
 							if (newChapter.getLastUpdate().getTime() > oldChapter.getLastUpdate().getTime()) {
 								newChapter.setUpdated(true);
 								Log.i(TAG, "Found updated chapter: " + newChapter.getTitle());
