@@ -375,14 +375,20 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 	public void getResult(AsyncTaskResult<?> result, Class<?> t) {
 		Exception e = result.getError();
 		if (e == null) {
-			// from LoadNovelsTask
+			// from LoadAlternativeTask
 			if (t == PageModel[].class) {
 				PageModel[] list = (PageModel[]) result.getResult();
-				if (list != null) {
+				TextView emptyList = (TextView) findViewById(R.id.emptyList);
+
+				if (list.length > 0) {
 					adapter.clear();
 					adapter.addAll(list);
-					toggleProgressBar(false);
+					emptyList.setVisibility(View.GONE);
 				}
+				else {
+					emptyList.setVisibility(View.VISIBLE);
+				}
+				toggleProgressBar(false);
 			}
 			// from DownloadNovelDetailsTask
 			else if (t == NovelCollectionModel[].class) {
@@ -407,6 +413,9 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 				}
 				adapter.notifyDataSetChanged();
 				toggleProgressBar(false);
+			}
+			else {
+				Log.e(TAG, "Unexpected Result Type: " + t.toString());
 			}
 		} else {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);

@@ -301,6 +301,7 @@
     <string name="load_novel_alt_task_refreshing">Refreshing %1$s List...</string>
     <string name="load_novel_alt_task_loading">Loading %1$s List...</string>
     <string name="load_novel_alt_task_error">Error when getting %1$s List: %2$s.</string>
+    <string name="load_novel_alt_task_complete">Loading %1$s List complete.</string>
     <string name="download_novel_details_task_progress">Downloading chapter list for: %1$s.</string>
     <string name="download_novel_details_task_error">Failed to download novel details for: %1$s, error message: %2$s.</string>
     <string name="download_novel_content_task_progress">Downloading content: %1$s.</string>

@@ -57,7 +57,7 @@ public class LoadAlternativeTask extends AsyncTask<Void, ICallbackEventData, Asy
 			}
 			else {
 				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_alt_task_loading, language)));
-				NovelsDao.getInstance().getAlternative(this, alphOrder, language);
+				novels = NovelsDao.getInstance().getAlternative(this, alphOrder, language);
 			}
 			return new AsyncTaskResult<PageModel[]>(novels.toArray(new PageModel[novels.size()]));
 		} catch (Exception e) {
@@ -75,6 +75,7 @@ public class LoadAlternativeTask extends AsyncTask<Void, ICallbackEventData, Asy
 	@Override
 	protected void onPostExecute(AsyncTaskResult<PageModel[]> result) {
 		// executed on UI thread.
-		owner.getResult(result, PageModel.class);
+		owner.setMessageDialog(new CallbackEventData(LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.load_novel_alt_task_complete, language)));
+		owner.getResult(result, PageModel[].class);
 	}
 }

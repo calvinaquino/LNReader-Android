@@ -405,7 +405,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 			// from LoadNovelsTask
 			if (t == PageModel[].class) {
 				PageModel[] list = (PageModel[]) result.getResult();
-				Log.d("WatchList", "result ok");
+				Log.d(TAG, "LoadNovelsTask result ok");
 				if (list != null && list.length > 0) {
 					adapter.clear();
 					adapter.addAll(list);
@@ -413,8 +413,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 
 					// Show message if watch list is empty
 					if (list.length == 0 && onlyWatched) {
-
-						Log.d("WatchList", "result set message empty");
+						Log.d(TAG, "WatchList result set message empty");
 						loadingText.setVisibility(TextView.VISIBLE);
 						loadingText.setText("Watch List is empty.");
 					}
