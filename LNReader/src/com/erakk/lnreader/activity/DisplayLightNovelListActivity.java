@@ -452,7 +452,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 					// Show message if watch list is empty
 					if (onlyWatched) {
 						if (list.length == 0) {
-							Log.d("WatchList", "result set message empty");
+							Log.d(TAG, "WatchList result set message empty");
 							TextView tv = (TextView) findViewById(R.id.emptyList);
 							tv.setVisibility(TextView.VISIBLE);
 							tv.setText("Watch List is empty.");
