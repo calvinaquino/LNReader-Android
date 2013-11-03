@@ -110,7 +110,7 @@
    	            android:onClick="openSearch"
    	            android:layout_gravity="bottom|center_horizontal"
    	            android:src="@drawable/ic_main_search"
-   	            android:background="@null"
+   	            android:background="@drawable/button_states"
    	            android:contentDescription="@string/search"/>
 	        <ImageButton
 	            android:id="@+id/main_bookmarks_button"
@@ -120,7 +120,7 @@
    	            android:onClick="openBookmarks"
    	            android:layout_gravity="bottom|center_horizontal"
    	            android:src="@drawable/ic_main_bookmarks"
-   	            android:background="@null"
+   	            android:background="@drawable/button_states"
    	            android:contentDescription="@string/bookmarks"/>
 	        <ImageButton
 	            android:id="@+id/main_updates_button"
@@ -130,7 +130,7 @@
    	            android:onClick="openUpdatesList"
    	            android:layout_gravity="bottom|center_horizontal"
    	            android:src="@drawable/ic_main_updates"
-   	            android:background="@null"
+   	            android:background="@drawable/button_states"
    	            android:contentDescription="@string/updates"/>
 	        <ImageButton
 	            android:id="@+id/main_download_button"
@@ -140,7 +140,7 @@
    	            android:onClick="openDownloadsList"
    	            android:layout_gravity="bottom|center_horizontal"
    	            android:src="@drawable/ic_main_downloads"
-   	            android:background="@null"
+   	            android:background="@drawable/button_states"
    	            android:contentDescription="@string/download_list"/>
 	        <ImageButton
 	            android:id="@+id/main_settings_button"
@@ -150,7 +150,7 @@
    	            android:onClick="openSettings"
    	            android:layout_gravity="bottom|center_horizontal"
    	            android:src="@drawable/ic_main_settings"
-   	            android:background="@null"
+   	            android:background="@drawable/button_states"
    	            android:contentDescription="@string/settings"/>
 	        
 	    </LinearLayout>
