@@ -143,6 +143,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	}
 
+	@SuppressLint("NewApi")
 	@Override
 	public void onInit(int status) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -543,9 +544,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				Log.d(TAG, "TOC Found: " + chapters.size());
 
 				int resourceId = R.layout.jumpto_list_item;
-				if (UIHelper.IsSmallScreen(this)) {
-					resourceId = R.layout.jumpto_list_item;
-				}
+				// if (UIHelper.IsSmallScreen(this)) {
+				// resourceId = R.layout.jumpto_list_item;
+				// }
 				jumpAdapter = new PageModelAdapter(this, resourceId, chapters);
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setTitle(getResources().getString(R.string.content_toc));
@@ -556,12 +557,36 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 						jumpTo(page);
 					}
 				});
+				builder.setNegativeButton(R.string.back_to_index, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						backToIndex();
+					}
+				});
 				tocMenu = builder.create();
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Cannot get current page for menu.", e);
 		}
 		// }
+	}
+
+	public void backToIndex() {
+		String page = getIntent().getStringExtra(Constants.EXTRA_PAGE);
+		PageModel pageModel = new PageModel();
+		pageModel.setPage(page);
+		try {
+			pageModel = NovelsDao.getInstance().getExistingPageModel(pageModel, null).getParentPageModel();
+
+			Intent i = new Intent(this, DisplayLightNovelDetailsActivity.class);
+			i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			i.putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
+			startActivity(i);
+			finish();
+		} catch (Exception e) {
+			Log.e(TAG, "Failed to get parent page model", e);
+		}
 	}
 
 	public void buildBookmarkMenu() {

@@ -326,4 +326,5 @@
     <string name="add_novel_task_missing">Novel doesn\'t exists: %1$s.</string>
     <string name="add_novel_task_error">Error when adding novel: %1$s, error message: %2$s.</string>
     <string name="add_novel_task_complete">Novel added.</string>
+    <string name="back_to_index">Back to Chapter List.</string>
 </resources>

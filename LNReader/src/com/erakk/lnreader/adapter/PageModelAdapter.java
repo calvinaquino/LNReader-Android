@@ -30,7 +30,7 @@ import com.erakk.lnreader.model.PageModel;
 
 public class PageModelAdapter extends ArrayAdapter<PageModel> {
 	private static final String TAG = PageModelAdapter.class.toString();
-	private Context context;
+	private final Context context;
 	private int layoutResourceId;
 	public List<PageModel> data;
 	private boolean isAdding = false;
@@ -46,20 +46,20 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 	public void setLayout(int resourceId) {
 		this.layoutResourceId = resourceId;
 	}
-	
+
 	@SuppressLint("NewApi")
 	public void addAll(List<PageModel> objects) {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB )
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			super.addAll(objects);
 		else {
-			for(Iterator<PageModel> iPage = objects.iterator(); iPage.hasNext();) {
+			for (Iterator<PageModel> iPage = objects.iterator(); iPage.hasNext();) {
 				isAdding = true;
 				this.add(iPage.next());
 			}
 			isAdding = false;
 			this.notifyDataSetChanged();
 		}
-		//Log.d(TAG, "onAddAll Count = " + objects.size());
+		// Log.d(TAG, "onAddAll Count = " + objects.size());
 	}
 
 	@Override
@@ -68,63 +68,77 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		PageModelHolder holder = null;
 
 		final PageModel page = data.get(position);
-		
-		LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-		row = inflater.inflate(layoutResourceId, parent, false);
 
+		LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+		row = inflater.inflate(layoutResourceId, parent, false);
 		holder = new PageModelHolder();
-		holder.txtNovel = (TextView)row.findViewById(R.id.novel_name);
-		if(holder.txtNovel != null) {
+		holder.txtNovel = (TextView) row.findViewById(R.id.novel_name);
+		if (holder.txtNovel != null) {
 			holder.txtNovel.setText(page.getTitle());
-			if(page.isHighlighted()) {
+			if (page.isHighlighted()) {
 				holder.txtNovel.setTypeface(null, Typeface.BOLD);
 				holder.txtNovel.setTextSize(20);
-				holder.txtNovel.setText("> " + holder.txtNovel.getText());
+				holder.txtNovel.setText("⇒" + holder.txtNovel.getText());
 			}
-			
-			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
+
+			if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
 				holder.txtNovel.setTextColor(Constants.COLOR_UNREAD);
 			}
 			else {
 				holder.txtNovel.setTextColor(Constants.COLOR_UNREAD_DARK);
 			}
-			if(page.isMissing()) holder.txtNovel.setTextColor(Constants.COLOR_MISSING);
-			if(page.isExternal()) holder.txtNovel.setTextColor(Constants.COLOR_EXTERNAL);
-			
+			if (page.isMissing()) {
+				holder.txtNovel.setTextColor(Constants.COLOR_MISSING);
+			}
+			if (page.isExternal()) {
+				holder.txtNovel.setTextColor(Constants.COLOR_EXTERNAL);
+			}
+			ImageView ivExternal = (ImageView) row.findViewById(R.id.is_external);
+			if (ivExternal != null) {
+				if (page.isExternal()) {
+					ivExternal.setVisibility(View.VISIBLE);
+					UIHelper.setColorFilter(ivExternal);
+				}
+				else {
+					ivExternal.setVisibility(View.GONE);
+				}
+			}
+
 			ImageView ivHasUpdates = (ImageView) row.findViewById(R.id.novel_has_updates);
-			if(ivHasUpdates != null) {
-				if(page.getUpdateCount() > 0) {
+			if (ivHasUpdates != null) {
+				if (page.getUpdateCount() > 0) {
 					ivHasUpdates.setVisibility(View.VISIBLE);
-					UIHelper.setColorFilter(ivHasUpdates);					
+					UIHelper.setColorFilter(ivHasUpdates);
 				}
 				else {
 					ivHasUpdates.setVisibility(View.GONE);
 				}
 			}
 		}
-		
-		holder.txtLastUpdate = (TextView)row.findViewById(R.id.novel_last_update);
-		if(holder.txtLastUpdate != null) {
+
+		holder.txtLastUpdate = (TextView) row.findViewById(R.id.novel_last_update);
+		if (holder.txtLastUpdate != null) {
 			holder.txtLastUpdate.setText(context.getResources().getString(R.string.last_update) + ": " + Util.formatDateForDisplay(page.getLastUpdate()));
 		}
-		
-		holder.txtLastCheck = (TextView)row.findViewById(R.id.novel_last_check);
-		if(holder.txtLastCheck != null) {
+
+		holder.txtLastCheck = (TextView) row.findViewById(R.id.novel_last_check);
+		if (holder.txtLastCheck != null) {
 			holder.txtLastCheck.setText(context.getResources().getString(R.string.last_check) + ": " + Util.formatDateForDisplay(page.getLastCheck()));
 		}
-		
-		holder.chkIsWatched = (CheckBox)row.findViewById(R.id.novel_is_watched);
-		if(holder.chkIsWatched != null) {
-			//Log.d(TAG, page.getId() + " " + page.getTitle() + " isWatched: " + page.isWatched());
+
+		holder.chkIsWatched = (CheckBox) row.findViewById(R.id.novel_is_watched);
+		if (holder.chkIsWatched != null) {
+			// Log.d(TAG, page.getId() + " " + page.getTitle() + " isWatched: " + page.isWatched());
 			holder.chkIsWatched.setChecked(page.isWatched());
 			holder.chkIsWatched.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
+				@Override
 				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if(isChecked){
-						Toast.makeText(context, "Added to watch list: " + page.getTitle(),	Toast.LENGTH_SHORT).show();
+					if (isChecked) {
+						Toast.makeText(context, "Added to watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
 					}
 					else {
-						Toast.makeText(context, "Removed from watch list: " + page.getTitle(),	Toast.LENGTH_SHORT).show();
+						Toast.makeText(context, "Removed from watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
 					}
 					// update the db!
 					page.setWatched(isChecked);
@@ -133,18 +147,18 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 				}
 			});
 		}
-		
+
 		row.setTag(holder);
 		return row;
-	}	
+	}
 
-// somehow if enabled, will trigger the db 2x (first load and after load)  
+	// somehow if enabled, will trigger the db 2x (first load and after load)
 	@Override
 	public void notifyDataSetChanged() {
-		if(!isAdding) {
+		if (!isAdding) {
 			// refresh the data
 			Log.d(TAG, "Refreshing data: " + data.size() + " items");
-			for(int i = 0; i< data.size();++i) {
+			for (int i = 0; i < data.size(); ++i) {
 				try {
 					PageModel temp = NovelsDao.getInstance(context).getPageModel(data.get(i), null);
 					temp.setUpdateCount(data.get(i).getUpdateCount());
@@ -156,7 +170,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			super.notifyDataSetChanged();
 		}
 	}
-	
+
 	static class PageModelHolder
 	{
 		TextView txtNovel;
@@ -165,7 +179,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		CheckBox chkIsWatched;
 	}
 
-	public void setResourceId (int id) {
+	public void setResourceId(int id) {
 		this.layoutResourceId = id;
 	}
 }
