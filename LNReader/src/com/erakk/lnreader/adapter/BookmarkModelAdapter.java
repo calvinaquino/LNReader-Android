@@ -21,6 +21,7 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
+import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.BookmarkModel;
 import com.erakk.lnreader.model.PageModel;
 
@@ -62,6 +63,12 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 		BookmarkModelHolder holder = new BookmarkModelHolder();
 
 		final BookmarkModel bookmark = data.get(position);
+		PageModel pageModel = null;
+		try {
+			pageModel = bookmark.getPageModel();
+		} catch (Exception e) {
+			Log.e(TAG, "Failed to get PageModel for Bookmark.", e);
+		}
 
 		LayoutInflater inflater = ((Activity) context).getLayoutInflater();
 		row = inflater.inflate(layoutResourceId, parent, false);
@@ -86,7 +93,6 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 			if (showPage) {
 				holder.txtPageTitle.setVisibility(View.VISIBLE);
 				try {
-					PageModel pageModel = bookmark.getPageModel();
 					PageModel parentPage = pageModel.getParentPageModel();
 					holder.txtPageTitle.setText(parentPage.getTitle());
 				} catch (Exception ex) {
@@ -100,14 +106,20 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 		holder.txtPageSubTitle = (TextView) row.findViewById(R.id.page_subtitle);
 		if (holder.txtPageSubTitle != null) {
 			if (showPage) {
+				String subTitle = bookmark.getPage();
 				holder.txtPageSubTitle.setVisibility(View.VISIBLE);
 				try {
-					PageModel pageModel = bookmark.getPageModel();
-					holder.txtPageSubTitle.setText(pageModel.getTitle());
+					subTitle = pageModel.getTitle();
+					try {
+						BookModel book = pageModel.getBook();
+						subTitle = String.format("(%s) %s", book.getTitle(), subTitle);
+					} catch (Exception ex) {
+						Log.e(TAG, "Failed to get bookModel: " + ex.getMessage(), ex);
+					}
 				} catch (Exception ex) {
 					Log.e(TAG, "Failed to get pageModel: " + ex.getMessage(), ex);
-					holder.txtPageSubTitle.setText(bookmark.getPage());
 				}
+				holder.txtPageSubTitle.setText(subTitle);
 			} else {
 				holder.txtPageSubTitle.setVisibility(View.GONE);
 			}
