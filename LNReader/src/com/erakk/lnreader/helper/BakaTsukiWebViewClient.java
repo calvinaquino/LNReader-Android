@@ -113,4 +113,15 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 		}
 		return true;
 	}
+
+	@Override
+	public void onPageFinished(WebView view, String url) {
+		super.onPageFinished(view, url);
+		final DisplayLightNovelContentActivity caller = activityRef.get();
+		if (caller != null)
+		{
+			caller.saveWebArchive(null);
+		}
+	}
+
 }

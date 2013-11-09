@@ -28,6 +28,7 @@ import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.ValueCallback;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -63,6 +64,7 @@ import com.erakk.lnreader.service.TtsService;
 import com.erakk.lnreader.service.TtsService.TtsBinder;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelContentTask;
+import com.erakk.lnreader.task.LoadWacTask;
 
 public class DisplayLightNovelContentActivity extends SherlockActivity implements IAsyncTaskOwner, OnInitListener, OnCompleteListener {
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
@@ -679,17 +681,84 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 	}
 
+	boolean isSaveEnabled;
+
 	public void loadExternalUrl(PageModel pageModel) {
 		try {
-			final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
-			setWebViewSettings();
-			wv.loadUrl(pageModel.getPage());
+			// check if .wac available
+			String wacName = UIHelper.getImageRoot(this) + "/wac/" + Util.calculateCRC32(pageModel.getPage()) + ".wac";
+			File f = new File(wacName);
+			if (f.exists()) {
+				isSaveEnabled = false;
+				executeLoadWacTask(wacName);
+			}
+			else {
+				Log.w(TAG, "WAC not available: " + wacName);
+				isSaveEnabled = true;
+				final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
+				setWebViewSettings();
+				wv.loadUrl(pageModel.getPage());
+			}
 			setChapterTitle(pageModel);
 			buildTOCMenu(pageModel);
 			content = null;
 		} catch (Exception ex) {
 			Log.e(TAG, "Cannot load external content: " + pageModel.getPage(), ex);
 		}
+	}
+
+	@SuppressLint("InlinedApi")
+	private void executeLoadWacTask(String wacName) {
+		NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
+		LoadWacTask task = new LoadWacTask(this, webView, wacName, client);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		else
+			task.execute();
+	}
+
+	@SuppressLint("SdCardPath")
+	public void saveWebArchive(String page) {
+		if (!isSaveEnabled)
+			return;
+
+		if (page == null) {
+			page = getIntent().getStringExtra(Constants.EXTRA_PAGE);
+		}
+
+		try {
+			PageModel pageModel = new PageModel();
+			pageModel.setPage(page);
+			pageModel = NovelsDao.getInstance().getExistingPageModel(pageModel, null);
+			if (!pageModel.isExternal())
+				return;
+		} catch (Exception e1) {
+			Log.e(TAG, "Failed to load page model: " + page, e1);
+		}
+
+		try {
+			String filename = UIHelper.getImageRoot(this) + "/wac";
+			File f = new File(filename);
+			f.mkdirs();
+			Log.i(TAG, "WAC dirs: " + filename);
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
+				if (page != wv.getUrl()) {
+					Log.w(TAG, "Different url: " + page + " != " + wv.getUrl());
+				}
+				wv.saveWebArchive(f.getAbsolutePath() + "/" + Util.calculateCRC32(wv.getUrl()) + ".wac", false, new ValueCallback<String>() {
+
+					@Override
+					public void onReceiveValue(String value) {
+						Log.i(TAG, "Saved to: " + value);
+					}
+				});
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "Failed to save external page: " + page, e);
+		}
+		isSaveEnabled = false;
 	}
 
 	public void setContent(NovelContentModel loadedContent) {

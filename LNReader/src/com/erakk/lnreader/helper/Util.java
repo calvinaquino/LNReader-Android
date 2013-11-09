@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -249,5 +250,12 @@ public class Util {
 
 		zis.close();
 		Log.d(TAG, "Completed unzipping to: " + zipName);
+	}
+
+	public static String calculateCRC32(String input) {
+		CRC32 crc = new CRC32();
+		crc.reset();
+		crc.update(input.getBytes());
+		return Long.toHexString(crc.getValue());
 	}
 }
