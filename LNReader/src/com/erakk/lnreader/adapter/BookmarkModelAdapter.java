@@ -1,12 +1,11 @@
 package com.erakk.lnreader.adapter;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,8 +28,7 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 	private static final String TAG = BookmarkModelAdapter.class.toString();
 	private final int layoutResourceId;
 	private final Context context;
-	private final List<BookmarkModel> data;
-	// private boolean isAdding = false;
+	private List<BookmarkModel> data;
 	private PageModel novel = null;
 	public boolean showPage = false;
 	public boolean showCheckBox = false;
@@ -43,16 +41,29 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 		this.novel = parent;
 	}
 
-	@SuppressLint("NewApi")
-	public void addAll(List<BookmarkModel> objects) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			super.addAll(objects);
-		else {
-			for (Iterator<BookmarkModel> iPage = objects.iterator(); iPage.hasNext();) {
-				// isAdding = true;
-				this.add(iPage.next());
+	@Override
+	public void addAll(Collection<? extends BookmarkModel> objects) {
+		synchronized (this) {
+			if (data == null) {
+				data = new ArrayList<BookmarkModel>();
 			}
-			// isAdding = false;
+			data.addAll(objects);
+
+			this.notifyDataSetChanged();
+		}
+	}
+
+	@Override
+	public void addAll(BookmarkModel... objects) {
+		synchronized (this) {
+			if (data == null) {
+				data = new ArrayList<BookmarkModel>();
+			}
+
+			for (BookmarkModel item : objects) {
+				data.add(item);
+			}
+
 			this.notifyDataSetChanged();
 		}
 	}

@@ -999,6 +999,7 @@ public class NovelsDao {
 				if (!page.getPage().endsWith("&action=edit&redlink=1")) {
 					Response response = Jsoup.connect(encodedUrl).timeout(getTimeout(retry)).execute();
 					doc = response.parse();
+					page.setMissing(false);
 				}
 				else {
 					Log.w(TAG, "redlink page: " + page.getPage());
@@ -1009,6 +1010,7 @@ public class NovelsDao {
 							"or <span class=\"plainlinks\"><a rel=\"nofollow\" class=\"external text\" href=\"https://www.baka-tsuki.org/project/index.php?title=Special:Log&amp;page=" + titleClean + "\">search the related logs</a></span>." +
 							"</p>" +
 							"</div>");
+					page.setMissing(true);
 				}
 				content = BakaTsukiParser.ParseNovelContent(doc, page);
 				content.setUpdatingFromInternet(true);
@@ -1069,8 +1071,8 @@ public class NovelsDao {
 				content.setLastUpdate(contentPageModelTemp.getLastUpdate());
 				content.setLastCheck(new Date());
 			}
-			// page model will be also saved in insertNovelContent()
 
+			// page model will be also saved in insertNovelContent()
 			synchronized (dbh) {
 				// save to DB, and get the saved value
 				SQLiteDatabase db = dbh.getWritableDatabase();
