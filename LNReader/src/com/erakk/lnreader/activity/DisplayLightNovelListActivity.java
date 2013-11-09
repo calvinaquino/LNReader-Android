@@ -445,10 +445,10 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 			// from LoadNovelsTask
 			if (t == PageModel[].class) {
 				PageModel[] list = (PageModel[]) result.getResult();
+				toggleProgressBar(false);
 				if (list != null && list.length > 0) {
 					adapter.clear();
 					adapter.addAll(list);
-					toggleProgressBar(false);
 
 					// Show message if watch list is empty
 					if (onlyWatched) {
