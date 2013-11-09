@@ -1,16 +1,15 @@
 package com.erakk.lnreader.adapter;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,14 +70,28 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
 		this.layoutResourceId = resourceId;
 	}
 
-	@SuppressLint("NewApi")
-	public void addAll(List<UpdateInfoModel> objects) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			super.addAll(objects);
-		else {
-			for (Iterator<UpdateInfoModel> iPage = objects.iterator(); iPage.hasNext();) {
-				this.add(iPage.next());
+	@Override
+	public void addAll(UpdateInfoModel... objects) {
+		synchronized (this) {
+			if (data == null) {
+				data = new ArrayList<UpdateInfoModel>();
 			}
+			for (UpdateInfoModel item : objects) {
+				data.add(item);
+			}
+
+			this.notifyDataSetChanged();
+		}
+	}
+
+	@Override
+	public void addAll(Collection<? extends UpdateInfoModel> objects) {
+		synchronized (this) {
+			if (data == null) {
+				data = new ArrayList<UpdateInfoModel>();
+			}
+			data.addAll(objects);
+
 			this.notifyDataSetChanged();
 		}
 	}

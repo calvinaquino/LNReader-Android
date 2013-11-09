@@ -1,13 +1,12 @@
 package com.erakk.lnreader.adapter;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,7 +32,6 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 	private final Context context;
 	private int layoutResourceId;
 	public List<PageModel> data;
-	private boolean isAdding = false;
 
 	public PageModelAdapter(Context context, int resourceId, List<PageModel> objects) {
 		super(context, resourceId, objects);
@@ -47,19 +45,30 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		this.layoutResourceId = resourceId;
 	}
 
-	@SuppressLint("NewApi")
-	public void addAll(List<PageModel> objects) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			super.addAll(objects);
-		else {
-			for (Iterator<PageModel> iPage = objects.iterator(); iPage.hasNext();) {
-				isAdding = true;
-				this.add(iPage.next());
+	@Override
+	public void addAll(PageModel... objects) {
+		synchronized (this) {
+			if (data == null) {
+				data = new ArrayList<PageModel>();
 			}
-			isAdding = false;
-			this.notifyDataSetChanged();
+			for (PageModel pageModel : objects) {
+				data.add(pageModel);
+			}
 		}
-		// Log.d(TAG, "onAddAll Count = " + objects.size());
+
+		this.notifyDataSetChanged();
+	}
+
+	@Override
+	public void addAll(Collection<? extends PageModel> objects) {
+		synchronized (this) {
+			if (data == null) {
+				data = new ArrayList<PageModel>();
+			}
+			data.addAll(objects);
+		}
+
+		this.notifyDataSetChanged();
 	}
 
 	@Override
@@ -155,7 +164,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 	// somehow if enabled, will trigger the db 2x (first load and after load)
 	@Override
 	public void notifyDataSetChanged() {
-		if (!isAdding) {
+		synchronized (this) {
 			// refresh the data
 			Log.d(TAG, "Refreshing data: " + data.size() + " items");
 			for (int i = 0; i < data.size(); ++i) {
