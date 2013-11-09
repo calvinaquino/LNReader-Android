@@ -18,6 +18,7 @@ import com.erakk.lnreader.model.PageModel;
 public class BakaTsukiWebViewClient extends WebViewClient {
 	private static final String TAG = BakaTsukiWebViewClient.class.toString();
 	protected WeakReference<DisplayLightNovelContentActivity> activityRef;
+	private boolean hasError = false;
 
 	public BakaTsukiWebViewClient(DisplayLightNovelContentActivity caller) {
 		super();
@@ -26,6 +27,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 
 	@Override
 	public boolean shouldOverrideUrlLoading(WebView view, String url) {
+		hasError = false;
 		final DisplayLightNovelContentActivity caller = activityRef.get();
 		if (caller == null)
 			return false;
@@ -118,10 +120,16 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 	public void onPageFinished(WebView view, String url) {
 		super.onPageFinished(view, url);
 		final DisplayLightNovelContentActivity caller = activityRef.get();
-		if (caller != null)
+		if (caller != null && !hasError)
 		{
 			caller.saveWebArchive(null);
 		}
 	}
 
+	@Override
+	public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+		super.onReceivedError(view, errorCode, description, failingUrl);
+		hasError = true;
+		Log.w(TAG, String.format("Error detected: [%s] %s => %s", errorCode, description, failingUrl));
+	}
 }

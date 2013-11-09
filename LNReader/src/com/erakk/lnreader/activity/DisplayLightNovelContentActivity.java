@@ -752,6 +752,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 					@Override
 					public void onReceiveValue(String value) {
 						Log.i(TAG, "Saved to: " + value);
+						Toast.makeText(getContext(), "Page saved to: " + value, Toast.LENGTH_SHORT).show();
 					}
 				});
 			}
