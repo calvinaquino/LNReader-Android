@@ -2,6 +2,7 @@ package com.erakk.lnreader.helper.db;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 
 import android.content.ContentValues;
@@ -147,6 +148,23 @@ public class ImageModelHelper {
 		// Log.d(TAG, "Complete Insert Images: " + image.getName() + " id: " + image.getId());
 
 		return image;
+	}
+
+	public static ArrayList<ImageModel> getAllImages(SQLiteDatabase db) {
+		ArrayList<ImageModel> result = new ArrayList<ImageModel>();
+		Cursor cursor = helper.rawQuery(db, "select * from " + DBHelper.TABLE_IMAGE, null);
+		try {
+			cursor.moveToFirst();
+			while (!cursor.isAfterLast()) {
+				ImageModel image = cursorToImage(cursor);
+				result.add(image);
+				cursor.moveToNext();
+			}
+		} finally {
+			if (cursor != null)
+				cursor.close();
+		}
+		return result;
 	}
 
 	/*

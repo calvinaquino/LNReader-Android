@@ -1197,15 +1197,7 @@ public class NovelsDao {
 				image = downloader.downloadImage(image.getUrl());
 				image.setReferer(url);
 
-				synchronized (dbh) {
-					// save to db and get the saved value
-					SQLiteDatabase db = dbh.getWritableDatabase();
-					try {
-						image = ImageModelHelper.insertImage(db, image);
-					} finally {
-						db.close();
-					}
-				}
+				image = insertImage(image);
 				break;
 			} catch (EOFException eof) {
 				if (notifier != null) {
@@ -1226,6 +1218,28 @@ public class NovelsDao {
 			}
 		}
 		return image;
+	}
+
+	public ImageModel insertImage(ImageModel image) {
+		synchronized (dbh) {
+			// save to db and get the saved value
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			try {
+				image = ImageModelHelper.insertImage(db, image);
+			} finally {
+				db.close();
+			}
+		}
+		return image;
+	}
+
+	public ArrayList<ImageModel> getAllImages() {
+		ArrayList<ImageModel> result;
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			result = ImageModelHelper.getAllImages(db);
+		}
+		return result;
 	}
 
 	public ArrayList<PageModel> doSearch(String searchStr, boolean isNovelOnly, ArrayList<String> languageList) {

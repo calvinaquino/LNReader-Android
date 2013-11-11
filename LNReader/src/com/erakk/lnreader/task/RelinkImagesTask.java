@@ -17,6 +17,7 @@ import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
@@ -62,6 +63,32 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 
 	@Override
 	protected Void doInBackground(Void... params) {
+		processImageInContents();
+		processBigImage();
+		return null;
+	}
+
+	private void processBigImage() {
+		ArrayList<ImageModel> images = NovelsDao.getInstance().getAllImages();
+
+		int count = 1;
+		for(ImageModel image : images) {
+			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_progress2, image.getName(), count, images.size());
+			publishProgress(new CallbackEventData(message));
+			String oldPath = image.getPath();
+			//TODO: need more check
+			String newPath = oldPath.replaceAll("[\\w/\\./!$%^&*()_+|~\\={}\\[\\]:\";'<>?,-]+/project/images/", rootPath + "/project/images/");
+			Log.i(TAG, "Trying to update big image: " + oldPath);
+			if(new File(newPath).exists()) {
+				Log.i(TAG, "Updated: " + oldPath + " => " + newPath);
+				image.setPath(newPath);
+				NovelsDao.getInstance().insertImage(image);
+				++updated;
+			}
+		}
+	}
+
+	private void processImageInContents() {
 		// get all contents
 		ArrayList<PageModel> pages = NovelsDao.getInstance().getAllContentPageModel();
 		updated = 0;
@@ -114,8 +141,6 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 			}
 			++count;
 		}
-
-		return null;
 	}
 
 	@Override

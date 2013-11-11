@@ -268,6 +268,7 @@
     <string name="bookmark_order_title">Order Bookmark by Date</string>
     <string name="bookmark_order_summary">Order bookmark by creation date in descending order if enabled.</string>
     <string name="relink_task_progress">Relink image in content: %1$s [%2$s of %3$s].</string>
+    <string name="relink_task_progress2">Relink big image: %1$s [%2$s of %3$s].</string>
     <string name="relink_task_error">Failed to relink image in content: %1$s.</string>
     <string name="relink_task_complete">Completed relink images to: %1$s with %2$s image(s) updated.</string>
     <string name="zip_files_task_get_files">Getting files from: %1$s, this might some times...</string>
