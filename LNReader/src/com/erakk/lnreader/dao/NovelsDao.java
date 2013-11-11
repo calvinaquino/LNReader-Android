@@ -769,6 +769,9 @@ public class NovelsDao {
 
 				ArrayList<PageModel> chapters = getUpdateInfo(novel.getFlattedChapterList(), notifier);
 				for (PageModel pageModel : chapters) {
+					if(pageModel.getPage().endsWith("&action=edit&redlink=1")) {
+						pageModel.setMissing(true);
+					}
 					pageModel = updatePageModel(pageModel);
 				}
 

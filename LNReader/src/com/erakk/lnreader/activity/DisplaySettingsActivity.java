@@ -510,11 +510,11 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			}
 		});
 		if (RelinkImagesTask.getInstance() != null && RelinkImagesTask.getInstance().getStatus() == Status.RUNNING) {
-			RelinkImagesTask.getInstance().setCallback(this, Constants.PREF_RESTORE_THUMB_IMAGES);
+			RelinkImagesTask.getInstance().setCallback(this, Constants.PREF_RELINK_THUMB_IMAGES);
 		}
 	}
 
-	@SuppressLint("InlinedApi")
+	@SuppressLint({ "InlinedApi", "NewApi" })
 	private void relinkThumbs() {
 		String rootPath = UIHelper.getImageRoot(this);
 		RelinkImagesTask task = RelinkImagesTask.getInstance(rootPath, this, Constants.PREF_RELINK_THUMB_IMAGES);
@@ -524,7 +524,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			task.execute();
 	}
 
-	@SuppressLint("InlinedApi")
+	@SuppressLint({ "InlinedApi", "NewApi" })
 	private void restoreThumbs() {
 		if (ZipFilesTask.getInstance() != null && ZipFilesTask.getInstance().getStatus() == Status.RUNNING) {
 			Toast.makeText(this, "Please wait until all images are backed-up.", Toast.LENGTH_SHORT).show();
@@ -540,7 +540,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			task.execute();
 	}
 
-	@SuppressLint("InlinedApi")
+	@SuppressLint({ "InlinedApi", "NewApi" })
 	private void copyDB(boolean makeBackup, String source) {
 		CopyDBTask task = new CopyDBTask(makeBackup, this, source);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -549,7 +549,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			task.execute();
 	}
 
-	@SuppressLint("InlinedApi")
+	@SuppressLint({ "InlinedApi", "NewApi" })
 	private void backupThumbs() {
 		if (UnZipFilesTask.getInstance() != null && UnZipFilesTask.getInstance().getStatus() == Status.RUNNING) {
 			Toast.makeText(this, "Please wait until all images are restored.", Toast.LENGTH_SHORT).show();
