@@ -72,19 +72,29 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 		ArrayList<ImageModel> images = NovelsDao.getInstance().getAllImages();
 
 		int count = 1;
-		for(ImageModel image : images) {
+		for (ImageModel image : images) {
 			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_progress2, image.getName(), count, images.size());
 			publishProgress(new CallbackEventData(message));
 			String oldPath = image.getPath();
-			//TODO: need more check
+
+			// skip if file exists
+			if (new File(oldPath).exists()) {
+				Log.d(TAG, "Skipping: " + oldPath);
+				continue;
+			}
+
 			String newPath = oldPath.replaceAll("[\\w/\\./!$%^&*()_+|~\\={}\\[\\]:\";'<>?,-]+/project/images/", rootPath + "/project/images/");
-			Log.i(TAG, "Trying to update big image: " + oldPath);
-			if(new File(newPath).exists()) {
+			Log.i(TAG, "Trying to update big image: " + oldPath + " => " + newPath);
+			if (new File(newPath).exists()) {
 				Log.i(TAG, "Updated: " + oldPath + " => " + newPath);
 				image.setPath(newPath);
 				NovelsDao.getInstance().insertImage(image);
 				++updated;
 			}
+			else {
+				Log.w(TAG, "File doesn't exists: " + newPath);
+			}
+			++count;
 		}
 	}
 

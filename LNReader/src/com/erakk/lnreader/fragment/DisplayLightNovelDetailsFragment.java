@@ -449,8 +449,10 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 	@Override
 	@SuppressLint("NewApi")
 	public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
-		Exception e = result.getError();
+		if (!isAdded())
+			return;
 
+		Exception e = result.getError();
 		if (e == null) {
 			// from DownloadNovelContentTask
 			if (t == NovelContentModel[].class) {
