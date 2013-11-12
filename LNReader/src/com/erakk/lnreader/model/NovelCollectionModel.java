@@ -146,12 +146,9 @@ public class NovelCollectionModel {
 	public ArrayList<PageModel> getFlattedChapterList() {
 		if (_FlattedChapterList == null) {
 			_FlattedChapterList = new ArrayList<PageModel>();
-			for (Iterator<BookModel> i = this.bookCollections.iterator(); i.hasNext();) {
-				BookModel b = i.next();
-				for (Iterator<PageModel> i2 = b.getChapterCollection().iterator(); i2.hasNext();) {
-					PageModel temp = i2.next();
+			for (BookModel b : bookCollections) {
+				for (PageModel temp : b.getChapterCollection()) {
 					_FlattedChapterList.add(temp);
-					// Log.d(TAG, "Added: "+ temp.getPage());
 				}
 			}
 		}

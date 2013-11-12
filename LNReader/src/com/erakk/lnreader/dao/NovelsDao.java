@@ -769,7 +769,8 @@ public class NovelsDao {
 
 				ArrayList<PageModel> chapters = getUpdateInfo(novel.getFlattedChapterList(), notifier);
 				for (PageModel pageModel : chapters) {
-					if(pageModel.getPage().endsWith("&action=edit&redlink=1")) {
+					Log.w(TAG, "pagemodel: " + pageModel.getPage());
+					if (pageModel.getPage().endsWith("&action=edit&redlink=1")) {
 						pageModel.setMissing(true);
 					}
 					pageModel = updatePageModel(pageModel);
@@ -843,20 +844,20 @@ public class NovelsDao {
 	 */
 	public ArrayList<PageModel> getUpdateInfo(ArrayList<PageModel> pageModels, ICallbackNotifier notifier) throws Exception {
 		ArrayList<PageModel> resultPageModel = new ArrayList<PageModel>();
+		ArrayList<PageModel> missingPageModel = new ArrayList<PageModel>();
+
 		String baseUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=";
 		int i = 0;
 		int retry = 0;
 		while (i < pageModels.size()) {
 			int apiPageCount = 1;
 			ArrayList<PageModel> checkedPageModel = new ArrayList<PageModel>();
-			String titles = "";// pageModels.get(i).getPage();
-			// checkedPageModel.add(pageModels.get(i));
-			// Log.d("parser", "pageModels.get(i).getPage(): " +
-			// pageModels.get(i).getPage());
-			// ++i;
+			String titles = "";
 
 			while (i < pageModels.size() && apiPageCount < 50) {
 				if (pageModels.get(i).isExternal() || pageModels.get(i).isMissing() || pageModels.get(i).getPage().endsWith("&action=edit&redlink=1")) {
+					pageModels.get(i).setMissing(true);
+					missingPageModel.add(pageModels.get(i));
 					++i;
 					continue;
 				}
@@ -869,6 +870,7 @@ public class NovelsDao {
 					break;
 				}
 			}
+
 			// request the page
 			while (retry < getRetry()) {
 				try {
@@ -899,6 +901,7 @@ public class NovelsDao {
 			}
 		}
 
+		resultPageModel.addAll(missingPageModel);
 		return resultPageModel;
 	}
 
