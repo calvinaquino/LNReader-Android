@@ -26,7 +26,6 @@ import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.helper.BakaReaderException;
 import com.erakk.lnreader.helper.DBHelper;
-import com.erakk.lnreader.helper.DownloadFileTask;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.helper.db.BookModelHelper;
 import com.erakk.lnreader.helper.db.BookmarkModelHelper;
@@ -45,6 +44,7 @@ import com.erakk.lnreader.model.UpdateInfoModel;
 import com.erakk.lnreader.parser.BakaTsukiParser;
 import com.erakk.lnreader.parser.BakaTsukiParserAlternative;
 import com.erakk.lnreader.parser.CommonParser;
+import com.erakk.lnreader.task.DownloadFileTask;
 
 /**
  * @author Nandaka

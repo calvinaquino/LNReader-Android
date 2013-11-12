@@ -1,4 +1,4 @@
-package com.erakk.lnreader.helper;
+package com.erakk.lnreader.task;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -20,6 +20,8 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.DownloadCallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.ImageModel;
 
 public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<ImageModel>> {
