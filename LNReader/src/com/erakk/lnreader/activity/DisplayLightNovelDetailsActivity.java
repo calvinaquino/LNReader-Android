@@ -566,11 +566,15 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 					}
 					bookModelAdapter = new BookModelAdapter(DisplayLightNovelDetailsActivity.this, novelCol.getBookCollections());
 					expandList.setAdapter(bookModelAdapter);
+					Log.d(TAG, "Loaded: " + novelCol.getPage());
 				} catch (Exception e2) {
 					Log.e(TAG, "Error when setting up chapter list: " + e2.getMessage(), e2);
 					Toast.makeText(DisplayLightNovelDetailsActivity.this, getResources().getString(R.string.error_setting_chapter_list, e2.getMessage()), Toast.LENGTH_SHORT).show();
 				}
-				Log.d(TAG, "Loaded: " + novelCol.getPage());
+
+				if (novelCol == null) {
+					Log.e(TAG, "Empty Novel Collection: " + getIntent().getStringExtra(Constants.EXTRA_PAGE));
+				}
 			}
 		} else {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);

@@ -401,6 +401,9 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 
 	@Override
 	public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
+		if (!isAdded())
+			return;
+
 		Exception e = result.getError();
 		if (e == null) {
 			// from LoadNovelsTask

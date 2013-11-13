@@ -1,10 +1,12 @@
 //package com.nandaka.bakareaderclone.helper;
-package com.erakk.lnreader.helper;
+package com.erakk.lnreader.task;
 
 import java.net.URL;
 import org.jsoup.Jsoup;
 import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
+
+import com.erakk.lnreader.helper.AsyncTaskResult;
 
 import android.os.AsyncTask;
 import android.util.Log;

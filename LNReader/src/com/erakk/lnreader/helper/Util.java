@@ -158,14 +158,15 @@ public class Util {
 		}
 	}
 
-	public static List<File> getListFiles(File parentDir, ICallbackNotifier callback) {
+	public static List<File> getListFiles(File parentDir, Long[] totalSize, ICallbackNotifier callback) {
 		ArrayList<File> inFiles = new ArrayList<File>();
 		File[] files = parentDir.listFiles();
 		for (File file : files) {
 			if (file.isDirectory()) {
-				inFiles.addAll(getListFiles(file, callback));
+				inFiles.addAll(getListFiles(file, totalSize, callback));
 			} else {
 				inFiles.add(file);
+				totalSize[0] += file.length();
 			}
 		}
 		return inFiles;
@@ -257,5 +258,21 @@ public class Util {
 		crc.reset();
 		crc.update(input.getBytes());
 		return Long.toHexString(crc.getValue());
+	}
+
+	/**
+	 * http://stackoverflow.com/a/3758880
+	 * 
+	 * @param bytes
+	 * @param si
+	 * @return
+	 */
+	public static String humanReadableByteCount(long bytes, boolean si) {
+		int unit = si ? 1000 : 1024;
+		if (bytes < unit)
+			return bytes + " B";
+		int exp = (int) (Math.log(bytes) / Math.log(unit));
+		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
+		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
 	}
 }

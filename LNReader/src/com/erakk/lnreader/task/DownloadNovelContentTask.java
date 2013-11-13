@@ -74,8 +74,8 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
 			}
 			return new AsyncTaskResult<NovelContentModel[]>(contents);
 		} catch (Exception e) {
-			Log.e(TAG, String.format("Error when downloading: %s", chapters[currentChapter].getPage(), e));
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_content_task_error, e.getMessage())));
+			Log.e(TAG, String.format("Error when downloading: %s", chapters[currentChapter - 1].getPage(), e));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_content_task_error, chapters[currentChapter - 1].getPage(), e.getMessage())));
 			return new AsyncTaskResult<NovelContentModel[]>(e);
 		}
 	}

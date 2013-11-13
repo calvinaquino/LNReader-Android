@@ -56,14 +56,27 @@ public class ZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> impl
 		publishProgress(message);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected Void doInBackground(Void... params) {
 		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		// get thumb images
 		publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.zip_files_task_get_files, rootPath)));
-		List<File> filenames = Util.getListFiles(new File(rootPath), this);
 
-		// TODO: check the total file size?
+		// Java ref cheating using array
+		Long totalSize[] = { 0L };
+		List<File> filenames = Util.getListFiles(new File(rootPath), totalSize, this);
+
+		// check the total file size
+		long freeSpaceInBytes = new File(zipName).getFreeSpace();
+		Log.i(TAG, "Total File Size = " + totalSize[0] + ". Free Space: " + freeSpaceInBytes);
+		if (freeSpaceInBytes < totalSize[0]) {
+			String errorMessage = String.format("Not enough free space in %s (%s > %s)", rootPath, Util.humanReadableByteCount(freeSpaceInBytes, true), Util.humanReadableByteCount(totalSize[0], true));
+			Log.e(TAG, errorMessage);
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.zip_files_task_error, errorMessage)));
+			hasError = true;
+			return null;
+		}
 
 		// zip the files
 		try {

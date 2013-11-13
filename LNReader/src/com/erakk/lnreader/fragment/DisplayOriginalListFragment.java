@@ -332,6 +332,9 @@ public class DisplayOriginalListFragment extends SherlockListFragment implements
 
 	@Override
 	public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
+		if (!isAdded())
+			return;
+
 		Exception e = result.getError();
 		if (e == null) {
 			// from LoadNovelsTask
