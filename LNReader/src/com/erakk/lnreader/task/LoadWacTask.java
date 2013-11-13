@@ -14,24 +14,31 @@ import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.WebArchiveReader;
 
-public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskResult<String>> implements ICallbackNotifier {
+public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskResult<Boolean>> implements ICallbackNotifier {
 	private static final String TAG = LoadWacTask.class.toString();
 	private final WebView wv;
-	private final WebViewClient client;
 	private final String wacName;
 	private final IAsyncTaskOwner owner;
+	private final WebArchiveReader wr;
 
-	public LoadWacTask(IAsyncTaskOwner owner, WebView wv, String wacName, WebViewClient client) {
+	public LoadWacTask(IAsyncTaskOwner owner, WebView wv, String wacName, final WebViewClient client) {
 		this.wv = wv;
 		this.wacName = wacName;
-		this.client = client;
 		this.owner = owner;
+
+		wr = new WebArchiveReader() {
+
+			@Override
+			protected void onFinished(WebView webView) {
+				webView.setWebViewClient(client);
+				Log.d(TAG, "WAC loaded");
+			}
+		};
 	}
 
 	@Override
-	protected AsyncTaskResult<String> doInBackground(Void... arg0) {
-		loadFromWac(this.wacName);
-		return new AsyncTaskResult<String>("Completed");
+	protected AsyncTaskResult<Boolean> doInBackground(Void... arg0) {
+		return new AsyncTaskResult<Boolean>(loadFromWac(this.wacName));
 	}
 
 	@Override
@@ -39,34 +46,30 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 		owner.setMessageDialog(values[0]);
 	}
 
-	private void loadFromWac(String wacName) {
+	private boolean loadFromWac(String wacName) {
 		Log.d(TAG, "Loading from WAC: " + wacName);
 		publishProgress(new CallbackEventData("Loading from WAC: " + wacName));
 		try {
-			WebArchiveReader wr = new WebArchiveReader() {
-
-				@Override
-				protected void onFinished(WebView webView) {
-					webView.setWebViewClient(client);
-					Log.d(TAG, "WAC loaded");
-				}
-			};
-
 			FileInputStream is;
-
 			is = new FileInputStream(wacName);
-
-			if (wr.readWebArchive(is)) {
-				wr.loadToWebView(wv);
-			}
+			return wr.readWebArchive(is);
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, "Failed to load saved web archive: " + wacName, e);
 		}
+		return false;
 	}
 
 	@Override
-	protected void onPostExecute(AsyncTaskResult<String> result) {
-		owner.setMessageDialog(new CallbackEventData(result.getResult()));
+	protected void onPostExecute(AsyncTaskResult<Boolean> result) {
+		String message = null;
+		if (result.getResult()) {
+			wr.loadToWebView(wv);
+			message = "Completed";
+		}
+		else {
+			message = "Failed";
+		}
+		owner.setMessageDialog(new CallbackEventData(message));
 	}
 
 	@Override
