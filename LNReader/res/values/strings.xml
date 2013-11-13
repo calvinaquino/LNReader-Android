@@ -330,4 +330,13 @@
     <string name="back_to_index">Back to Chapter List.</string>
     <string name="pref_cat_database">Database</string>
     <string name="pref_cat_images">Images</string>
+    <string name="pref_scrolling">Scrolling</string>
+    <string name="css_layout_summary">Adjust custom CSS, alignment, line spacing, and margin.</string>
+    <string name="pref_tss_summary">Adjust Text-To-Speech settings.</string>
+    <string name="pref_notif">Notification</string>
+    <string name="pref_network">Network</string>
+    <string name="pref_ui">UI</string>
+    <string name="pref_listing">Chapter Listing</string>
+    <string name="pref_process_all_images_title">Process All Images</string>
+    <string name="pref_process_all_images_summary">Include big images for backup/restore.</string>
 </resources>

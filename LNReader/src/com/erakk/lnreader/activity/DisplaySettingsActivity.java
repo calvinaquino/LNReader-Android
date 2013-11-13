@@ -197,7 +197,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 		// non preferences setup
 		LNReaderApplication.getInstance().setUpdateServiceListener(this);
-		isInverted = getColorPreferences();
+		isInverted = UIHelper.getColorPreferences(this);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -533,6 +533,12 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 		String zipName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_thumbs.zip";
 		String thumbRootPath = UIHelper.getImageRoot(this) + "/project/images/thumb";
+
+		if (getProcessAllImagesPreferences()) {
+			zipName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_all_images.zip";
+			thumbRootPath = UIHelper.getImageRoot(this) + "/project/images";
+		}
+
 		UnZipFilesTask task = UnZipFilesTask.getInstance(zipName, thumbRootPath, this, Constants.PREF_RESTORE_THUMB_IMAGES);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -558,6 +564,12 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 		String zipName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_thumbs.zip";
 		String thumbRootPath = UIHelper.getImageRoot(this) + "/project/images/thumb";
+
+		if (getProcessAllImagesPreferences()) {
+			zipName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_all_images.zip";
+			thumbRootPath = UIHelper.getImageRoot(this) + "/project/images";
+		}
+
 		ZipFilesTask task = ZipFilesTask.getInstance(zipName, thumbRootPath, this, Constants.PREF_BACKUP_THUMB_IMAGES);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -850,7 +862,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		if (isInverted != getColorPreferences()) {
+		if (isInverted != UIHelper.getColorPreferences(this)) {
 			UIHelper.Recreate(this);
 		}
 	}
@@ -905,8 +917,8 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		UIHelper.CheckKeepAwake(this);
 	}
 
-	private boolean getColorPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
+	private boolean getProcessAllImagesPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_PROCESS_ALL_IMAGES, false);
 	}
 
 	@Override
