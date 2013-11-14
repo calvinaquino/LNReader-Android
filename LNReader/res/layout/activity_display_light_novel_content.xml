@@ -3,14 +3,6 @@
     android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-
-    <ProgressBar
-        android:id="@+id/loadProgress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="6dip"
-        android:visibility="gone" />
 	<TextView
         android:id="@+id/emptyList"
         android:layout_width="fill_parent"
@@ -35,19 +27,17 @@
 
     <RelativeLayout
         android:id="@+id/searchBox"
-        android:layout_below="@+id/loadProgress"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:visibility="gone" >
 
-        <Button
+        <ImageButton
             android:id="@+id/btnClose"
             android:layout_width="35dp"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/searchText"
             android:onClick="closeSearchBox"
-            android:text="X"
-            android:textSize="12sp" />
+            android:src="@android:drawable/btn_dialog" />
 
         <EditText
             android:id="@+id/searchText"
@@ -81,6 +71,7 @@
             android:onClick="searchPrev"
             android:text="&lt;"
             android:textSize="12sp" />
+
     </RelativeLayout>
 
     <Button
@@ -94,6 +85,15 @@
         android:minWidth="24dp"
         android:onClick="OpenMenu"
         android:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/loadProgress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="-8dp"
+		android:layout_marginTop="-4dp"
+        android:visibility="visible" />
 
     <ImageButton
         android:id="@+id/webview_go_top"
