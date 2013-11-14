@@ -345,6 +345,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				String pageStr = getIntent().getStringExtra(Constants.EXTRA_PAGE);
 				try {
 					page = NovelsDao.getInstance(this).getExistingPageModel(new PageModel(pageStr), null);
+					if (page == null) {
+						// no page model, just url
+						page = new PageModel(pageStr);
+						page.setExternal(true);
+					}
 				} catch (Exception e) {
 					Log.e(TAG, "Cannot get current chapter.", e);
 				}
@@ -673,7 +678,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	private void executeTask(PageModel pageModel, boolean refresh) {
 		NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
 		if (pageModel.isExternal()) {
-			loadExternalUrl(pageModel);
+			loadExternalUrl(pageModel, refresh);
 		} else {
 			isPageLoaded = false;
 			task = new LoadNovelContentTask(refresh, this);
@@ -701,17 +706,23 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	boolean isSaveEnabled;
 
-	public void loadExternalUrl(PageModel pageModel) {
+	public void loadExternalUrl(PageModel pageModel, boolean refresh) {
 		try {
 			// check if .wac available
 			String wacName = UIHelper.getImageRoot(this) + "/wac/" + Util.calculateCRC32(pageModel.getPage()) + ".wac";
 			File f = new File(wacName);
-			if (f.exists()) {
+			if (f.exists() && !refresh) {
 				isSaveEnabled = false;
 				executeLoadWacTask(wacName);
 			}
 			else {
-				Log.w(TAG, "WAC not available: " + wacName);
+				if (refresh) {
+					Toast.makeText(this, "Refreshing WAC: " + wacName, Toast.LENGTH_SHORT).show();
+					Log.i(TAG, "Refreshing WAC: " + wacName);
+				} else
+				{
+					Log.w(TAG, "WAC not available: " + wacName);
+				}
 				isSaveEnabled = true;
 				final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 				setWebViewSettings();
@@ -748,7 +759,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		try {
 			PageModel pageModel = new PageModel(page);
 			pageModel = NovelsDao.getInstance().getExistingPageModel(pageModel, null);
-			if (!pageModel.isExternal())
+			if (pageModel != null && !pageModel.isExternal())
 				return;
 		} catch (Exception e1) {
 			Log.e(TAG, "Failed to load page model: " + page, e1);
@@ -818,17 +829,18 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	}
 
 	private void setChapterTitle(PageModel pageModel) {
+		String title = pageModel.getPage();
 		try {
-			Log.d(TAG, "Parent Page: " + pageModel.getParent());
-			novelDetails = NovelsDao.getInstance(this).getNovelDetails(pageModel.getParentPageModel(), null);
-
-			String volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
-
-			setTitle(pageModel.getTitle() + " (" + volume + ")");
+			if (pageModel.getParent() != null) {
+				Log.d(TAG, "Parent Page: " + pageModel.getParent());
+				novelDetails = NovelsDao.getInstance(this).getNovelDetails(pageModel.getParentPageModel(), null);
+				String volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
+				title = pageModel.getTitle() + " (" + volume + ")";
+			}
 		} catch (Exception ex) {
 			Log.e(TAG, "Error when setting title: " + ex.getMessage(), ex);
-			setTitle(pageModel.getPage());
 		}
+		setTitle(title);
 	}
 
 	private String prepareJavaScript(int lastPos, ArrayList<BookmarkModel> bookmarks) {

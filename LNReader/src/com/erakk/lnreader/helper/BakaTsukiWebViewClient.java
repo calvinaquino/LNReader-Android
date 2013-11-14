@@ -101,7 +101,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 					}
 					if (temp != null)
 						pageModel = temp;
-					caller.loadExternalUrl(pageModel);
+					caller.loadExternalUrl(pageModel, false);
 
 				} else {
 					// set the intent page to the current page
