@@ -1,3 +1,14 @@
+1.1.12-beta:
+- Fix External Page Refresh.
+- Reorganize Preferences screen.
+- Update backup and restore to include all images, controlled by flag.
+- Update relink image to process all images.
+- Add free space validation for backup image.
+- Fix isMissing flag for redlinked chapter.
+- Fix update service for external chapter.
+- Fix refresh for external chapter.
+- Update jSoup to 1.7.3
+
 1.1.11:
 - Add volume indicator in bookmark.
 - Add Back to Chapter List in Jump List.
