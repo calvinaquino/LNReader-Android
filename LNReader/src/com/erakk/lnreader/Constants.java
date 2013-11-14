@@ -27,7 +27,7 @@ public class Constants {
 
 	// Shared Preferences keys
 	public static final String PREF_FIRST_RUN = "first_run";
-	public static final String PREF_DOWNLOAD_TOUCH = "auto_download_chapter";
+	public static final String PREF_DOWNLOAD_TOUCH = "touch_download_chapter";
 	public static final String PREF_INVERT_COLOR = "invert_colors";
 	public static final String PREF_LANGUAGE = "language_selection";
 	public static final String PREF_LOCK_HORIZONTAL = "lock_horizontal";
@@ -83,6 +83,7 @@ public class Constants {
 	public static final String PREF_RESTORE_THUMB_IMAGES = "restore_thumb_images";
 	public static final String PREF_RELINK_THUMB_IMAGES = "relink_images";
 	public static final String PREF_BOOKMARK_ORDER = "bookmark_order";
+	public static final String PREF_PROCESS_ALL_IMAGES = "process_all_images";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 

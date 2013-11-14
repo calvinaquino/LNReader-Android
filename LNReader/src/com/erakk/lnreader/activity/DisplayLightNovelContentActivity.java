@@ -202,8 +202,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		// (activity destroyed, onCreate called again)
 		// when the user navigate using next/prev/jumpTo
 		if (!restored) {
-			PageModel pageModel = new PageModel();
-			pageModel.setPage(getIntent().getStringExtra(Constants.EXTRA_PAGE));
+			PageModel pageModel = new PageModel(getIntent().getStringExtra(Constants.EXTRA_PAGE));
 			try {
 				pageModel = NovelsDao.getInstance(this).getPageModel(pageModel, null);
 				executeTask(pageModel, false);
@@ -284,8 +283,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		try {
 			// replace the current pageModel with the saved instance if have
 			// different page
-			PageModel pageModel = new PageModel();
-			pageModel.setPage(restoredPage);
+			PageModel pageModel = new PageModel(restoredPage);
 			pageModel = NovelsDao.getInstance(this).getPageModel(pageModel, null);
 			executeTask(pageModel, false);
 		} catch (Exception e) {
@@ -336,15 +334,24 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			/*
 			 * Implement code to refresh chapter content
 			 */
-			// refresh = true;
+			PageModel page = null;
 			if (content != null) {
 				try {
-					executeTask(content.getPageModel(), true);
-					// Toast.makeText(this, "Refreshing",
-					// Toast.LENGTH_SHORT).show();
+					page = content.getPageModel();
 				} catch (Exception e) {
 					Log.e(TAG, "Cannot get current chapter.", e);
 				}
+			} else {
+				String pageStr = getIntent().getStringExtra(Constants.EXTRA_PAGE);
+				try {
+					page = NovelsDao.getInstance(this).getExistingPageModel(new PageModel(pageStr), null);
+				} catch (Exception e) {
+					Log.e(TAG, "Cannot get current chapter.", e);
+				}
+			}
+
+			if (page != null) {
+				executeTask(page, true);
 			}
 			return true;
 		case R.id.invert_colors:
@@ -360,35 +367,43 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			/*
 			 * Implement code to move to previous chapter
 			 */
+			PageModel prev = null;
 			if (content != null) {
 				try {
-					PageModel prev = novelDetails.getPrev(content.getPageModel().getPage());
-					if (prev != null) {
-						jumpTo(prev);
-					} else {
-						Toast.makeText(this, getResources().getString(R.string.first_available_chapter), Toast.LENGTH_SHORT).show();
-					}
+					prev = novelDetails.getPrev(content.getPageModel().getPage());
 				} catch (Exception e) {
 					Log.e(TAG, "Cannot get previous chapter.", e);
 				}
+			} else {
+				prev = novelDetails.getPrev(getIntent().getStringExtra(Constants.EXTRA_PAGE));
 			}
+			if (prev != null) {
+				jumpTo(prev);
+			} else {
+				Toast.makeText(this, getResources().getString(R.string.first_available_chapter), Toast.LENGTH_SHORT).show();
+			}
+
 			return true;
 		case R.id.menu_chapter_next:
 
 			/*
 			 * Implement code to move to next chapter
 			 */
+			PageModel next = null;
 			if (content != null) {
 				try {
-					PageModel next = novelDetails.getNext(content.getPageModel().getPage());
-					if (next != null) {
-						jumpTo(next);
-					} else {
-						Toast.makeText(this, getResources().getString(R.string.last_available_chapter), Toast.LENGTH_SHORT).show();
-					}
+					next = novelDetails.getNext(content.getPageModel().getPage());
 				} catch (Exception e) {
 					Log.e(TAG, "Cannot get next chapter.", e);
 				}
+			} else {
+				next = novelDetails.getNext(getIntent().getStringExtra(Constants.EXTRA_PAGE));
+			}
+
+			if (next != null) {
+				jumpTo(next);
+			} else {
+				Toast.makeText(this, getResources().getString(R.string.last_available_chapter), Toast.LENGTH_SHORT).show();
 			}
 			return true;
 		case R.id.menu_chapter_toc:
@@ -576,8 +591,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	public void backToIndex() {
 		String page = getIntent().getStringExtra(Constants.EXTRA_PAGE);
-		PageModel pageModel = new PageModel();
-		pageModel.setPage(page);
+		PageModel pageModel = new PageModel(page);
 		try {
 			pageModel = NovelsDao.getInstance().getExistingPageModel(pageModel, null).getParentPageModel();
 
@@ -644,7 +658,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			// save for jump to last read.
 			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 			SharedPreferences.Editor editor = sharedPrefs.edit();
-			editor.putString(Constants.PREF_LAST_READ, content.getPage());
+			if (content != null) {
+				editor.putString(Constants.PREF_LAST_READ, content.getPage());
+			} else {
+				editor.putString(Constants.PREF_LAST_READ, getIntent().getStringExtra(Constants.EXTRA_PAGE));
+			}
 			editor.commit();
 
 			Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() + " " + content.getLastZoom());
@@ -702,6 +720,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			setChapterTitle(pageModel);
 			buildTOCMenu(pageModel);
 			content = null;
+			getIntent().putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
 		} catch (Exception ex) {
 			Log.e(TAG, "Cannot load external content: " + pageModel.getPage(), ex);
 		}
@@ -727,8 +746,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 
 		try {
-			PageModel pageModel = new PageModel();
-			pageModel.setPage(page);
+			PageModel pageModel = new PageModel(page);
 			pageModel = NovelsDao.getInstance().getExistingPageModel(pageModel, null);
 			if (!pageModel.isExternal())
 				return;

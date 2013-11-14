@@ -126,7 +126,9 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 		if (callback != null) {
 			callback.onCallback(new CallbackEventData(message));
 		}
-		dao.getNovelContentFromInternet(chapter, callback);
+		if (!chapter.isMissing() && !chapter.isExternal()) {
+			dao.getNovelContentFromInternet(chapter, callback);
+		}
 	}
 
 	private ArrayList<PageModel> processWatchedNovel(PageModel novel, ICallbackNotifier callback) throws Exception {

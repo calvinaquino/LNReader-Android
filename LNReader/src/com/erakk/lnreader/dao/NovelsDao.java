@@ -6,8 +6,12 @@ package com.erakk.lnreader.dao;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
@@ -769,7 +773,6 @@ public class NovelsDao {
 
 				ArrayList<PageModel> chapters = getUpdateInfo(novel.getFlattedChapterList(), notifier);
 				for (PageModel pageModel : chapters) {
-					Log.w(TAG, "pagemodel: " + pageModel.getPage());
 					if (pageModel.getPage().endsWith("&action=edit&redlink=1")) {
 						pageModel.setMissing(true);
 					}
@@ -844,7 +847,8 @@ public class NovelsDao {
 	 */
 	public ArrayList<PageModel> getUpdateInfo(ArrayList<PageModel> pageModels, ICallbackNotifier notifier) throws Exception {
 		ArrayList<PageModel> resultPageModel = new ArrayList<PageModel>();
-		ArrayList<PageModel> missingPageModel = new ArrayList<PageModel>();
+		ArrayList<PageModel> noInfoPageModel = new ArrayList<PageModel>();
+		ArrayList<PageModel> externalPageModel = new ArrayList<PageModel>();
 
 		String baseUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=";
 		int i = 0;
@@ -855,9 +859,15 @@ public class NovelsDao {
 			String titles = "";
 
 			while (i < pageModels.size() && apiPageCount < 50) {
-				if (pageModels.get(i).isExternal() || pageModels.get(i).isMissing() || pageModels.get(i).getPage().endsWith("&action=edit&redlink=1")) {
+				if (pageModels.get(i).isExternal()) {
+					pageModels.get(i).setMissing(false);
+					externalPageModel.add(pageModels.get(i));
+					++i;
+					continue;
+				}
+				if (pageModels.get(i).isMissing() || pageModels.get(i).getPage().endsWith("&action=edit&redlink=1")) {
 					pageModels.get(i).setMissing(true);
-					missingPageModel.add(pageModels.get(i));
+					noInfoPageModel.add(pageModels.get(i));
 					++i;
 					continue;
 				}
@@ -901,8 +911,49 @@ public class NovelsDao {
 			}
 		}
 
-		resultPageModel.addAll(missingPageModel);
+		for (PageModel page : externalPageModel) {
+			getExternalUpdateInfo(page);
+		}
+
+		resultPageModel.addAll(noInfoPageModel);
+		resultPageModel.addAll(externalPageModel);
+
 		return resultPageModel;
+	}
+
+	public void getExternalUpdateInfo(PageModel page) {
+		int retry;
+		Map<String, String> headers = null;
+		// Date: Wed, 13 Nov 2013 13:08:35 GMT
+		DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy kk:mm:ss z", Locale.US);
+		retry = 0;
+		while (retry < getRetry()) {
+			try {
+				headers = Jsoup.connect(page.getPage()).timeout(getTimeout(retry)).maxBodySize(1).execute().headers();
+				break;
+			} catch (Exception e) {
+				Log.e(TAG, "Error when getting updated date for: " + page.getPage(), e);
+				++retry;
+			}
+		}
+		if (headers != null) {
+			String dateStr = null;
+			if (headers.containsKey("Last-Modified")) {
+				dateStr = headers.get("Last-Modified");
+			}
+			else if (headers.containsKey("Date")) {
+				dateStr = headers.get("Date");
+			}
+			if (!Util.isStringNullOrEmpty(dateStr)) {
+				try {
+					Log.d(TAG, "External Novel last update: " + dateStr);
+					page.setLastUpdate(df.parse(dateStr));
+				} catch (Exception e) {
+					Log.e(TAG, "Failed to parse date for: " + page.getPage(), e);
+				}
+			}
+		}
+		page.setLastCheck(new Date());
 	}
 
 	public void deleteBooks(BookModel bookDel) {
