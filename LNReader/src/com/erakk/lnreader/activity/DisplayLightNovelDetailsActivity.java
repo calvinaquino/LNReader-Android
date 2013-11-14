@@ -113,28 +113,28 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 	private void loadChapter(PageModel chapter) {
 		boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
 
-		if (!chapter.isMissing()) {
-			if (chapter.isExternal() && !useInternalWebView) {
-				try {
-					Uri url = Uri.parse(chapter.getPage());
-					Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
-					startActivity(browserIntent);
-				} catch (Exception ex) {
-					String message = getResources().getString(R.string.error_parsing_url) + ": " + chapter.getPage();
-					Log.e(TAG, message, ex);
-					Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-				}
+		// if (!chapter.isMissing()) {
+		if (chapter.isExternal() && !useInternalWebView) {
+			try {
+				Uri url = Uri.parse(chapter.getPage());
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
+				startActivity(browserIntent);
+			} catch (Exception ex) {
+				String message = getResources().getString(R.string.error_parsing_url) + ": " + chapter.getPage();
+				Log.e(TAG, message, ex);
+				Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+			}
+		} else {
+			if (chapter.isExternal() || chapter.isDownloaded() || !UIHelper.getDownloadTouchPreference(this)) {
+				Intent intent = new Intent(this, DisplayLightNovelContentActivity.class);
+				intent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
+				startActivity(intent);
 			} else {
-				if (chapter.isExternal() || chapter.isDownloaded() || !UIHelper.getDownloadTouchPreference(this)) {
-					Intent intent = new Intent(this, DisplayLightNovelContentActivity.class);
-					intent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
-					startActivity(intent);
-				} else {
-					downloadTask = new DownloadNovelContentTask(new PageModel[] { chapter }, DisplayLightNovelDetailsActivity.this);
-					downloadTask.execute();
-				}
+				downloadTask = new DownloadNovelContentTask(new PageModel[] { chapter }, DisplayLightNovelDetailsActivity.this);
+				downloadTask.execute();
 			}
 		}
+		// }
 	}
 
 	@Override

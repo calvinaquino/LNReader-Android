@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
@@ -64,12 +65,13 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 		String message = null;
 		if (result.getResult()) {
 			wr.loadToWebView(wv);
-			message = "Completed";
+			message = "Load from: " + wacName;
 		}
 		else {
 			message = "Failed";
 		}
 		owner.setMessageDialog(new CallbackEventData(message));
+		Toast.makeText(owner.getContext(), message, Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
