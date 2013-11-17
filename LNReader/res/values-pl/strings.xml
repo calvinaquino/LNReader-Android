@@ -39,7 +39,7 @@
     <string name="title_activity_download_list_adapter">Pobierane</string>
     <string name="title_activity_display_novel_pager">Lista Powieści</string>
     <string name="title_activity_update_history">Historia aktualizacji</string>
-    <string name="language_selection">Wybór języka</string>
+    <string name="language_selection">Wybór języka aplikacji</string>
     <string name="current_value">Obecna wartość</string>
     <string name="set">Wybierz</string>
     <string name="cancel">Anuluj</string>
@@ -85,7 +85,7 @@
     <string name="novel_database_to">Baza danych nowelek zapisana w: %1$s</string>
     <string name="copyright">Baka-Tsuki:Copyrights</string>
     <string name="not_copyright">Nie można pobrać licencji.</string>
-    <string name="run_update_text">Wymuś aktualizację</string>
+    <string name="run_update_text">Aktualizuj TERAZ</string>
     <string name="use_sound_summary">Dzwonek powiadomienia o aktualizacji.</string>
     <string name="use_sound_title">Użyj dzwonka</string>
     <string name="use_vibration_summary">Wibruj przy aktualizacji.</string>
@@ -104,14 +104,14 @@
     <string name="auto_download_chapter_title">Dotknięcie uruchamia pobieranie</string>
     <string name="alphabet_order_summary">Alfabetyczne sortowanie powieści</string>
     <string name="alphabet_order_title">Kolejność alfabetyczna</string>
-    <string name="show_missing_summary">Pokaż brakujący rozdział (Oznaczone kolorem czerwonym).</string>
-    <string name="show_missing_title">Pokaż brakujący rozdział</string>
+    <string name="show_missing_summary">Spis rozdziałów będzie zawierał również niedostępne (Kolor czerwony).</string>
+    <string name="show_missing_title">Pokaż brakujące rozdziały</string>
     <string name="show_external_summary">Pokaż inne rozdziały (Zaznaczone na niebiesko).</string>
     <string name="show_external_title">Pokaż inne rozdziały</string>
     <string name="use_internal_webview_summary">Linki zewnętrzne otwieraj w aplikacji, nie w przeglądarce.</string>
     <string name="use_internal_webview_title">Użyj podglądu</string>
-    <string name="strech_detail_image_summary">Dopasuj rozmiar okładki do wyświetlacza.</string>
-    <string name="strech_detail_image_title">Dostosuj okładkę</string>
+    <string name="strech_detail_image_summary">Dopasuj wymiary okładki do wyświetlacza.</string>
+    <string name="strech_detail_image_title">Dopasuj okładkę</string>
     <string name="reading_layout">Opcje wyglądu</string>
     <string name="show_images_summary">Włącza wyswietlanie obrazków.</string>
     <string name="show_images_title">Pokaż obrazy</string>
@@ -204,8 +204,8 @@
     <string name="last_update">Ostatnia aktualizacja: </string>
     <string name="last_check">Ostatnio sprawdzano: </string>
     <string name="updates">Aktualizacje</string>
-    <string name="alternative_language_summary">Powieści w tłumaczeniach na inne języki.</string>
-    <string name="alternative_language_title">Alternatywne języki powieści:</string>
+    <string name="alternative_language_summary">Powwieści dostępne w innych językach niż angielski.</string>
+    <string name="alternative_language_title">Pokazuj powieści w językach:</string>
     <string name="no_selected_language">Nie wybrano języka!</string>
     <string name="category_search_language">Szukaj w językach</string>
     <string name="enabled">Włączono</string>
@@ -225,7 +225,7 @@
     <string name="increase_retry_title">Czas pomiędzy próbami pobierania</string>
     <string name="increase_retry_summary">W razie przerwania pobierania, czas między wznowieniem ulega podwojeniu.</string>
     <string name="aggresive_title_clean_up_title">Pełne czyszczenie powieści</string>
-    <string name="aggresive_title_clean_up_summary">Zezwala na pełne czyszczenie zawartości powieści po / \'(\' )</string>
+    <string name="aggresive_title_clean_up_summary">Zezwala na pełne czyszczenie zawartości powieści</string>
     <string name="use_https_title">Używaj HTTPS</string>
     <string name="use_https_summary">Używaj HTTPS przy łączeniu z BAKA-Tsuki.</string>
     <string name="error_parsing_url">Błąd przy przetwarzaniu URL: %1$s</string>
@@ -244,7 +244,7 @@
     <string name="error_setting_chapter_list">Błąd przy pobieraniu listy rozdziałów: %1$s</string>
     <string name="error_empty_download_array">Brak materiałów do Pobierania</string>
     <string name="hide_empty_volume_title">Ukryj puste tomy</string>
-    <string name="hide_empty_volume_summary">Ukrywa puste tomy z listy tomów powieści.</string>
+    <string name="hide_empty_volume_summary">Ukrywa puste tomy z listy dostępnych dla danej powieści.</string>
     <string name="pref_tts">TEXT-TO-Speech</string>
     <string name="tts_pitch_title">Głośność</string>
     <string name="tts_pitch_summary">Domyślna wartość to 1.0, obecna wartość to %1$s.</string>
@@ -256,7 +256,7 @@
     <string name="pref_tts_engine_summary">Otwórz ustawienia Androida by wybrać aplikację TTS.</string>
     <string name="tts_stop_on_lost_focus_title">Zatrzymanie w tle</string>
     <string name="tts_stop_on_lost_focus_summary">Zatrzymuje czytanie jeśli apka przejdzie w działanie w tle. Zatrzymuje się zawsze przy zatrzymaniu apki..</string>
-    <string name="auto_download_updated_chapter_title">Automatyczne uaktualnianie rozdziałów</string>
+    <string name="auto_download_updated_chapter_title">Aktualizacje rozdziałów</string>
     <string name="auto_download_updated_chapter_summary">Automatycznie pobiera uaktualnienia powieści z listy obserwowanych</string>
     <string name="backup_thumb_images_title">Kopia okładek</string>
     <string name="backup_thumb_images_summary">Tworzy kopię zapasową okładek na karcie SDCard.</string>
