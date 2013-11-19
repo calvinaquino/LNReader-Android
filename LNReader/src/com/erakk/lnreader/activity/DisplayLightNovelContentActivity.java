@@ -737,7 +737,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 	}
 
-	@SuppressLint("InlinedApi")
+	@SuppressLint({ "InlinedApi", "NewApi" })
 	private void executeLoadWacTask(String wacName) {
 		NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
 		LoadWacTask task = new LoadWacTask(this, webView, wacName, client);
@@ -747,7 +747,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			task.execute();
 	}
 
-	@SuppressLint("SdCardPath")
+	@SuppressLint("NewApi")
 	public void saveWebArchive(String page) {
 		if (!isSaveEnabled)
 			return;
