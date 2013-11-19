@@ -188,6 +188,11 @@
             android:name="com.erakk.lnreader.activity.DisplayCreditActivity"
             android:label="@string/title_activity_display_credit" >
         </activity>
+        
+        <activity
+            android:name="com.erakk.lnreader.activity.DisplayChangelogActivity"
+            android:label="@string/title_activity_display_changelog" >
+        </activity>
     </application>
 
 </manifest>

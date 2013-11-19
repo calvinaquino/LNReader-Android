@@ -169,7 +169,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			}
 		});
 
-		// App Version
+		// App Version Activity
 		Preference appVersion = findPreference("app_version");
 		String version = "N/A";
 		try {
@@ -178,6 +178,19 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			Log.e(TAG, "Cannot get version.", e);
 		}
 		appVersion.setSummary(version);
+		appVersion.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				try {
+					Intent intent = new Intent(getApplicationContext(), DisplayChangelogActivity.class);
+					startActivity(intent);
+				} catch (Exception e) {
+					Log.e(TAG, getResources().getString(R.string.title_activity_display_changelog), e);
+				}
+				return false;
+			}
+		});
 
 		// Credits activity
 		Preference credits = findPreference("credits");

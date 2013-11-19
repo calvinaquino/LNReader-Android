@@ -1,0 +1,93 @@
+1.1.12-beta:
+- Fix External Page Refresh.
+- Reorganize Preferences screen.
+- Update backup and restore to include all images, controlled by flag.
+- Update relink image to process all images.
+- Add free space validation for backup image.
+- Fix isMissing flag for redlinked chapter.
+- Fix update service for external chapter.
+- Fix refresh for external chapter.
+- Update jSoup to 1.7.3
+
+1.1.11:
+- Add volume indicator in bookmark.
+- Add Back to Chapter List in Jump List.
+- Update parser to include redlink page in Chapter List (marked as missing page).
+- Update UI for main: add button states.
+- Fix Alt. Novel listing bug.
+- Add thumbnails image backup and restore.
+- Add thumbnails image relinker.
+- Update UI Translations.
+- Add option to order bookmarks by Creation Date.
+- Fix Settings menu in Bookmark activity.
+- Add option to Auto Download updated chapter from service.
+
+1.1.10:
+- Add Text-to-speech feature.
+- Show big image if novel cover is clicked.
+- Fix last position bug.
+- Replace Progress Dialog with inline Progress Bar.
+- Enable Display Zoom Option for older android.
+- Add Toast message if unable to open DB.
+- Fix Update service FC (1.1.10b)
+
+1.1.9:
+- Update parser to handle empty string exception.
+- Update getImage to handle http or https.
+- Add option to hide empty volume.
+- Fix custom image path resolution.
+
+1.1.8:
+- Add option to use HTTPS for conneting to Baka-Tsuki.
+- Add option to disable agrressive book title cleanup (e.g. Nekomonogatari).
+- Add option to change the path for image storage. 
+  Note: The old images is not moved/removed. You can use file manager to do this, and you need to refresh the chapter again to get the correct image path. (1.1.8c)
+- Update UI translation.
+- Fix crash if using Tablet UI (1.1.8b)
+- Fix crash when adding item to download list (1.1.8b)
+
+1.1.7
+- Add option to change the retry and timeout.
+- Add option to auto increase the time out when retrying.
+- Fix crash when opening Settings.
+- Update UI translations.
+
+1.1.6
+- Add option to *delete* Chapter/Volume.
+- Add check box in Bookmarks Activity for mass deletion.
+- Add Polish UI translation.
+- Add Polish Alternative Language Novel List.
+
+1.1.5
+- Add Dutch UI Translation.
+- Synchronize zoom settings for Content and Image.
+- Update Delete Novel behaviour, only the content will be deleted and set as not downloaded.
+- Add Orientation Lock preferences (Free/Horizontal/Vertical), replace Horizontal Lock.
+- More small fixes, see github for more details
+- Fix null pointer exception when dismissing progress dialog when loading chapter (1.1.5b)
+- Fix update service scheduler (1.1.5c)
+
+1.1.4
+- Add alternate language translation, currently only Indonesian and French are supported. Visit baka-tsuki forum for more.
+- Add Indonesian and French UI translation.
+- More bug fixes.
+
+1.1.3
+- Fixed "Unparseable date" bug
+
+1.1.2
+- Fixed bug related to Update History
+- Reordered Update History display
+- Update History Persist, can be removed manually.
+- Update Warning on Novel Lists
+- Small performance Updates.
+
+1.1.1
+- Added Margin option
+- Corrected lines overlapping problem
+
+1.1.0 - Lot's of changes!
+- New Downloads and Update systems;
+- Reworked most of the UI;
+- New reading features;
+- Fxed crashes and bugs;
