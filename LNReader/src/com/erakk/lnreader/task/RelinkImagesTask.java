@@ -64,6 +64,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 	@Override
 	protected Void doInBackground(Void... params) {
 		processImageInContents();
+		if(this.isCancelled()) return null;
 		processBigImage();
 		return null;
 	}
@@ -72,9 +73,11 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 		ArrayList<ImageModel> images = NovelsDao.getInstance().getAllImages();
 
 		int count = 1;
+		StringBuilder message = new StringBuilder();
 		for (ImageModel image : images) {
-			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_progress2, image.getName(), count, images.size());
-			publishProgress(new CallbackEventData(message));
+			message.delete(0, message.length());
+			message.append(LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_progress2, image.getName(), count, images.size()));
+			publishProgress(new CallbackEventData(message.toString()));
 			String oldPath = image.getPath();
 
 			// skip if file exists
@@ -94,6 +97,10 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 			else {
 				Log.w(TAG, "File doesn't exists: " + newPath);
 			}
+			if(this.isCancelled()) {
+				Log.d(TAG, "Stopped relinking at:"+image.getName()+" ["+count+" of "+images.size()+"]");
+				break;
+			}
 			++count;
 		}
 	}
@@ -103,9 +110,11 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 		ArrayList<PageModel> pages = NovelsDao.getInstance().getAllContentPageModel();
 		updated = 0;
 		int count = 1;
+		StringBuilder message = new StringBuilder();
 		for (PageModel page : pages) {
-			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_progress, page.getPage(), count, pages.size());
-			publishProgress(new CallbackEventData(message));
+			message.delete(0, message.length());
+			message.append(LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_progress, page.getPage(), count, pages.size()));
+			publishProgress(new CallbackEventData(message.toString()));
 
 			try {
 				// get the contents
@@ -145,9 +154,15 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 
 				}
 			} catch (Exception e) {
-				message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_error, page.getPage());
-				Log.e(TAG, message, e);
-				publishProgress(new CallbackEventData(message));
+				message.delete(0, message.length());
+				message.append(LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_error, page.getPage()));
+				Log.e(TAG, message.toString(), e);
+				publishProgress(new CallbackEventData(message.toString()));
+			}
+
+			if(this.isCancelled()) {
+				Log.d(TAG, "Stopped relinking at:"+page.getPage()+" ["+count+" of "+pages.size()+"]");
+				break;
 			}
 			++count;
 		}
