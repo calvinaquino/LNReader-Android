@@ -342,4 +342,9 @@
     <string name="mark_volume_unread">Mark Volume as Unread</string>
     <string name="toast_mark_volume2">Mark Volume as Unread</string>
     <string name="title_activity_display_changelog">Changelog</string>
+    <string name="menu_show_updated">Show Updated</string>
+    <string name="menu_show_new">Show New</string>
+    <string name="menu_show_deleted">Show Deleted</string>
+    <string name="menu_show_clear_all">Clear All</string>
+    <string name="menu_show_clear_selected">Clear Selected</string>
 </resources>
