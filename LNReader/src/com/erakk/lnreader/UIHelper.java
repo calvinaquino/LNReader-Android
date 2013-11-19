@@ -1,5 +1,7 @@
 package com.erakk.lnreader;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.Locale;
 
 import android.annotation.SuppressLint;
@@ -300,12 +302,47 @@ public class UIHelper {
 		return loc;
 	}
 
+	/**
+	 * Return HTTP or HTTPS based on pref.
+	 * 
+	 * @param activity
+	 * @return
+	 */
 	public static String getBaseUrl(Context activity) {
 		boolean useHttps = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_USE_HTTPS, false);
 		if (useHttps)
 			return Constants.BASE_URL_HTTPS;
 		else
 			return Constants.BASE_URL;
+	}
+
+	/**
+	 * Read raw resources and return it as string
+	 * 
+	 * @param ctx
+	 * @param resourceId
+	 * @return
+	 */
+	public static String readRawStringResources(Context ctx, int resourceId) {
+		InputStream in = ctx.getResources().openRawResource(resourceId);
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		String temp = null;
+
+		int i;
+		try {
+			i = in.read();
+			while (i != -1)
+			{
+				byteArrayOutputStream.write(i);
+				i = in.read();
+			}
+			in.close();
+			temp = byteArrayOutputStream.toString();
+			byteArrayOutputStream.close();
+		} catch (Exception e) {
+			Log.e(TAG, "Failed to Read Asset: " + resourceId, e);
+		}
+		return temp;
 	}
 
 	/* PREFERENCES HELPER */

@@ -110,3 +110,7 @@ function setup() {
     setTimeout(function() { goToParagraph(lastPos); }, 1000);
     console.log("LOAD_COMPLETE_EVENT:" + pCollections.length + ":" + lastPos);
 }
+
+function recalcWidth(){
+	document.body.style.width = window.clientWidth;// * 0.90;
+}

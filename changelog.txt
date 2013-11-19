@@ -8,6 +8,11 @@
 - Fix update service for external chapter.
 - Fix refresh for external chapter.
 - Update jSoup to 1.7.3
+- Add DisplayChangelogActivity (yaminorito).
+- Update image path check logic (yaminorito).
+- Add Mark Unread Entire Volume context menu (yaminorito).
+- Update Android 4.4/Kitkat text zoom handler (need to be tested).
+- Update read handler to ignore redlink=1 chapter.
 
 1.1.11:
 - Add volume indicator in bookmark.
@@ -40,8 +45,8 @@
 1.1.8:
 - Add option to use HTTPS for conneting to Baka-Tsuki.
 - Add option to disable agrressive book title cleanup (e.g. Nekomonogatari).
-- Add option to change the path for image storage. 
-  Note: The old images is not moved/removed. You can use file manager to do this, and you need to refresh the chapter again to get the correct image path. (1.1.8c)
+- Add option to change the path for image storage.
+  Note: The old images is not moved/removed. You can use file manager to do this, and you need to refresh the chapter again to get the correct image path. (1.1.8c)
 - Update UI translation.
 - Fix crash if using Tablet UI (1.1.8b)
 - Fix crash when adding item to download list (1.1.8b)

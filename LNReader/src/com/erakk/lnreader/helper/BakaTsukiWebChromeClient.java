@@ -26,6 +26,7 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 	private static final String SPEAK_EVENT = "SPEAK_EVENT";
 	private int oldScrollY = 0;
 	protected WeakReference<DisplayLightNovelContentActivity> activityRef;
+	private static String lastLog = "";
 
 	public BakaTsukiWebChromeClient(DisplayLightNovelContentActivity caller) {
 		super();
@@ -62,7 +63,12 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 				String data[] = consoleMessage.message().split(":");
 				if (data.length > 1 && data[1] != null) {
 					caller.updateLastLine(Integer.parseInt(data[1]));
-					Log.d("SCROLL", "" + data[0] + " " + data[1]);
+					String message = "" + data[0] + " " + data[1];
+					// suppress log message if the same
+					if (!lastLog.equalsIgnoreCase(message)) {
+						Log.d(TAG, message);
+						lastLog = message;
+					}
 					int newScrollY = Integer.parseInt(data[1]);
 
 					if (UIHelper.getDynamicButtonsPreferences(caller)) {
@@ -83,7 +89,7 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 				String data[] = consoleMessage.message().split(":", 2);
 				caller.speak(data[1]);
 			} else {
-				Log.d(TAG, "Console: " + consoleMessage.lineNumber() + ":" + consoleMessage.message());
+				Log.w(TAG, "Console: " + consoleMessage.lineNumber() + ":" + consoleMessage.message());
 			}
 		} catch (Exception ex2) {
 			Log.e(TAG, "Unknown error when parsing data: " + consoleMessage.message(), ex2);

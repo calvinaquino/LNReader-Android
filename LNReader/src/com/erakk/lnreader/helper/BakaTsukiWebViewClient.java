@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.webkit.WebView;
@@ -19,6 +20,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 	private static final String TAG = BakaTsukiWebViewClient.class.toString();
 	protected WeakReference<DisplayLightNovelContentActivity> activityRef;
 	private boolean hasError = false;
+	private boolean scaleChangedRunnablePending = false;
 
 	public BakaTsukiWebViewClient(DisplayLightNovelContentActivity caller) {
 		super();
@@ -132,4 +134,31 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 		hasError = true;
 		Log.w(TAG, String.format("Error detected: [%s] %s => %s", errorCode, description, failingUrl));
 	}
+
+	/**
+	 * KitKat chromium text zoom handler, see http://stackoverflow.com/a/20000193
+	 * 
+	 * @param webView
+	 * @param oldScale
+	 * @param newScale
+	 */
+	@Override
+	public void onScaleChanged(final WebView webView, float oldScale, float newScale) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
+			return;
+
+		if (scaleChangedRunnablePending)
+			return;
+
+		scaleChangedRunnablePending = true;
+		webView.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				Log.d(TAG, "Recalculating width");
+				webView.loadUrl("javascript:recalcWidth();", null);
+				scaleChangedRunnablePending = false;
+			}
+		}, 500);
+	}
+
 }
