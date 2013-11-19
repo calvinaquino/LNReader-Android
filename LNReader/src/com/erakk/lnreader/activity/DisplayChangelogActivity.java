@@ -1,8 +1,5 @@
 package com.erakk.lnreader.activity;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -15,6 +12,7 @@ import com.erakk.lnreader.UIHelper;
 
 public class DisplayChangelogActivity extends SherlockActivity {
 	private static final String TAG = DisplayChangelogActivity.class.toString();
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -23,29 +21,11 @@ public class DisplayChangelogActivity extends SherlockActivity {
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
 		TextView txtChangelog = (TextView) findViewById(R.id.txtChangelog);
-		//txtChangelog.setTextSize(20);
-		txtChangelog.setText(readrawchangelog());
+		txtChangelog.setText(UIHelper.readRawStringResources(this, R.raw.changelog));
 		txtChangelog.setMovementMethod(LinkMovementMethod.getInstance());
+		Log.d(TAG, "created");
 	}
 
-	private String readrawchangelog(){
-		InputStream inputStream = getResources().openRawResource(R.raw.changelog);
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		int i;
-		try {
-			i = inputStream.read();
-			while (i != -1)
-			{
-				byteArrayOutputStream.write(i);
-				i = inputStream.read();
-			}
-			inputStream.close();
-		} catch (Exception e) {
-			Log.e(TAG,"Failed to Read raw file:changelog.txt:"+e);
-		}
-		return byteArrayOutputStream.toString();
-	}
-	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
