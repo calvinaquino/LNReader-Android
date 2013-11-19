@@ -13,6 +13,7 @@
 - Add Mark Unread Entire Volume context menu (yaminorito).
 - Update Android 4.4/Kitkat text zoom handler (need to be tested).
 - Update read handler to ignore redlink=1 chapter.
+- Add filter on Update History.
 
 1.1.11:
 - Add volume indicator in bookmark.
