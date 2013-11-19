@@ -1208,8 +1208,19 @@ public class NovelsDao {
 			Log.i(TAG, "Image not found in DB, getting data from internet: " + image.getName());
 			downloadBigImage = true;
 		} else if (!new File(imageTemp.getPath()).exists()) {
-			Log.i(TAG, "Image found in DB, but doesn't exists in path: " + imageTemp.getPath());
-			downloadBigImage = true;
+			try{
+				Log.i(TAG, "Image found in DB, but doesn't exist in path: " + imageTemp.getPath()
+						+"\nAttempting URLDecoding method with default charset:"+java.nio.charset.Charset.defaultCharset().displayName());
+				if(!new File(java.net.URLDecoder.decode(imageTemp.getPath(), java.nio.charset.Charset.defaultCharset().displayName())).exists()){
+					Log.i(TAG, "Image found in DB, but doesn't exist in URL decoded path: " + java.net.URLDecoder.decode(imageTemp.getPath(), java.nio.charset.Charset.defaultCharset().displayName()));
+					downloadBigImage = true;					
+				} //else Log.i(TAG, "Image found in DB with URL decoded path: " + java.net.URLDecoder.decode(imageTemp.getPath(), java.nio.charset.Charset.defaultCharset().displayName()));
+				
+			}catch(Exception e){
+				Log.i(TAG, "Image found in DB, but path string seems to be broken: " + imageTemp.getPath()
+						+ " Charset:" + java.nio.charset.Charset.defaultCharset().displayName());
+				downloadBigImage = true;
+			}
 		}
 		if (downloadBigImage) {
 			Log.d(TAG, "Downloading big image from internet: " + image.getName());
