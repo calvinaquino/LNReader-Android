@@ -6,6 +6,8 @@
               android:title="Clear Volume Cache" />
       <item android:id="@+id/mark_volume"
               android:title="Mark entire Volume as Read" />
+      <item android:id="@+id/mark_volume2"
+              android:title="Mark entire Volume as Unread" />
       <item android:id="@+id/delete_volume"
               android:title="Delete Volume" />
 </menu>
