@@ -651,12 +651,16 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 			// check if complete read.
 			if (wv.getContentHeight() <= wv.getScrollY() + wv.getBottom()) {
-				try {
-					PageModel page = content.getPageModel();
-					page.setFinishedRead(true);
-					page = NovelsDao.getInstance(this).updatePageModel(page);
-				} catch (Exception ex) {
-					Log.e(TAG, "Error updating PageModel for Content: " + content.getPage(), ex);
+				if (content != null) {
+					try {
+						PageModel page = content.getPageModel();
+						if (!page.getPage().endsWith("&action=edit&redlink=1")) {
+							page.setFinishedRead(true);
+							page = NovelsDao.getInstance(this).updatePageModel(page);
+						}
+					} catch (Exception ex) {
+						Log.e(TAG, "Error updating PageModel for Content: " + content.getPage(), ex);
+					}
 				}
 			}
 

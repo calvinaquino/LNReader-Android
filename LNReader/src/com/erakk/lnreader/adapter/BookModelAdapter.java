@@ -238,6 +238,8 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		// check if all chapter is read
 		boolean readAll = true;
 		for (PageModel pageModel : chapterList) {
+			if (pageModel.getPage().endsWith("&action=edit&redlink=1"))
+				continue;
 			if (!pageModel.isFinishedRead()) {
 				readAll = false;
 				break;
