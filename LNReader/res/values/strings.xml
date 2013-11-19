@@ -339,4 +339,6 @@
     <string name="pref_listing">Chapter Listing</string>
     <string name="pref_process_all_images_title">Process All Images</string>
     <string name="pref_process_all_images_summary">Include big images for backup/restore.</string>
+    <string name="mark_volume_unread">Mark Volume as Unread</string>
+    <string name="toast_mark_volume2">Mark Volume as Unread</string>
 </resources>
