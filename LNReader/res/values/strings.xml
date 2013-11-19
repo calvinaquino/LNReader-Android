@@ -357,6 +357,4 @@
     <string name="restore_zip_question2">Restore Thumb Images</string>
     <string name="relink_question">Do you want to relink images? (May take some time)</string>
     <string name="relink_question2">Relink Images</string>
-    <string name="relink_stop_question">Do you want to stop relinking images? (Changes will remain, but will repeat everything on re-run)</string>
-    <string name="relink_stop_question2">Stop Relinking Images</string>
 </resources>

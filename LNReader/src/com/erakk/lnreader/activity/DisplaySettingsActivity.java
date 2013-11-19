@@ -420,6 +420,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 	@SuppressWarnings("deprecation")
 	private void storagePreferences() {
+		final DisplaySettingsActivity dsa = this;
 		// Clear DB
 		Preference clearDatabase = findPreference("clear_database");
 		clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -437,7 +438,21 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference p) {
-				copyDB(true, Constants.PREF_BACKUP_DB);
+				//Quick fix, please revise as seen fit.
+				//Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+						dsa
+						, getResources().getString(R.string.backup_db_question)
+						, getResources().getString(R.string.backup_db_question2)
+						, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == DialogInterface.BUTTON_POSITIVE) {
+							copyDB(true, Constants.PREF_BACKUP_DB);
+						}
+					}
+				}).show();
 				return true;
 			}
 		});
@@ -448,7 +463,21 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference p) {
-				copyDB(false, Constants.PREF_RESTORE_DB);
+				//Quick fix, please revise as seen fit.
+				//Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+						dsa
+						, getResources().getString(R.string.restore_db_question)
+						, getResources().getString(R.string.restore_db_question2)
+						, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == DialogInterface.BUTTON_POSITIVE) {
+							copyDB(false, Constants.PREF_RESTORE_DB);
+						}
+					}
+				}).show();
 				return true;
 			}
 		});
@@ -490,7 +519,22 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				backupThumbs();
+				
+				//Quick fix, please revise as seen fit.
+				//Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+					dsa
+					, getResources().getString(R.string.backup_zip_question)
+					, getResources().getString(R.string.backup_zip_question2)
+					, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == DialogInterface.BUTTON_POSITIVE) {
+							backupThumbs();
+						}
+					}
+				}).show();
 				return true;
 			}
 		});
@@ -504,7 +548,22 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				restoreThumbs();
+				
+				//Quick fix, please revise as seen fit.
+				//Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+					dsa
+					, getResources().getString(R.string.restore_zip_question)
+					, getResources().getString(R.string.restore_zip_question2)
+					, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == DialogInterface.BUTTON_POSITIVE) {
+							restoreThumbs();
+						}
+					}
+				}).show();
 				return true;
 			}
 		});
@@ -518,7 +577,23 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				relinkThumbs();
+				
+				
+				//Quick fix, please revise as seen fit.
+				//Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+					dsa
+					, getResources().getString(R.string.relink_question)
+					, getResources().getString(R.string.relink_question2)
+					, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == DialogInterface.BUTTON_POSITIVE) {
+							relinkThumbs();
+						}
+					}
+				}).show();
 				return true;
 			}
 		});
@@ -529,59 +604,12 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 	@SuppressLint({ "InlinedApi", "NewApi" })
 	private void relinkThumbs() {
-		
-		//Quick fix, please revise as seen fit.
-		//Attempt to stop relinking process on confirmation.
-		//Should be safe to stop it, any possible error(s) can be fixed 
-		//by rerunning and finishing the relinking process
-		//A Resume option is not yet plausible with such an approach as this(I think...)
-		if (RelinkImagesTask.getInstance() != null && RelinkImagesTask.getInstance().getStatus() == Status.RUNNING) {
-			UIHelper.createYesNoDialog(
-					this
-					, getResources().getString(R.string.relink_stop_question)
-					, getResources().getString(R.string.relink_stop_question2)
-					, new OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if (which == DialogInterface.BUTTON_POSITIVE) {
-						RelinkImagesTask.getInstance().cancel(true);
-					}
-				}
-			}).show();
-			return;
-		}
-		
-		//Quick fix, please revise as seen fit.
-		//Confirm task execution, useful during unintentional clicks.
-		final DisplaySettingsActivity dsa = this;
-		UIHelper.createYesNoDialog(
-			this
-			, getResources().getString(R.string.relink_question)
-			, getResources().getString(R.string.relink_question2)
-			, new OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				if (which == DialogInterface.BUTTON_POSITIVE) {
-					String rootPath = UIHelper.getImageRoot(dsa);
-					RelinkImagesTask task = RelinkImagesTask.getInstance(rootPath, dsa, Constants.PREF_RELINK_THUMB_IMAGES);
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-						task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-					else
-						task.execute();
-				}
-			}
-		}).show();
-				
-		/*
 		String rootPath = UIHelper.getImageRoot(this);
 		RelinkImagesTask task = RelinkImagesTask.getInstance(rootPath, this, Constants.PREF_RELINK_THUMB_IMAGES);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		else
 			task.execute();
-		/**/
 	}
 
 	@SuppressLint({ "InlinedApi", "NewApi" })
@@ -590,37 +618,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			Toast.makeText(this, "Please wait until all images are backed-up.", Toast.LENGTH_SHORT).show();
 			return;
 		}
-		
-		//Quick fix, please revise as seen fit.
-		//Confirm task execution, useful during unintentional clicks.
-		final DisplaySettingsActivity dsa = this;
-		UIHelper.createYesNoDialog(
-			this
-			, getResources().getString(R.string.restore_zip_question)
-			, getResources().getString(R.string.restore_zip_question2)
-			, new OnClickListener() {
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				if (which == DialogInterface.BUTTON_POSITIVE) {
-					String zipName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_thumbs.zip";
-					String thumbRootPath = UIHelper.getImageRoot(dsa) + "/project/images/thumb";
-
-					if (getProcessAllImagesPreferences()) {
-						zipName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_all_images.zip";
-						thumbRootPath = UIHelper.getImageRoot(dsa) + "/project/images";
-					}
-
-					UnZipFilesTask task = UnZipFilesTask.getInstance(zipName, thumbRootPath, dsa, Constants.PREF_RESTORE_THUMB_IMAGES);
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-						task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-					else
-						task.execute();
-				}
-			}
-		}).show();
-				
-		/*
 		String zipName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_thumbs.zip";
 		String thumbRootPath = UIHelper.getImageRoot(this) + "/project/images/thumb";
 
@@ -634,40 +632,15 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		else
 			task.execute();
-		/**/
 	}
 
 	@SuppressLint({ "InlinedApi", "NewApi" })
-	private void copyDB(final boolean makeBackup,final String source) {
-		
-		//Quick fix, please revise as seen fit.
-		//Confirm task execution, useful during unintentional clicks.
-		final DisplaySettingsActivity dsa = this;
-		UIHelper.createYesNoDialog(
-				this
-				, getResources().getString((makeBackup)?R.string.backup_db_question:R.string.restore_db_question)
-				, getResources().getString((makeBackup)?R.string.backup_db_question2:R.string.restore_db_question2)
-				, new OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				if (which == DialogInterface.BUTTON_POSITIVE) {
-					CopyDBTask task = new CopyDBTask(makeBackup, dsa, source);
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-						task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-					else
-						task.execute();
-				}
-			}
-		}).show();
-		
-		/*
+	private void copyDB(boolean makeBackup, String source) {
 		CopyDBTask task = new CopyDBTask(makeBackup, this, source);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		else
 			task.execute();
-		/**/
 	}
 
 	@SuppressLint({ "InlinedApi", "NewApi" })
@@ -676,37 +649,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			Toast.makeText(this, "Please wait until all images are restored.", Toast.LENGTH_SHORT).show();
 			return;
 		}
-		
-		//Quick fix, please revise as seen fit.
-		//Confirm task execution, useful during unintentional clicks.
-		final DisplaySettingsActivity dsa = this;
-		UIHelper.createYesNoDialog(
-			this
-			, getResources().getString(R.string.backup_zip_question)
-			, getResources().getString(R.string.backup_zip_question2)
-			, new OnClickListener() {
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				if (which == DialogInterface.BUTTON_POSITIVE) {
-					String zipName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_thumbs.zip";
-					String thumbRootPath = UIHelper.getImageRoot(dsa) + "/project/images/thumb";
-
-					if (getProcessAllImagesPreferences()) {
-						zipName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_all_images.zip";
-						thumbRootPath = UIHelper.getImageRoot(dsa) + "/project/images";
-					}
-
-					ZipFilesTask task = ZipFilesTask.getInstance(zipName, thumbRootPath, dsa, Constants.PREF_BACKUP_THUMB_IMAGES);
-					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-						task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-					else
-						task.execute();
-				}
-			}
-		}).show();
-				
-		/*
 		String zipName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_thumbs.zip";
 		String thumbRootPath = UIHelper.getImageRoot(this) + "/project/images/thumb";
 
@@ -720,7 +663,6 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		else
 			task.execute();
-		/**/
 	}
 
 	@SuppressWarnings("deprecation")
