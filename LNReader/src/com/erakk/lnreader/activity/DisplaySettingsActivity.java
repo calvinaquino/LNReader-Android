@@ -420,6 +420,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 	@SuppressWarnings("deprecation")
 	private void storagePreferences() {
+		final DisplaySettingsActivity dsa = this;
 		// Clear DB
 		Preference clearDatabase = findPreference("clear_database");
 		clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -437,7 +438,21 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference p) {
-				copyDB(true, Constants.PREF_BACKUP_DB);
+				//Quick fix, please revise as seen fit.
+				//Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+						dsa
+						, getResources().getString(R.string.backup_db_question)
+						, getResources().getString(R.string.backup_db_question2)
+						, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == DialogInterface.BUTTON_POSITIVE) {
+							copyDB(true, Constants.PREF_BACKUP_DB);
+						}
+					}
+				}).show();
 				return true;
 			}
 		});
@@ -448,7 +463,21 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference p) {
-				copyDB(false, Constants.PREF_RESTORE_DB);
+				//Quick fix, please revise as seen fit.
+				//Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+						dsa
+						, getResources().getString(R.string.restore_db_question)
+						, getResources().getString(R.string.restore_db_question2)
+						, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == DialogInterface.BUTTON_POSITIVE) {
+							copyDB(false, Constants.PREF_RESTORE_DB);
+						}
+					}
+				}).show();
 				return true;
 			}
 		});
@@ -490,7 +519,22 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				backupThumbs();
+				
+				//Quick fix, please revise as seen fit.
+				//Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+					dsa
+					, getResources().getString(R.string.backup_zip_question)
+					, getResources().getString(R.string.backup_zip_question2)
+					, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == DialogInterface.BUTTON_POSITIVE) {
+							backupThumbs();
+						}
+					}
+				}).show();
 				return true;
 			}
 		});
@@ -504,7 +548,22 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				restoreThumbs();
+				
+				//Quick fix, please revise as seen fit.
+				//Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+					dsa
+					, getResources().getString(R.string.restore_zip_question)
+					, getResources().getString(R.string.restore_zip_question2)
+					, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == DialogInterface.BUTTON_POSITIVE) {
+							restoreThumbs();
+						}
+					}
+				}).show();
 				return true;
 			}
 		});
@@ -518,7 +577,23 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				relinkThumbs();
+				
+				
+				//Quick fix, please revise as seen fit.
+				//Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+					dsa
+					, getResources().getString(R.string.relink_question)
+					, getResources().getString(R.string.relink_question2)
+					, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == DialogInterface.BUTTON_POSITIVE) {
+							relinkThumbs();
+						}
+					}
+				}).show();
 				return true;
 			}
 		});

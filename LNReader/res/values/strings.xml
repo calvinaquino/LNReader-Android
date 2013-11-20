@@ -319,7 +319,7 @@
     <string name="download_novel_content_task_error">Failed to download content for: %1$s, error message: %2$s.</string>
     <string name="copy_db_task_backup_error">Error when backing up DB.</string>
     <string name="copy_db_task_restore_error">Error when restoring DB.</string>
-    <string name="copy_db_task_backup_start">Staring database backup, this might take some time...</string>
+    <string name="copy_db_task_backup_start">Starting database backup, this might take some time...</string>
     <string name="copy_db_task_restore_start">Starting database restore, this might take some time...</string>
     <string name="copy_db_task_backup_complete">Database backup created at: %1$s.</string>
     <string name="copy_db_task_restore_complete">Database backup restored!</string>
@@ -347,4 +347,14 @@
     <string name="menu_show_deleted">Show Deleted</string>
     <string name="menu_show_clear_all">Clear All</string>
     <string name="menu_show_clear_selected">Clear Selected</string>
+    <string name="restore_db_question">Do you want to restore backed-up DB(if there is one in SDCard)?</string>
+    <string name="restore_db_question2">Restore Novel Database Backup</string>
+    <string name="backup_db_question">Do you want to create back-up DB?</string>
+    <string name="backup_db_question2">Create Novel Database Backup</string>
+    <string name="backup_zip_question">Do you really want to backup thumb images? (Larger thumb cache = More resource intensive)</string>
+    <string name="backup_zip_question2">Backup Thumb Images</string>
+    <string name="restore_zip_question">Do you really want to restore thumb images? (Larger thumb cache = More resource intensive)</string>
+    <string name="restore_zip_question2">Restore Thumb Images</string>
+    <string name="relink_question">Do you want to relink images? (May take some time)</string>
+    <string name="relink_question2">Relink Images</string>
 </resources>
