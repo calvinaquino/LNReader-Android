@@ -357,4 +357,6 @@
     <string name="restore_zip_question2">Restore Thumb Images</string>
     <string name="relink_question">Do you want to relink images? (May take some time)</string>
     <string name="relink_question2">Relink Images</string>
+    <string name="pref_show_redlink_title">Show Redlink page</string>
+    <string name="pref_show_redlink_summary">Show redlink=1 chapter (no content).</string>
 </resources>

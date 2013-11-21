@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.helper.Util;
 
 public class PageModel {
 	public static final String TYPE_NOVEL = "Novel";
@@ -291,5 +292,11 @@ public class PageModel {
 
 	public void setUpdateCount(int updateCount) {
 		this.updateCount = updateCount;
+	}
+
+	public boolean isRedlink() {
+		if (Util.isStringNullOrEmpty(this.page))
+			return false;
+		return this.page.endsWith("&action=edit&redlink=1");
 	}
 }
