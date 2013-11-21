@@ -345,4 +345,14 @@
     <string name="menu_show_deleted">Pokaż usunięte</string>
     <string name="menu_show_clear_all">Wyczyść wszystko</string>
     <string name="menu_show_clear_selected">Wyczyśc wybrane</string>
+    <string name="restore_db_question">Czy przywrucić BD (jesli jest na SD)?</string>
+    <string name="restore_db_question2">Przywróć kopię zapasową bazy danych powieści</string>
+    <string name="backup_db_question">Czy utworzyć kopię zapasową bazy danych?</string>
+    <string name="backup_db_question2">Create Novel Database Backup</string>
+    <string name="backup_zip_question">Czy na pewno kopiować również obrazy? (Duże obrazy wymagają dużo pamięci)</string>
+    <string name="backup_zip_question2">Kopiuj obrazy</string>
+    <string name="restore_zip_question">Czy na pewno przywrócić obrazy? (Duże obrazy wymagają dużo pamięci)</string>
+    <string name="restore_zip_question2">Przywróć obrazy</string>
+    <string name="relink_question">Przylaczy zdjecia? (Wymaga sporo czasu)</string>
+    <string name="relink_question2">Relink Images</string>
 </resources>
