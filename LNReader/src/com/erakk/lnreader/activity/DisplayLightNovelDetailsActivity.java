@@ -289,12 +289,13 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			 */
 			Toast.makeText(this, getResources().getString(R.string.mark_volume_read), Toast.LENGTH_SHORT).show();
 			BookModel book2 = novelCol.getBookCollections().get(groupPosition);
-			for (Iterator<PageModel> iPage = book2.getChapterCollection().iterator(); iPage.hasNext();) {
-				PageModel page = iPage.next();
-				page.setFinishedRead(true);
-				dao.updatePageModel(page);
+			if (book2 != null) {
+				for (PageModel page : book2.getChapterCollection()) {
+					page.setFinishedRead(true);
+					dao.updatePageModel(page);
+				}
+				bookModelAdapter.notifyDataSetChanged();
 			}
-			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		case R.id.mark_volume2:
 
@@ -303,12 +304,13 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			 */
 			Toast.makeText(this, getResources().getString(R.string.mark_volume_unread), Toast.LENGTH_SHORT).show();
 			BookModel ubook2 = novelCol.getBookCollections().get(groupPosition);
-			for (Iterator<PageModel> iPage = ubook2.getChapterCollection().iterator(); iPage.hasNext();) {
-				PageModel page = iPage.next();
-				page.setFinishedRead(false);
-				dao.updatePageModel(page);
+			if (ubook2 != null) {
+				for (PageModel page : ubook2.getChapterCollection()) {
+					page.setFinishedRead(false);
+					dao.updatePageModel(page);
+				}
+				bookModelAdapter.notifyDataSetChanged();
 			}
-			bookModelAdapter.notifyDataSetChanged();
 			return true;
 			// Chapter cases
 		case R.id.download_chapter:
