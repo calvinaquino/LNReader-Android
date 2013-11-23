@@ -335,6 +335,24 @@
     <string name="pref_network">Sieć</string>
     <string name="pref_ui">UI</string>
     <string name="pref_listing">Lista rozdziałów</string>
-    <string name="pref_process_all_images_title">Przetwarzanie obrazów</string>
-    <string name="pref_process_all_images_summary">Kopia dużych obrazówp.</string>
+    <string name="pref_process_all_images_title">Kopiuj obrazy</string>
+    <string name="pref_process_all_images_summary">Kopia bazy ma zawierać również duże obrazy</string>
+    <string name="mark_volume_unread">Oznacz tom jako nieprzeczytany</string>
+    <string name="toast_mark_volume2">Oznacz tom jako nieprzeczytany</string>
+    <string name="title_activity_display_changelog">Spis zmian</string>
+    <string name="menu_show_updated">Pokaż uaktualnione</string>
+    <string name="menu_show_new">Pokaż nowe</string>
+    <string name="menu_show_deleted">Pokaż usunięte</string>
+    <string name="menu_show_clear_all">Wyczyść wszystko</string>
+    <string name="menu_show_clear_selected">Wyczyśc wybrane</string>
+    <string name="restore_db_question">Czy przywrucić BD (jesli jest na SD)?</string>
+    <string name="restore_db_question2">Przywróć kopię zapasową bazy danych powieści</string>
+    <string name="backup_db_question">Czy utworzyć kopię zapasową bazy danych?</string>
+    <string name="backup_db_question2">Create Novel Database Backup</string>
+    <string name="backup_zip_question">Czy na pewno kopiować również obrazy? (Duże obrazy wymagają dużo pamięci)</string>
+    <string name="backup_zip_question2">Kopiuj obrazy</string>
+    <string name="restore_zip_question">Czy na pewno przywrócić obrazy? (Duże obrazy wymagają dużo pamięci)</string>
+    <string name="restore_zip_question2">Przywróć obrazy</string>
+    <string name="relink_question">Przylaczy zdjecia? (Wymaga sporo czasu)</string>
+    <string name="relink_question2">Relink Images</string>
 </resources>

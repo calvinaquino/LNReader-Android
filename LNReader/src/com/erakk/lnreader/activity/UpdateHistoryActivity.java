@@ -88,6 +88,24 @@ public class UpdateHistoryActivity extends SherlockActivity {
 			}
 			updateContent();
 			return true;
+		case R.id.menu_show_updated:
+			if (adapter != null) {
+				item.setChecked(!item.isChecked());
+				adapter.filterUpdated(item.isChecked());
+			}
+			return true;
+		case R.id.menu_show_new:
+			if (adapter != null) {
+				item.setChecked(!item.isChecked());
+				adapter.filterNew(item.isChecked());
+			}
+			return true;
+		case R.id.menu_show_deleted:
+			if (adapter != null) {
+				item.setChecked(!item.isChecked());
+				adapter.filterDeleted(item.isChecked());
+			}
+			return true;
 		case android.R.id.home:
 			Intent intent = getIntent();
 			String caller = intent.getStringExtra(Constants.EXTRA_CALLER_ACTIVITY);

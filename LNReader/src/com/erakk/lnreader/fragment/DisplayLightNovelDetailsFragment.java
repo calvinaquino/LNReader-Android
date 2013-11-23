@@ -270,6 +270,20 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			}
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
+		case R.id.mark_volume2:
+
+			/*
+			 * Implement code to mark entire volume as unread
+			 */
+			Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_mark_volume2), Toast.LENGTH_SHORT).show();
+			BookModel ubook2 = novelCol.getBookCollections().get(groupPosition);
+			for (Iterator<PageModel> iPage = ubook2.getChapterCollection().iterator(); iPage.hasNext();) {
+				PageModel page = iPage.next();
+				page.setFinishedRead(false);
+				dao.updatePageModel(page);
+			}
+			bookModelAdapter.notifyDataSetChanged();
+			return true;
 			// Chapter cases
 		case R.id.download_chapter:
 

@@ -141,6 +141,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 	public int getChildrenCount(int groupPosition) {
 		boolean showExternal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_EXTERNAL, true);
 		boolean showMissing = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_MISSING, true);
+		boolean showRedlink = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_REDLINK, true);
 
 		ArrayList<PageModel> chList = groups.get(groupPosition).getChapterCollection();
 		int count = 0;
@@ -148,6 +149,8 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			if (pageModel.isExternal() && !showExternal) {
 				continue;
 			} else if (!pageModel.isExternal() && pageModel.isMissing() && !showMissing) {
+				continue;
+			} else if (pageModel.isRedlink() && !showRedlink) {
 				continue;
 			}
 			++count;
@@ -159,6 +162,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 	public PageModel getChild(int groupPosition, int childPosition) {
 		boolean showExternal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_EXTERNAL, true);
 		boolean showMissing = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_MISSING, true);
+		boolean showRedlink = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_REDLINK, true);
 
 		ArrayList<PageModel> chList = groups.get(groupPosition).getChapterCollection();
 		int count = 0;
@@ -167,6 +171,8 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			if (temp.isExternal() && !showExternal) {
 				continue;
 			} else if (!temp.isExternal() && temp.isMissing() && !showMissing) {
+				continue;
+			} else if (temp.isRedlink() && !showRedlink) {
 				continue;
 			}
 
@@ -238,6 +244,8 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		// check if all chapter is read
 		boolean readAll = true;
 		for (PageModel pageModel : chapterList) {
+			if (pageModel.getPage().endsWith("&action=edit&redlink=1"))
+				continue;
 			if (!pageModel.isFinishedRead()) {
 				readAll = false;
 				break;

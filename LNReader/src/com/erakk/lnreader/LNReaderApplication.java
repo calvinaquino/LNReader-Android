@@ -1,9 +1,5 @@
 package com.erakk.lnreader;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -306,22 +302,7 @@ public class LNReaderApplication extends Application {
 		if (cssCache == null)
 			cssCache = new Hashtable<Integer, String>();
 		if (!cssCache.containsKey(styleId)) {
-			StringBuilder contents = new StringBuilder();
-			InputStream in = getApplicationContext().getResources().openRawResource(styleId);
-			InputStreamReader isr = new InputStreamReader(in);
-			BufferedReader buff = new BufferedReader(isr);
-			String temp = null;
-			try {
-				while ((temp = buff.readLine()) != null) {
-					contents.append(temp);
-				}
-				buff.close();
-				isr.close();
-				in.close();
-			} catch (IOException e) {
-				Log.e(TAG, "Error reading asset: " + e.getMessage(), e);
-			}
-			cssCache.put(styleId, contents.toString());
+			cssCache.put(styleId, UIHelper.readRawStringResources(getApplicationContext(), styleId));
 		}
 		return cssCache.get(styleId);
 	}

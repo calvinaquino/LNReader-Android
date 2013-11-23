@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,18 +27,24 @@ import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.UpdateInfoModel;
 
 public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
+	private static final String TAG = UpdateInfoModelAdapter.class.toString();
 	// private static final String TAG = PageModelAdapter.class.toString();
 	private final Context context;
 	private int layoutResourceId;
 	private final Date now;
 	long repeatTime = 0;
 	public List<UpdateInfoModel> data;
+	public UpdateInfoModel[] originalData = new UpdateInfoModel[0];
+	boolean showUpdate = true;
+	boolean showNew = true;
+	boolean showDeleted = true;
 
 	public UpdateInfoModelAdapter(Context context, int resourceId, List<UpdateInfoModel> objects) {
 		super(context, resourceId, objects);
 		this.layoutResourceId = resourceId;
 		this.context = context;
 		this.data = objects;
+		this.originalData = data.toArray(originalData);
 
 		now = new Date();
 
@@ -64,6 +71,55 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
 		default:
 			break;
 		}
+	}
+
+	public void filterUpdated(boolean value) {
+		this.showUpdate = value;
+		Log.d(TAG, "Filter Updated: " + showUpdate);
+		filterData();
+	}
+
+	public void filterNew(boolean value) {
+		this.showNew = value;
+		filterData();
+	}
+
+	public void filterDeleted(boolean value) {
+		this.showDeleted = value;
+		filterData();
+	}
+
+	private void filterData() {
+		this.clear();
+		data.clear();
+		for (UpdateInfoModel item : originalData) {
+			switch (item.getUpdateType()) {
+			case New:
+				if (showNew)
+					add(item);
+				break;
+			case NewNovel:
+				if (showNew)
+					add(item);
+				break;
+			case Updated:
+				if (showUpdate)
+					add(item);
+				break;
+			case UpdateTos:
+				if (showUpdate)
+					add(item);
+				break;
+			case Deleted:
+				if (showDeleted)
+					add(item);
+				break;
+			default:
+				add(item);
+				break;
+			}
+		}
+		super.notifyDataSetChanged();
 	}
 
 	public void setLayout(int resourceId) {
@@ -163,7 +219,7 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
 			});
 		}
 
-		row.setTag(holder);
+		// row.setTag(holder);
 		return row;
 	}
 

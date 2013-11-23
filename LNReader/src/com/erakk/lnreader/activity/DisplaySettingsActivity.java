@@ -169,7 +169,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			}
 		});
 
-		// App Version
+		// App Version Activity
 		Preference appVersion = findPreference("app_version");
 		String version = "N/A";
 		try {
@@ -178,6 +178,19 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			Log.e(TAG, "Cannot get version.", e);
 		}
 		appVersion.setSummary(version);
+		appVersion.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				try {
+					Intent intent = new Intent(getApplicationContext(), DisplayChangelogActivity.class);
+					startActivity(intent);
+				} catch (Exception e) {
+					Log.e(TAG, getResources().getString(R.string.title_activity_display_changelog), e);
+				}
+				return false;
+			}
+		});
 
 		// Credits activity
 		Preference credits = findPreference("credits");
@@ -407,6 +420,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 	@SuppressWarnings("deprecation")
 	private void storagePreferences() {
+		final DisplaySettingsActivity dsa = this;
 		// Clear DB
 		Preference clearDatabase = findPreference("clear_database");
 		clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -424,7 +438,21 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference p) {
-				copyDB(true, Constants.PREF_BACKUP_DB);
+				//Quick fix, please revise as seen fit.
+				//Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+						dsa
+						, getResources().getString(R.string.backup_db_question)
+						, getResources().getString(R.string.backup_db_question2)
+						, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == DialogInterface.BUTTON_POSITIVE) {
+							copyDB(true, Constants.PREF_BACKUP_DB);
+						}
+					}
+				}).show();
 				return true;
 			}
 		});
@@ -435,7 +463,21 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference p) {
-				copyDB(false, Constants.PREF_RESTORE_DB);
+				//Quick fix, please revise as seen fit.
+				//Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+						dsa
+						, getResources().getString(R.string.restore_db_question)
+						, getResources().getString(R.string.restore_db_question2)
+						, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == DialogInterface.BUTTON_POSITIVE) {
+							copyDB(false, Constants.PREF_RESTORE_DB);
+						}
+					}
+				}).show();
 				return true;
 			}
 		});
@@ -477,7 +519,22 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				backupThumbs();
+				
+				//Quick fix, please revise as seen fit.
+				//Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+					dsa
+					, getResources().getString(R.string.backup_zip_question)
+					, getResources().getString(R.string.backup_zip_question2)
+					, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == DialogInterface.BUTTON_POSITIVE) {
+							backupThumbs();
+						}
+					}
+				}).show();
 				return true;
 			}
 		});
@@ -491,7 +548,22 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				restoreThumbs();
+				
+				//Quick fix, please revise as seen fit.
+				//Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+					dsa
+					, getResources().getString(R.string.restore_zip_question)
+					, getResources().getString(R.string.restore_zip_question2)
+					, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == DialogInterface.BUTTON_POSITIVE) {
+							restoreThumbs();
+						}
+					}
+				}).show();
 				return true;
 			}
 		});
@@ -505,7 +577,23 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				relinkThumbs();
+				
+				
+				//Quick fix, please revise as seen fit.
+				//Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+					dsa
+					, getResources().getString(R.string.relink_question)
+					, getResources().getString(R.string.relink_question2)
+					, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (which == DialogInterface.BUTTON_POSITIVE) {
+							relinkThumbs();
+						}
+					}
+				}).show();
 				return true;
 			}
 		});

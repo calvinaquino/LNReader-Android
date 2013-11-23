@@ -651,12 +651,16 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 			// check if complete read.
 			if (wv.getContentHeight() <= wv.getScrollY() + wv.getBottom()) {
-				try {
-					PageModel page = content.getPageModel();
-					page.setFinishedRead(true);
-					page = NovelsDao.getInstance(this).updatePageModel(page);
-				} catch (Exception ex) {
-					Log.e(TAG, "Error updating PageModel for Content: " + content.getPage(), ex);
+				if (content != null) {
+					try {
+						PageModel page = content.getPageModel();
+						if (!page.getPage().endsWith("&action=edit&redlink=1")) {
+							page.setFinishedRead(true);
+							page = NovelsDao.getInstance(this).updatePageModel(page);
+						}
+					} catch (Exception ex) {
+						Log.e(TAG, "Error updating PageModel for Content: " + content.getPage(), ex);
+					}
 				}
 			}
 
@@ -737,7 +741,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 	}
 
-	@SuppressLint("InlinedApi")
+	@SuppressLint({ "InlinedApi", "NewApi" })
 	private void executeLoadWacTask(String wacName) {
 		NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
 		LoadWacTask task = new LoadWacTask(this, webView, wacName, client);
@@ -747,7 +751,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			task.execute();
 	}
 
-	@SuppressLint("SdCardPath")
+	@SuppressLint("NewApi")
 	public void saveWebArchive(String page) {
 		if (!isSaveEnabled)
 			return;
