@@ -112,5 +112,7 @@ function setup() {
 }
 
 function recalcWidth(){
-	document.body.style.width = window.clientWidth;// * 0.90;
+	document.body.style.width = window.innerWidth * 0.90;//window.clientWidth;// * 0.90;
+	window.scrollTo(0, window.pageYOffset || document.documentElement.scrollTop);
+	console.log("RECALC_EVENT:" + document.body.style.width);
 }
