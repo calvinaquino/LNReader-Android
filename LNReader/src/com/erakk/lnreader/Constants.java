@@ -85,6 +85,7 @@ public class Constants {
 	public static final String PREF_BOOKMARK_ORDER = "bookmark_order";
 	public static final String PREF_PROCESS_ALL_IMAGES = "process_all_images";
 	public static final String PREF_SHOW_REDLINK = "show_redlink";
+	public static final String PREF_KITKAT_WEBVIEW_FIX = "webview_kitkat_fix";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 
@@ -121,5 +122,4 @@ public class Constants {
 	/* You just need to add a new alternative language here and in AlternativeLanguageInfo -> initSingleton */
 	public static final String[] languageList = { Constants.LANG_ENGLISH, Constants.LANG_FRENCH, Constants.LANG_BAHASA_INDONESIA, Constants.LANG_POLISH };
 	public static final int BUFFER = 1024;
-
 }
