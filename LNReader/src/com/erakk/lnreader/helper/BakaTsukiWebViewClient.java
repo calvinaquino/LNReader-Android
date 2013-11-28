@@ -157,7 +157,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 						webView.loadUrl("javascript:recalcWidth();", null);
 						scaleChangedRunnablePending = false;
 					}
-				}, 500);
+				}, UIHelper.getIntFromPreferences(Constants.PREF_KITKAT_WEBVIEW_FIX_DELAY, 500));
 			}
 		}
 	}

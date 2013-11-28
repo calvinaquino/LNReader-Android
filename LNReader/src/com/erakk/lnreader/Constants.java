@@ -86,6 +86,7 @@ public class Constants {
 	public static final String PREF_PROCESS_ALL_IMAGES = "process_all_images";
 	public static final String PREF_SHOW_REDLINK = "show_redlink";
 	public static final String PREF_KITKAT_WEBVIEW_FIX = "webview_kitkat_fix";
+	public static final String PREF_KITKAT_WEBVIEW_FIX_DELAY = "webview_kitkat_fix_delay";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 

@@ -361,4 +361,6 @@
     <string name="pref_show_redlink_summary">Show redlink=1 chapter (no content).</string>
     <string name="pref_webview_kitkat_fix_title">KitKat WebView Zoom Fix</string>
     <string name="pref_webview_kitkat_fix_sum">Enable text reflow when zooming for Android 4.4 (KitKat)</string>
+    <string name="pref_webview_kitkat_fix_delay_sum">Kitkat WebView zoom delay, default is 500ms.</string>
+    <string name="pref_webview_kitkat_fix_delay_title">Reflow Delay</string>
 </resources>

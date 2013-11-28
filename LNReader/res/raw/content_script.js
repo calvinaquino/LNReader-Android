@@ -49,6 +49,7 @@ function goToParagraph(index, useSmoothScroll) {
             window.scroll(currPos, targetPost);
         }
     }
+    window.scrollTo(0, window.pageYOffset || document.documentElement.scrollTop);
 }
 
 /* Helper method to get paragraph position */
@@ -112,7 +113,10 @@ function setup() {
 }
 
 function recalcWidth(){
-	document.body.style.width = window.innerWidth * 0.90;//window.clientWidth;// * 0.90;
+	var style = document.body.currentStyle || window.getComputedStyle(document.body);
+	var marginLeft = style.marginLeft.replace("px","") / screen.width;
+	var marginRight = style.marginRight.replace("px","") / screen.width;
+	document.body.style.width = ~~(window.innerWidth * (1 - (marginLeft + marginRight)));;
 	window.scrollTo(0, window.pageYOffset || document.documentElement.scrollTop);
-	console.log("RECALC_EVENT:" + document.body.style.width);
+	console.log("RECALC_EVENT:" + document.body.style.width + ":" + marginLeft + ":" + marginRight + ":" + screen.width);
 }

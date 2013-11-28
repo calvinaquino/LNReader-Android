@@ -816,7 +816,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			if (pIndex > 0)
 				lastPos = pIndex;
 
-			String html = "<html><head><style type=\"text/css\">" + getCSSSheet() + "</style>" + "<meta name='viewport' content='width=device-width, minimum-scale=0.5, maximum-scale=5' />" + prepareJavaScript(lastPos, content.getBookmarks()) + "</head><body onclick='toogleHighlight(this, event);' onload='setup();'>" + content.getContent() + "</body></html>";
+			String html = "<html><head><style type=\"text/css\">" + getCSSSheet() + "</style>" +
+					"<meta name='viewport' content='width=device-width, minimum-scale=0.5, maximum-scale=5' id='viewport-meta'/>" +
+					prepareJavaScript(lastPos, content.getBookmarks()) +
+					"</head><body onclick='toogleHighlight(this, event);' onload='setup();'>" +
+					content.getContent() + "</body></html>";
 			wv.loadDataWithBaseURL(UIHelper.getBaseUrl(this), html, "text/html", "utf-8", "");
 			if (content.getLastZoom() > 0) {
 				wv.setInitialScale((int) (content.getLastZoom() * 100));
