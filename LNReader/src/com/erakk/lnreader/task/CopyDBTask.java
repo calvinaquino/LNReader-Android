@@ -36,7 +36,7 @@ public class CopyDBTask extends AsyncTask<Void, ICallbackEventData, Void> implem
 		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		try {
 			copyDB(makeBackup);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			String message;
 			if (makeBackup) {
 				message = ctx.getResources().getString(R.string.copy_db_task_backup_error);

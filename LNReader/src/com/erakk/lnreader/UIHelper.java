@@ -373,4 +373,8 @@ public class UIHelper {
 	public static boolean getAllBookmarkOrder(Context ctx) {
 		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_BOOKMARK_ORDER, false);
 	}
+
+	public static boolean getKitKatWebViewFix(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_KITKAT_WEBVIEW_FIX, false);
+	}
 }

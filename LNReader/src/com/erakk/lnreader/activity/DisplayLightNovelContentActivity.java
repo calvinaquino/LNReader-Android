@@ -380,7 +380,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 					Log.e(TAG, "Cannot get previous chapter.", e);
 				}
 			} else {
-				prev = novelDetails.getPrev(getIntent().getStringExtra(Constants.EXTRA_PAGE));
+				String currentPage = getIntent().getStringExtra(Constants.EXTRA_PAGE);
+				if (!Util.isStringNullOrEmpty(currentPage))
+					prev = novelDetails.getPrev(currentPage);
 			}
 			if (prev != null) {
 				jumpTo(prev);
@@ -402,7 +404,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 					Log.e(TAG, "Cannot get next chapter.", e);
 				}
 			} else {
-				next = novelDetails.getNext(getIntent().getStringExtra(Constants.EXTRA_PAGE));
+				String currentPage = getIntent().getStringExtra(Constants.EXTRA_PAGE);
+				if (!Util.isStringNullOrEmpty(currentPage))
+					next = novelDetails.getNext(currentPage);
 			}
 
 			if (next != null) {

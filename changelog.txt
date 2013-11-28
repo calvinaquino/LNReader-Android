@@ -1,4 +1,4 @@
-1.1.12-beta:
+1.1.12-beta2:
 - Fix External Page Refresh.
 - Reorganize Preferences screen.
 - Update backup and restore to include all images, controlled by flag.
@@ -14,6 +14,7 @@
 - Update read handler to ignore redlink=1 chapter.
 - Add filter on Update History.
 - Add option to hide redlink page (separated from missing).
+- Change jsoup library to modded one (replace String.isEmpty()).
 
 
 1.1.11:

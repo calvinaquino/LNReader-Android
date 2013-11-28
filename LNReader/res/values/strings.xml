@@ -359,4 +359,6 @@
     <string name="relink_question2">Relink Images</string>
     <string name="pref_show_redlink_title">Show Redlink page</string>
     <string name="pref_show_redlink_summary">Show redlink=1 chapter (no content).</string>
+    <string name="pref_webview_kitkat_fix_title">KitKat WebView Zoom Fix</string>
+    <string name="pref_webview_kitkat_fix_sum">Enable text reflow when zooming for Android 4.4 (KitKat)</string>
 </resources>

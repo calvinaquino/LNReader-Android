@@ -4,13 +4,13 @@ import java.lang.ref.WeakReference;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.activity.DisplayImageActivity;
 import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.dao.NovelsDao;
@@ -144,21 +144,21 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 	 */
 	@Override
 	public void onScaleChanged(final WebView webView, float oldScale, float newScale) {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT)
-			return;
-
-		if (scaleChangedRunnablePending)
-			return;
-
-		scaleChangedRunnablePending = true;
-		webView.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				Log.d(TAG, "Recalculating width");
-				webView.loadUrl("javascript:recalcWidth();", null);
-				scaleChangedRunnablePending = false;
+		if (UIHelper.getKitKatWebViewFix(webView.getContext())) {
+			if (scaleChangedRunnablePending) {
+				Log.d(TAG, "OnScaleChange KitKat handler already running");
+				return;
 			}
-		}, 500);
-	}
 
+			scaleChangedRunnablePending = true;
+			webView.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					Log.d(TAG, "Recalculating width");
+					webView.loadUrl("javascript:recalcWidth();", null);
+					scaleChangedRunnablePending = false;
+				}
+			}, 500);
+		}
+	}
 }
