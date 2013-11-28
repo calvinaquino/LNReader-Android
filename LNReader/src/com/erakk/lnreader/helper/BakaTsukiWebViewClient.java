@@ -149,16 +149,16 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 				Log.d(TAG, "OnScaleChange KitKat handler already running");
 				return;
 			}
-
-			scaleChangedRunnablePending = true;
-			webView.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					Log.d(TAG, "Recalculating width");
-					webView.loadUrl("javascript:recalcWidth();", null);
-					scaleChangedRunnablePending = false;
-				}
-			}, 500);
+			synchronized (webView) {
+				scaleChangedRunnablePending = true;
+				webView.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						webView.loadUrl("javascript:recalcWidth();", null);
+						scaleChangedRunnablePending = false;
+					}
+				}, 500);
+			}
 		}
 	}
 }

@@ -15,7 +15,7 @@
 - Add filter on Update History.
 - Add option to hide redlink page (separated from missing).
 - Change jsoup library to modded one (replace String.isEmpty()).
-
+- Enable immersive mode for KitKat in fullscreen (liyhcharles).
 
 1.1.11:
 - Add volume indicator in bookmark.
