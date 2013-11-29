@@ -373,18 +373,18 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			/*
 			 * Implement code to move to previous chapter
 			 */
-			PageModel prev = null;
+			String currentPage = null;
 			if (content != null) {
 				try {
-					prev = novelDetails.getPrev(content.getPageModel().getPage());
+					currentPage = content.getPageModel().getPage();
 				} catch (Exception e) {
 					Log.e(TAG, "Cannot get previous chapter.", e);
 				}
 			} else {
-				String currentPage = getIntent().getStringExtra(Constants.EXTRA_PAGE);
-				if (!Util.isStringNullOrEmpty(currentPage))
-					prev = novelDetails.getPrev(currentPage);
+				currentPage = getIntent().getStringExtra(Constants.EXTRA_PAGE);
 			}
+
+			PageModel prev = novelDetails.getPrev(currentPage, UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
 			if (prev != null) {
 				jumpTo(prev);
 			} else {
@@ -397,19 +397,18 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			/*
 			 * Implement code to move to next chapter
 			 */
-			PageModel next = null;
+			String currentPage2 = null;
 			if (content != null) {
 				try {
-					next = novelDetails.getNext(content.getPageModel().getPage());
+					currentPage2 = content.getPageModel().getPage();
 				} catch (Exception e) {
 					Log.e(TAG, "Cannot get next chapter.", e);
 				}
 			} else {
-				String currentPage = getIntent().getStringExtra(Constants.EXTRA_PAGE);
-				if (!Util.isStringNullOrEmpty(currentPage))
-					next = novelDetails.getNext(currentPage);
+				currentPage2 = getIntent().getStringExtra(Constants.EXTRA_PAGE);
 			}
 
+			PageModel next = novelDetails.getNext(currentPage2, UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
 			if (next != null) {
 				jumpTo(next);
 			} else {

@@ -5,7 +5,6 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -155,34 +154,69 @@ public class NovelCollectionModel {
 		return _FlattedChapterList;
 	}
 
-	public PageModel getNext(String page) {
-		int index = -1;
-		for (Iterator<PageModel> i = getFlattedChapterList().iterator(); i.hasNext();) {
-			PageModel temp = i.next();
-			if (temp.getPage().contentEquals(page)) {
-				index = getFlattedChapterList().indexOf(temp);
+	public PageModel getNext(String page, boolean includeMissing, boolean includeRedlink) {
+		if (Util.isStringNullOrEmpty(page))
+			return null;
+
+		int index = getCurrentIndex(page);
+		PageModel next = null;
+
+		if (index != -1) {
+			index++;
+			while (index < getFlattedChapterList().size()) {
+				PageModel temp = getFlattedChapterList().get(index);
+				if (!includeRedlink && temp.isRedlink()) {
+					index++;
+					continue;
+				}
+				else if (!includeMissing && temp.isMissing()) {
+					index++;
+					continue;
+				}
+				next = temp;
 				break;
 			}
 		}
-		if (index != -1 && index + 1 < getFlattedChapterList().size())
-			return getFlattedChapterList().get(index + 1);
-		else
-			return null;
+
+		return next;
 	}
 
-	public PageModel getPrev(String page) {
+	public PageModel getPrev(String page, boolean includeMissing, boolean includeRedlink) {
+		if (Util.isStringNullOrEmpty(page))
+			return null;
+
+		int index = getCurrentIndex(page);
+		PageModel prev = null;
+		if (index != -1) {
+			index--;
+			while (index > 0) {
+				PageModel temp = getFlattedChapterList().get(index);
+				if (!includeRedlink && temp.isRedlink()) {
+					index--;
+					continue;
+				}
+				else if (!includeMissing && temp.isMissing()) {
+					index--;
+					continue;
+				}
+
+				prev = temp;
+				break;
+			}
+		}
+
+		return prev;
+	}
+
+	private int getCurrentIndex(String page) {
 		int index = -1;
-		for (Iterator<PageModel> i = getFlattedChapterList().iterator(); i.hasNext();) {
-			PageModel temp = i.next();
+		for (PageModel temp : getFlattedChapterList()) {
 			if (temp.getPage().contentEquals(page)) {
 				index = getFlattedChapterList().indexOf(temp);
 				break;
 			}
 		}
-		if (index != -1 && index - 1 >= 0)
-			return getFlattedChapterList().get(index - 1);
-		else
-			return null;
+		return index;
 	}
 
 	public String getRedirectTo() {

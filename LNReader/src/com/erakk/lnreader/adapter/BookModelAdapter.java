@@ -139,9 +139,9 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public int getChildrenCount(int groupPosition) {
-		boolean showExternal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_EXTERNAL, true);
-		boolean showMissing = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_MISSING, true);
-		boolean showRedlink = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_REDLINK, true);
+		boolean showExternal = UIHelper.getShowExternal(context);
+		boolean showMissing = UIHelper.getShowMissing(context);
+		boolean showRedlink = UIHelper.getShowRedlink(context);
 
 		ArrayList<PageModel> chList = groups.get(groupPosition).getChapterCollection();
 		int count = 0;
@@ -160,9 +160,9 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public PageModel getChild(int groupPosition, int childPosition) {
-		boolean showExternal = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_EXTERNAL, true);
-		boolean showMissing = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_MISSING, true);
-		boolean showRedlink = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_SHOW_REDLINK, true);
+		boolean showExternal = UIHelper.getShowExternal(context);
+		boolean showMissing = UIHelper.getShowMissing(context);
+		boolean showRedlink = UIHelper.getShowRedlink(context);
 
 		ArrayList<PageModel> chList = groups.get(groupPosition).getChapterCollection();
 		int count = 0;
