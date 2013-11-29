@@ -49,9 +49,9 @@ public class TtsService extends Service implements OnInitListener, OnCompleteLis
 	}
 
 	@Override
-	public void onComplete(Object i) {
+	public void onComplete(Object i, Class<?> source) {
 		if (this.onComplete != null) {
-			this.onComplete.onComplete(i);
+			this.onComplete.onComplete(i, source);
 		}
 	}
 

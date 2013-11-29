@@ -49,7 +49,7 @@ function goToParagraph(index, useSmoothScroll) {
             window.scroll(currPos, targetPost);
         }
     }
-    window.scrollTo(0, window.pageYOffset || document.documentElement.scrollTop);
+    window.scrollTo(0, targetPost);
 }
 
 /* Helper method to get paragraph position */

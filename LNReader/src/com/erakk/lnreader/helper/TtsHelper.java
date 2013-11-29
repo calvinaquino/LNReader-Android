@@ -119,7 +119,7 @@ public class TtsHelper implements OnInitListener {
 		synchronized (this) {
 			if (queue != null && queue.size() > currentQueueIndex) {
 				SpeakValue s = queue.get(currentQueueIndex);
-				onCompleteListener.onComplete(s.ID);
+				onCompleteListener.onComplete(s.ID, TtsHelper.class);
 			}
 			if (isPaused) {
 				Log.d(TAG, "Paused!");

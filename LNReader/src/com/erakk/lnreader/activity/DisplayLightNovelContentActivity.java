@@ -54,6 +54,7 @@ import com.erakk.lnreader.helper.BakaTsukiWebChromeClient;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
 import com.erakk.lnreader.helper.NonLeakingWebView;
 import com.erakk.lnreader.helper.OnCompleteListener;
+import com.erakk.lnreader.helper.TtsHelper;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.BookmarkModel;
@@ -211,13 +212,13 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			}
 		}
 		setWebViewSettings();
-		if (content != null) {
-			NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
-			int pos = content.getLastYScroll();
-			if (pos > 0)
-				pos = pos - 1;
-			wv.loadUrl("javascript:goToParagraph(" + pos + ")");
-		}
+		// if (content != null) {
+		// NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
+		// int pos = content.getLastYScroll();
+		// if (pos > 0)
+		// pos = pos - 1;
+		// wv.loadUrl("javascript:goToParagraph(" + pos + ")");
+		// }
 
 		if (ttsBinder != null) {
 			ttsBinder.initConfig();
@@ -678,7 +679,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			}
 			editor.commit();
 
-			Log.d(TAG, "Update Content: " + content.getLastXScroll() + " " + content.getLastYScroll() + " " + content.getLastZoom());
+			Log.d(TAG, "Update Content:X=" + content.getLastXScroll() + ":Y=" + content.getLastYScroll() + ":Z=" + content.getLastZoom());
 		}
 	}
 
@@ -990,8 +991,15 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	public void notifyLoadComplete() {
 		isPageLoaded = true;
 		if (webView != null && content != null) {
-			Log.d(TAG, "notifyLoadComplete(): Move to the saved pos: " + content.getLastYScroll());
-			webView.loadUrl("javascript:goToParagraph(" + content.getLastYScroll() + ")");
+			// webView.loadUrl("javascript:goToParagraph(" + content.getLastYScroll() + ")");
+			webView.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					int y = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, content.getLastYScroll());
+					Log.d(TAG, "notifyLoadComplete(): Move to the saved pos: " + y);
+					webView.loadUrl("javascript:goToParagraph(" + y + ")");
+				}
+			}, UIHelper.getIntFromPreferences(Constants.PREF_KITKAT_WEBVIEW_FIX_DELAY, 500) + 100);
 		}
 	}
 
@@ -1159,24 +1167,27 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	}
 
 	@Override
-	public void onComplete(Object i) {
+	public void onComplete(Object i, Class<?> source) {
 		if (i != null) {
-			final String index = i.toString();
-			this.runOnUiThread(new Runnable() {
+			// handle TTS Auto Scroll
+			if (source == TtsHelper.class) {
+				final String index = i.toString();
+				this.runOnUiThread(new Runnable() {
 
-				@Override
-				public void run() {
+					@Override
+					public void run() {
 
-					if (true && webView != null && index != null) {
-						Log.d(TAG, "Auto Scroll to: " + index);
-						try {
-							webView.loadUrl("javascript:goToParagraph(" + index + ", true)");
-						} catch (Exception ex) {
-							Log.e(TAG, ex.getMessage(), ex);
+						if (true && webView != null && index != null) {
+							Log.d(TAG, "Auto Scroll to: " + index);
+							try {
+								webView.loadUrl("javascript:goToParagraph(" + index + ", true)");
+							} catch (Exception ex) {
+								Log.e(TAG, ex.getMessage(), ex);
+							}
 						}
 					}
-				}
-			});
+				});
+			}
 		}
 	}
 
