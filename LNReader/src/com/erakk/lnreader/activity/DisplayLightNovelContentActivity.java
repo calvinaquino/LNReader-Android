@@ -191,7 +191,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		// show/hide option button
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			Button btnOption = (Button) findViewById(R.id.btnMenu);
-			if (getFullscreenPreferences()) {
+			// do not show option button for KitKat, immersive mode will show action bar
+			if (getFullscreenPreferences() && Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
 				btnOption.setVisibility(View.VISIBLE);
 			} else {
 				btnOption.setVisibility(View.GONE);
