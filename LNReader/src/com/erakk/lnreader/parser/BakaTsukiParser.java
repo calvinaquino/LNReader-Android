@@ -338,105 +338,14 @@ public class BakaTsukiParser {
 				Elements h3s = bookElement.select("h3");
 				if (h3s != null && h3s.size() > 0) {
 					for (Element h3 : h3s) {
-						bookOrder = processH3(novel, books, h3, bookOrder);
+						bookOrder = CommonParser.processH3(novel, books, h3, bookOrder, Constants.LANG_ENGLISH);
 					}
 				}
 			} else if (bookElement.tagName() == "h3") {
-				bookOrder = processH3(novel, books, bookElement, bookOrder);
+				bookOrder = CommonParser.processH3(novel, books, bookElement, bookOrder, Constants.LANG_ENGLISH);
 			}
 		} while (walkBook);
 		return books;
-	}
-
-	public static int processH3(NovelCollectionModel novel, ArrayList<BookModel> books, Element bookElement, int bookOrder) {
-		// Log.d(TAG, "Found: " +bookElement.text());
-		BookModel book = new BookModel();
-		if (bookElement.html().contains("href"))
-			book.setTitle(CommonParser.sanitize(bookElement.text(), true));
-		else
-			book.setTitle(CommonParser.sanitize(bookElement.text(), false));
-		book.setOrder(bookOrder);
-		ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
-		String parent = novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle();
-
-		// parse the chapters.
-		boolean walkChapter = true;
-		int chapterOrder = 0;
-		Element chapterElement = bookElement;
-		do {
-			chapterElement = chapterElement.nextElementSibling();
-			if (chapterElement == null || chapterElement.tagName() == "h2" || chapterElement.tagName() == "h3") {
-				walkChapter = false;
-			} else {
-				Elements chapters = chapterElement.select("li");
-				for (Element chapter : chapters) {
-					PageModel p = processLI(chapter, parent, chapterOrder);
-					if (p != null) {
-						chapterCollection.add(p);
-						++chapterOrder;
-					}
-				}
-			}
-			book.setChapterCollection(chapterCollection);
-		} while (walkChapter);
-		books.add(book);
-		++bookOrder;
-		return bookOrder;
-	}
-
-	/***
-	 * Process li to chapter.
-	 * 
-	 * @param li
-	 * @param parent
-	 * @param chapterOrder
-	 * @return
-	 */
-	private static PageModel processLI(Element li, String parent, int chapterOrder) {
-		PageModel p = null;
-		Elements links = li.select("a");
-		if (links != null && links.size() > 0) {
-			// TODO: need to handle multiple link in one list item
-			Element link = links.first();
-
-			// skip if User_talk:
-			if (link.attr("href").contains("User_talk:"))
-				return null;
-
-			p = processA(li.text(), parent, chapterOrder, link);
-		}
-		return p;
-	}
-
-	/***
-	 * Process &lt;a&gt; to chapter
-	 * 
-	 * @param title
-	 * @param parent
-	 * @param chapterOrder
-	 * @param link
-	 * @return
-	 */
-	private static PageModel processA(String title, String parent, int chapterOrder, Element link) {
-		PageModel p = new PageModel();
-		p.setTitle(CommonParser.sanitize(title, false));
-		p.setParent(parent);
-		p.setType(PageModel.TYPE_CONTENT);
-		p.setOrder(chapterOrder);
-		p.setLastUpdate(new Date(0));
-		p.setLanguage(Constants.LANG_ENGLISH);
-
-		// External link
-		if (link.className().contains("external text")) {
-			p.setExternal(true);
-			p.setPage(link.attr("href"));
-			// Log.d(TAG, "Found external link for " + p.getTitle() + ": " + link.attr("href"));
-		} else {
-			p.setExternal(false);
-			String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL_HTTPS, "").replace(Constants.BASE_URL, "");
-			p.setPage(tempPage);
-		}
-		return p;
 	}
 
 	/***
@@ -483,7 +392,7 @@ public class BakaTsukiParser {
 					else if (chapterElement.tagName() == "dl" || chapterElement.tagName() == "ul" || chapterElement.tagName() == "div") {
 						Elements chapters = chapterElement.select("li");
 						for (Element chapter : chapters) {
-							PageModel p = processLI(chapter, parent, chapterOrder);
+							PageModel p = CommonParser.processLI(chapter, parent, chapterOrder, Constants.LANG_ENGLISH);
 							if (p != null) {
 								chapterCollection.add(p);
 								++chapterOrder;
@@ -495,7 +404,7 @@ public class BakaTsukiParser {
 						Elements links = bookElement.select("a");
 						if (links.size() > 0) {
 							Element link = links.first();
-							PageModel p = processA(link.text(), parent, chapterOrder, link);
+							PageModel p = CommonParser.processA(link.text(), parent, chapterOrder, link, Constants.LANG_ENGLISH);
 							// Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
 							chapterCollection.add(p);
 							++chapterOrder;
@@ -543,7 +452,7 @@ public class BakaTsukiParser {
 				int chapterOrder = 0;
 				Elements chapters = bookElement.select("li");
 				for (Element chapter : chapters) {
-					PageModel p = processLI(chapter, parent, chapterOrder);
+					PageModel p = CommonParser.processLI(chapter, parent, chapterOrder, Constants.LANG_ENGLISH);
 					if (p != null) {
 						chapterCollection.add(p);
 						++chapterOrder;

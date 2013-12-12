@@ -767,6 +767,10 @@ public class NovelsDao {
 				}
 
 				ArrayList<PageModel> chapters = getUpdateInfo(novel.getFlattedChapterList(), notifier);
+
+				if (notifier != null) {
+					notifier.onCallback(new CallbackEventData("Saving chapter information..."));
+				}
 				for (PageModel pageModel : chapters) {
 					if (pageModel.getPage().endsWith("&action=edit&redlink=1")) {
 						pageModel.setMissing(true);
@@ -847,6 +851,7 @@ public class NovelsDao {
 
 		String baseUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=";
 		int i = 0;
+		int pageCounter = 0;
 		int retry = 0;
 		while (i < pageModels.size()) {
 			int apiPageCount = 1;
@@ -885,6 +890,11 @@ public class NovelsDao {
 					Document doc = response.parse();
 					ArrayList<PageModel> updatedPageModels = CommonParser.parsePageAPI(checkedPageModel, doc, url);
 					resultPageModel.addAll(updatedPageModels);
+
+					if (notifier != null) {
+						pageCounter += checkedPageModel.size();
+						notifier.onCallback(new CallbackEventData(String.format("Updating chapter information: [%s of %s]", pageCounter, pageModels.size())));
+					}
 					break;
 				} catch (EOFException eof) {
 					++retry;
@@ -906,11 +916,19 @@ public class NovelsDao {
 			}
 		}
 
-		for (PageModel page : externalPageModel) {
-			getExternalUpdateInfo(page);
+		resultPageModel.addAll(noInfoPageModel);
+		if (notifier != null) {
+			pageCounter += noInfoPageModel.size();
+			notifier.onCallback(new CallbackEventData(String.format("Updating chapter information: [%s of %s]", pageCounter, pageModels.size())));
 		}
 
-		resultPageModel.addAll(noInfoPageModel);
+		for (PageModel page : externalPageModel) {
+			getExternalUpdateInfo(page);
+			if (notifier != null) {
+				pageCounter++;
+				notifier.onCallback(new CallbackEventData(String.format("Updating external chapter information: [%s of %s]", pageCounter, pageModels.size())));
+			}
+		}
 		resultPageModel.addAll(externalPageModel);
 
 		return resultPageModel;

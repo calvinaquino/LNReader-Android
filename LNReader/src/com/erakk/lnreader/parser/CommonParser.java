@@ -26,6 +26,7 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.ImageModel;
+import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 
 public class CommonParser {
@@ -46,6 +47,7 @@ public class CommonParser {
 
 	/**
 	 * Get all img element and update the src from /project/ to rootImagePath/project/
+	 * 
 	 * @param doc
 	 * @param rootImagePath
 	 * @return
@@ -56,7 +58,7 @@ public class CommonParser {
 		for (Element imageElement : imageElements) {
 			ImageModel image = new ImageModel();
 			String urlStr = imageElement.attr("src").replace("/project/", rootImagePath + "/project/");
-			//imageElement.attr("src", urlStr);
+			// imageElement.attr("src", urlStr);
 			String name = urlStr.substring(urlStr.lastIndexOf("/"));
 			image.setName(name);
 			try {
@@ -107,12 +109,12 @@ public class CommonParser {
 		int chapterOrder = 0;
 		for (Iterator<PageModel> iChapter = chapters.iterator(); iChapter.hasNext();) {
 			PageModel chapter = iChapter.next();
-			
+
 			// redlink=1 means chapter is missing, commented out to include missing chapters
-			if (!(//chapter.getPage().contains("redlink=1") || // missing page
-					chapter.getPage().contains("User:") || // user page
-					chapter.getPage().contains("Special:BookSources") // ISBN handler
-					)) {
+			if (!(// chapter.getPage().contains("redlink=1") || // missing page
+			chapter.getPage().contains("User:") || // user page
+			chapter.getPage().contains("Special:BookSources") // ISBN handler
+			)) {
 				chapter.setOrder(chapterOrder);
 				validatedChapters.add(chapter);
 				++chapterOrder;
@@ -268,6 +270,7 @@ public class CommonParser {
 
 	/**
 	 * Get the url for the big image http://www.baka-tsuki.org/project/index.php?title=File:xxx
+	 * 
 	 * @param imageUrl
 	 * @return
 	 */
@@ -290,6 +293,7 @@ public class CommonParser {
 
 	/**
 	 * Get the image model from /project/index.php?title=File:xxx
+	 * 
 	 * @param doc
 	 * @return
 	 */
@@ -311,6 +315,7 @@ public class CommonParser {
 
 	/**
 	 * Get all /project/index.php?title=File:xxx from content
+	 * 
 	 * @param doc
 	 * @return
 	 */
@@ -329,5 +334,140 @@ public class CommonParser {
 
 		Log.d(TAG, "Images Found: " + result.size());
 		return result;
+	}
+
+	/***
+	 * Process &lt;a&gt; to chapter
+	 * 
+	 * @param title
+	 * @param parent
+	 * @param chapterOrder
+	 * @param link
+	 * @param language
+	 * @return
+	 */
+	public static PageModel processA(String title, String parent, int chapterOrder, Element link, String language) {
+		PageModel p = new PageModel();
+		p.setTitle(CommonParser.sanitize(title, false));
+		p.setParent(parent);
+		p.setType(PageModel.TYPE_CONTENT);
+		p.setOrder(chapterOrder);
+		p.setLastUpdate(new Date(0));
+		p.setLanguage(language);
+
+		// External link
+		if (link.className().contains("external text")) {
+			p.setExternal(true);
+			p.setPage(link.attr("href"));
+			// Log.d(TAG, "Found external link for " + p.getTitle() + ": " + link.attr("href"));
+		} else {
+			p.setExternal(false);
+			String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL_HTTPS, "").replace(Constants.BASE_URL, "");
+			p.setPage(tempPage);
+		}
+		return p;
+	}
+
+	/***
+	 * Process li to chapter.
+	 * 
+	 * @param li
+	 * @param parent
+	 * @param chapterOrder
+	 * @return
+	 */
+	public static PageModel processLI(Element li, String parent, int chapterOrder, String language) {
+		PageModel p = null;
+		Elements links = li.select("a");
+		if (links != null && links.size() > 0) {
+			// TODO: need to handle multiple link in one list item
+			Element link = links.first();
+
+			// skip if User_talk:
+			if (link.attr("href").contains("User_talk:"))
+				return null;
+
+			p = processA(li.text(), parent, chapterOrder, link, language);
+		}
+		return p;
+	}
+
+	/***
+	 * Get the volume name and parse the chapter list.
+	 * 
+	 * @param novel
+	 * @param books
+	 * @param bookElement
+	 * @param bookOrder
+	 * @return
+	 */
+	public static int processH3(NovelCollectionModel novel, ArrayList<BookModel> books, Element bookElement, int bookOrder, String language) {
+		// Log.d(TAG, "Found: " +bookElement.text());
+		BookModel book = new BookModel();
+		if (bookElement.html().contains("href"))
+			book.setTitle(CommonParser.sanitize(bookElement.text(), true));
+		else
+			book.setTitle(CommonParser.sanitize(bookElement.text(), false));
+		book.setOrder(bookOrder);
+
+		ArrayList<PageModel> chapterCollection = parseChapters(novel, bookElement, language, book);
+		if (chapterCollection.size() == 0) {
+			// ToAru Index, the books is on h4
+			Element neighbor = null;
+			do {
+				neighbor = bookElement.parent().nextElementSibling();
+				if (neighbor != null) {
+					Elements h4s = neighbor.select("h4");
+					if (h4s != null) {
+						for (Element h4 : h4s) {
+							bookOrder = processH3(novel, books, h4, bookOrder, language);
+						}
+					}
+				}
+			} while (neighbor != null);
+		} else {
+			books.add(book);
+			++bookOrder;
+		}
+		return bookOrder;
+	}
+
+	/***
+	 * Parse chapter from element containing li element.
+	 * 
+	 * @param novel
+	 * @param bookElement
+	 * @param language
+	 * @param book
+	 * @return
+	 */
+	public static ArrayList<PageModel> parseChapters(NovelCollectionModel novel, Element bookElement, String language, BookModel book) {
+		ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
+		String parent = novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle();
+
+		// parse the chapters.
+		boolean walkChapter = true;
+		int chapterOrder = 0;
+		Element chapterElement = bookElement;
+		do {
+			chapterElement = chapterElement.nextElementSibling();
+			if (chapterElement == null
+					|| chapterElement.tagName() == "h2"
+					|| chapterElement.tagName() == "h3"
+					|| chapterElement.tagName() == "h4") {
+				walkChapter = false;
+			} else {
+				Elements chapters = chapterElement.select("li");
+				for (Element chapter : chapters) {
+					PageModel p = processLI(chapter, parent, chapterOrder, language);
+					if (p != null) {
+						chapterCollection.add(p);
+						++chapterOrder;
+					}
+				}
+			}
+			book.setChapterCollection(chapterCollection);
+		} while (walkChapter);
+		return chapterCollection;
 	}
 }

@@ -1,3 +1,6 @@
+1.1.13-beta:
+- update parser to handle ToAru Index.
+
 1.1.12:
 - Fix External Page Refresh.
 - Reorganize Preferences screen.
