@@ -1,5 +1,6 @@
 1.1.13-beta:
-- update parser to handle ToAru Index.
+- Update parser to handle ToAru Index.
+- Update immersive mode for KitKat (liyhcharles).
 
 1.1.12:
 - Fix External Page Refresh.

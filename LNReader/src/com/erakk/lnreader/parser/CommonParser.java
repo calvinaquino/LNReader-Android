@@ -413,9 +413,9 @@ public class CommonParser {
 		ArrayList<PageModel> chapterCollection = parseChapters(novel, bookElement, language, book);
 		if (chapterCollection.size() == 0) {
 			// ToAru Index, the books is on h4
-			Element neighbor = null;
+			Element neighbor = bookElement.parent();
 			do {
-				neighbor = bookElement.parent().nextElementSibling();
+				neighbor = neighbor.nextElementSibling();
 				if (neighbor != null) {
 					Elements h4s = neighbor.select("h4");
 					if (h4s != null) {
