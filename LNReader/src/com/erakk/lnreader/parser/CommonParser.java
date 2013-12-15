@@ -404,31 +404,50 @@ public class CommonParser {
 	public static int processH3(NovelCollectionModel novel, ArrayList<BookModel> books, Element bookElement, int bookOrder, String language) {
 		// Log.d(TAG, "Found: " +bookElement.text());
 		BookModel book = new BookModel();
-		if (bookElement.html().contains("href"))
+		if (bookElement.html().contains("href")) {
 			book.setTitle(CommonParser.sanitize(bookElement.text(), true));
-		else
+		}
+		else {
 			book.setTitle(CommonParser.sanitize(bookElement.text(), false));
+		}
+
+		String parent = novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle();
 		book.setOrder(bookOrder);
 
-		ArrayList<PageModel> chapterCollection = parseChapters(novel, bookElement, language, book);
+		ArrayList<PageModel> chapterCollection = parseChapters(novel, bookElement, language, parent);
+
 		if (chapterCollection.size() == 0) {
-			// ToAru Index, the books is on h4
-			Element neighbor = bookElement.parent();
-			do {
-				neighbor = neighbor.nextElementSibling();
-				if (neighbor != null) {
-					Elements h4s = neighbor.select("h4");
-					if (h4s != null) {
-						for (Element h4 : h4s) {
-							bookOrder = processH3(novel, books, h4, bookOrder, language);
-						}
+			// // ToAru Index, the books is on h4
+			// Element neighbor = bookElement.parent();
+			// do {
+			// neighbor = neighbor.nextElementSibling();
+			// if (neighbor != null) {
+			// Elements h4s = neighbor.select("h4");
+			// if (h4s != null) {
+			// for (Element h4 : h4s) {
+			// bookOrder = processH3(novel, books, h4, bookOrder, language);
+			// }
+			// }
+			// }
+			// } while (neighbor != null);
+			Elements bookLinks = bookElement.select("a");
+			if (bookLinks != null) {
+				for (Element a : bookLinks) {
+					Log.e(TAG, "Got linked Volume without chapter list: " + a.text() + " => " + a.attr("href"));
+					if (a.attr("href").startsWith(UIHelper.getBaseUrl(LNReaderApplication.getInstance()))) {
+						PageModel p = processA(a.text(), parent, 0, a, language);
+						chapterCollection.add(p);
+						break;
 					}
 				}
-			} while (neighbor != null);
-		} else {
-			books.add(book);
-			++bookOrder;
+			}
 		}
+		// else {
+		book.setChapterCollection(chapterCollection);
+
+		books.add(book);
+		++bookOrder;
+		// }
 		return bookOrder;
 	}
 
@@ -441,9 +460,8 @@ public class CommonParser {
 	 * @param book
 	 * @return
 	 */
-	public static ArrayList<PageModel> parseChapters(NovelCollectionModel novel, Element bookElement, String language, BookModel book) {
+	public static ArrayList<PageModel> parseChapters(NovelCollectionModel novel, Element bookElement, String language, String parent) {
 		ArrayList<PageModel> chapterCollection = new ArrayList<PageModel>();
-		String parent = novel.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle();
 
 		// parse the chapters.
 		boolean walkChapter = true;
@@ -466,7 +484,6 @@ public class CommonParser {
 					}
 				}
 			}
-			book.setChapterCollection(chapterCollection);
 		} while (walkChapter);
 		return chapterCollection;
 	}

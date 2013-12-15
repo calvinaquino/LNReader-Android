@@ -1443,6 +1443,7 @@ public class NovelsDao {
 		}
 		return timeout;
 	}
+
 	// public void temp() {
 	// synchronized (dbh) {
 	// SQLiteDatabase db = dbh.getWritableDatabase();
@@ -1450,4 +1451,11 @@ public class NovelsDao {
 	// db.execSQL(dbh.DATABASE_CREATE_NOVEL_BOOKMARK);
 	// }
 	// }
+
+	public String checkDB() {
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			return dbh.checkDB(db);
+		}
+	}
 }

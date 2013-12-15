@@ -49,6 +49,9 @@ function goToParagraph(index, useSmoothScroll) {
             window.scroll(currPos, targetPost);
         }
     }
+    if(index == 0) {
+    	targetPost = 0;
+    }
     window.scrollTo(0, targetPost);
 }
 

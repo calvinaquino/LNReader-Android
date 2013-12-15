@@ -462,4 +462,15 @@ public class DBHelper extends SQLiteOpenHelper {
 			return affectedRows;
 		}
 	}
+
+	public String checkDB(SQLiteDatabase db) {
+		try {
+			String sqlQuery = "pragma integrity_check";
+			db.rawQuery(sqlQuery, null);
+			return "DB OK";
+		} catch (Exception ex) {
+			Log.e(TAG, "DB Check failed.", ex);
+			return ex.getMessage();
+		}
+	}
 }
