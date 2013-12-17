@@ -112,10 +112,10 @@ public class NovelsDao {
 		}
 	}
 
-	public String copyDB(boolean makeBackup) throws IOException {
+	public String copyDB(boolean makeBackup, String filename) throws IOException {
 		synchronized (dbh) {
 			String filePath;
-			filePath = dbh.copyDB(context, makeBackup);
+			filePath = dbh.copyDB(context, makeBackup, filename);
 			return filePath;
 		}
 	}
@@ -1228,8 +1228,8 @@ public class NovelsDao {
 					Log.i(TAG, "Image found in DB, but doesn't exist in URL decoded path: " + java.net.URLDecoder.decode(imageTemp.getPath(), java.nio.charset.Charset.defaultCharset().displayName()));
 					downloadBigImage = true;
 				} // else Log.i(TAG, "Image found in DB with URL decoded path: " +
-					// java.net.URLDecoder.decode(imageTemp.getPath(),
-					// java.nio.charset.Charset.defaultCharset().displayName()));
+				// java.net.URLDecoder.decode(imageTemp.getPath(),
+				// java.nio.charset.Charset.defaultCharset().displayName()));
 
 			} catch (Exception e) {
 				Log.i(TAG, "Image found in DB, but path string seems to be broken: " + imageTemp.getPath()

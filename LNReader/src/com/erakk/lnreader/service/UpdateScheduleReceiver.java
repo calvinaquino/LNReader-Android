@@ -13,7 +13,7 @@ import android.util.Log;
 
 import com.erakk.lnreader.Constants;
 
-public class MyScheduleReceiver extends BroadcastReceiver {
+public class UpdateScheduleReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -51,7 +51,7 @@ public class MyScheduleReceiver extends BroadcastReceiver {
 		}
 
 		AlarmManager service = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		Intent intent = new Intent(context, MyStartServiceReceiver.class);
+		Intent intent = new Intent(context, UpdateStartServiceReceiver.class);
 		PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
 		if (repeatTime > 0) {

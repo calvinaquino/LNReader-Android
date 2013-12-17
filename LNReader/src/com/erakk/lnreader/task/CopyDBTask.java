@@ -19,11 +19,13 @@ public class CopyDBTask extends AsyncTask<Void, ICallbackEventData, Void> implem
 	private final ICallbackNotifier callback;
 	private final String source;
 	private final boolean makeBackup;
+	private final String filename;
 
-	public CopyDBTask(boolean makeBackup, ICallbackNotifier callback, String source) {
+	public CopyDBTask(boolean makeBackup, ICallbackNotifier callback, String source, String filename) {
 		this.makeBackup = makeBackup;
 		this.source = source;
 		this.callback = callback;
+		this.filename = filename;
 	}
 
 	@Override
@@ -64,7 +66,7 @@ public class CopyDBTask extends AsyncTask<Void, ICallbackEventData, Void> implem
 		else
 			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.copy_db_task_restore_start)));
 
-		String filePath = NovelsDao.getInstance().copyDB(makeBackup);
+		String filePath = NovelsDao.getInstance().copyDB(makeBackup, filename);
 		if (filePath == "null") {
 			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.database_not_found), source));
 		} else {

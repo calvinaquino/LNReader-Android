@@ -44,7 +44,7 @@ import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.Util;
-import com.erakk.lnreader.service.MyScheduleReceiver;
+import com.erakk.lnreader.service.UpdateScheduleReceiver;
 import com.erakk.lnreader.task.CopyDBTask;
 import com.erakk.lnreader.task.RelinkImagesTask;
 import com.erakk.lnreader.task.UnZipFilesTask;
@@ -255,7 +255,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int orientationIntervalValue = Util.tryParseInt(newValue.toString(), 0);
-				// MyScheduleReceiver.reschedule(orientationIntervalValue);
+				// UpdateScheduleReceiver.reschedule(orientationIntervalValue);
 				orientation.setSummary(String.format(getResources().getString(R.string.orientation_summary), orientationArray[orientationIntervalValue]));
 				setOrientation();
 				return true;
@@ -275,7 +275,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				int updatesIntervalInt = Util.tryParseInt(newValue.toString(), 0);
-				MyScheduleReceiver.reschedule(preference.getContext(), updatesIntervalInt);
+				UpdateScheduleReceiver.reschedule(preference.getContext(), updatesIntervalInt);
 				updatesInterval.setSummary(String.format(getResources().getString(R.string.update_interval_summary), updateIntervalArray[updatesIntervalInt]));
 				return true;
 			}
@@ -648,7 +648,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 	@SuppressLint({ "InlinedApi", "NewApi" })
 	private void copyDB(boolean makeBackup, String source) {
-		CopyDBTask task = new CopyDBTask(makeBackup, this, source);
+		CopyDBTask task = new CopyDBTask(makeBackup, this, source, null);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		else

@@ -87,6 +87,10 @@ public class Constants {
 	public static final String PREF_SHOW_REDLINK = "show_redlink";
 	public static final String PREF_KITKAT_WEBVIEW_FIX = "webview_kitkat_fix";
 	public static final String PREF_KITKAT_WEBVIEW_FIX_DELAY = "webview_kitkat_fix_delay";
+	public static final String PREF_LAST_AUTO_BACKUP_TIME = "last_auto_backup";
+	public static final String PREF_AUTO_BACKUP_COUNT = "auto_backup_count";
+	public static final String PREF_LAST_AUTO_BACKUP_INDEX = "last_auto_backup_index";
+	public static final String PREF_AUTO_BACKUP_ENABLED = "auto_backup_enabled";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-public class MyStartServiceReceiver extends BroadcastReceiver {
+public class UpdateStartServiceReceiver extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {

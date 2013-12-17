@@ -25,8 +25,9 @@
     <string name="novel_chapter">Novel Chapter</string>
     <string name="novel_chapter_dl">(DL)</string>
     <string name="list_empty">List is Empty</string>
-    <string name="service_name">LNReader Update Service</string>
+    <string name="update_service_name">LNReader Update Service</string>
     <string name="tts_service_name">LNReader TTS Service</string>
+    <string name="auto_backup_service_name">LNReader Auto Backup Service</string>
     <string name="hint_search">Search</string>
     <string name="teasers">Teaser List</string>
     <string name="search">Search</string>

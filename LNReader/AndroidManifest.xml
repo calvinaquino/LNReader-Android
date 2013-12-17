@@ -172,16 +172,30 @@
         <service
             android:name="com.erakk.lnreader.service.UpdateService"
             android:icon="@drawable/ic_launcher"
-            android:label="@string/tts_service_name"
+            android:label="@string/update_service_name"
+            android:process="" >
+        </service>
+        <service
+            android:name="com.erakk.lnreader.service.AutoBackupService"
+            android:icon="@drawable/ic_launcher"
+            android:label="@string/auto_backup_service_name"
             android:process="" >
         </service>
 
-        <receiver android:name="com.erakk.lnreader.service.MyScheduleReceiver" >
+        <receiver android:name="com.erakk.lnreader.service.UpdateScheduleReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.erakk.lnreader.service.MyStartServiceReceiver" >
+        <receiver android:name="com.erakk.lnreader.service.UpdateStartServiceReceiver" >
+        </receiver>
+        
+        <receiver android:name="com.erakk.lnreader.service.AutoBackupScheduleReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.erakk.lnreader.service.AutoBackupStartServiceReceiver" >
         </receiver>
 
         <activity

@@ -18,7 +18,7 @@ import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
-import com.erakk.lnreader.service.MyScheduleReceiver;
+import com.erakk.lnreader.service.UpdateScheduleReceiver;
 import com.erakk.lnreader.service.UpdateService;
 
 public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>> implements ICallbackNotifier {
@@ -60,7 +60,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 		}
 
 		// Reschedule for next run
-		MyScheduleReceiver.reschedule(service);
+		UpdateScheduleReceiver.reschedule(service);
 		service.setRunning(false);
 
 		// update last run

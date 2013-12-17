@@ -62,7 +62,7 @@ public class UpdateService extends Service {
 	public void execute() {
 		if (!shouldRun(force)) {
 			// Reschedule for next run
-			MyScheduleReceiver.reschedule(this);
+			UpdateScheduleReceiver.reschedule(this);
 			isRunning = false;
 			return;
 		}

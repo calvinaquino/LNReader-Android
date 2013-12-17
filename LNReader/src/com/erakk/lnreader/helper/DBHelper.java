@@ -176,25 +176,29 @@ public class DBHelper extends SQLiteOpenHelper {
 		Log.w(TAG, "Database Deleted.");
 	}
 
-	public String copyDB(Context context, boolean makeBackup) throws IOException {
-		Log.d("DatabaseManager", "creating database backup");
+	public String copyDB(Context context, boolean makeBackup, String filename) throws IOException {
+		if(Util.isStringNullOrEmpty(filename)) {
+			filename = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_pages.db";
+		}
 		File srcPath;
 		File dstPath;
 		if (makeBackup) {
+			Log.d(TAG, "Creating database backup");
 			srcPath = new File(getDbPath(context));
-			dstPath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_pages.db");
+			dstPath = new File(filename);
 		} else {
+			Log.d(TAG, "Restoring database backup");
 			dstPath = new File(getDbPath(context));
-			srcPath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_pages.db");
+			srcPath = new File(filename);
 		}
-		Log.d("DatabaseManager", "source file: " + srcPath.getAbsolutePath());
-		Log.d("DatabaseManager", "destination file: " + dstPath.getAbsolutePath());
+		Log.d(TAG, "source file: " + srcPath.getAbsolutePath());
+		Log.d(TAG, "destination file: " + dstPath.getAbsolutePath());
 		if (srcPath.exists()) {
 			Util.copyFile(srcPath, dstPath);
-			Log.d("DatabaseManager", "copy success");
+			Log.d(TAG, "copy success");
 			return dstPath.getPath();
 		} else {
-			Log.d("DatabaseManager", "source file does not exist");
+			Log.d(TAG, "source file does not exist");
 			return "null";
 		}
 	}
