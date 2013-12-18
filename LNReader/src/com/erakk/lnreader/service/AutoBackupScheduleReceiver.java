@@ -1,6 +1,7 @@
 package com.erakk.lnreader.service;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -30,10 +31,11 @@ public class AutoBackupScheduleReceiver extends BroadcastReceiver {
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.SECOND, 60);
 
+			Date nextRun = new Date(cal.getTimeInMillis() + repeatTime);
 			// InexactRepeating allows Android to optimize the energy consumption
-			Log.i(AutoBackupService.TAG, "Repeating in: " + repeatTime);
+			Log.i(AutoBackupService.TAG, "Repeating in: " + nextRun);
 			// service.setInexactRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), repeatTime, pending);
-			service.set(AlarmManager.RTC, cal.getTimeInMillis() + repeatTime, pending);
+			service.set(AlarmManager.RTC, nextRun.getTime(), pending);
 		}
 		else {
 			removeSchedule(context);

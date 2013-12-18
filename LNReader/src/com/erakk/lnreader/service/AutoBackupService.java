@@ -1,15 +1,17 @@
 package com.erakk.lnreader.service;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -18,9 +20,9 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
-import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.task.CopyDBTask;
 
-public class AutoBackupService extends Service{
+public class AutoBackupService extends Service {
 	public static final String TAG = AutoBackupService.class.toString();
 	private final IBinder mBinder = new AutoBackupServiceBinder();
 	private static boolean isRunning;
@@ -46,32 +48,32 @@ public class AutoBackupService extends Service{
 		return mBinder;
 	}
 
+	@SuppressLint("InlinedApi")
 	private void execute() {
-		if(!shouldRun()) {
+		if (!shouldRun()) {
 			return;
 		}
 
-		if(!isRunning) {
+		if (!isRunning) {
 			AutoBackupService.isRunning = true;
-			if(notifier != null)
-				notifier.onCallback(new CallbackEventData("Auto Backup is running...", AutoBackupService.class.toString()));
+			if (notifier != null)
+				notifier.onCallback(new CallbackEventData("Auto Backup is running...", Constants.PREF_AUTO_BACKUP_ENABLED));
 
 			int backupCount = UIHelper.getIntFromPreferences(Constants.PREF_AUTO_BACKUP_COUNT, 4);
 			int nextIndex = UIHelper.getIntFromPreferences(Constants.PREF_LAST_AUTO_BACKUP_INDEX, 0) + 1;
-			if(nextIndex > backupCount) nextIndex = 0;
+			if (nextIndex > backupCount)
+				nextIndex = 0;
 
 			String backupFilename = UIHelper.getBackupRoot(this) + "/Backup_pages.db." + nextIndex;
 
-			try {
-				NovelsDao.getInstance(this).copyDB(true, backupFilename);
-			} catch (IOException e) {
-				Log.e(TAG, "Failed to auto backup DB", e);
-				if(notifier != null)
-					notifier.onCallback(new CallbackEventData("Failed to auto backup DB.", AutoBackupService.class.toString()));
-			}
+			CopyDBTask task = new CopyDBTask(true, notifier, Constants.PREF_BACKUP_DB, backupFilename);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			else
+				task.execute();
 
-			if(notifier != null)
-				notifier.onCallback(new CallbackEventData("Auto Backup to: " + backupFilename, AutoBackupService.class.toString()));
+			if (notifier != null)
+				notifier.onCallback(new CallbackEventData("Auto Backup to: " + backupFilename, Constants.PREF_AUTO_BACKUP_ENABLED));
 
 			// update last backup information
 			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -91,7 +93,7 @@ public class AutoBackupService extends Service{
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
 		boolean isEnabled = preferences.getBoolean(Constants.PREF_AUTO_BACKUP_ENABLED, false);
-		if(isEnabled) {
+		if (isEnabled) {
 			long lastBackupTime = preferences.getLong(Constants.PREF_LAST_AUTO_BACKUP_TIME, 0);
 
 			// last backup time + 1 day
@@ -100,15 +102,13 @@ public class AutoBackupService extends Service{
 			if (nextBackupTime.before(currentTime)) {
 				result = true;
 			}
-			else {
-				AutoBackupScheduleReceiver.reschedule(this);
-				result = false;
-			}
 		}
+		if (!result)
+			AutoBackupScheduleReceiver.reschedule(this);
 		return result;
 	}
 
-	public boolean isRunning(){
+	public boolean isRunning() {
 		return AutoBackupService.isRunning;
 	}
 
@@ -123,12 +123,14 @@ public class AutoBackupService extends Service{
 
 		String backupFilename = rootPath + "/Backup_pages.db";
 		File f = new File(backupFilename);
-		if(f.exists()) backups.add(f);
+		if (f.exists())
+			backups.add(f);
 
-		for(int i = 0; i < backupCount; ++i) {
+		for (int i = 0; i < backupCount; ++i) {
 			backupFilename = rootPath + "/Backup_pages.db." + i;
 			f = new File(backupFilename);
-			if(f.exists()) backups.add(f);
+			if (f.exists())
+				backups.add(f);
 		}
 		Log.i(TAG, "Found backups: " + backups.size());
 		return backups;

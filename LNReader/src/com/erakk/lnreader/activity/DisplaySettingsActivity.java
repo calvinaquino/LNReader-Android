@@ -438,28 +438,15 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			}
 		});
 
-		// Backup DB
-		Preference backupDatabase = findPreference(Constants.PREF_BACKUP_DB);
-		backupDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+		// DB Location
+		Preference defaultDbLocation = findPreference("db_location");
+		defaultDbLocation.setSummary(String.format(getResources().getString(R.string.novel_database_to), DBHelper.getDbPath(this)));
+		defaultDbLocation.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
 			@Override
-			public boolean onPreferenceClick(Preference p) {
-				// Quick fix, please revise as seen fit.
-				// Confirm task execution, useful during unintentional clicks.
-				UIHelper.createYesNoDialog(
-						dsa
-						, getResources().getString(R.string.backup_db_question)
-						, getResources().getString(R.string.backup_db_question2)
-						, new OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								if (which == DialogInterface.BUTTON_POSITIVE) {
-									backupDB();
-								}
-							}
-						}).show();
-				return true;
+			public boolean onPreferenceClick(Preference preference) {
+				checkDB();
+				return false;
 			}
 		});
 
@@ -488,14 +475,55 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			}
 		});
 
+		// Backup DB
+		Preference backupDatabase = findPreference(Constants.PREF_BACKUP_DB);
+		backupDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference p) {
+				// Quick fix, please revise as seen fit.
+				// Confirm task execution, useful during unintentional clicks.
+				UIHelper.createYesNoDialog(
+						dsa
+						, getResources().getString(R.string.backup_db_question)
+						, getResources().getString(R.string.backup_db_question2)
+						, new OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								if (which == DialogInterface.BUTTON_POSITIVE) {
+									backupDB();
+								}
+							}
+						}).show();
+				return true;
+			}
+		});
+
+		// DB Backup Location
+		final EditTextPreference backupLocation = (EditTextPreference) findPreference(Constants.PREF_BACKUP_LOCATION);
+		backupLocation.setText(UIHelper.getBackupRoot(this));
+		backupLocation.setSummary(getResources().getString(R.string.pref_db_backup_location_summary, UIHelper.getBackupRoot(this)));
+		backupLocation.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				String newPath = (String) newValue;
+				boolean result = checkBackupStoragePath(newPath);
+				if (result)
+					backupLocation.setSummary(getResources().getString(R.string.pref_db_backup_location_summary, newPath));
+				return result;
+			}
+		});
+
 		// Auto Backup DB
 		Preference autoBackup = findPreference(Constants.PREF_AUTO_BACKUP_ENABLED);
-		autoBackup.setSummary(String.format("Enable daily auto backup. Last backup: %s", new Date(autoBackup.getSharedPreferences().getLong(Constants.PREF_LAST_AUTO_BACKUP_TIME, 0))));
+		autoBackup.setSummary(getResources().getString(R.string.pref_db_auto_backup_summary, new Date(autoBackup.getSharedPreferences().getLong(Constants.PREF_LAST_AUTO_BACKUP_TIME, 0))));
 		autoBackup.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				if((Boolean) newValue){
+				if ((Boolean) newValue) {
 					runAutoBackupService();
 				}
 				else {
@@ -505,19 +533,15 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			}
 		});
 
-		// DB Backup Location
-		final EditTextPreference backupLocation = (EditTextPreference) findPreference(Constants.PREF_BACKUP_LOCATION);
-		backupLocation.setText(UIHelper.getBackupRoot(this));
-		backupLocation.setSummary(String.format("Backup Location: %s", UIHelper.getBackupRoot(this)));
-		backupLocation.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+		// Auto Backup DB
+		final Preference autoBackupCount = findPreference(Constants.PREF_AUTO_BACKUP_COUNT);
+		autoBackupCount.setSummary(getResources().getString(R.string.pref_db_auto_backup_count_summary, UIHelper.getIntFromPreferences(Constants.PREF_AUTO_BACKUP_COUNT, 0)));
+		autoBackupCount.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
 			@Override
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				String newPath = (String) newValue;
-				boolean result = checkBackupStoragePath(newPath);
-				if (result)
-					backupLocation.setSummary(String.format("Backup Location: %s", newPath));
-				return result;
+				autoBackupCount.setSummary(getResources().getString(R.string.pref_db_auto_backup_count_summary, newValue));
+				return true;
 			}
 		});
 
@@ -547,19 +571,6 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				return result;
 			}
 		});
-
-		// DB Location
-		Preference defaultDbLocation = findPreference("db_location");
-		defaultDbLocation.setSummary(String.format(getResources().getString(R.string.novel_database_to), DBHelper.getDbPath(this)));
-		defaultDbLocation.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-
-			@Override
-			public boolean onPreferenceClick(Preference preference) {
-				checkDB();
-				return false;
-			}
-		});
-
 		// Backup Thumbs
 		Preference backupThumbs = findPreference(Constants.PREF_BACKUP_THUMB_IMAGES);
 		backupThumbs.setOnPreferenceClickListener(new OnPreferenceClickListener() {

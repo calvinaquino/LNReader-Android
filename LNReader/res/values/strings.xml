@@ -364,4 +364,12 @@
     <string name="pref_webview_kitkat_fix_sum">Enable text reflow when zooming for Android 4.4 (KitKat)</string>
     <string name="pref_webview_kitkat_fix_delay_sum">Kitkat WebView zoom delay, default is 500ms.</string>
     <string name="pref_webview_kitkat_fix_delay_title">Reflow Delay</string>
+    <string name="cat_db_backup_and_restore">Database Backup</string>
+    <string name="pref_db_backup_location_title">Backup Location</string>
+    <string name="pref_db_backup_location_summary">Default location for backups: %1$s.</string>
+    <string name="pref_db_auto_backup_title">Auto Backup</string>
+    <string name="pref_db_auto_backup_summary">Enable daily auto backup, last backup: %1$s.</string>
+    <string name="pref_db_auto_backup_count_title">Number of Auto Backup</string>
+    <string name="pref_db_auto_backup_count_summary">Number of auto backup created (rolling backup): %1$s.</string>
+    <string name="cat_image_backup">Image Backup</string>
 </resources>

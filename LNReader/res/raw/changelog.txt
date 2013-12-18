@@ -1,7 +1,10 @@
-1.1.13-beta:
+1.1.13-beta2:
 - Update parser to handle ToAru Index.
 - Update immersive mode for KitKat (liyhcharles).
 - Add check DB (Tap DB Save Location).
+- Add daily AutoBackup DB with rolling backup support (default is 4).
+- Add option to define DB backup location
+- Enhace DB restore: allow to choose backup version.
 
 1.1.12:
 - Fix External Page Refresh.

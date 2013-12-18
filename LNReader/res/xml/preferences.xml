@@ -94,17 +94,19 @@
         <PreferenceScreen
             android:key="storage_category"
             android:title="@string/storage" >
-            <PreferenceCategory android:title="@string/pref_cat_database"><Preference android:key="clear_database" android:summary="@string/clear_database_summary" android:title="@string/clear_database_title" /><Preference android:key="backup_database" android:summary="@string/backup_database_summary" android:title="@string/backup_database_title" /><Preference android:key="restore_database" android:summary="@string/restore_database_summary" android:title="@string/restore_database_title" /><Preference android:key="db_location" android:title="@string/db_location_title" />
-            
-            <CheckBoxPreference android:key="auto_backup_enabled" android:title="Auto Backup" android:defaultValue="false" android:summary="Enable daily auto backup."/>
-            <EditTextPreference android:key="auto_backup_count" android:title="Auto Backup Count" android:defaultValue="4" android:summary="Number of auto backup created (rolling backup)"/>
-            <EditTextPreference android:summary="Save location for backups." android:title="Backup Location" android:key="backup_location"/>
-</PreferenceCategory>
+            <PreferenceCategory android:title="@string/pref_cat_database"><Preference android:key="clear_database" android:summary="@string/clear_database_summary" android:title="@string/clear_database_title" /><Preference android:key="db_location" android:title="@string/db_location_title" /><Preference android:key="restore_database" android:summary="@string/restore_database_summary" android:title="@string/restore_database_title" />
             
             
-            <PreferenceCategory android:title="@string/pref_cat_images"><Preference android:key="clear_image_cache" android:summary="@string/clear_cache_summary" android:title="@string/clear_cache_title" /><Preference android:key="backup_thumb_images" android:title="@string/backup_thumb_images_title" android:summary="@string/backup_thumb_images_summary" /><Preference android:title="@string/restore_thumb_images_title" android:summary="@string/restore_thumb_images_summary" android:key="restore_thumb_images" /><EditTextPreference android:key="save_location" android:title="@string/save_location_title" /><Preference android:title="@string/relink_images_title" android:summary="@string/relink_images_summary" android:key="relink_images" /><CheckBoxPreference android:key="download_big_image" android:summary="@string/download_big_image_summary" android:title="@string/download_big_image_title" />
-            <CheckBoxPreference android:title="@string/pref_process_all_images_title" android:summary="@string/pref_process_all_images_summary" android:key="process_all_images" android:defaultValue="false"/>
-</PreferenceCategory>
+            
+            
+            
+</PreferenceCategory><PreferenceCategory android:title="@string/cat_db_backup_and_restore"><Preference android:key="backup_database" android:summary="@string/backup_database_summary" android:title="@string/backup_database_title" /><EditTextPreference android:key="backup_location" android:summary="@string/pref_db_backup_location_summary" android:title="@string/pref_db_backup_location_title" /><CheckBoxPreference android:key="auto_backup_enabled" android:defaultValue="false" android:summary="@string/pref_db_auto_backup_summary" android:title="@string/pref_db_auto_backup_title" /><EditTextPreference android:key="auto_backup_count" android:defaultValue="4" android:summary="@string/pref_db_auto_backup_count_summary" android:title="@string/pref_db_auto_backup_count_title" /></PreferenceCategory>
+            
+            
+            <PreferenceCategory android:title="@string/pref_cat_images"><CheckBoxPreference android:key="download_big_image" android:summary="@string/download_big_image_summary" android:title="@string/download_big_image_title" /><Preference android:key="clear_image_cache" android:summary="@string/clear_cache_summary" android:title="@string/clear_cache_title" /><EditTextPreference android:key="save_location" android:title="@string/save_location_title" />
+            
+            
+</PreferenceCategory><PreferenceCategory android:title="@string/cat_image_backup"><CheckBoxPreference android:title="@string/pref_process_all_images_title" android:summary="@string/pref_process_all_images_summary" android:key="process_all_images" android:defaultValue="false" /><Preference android:key="backup_thumb_images" android:title="@string/backup_thumb_images_title" android:summary="@string/backup_thumb_images_summary" /><Preference android:title="@string/restore_thumb_images_title" android:summary="@string/restore_thumb_images_summary" android:key="restore_thumb_images" /><Preference android:title="@string/relink_images_title" android:summary="@string/relink_images_summary" android:key="relink_images" /></PreferenceCategory>
             
             
 
