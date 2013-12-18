@@ -1,6 +1,8 @@
 package com.erakk.lnreader.activity;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -38,12 +40,15 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.adapter.FileListAdapter;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.Util;
+import com.erakk.lnreader.service.AutoBackupScheduleReceiver;
+import com.erakk.lnreader.service.AutoBackupService;
 import com.erakk.lnreader.service.UpdateScheduleReceiver;
 import com.erakk.lnreader.task.CopyDBTask;
 import com.erakk.lnreader.task.RelinkImagesTask;
@@ -210,6 +215,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 		// non preferences setup
 		LNReaderApplication.getInstance().setUpdateServiceListener(this);
+		LNReaderApplication.getInstance().setAutoBackupServiceListener(this);
 		isInverted = UIHelper.getColorPreferences(this);
 	}
 
@@ -449,7 +455,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								if (which == DialogInterface.BUTTON_POSITIVE) {
-									copyDB(true, Constants.PREF_BACKUP_DB);
+									backupDB();
 								}
 							}
 						}).show();
@@ -474,11 +480,44 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								if (which == DialogInterface.BUTTON_POSITIVE) {
-									copyDB(false, Constants.PREF_RESTORE_DB);
+									showBackupsDB();
 								}
 							}
 						}).show();
 				return true;
+			}
+		});
+
+		// Auto Backup DB
+		Preference autoBackup = findPreference(Constants.PREF_AUTO_BACKUP_ENABLED);
+		autoBackup.setSummary(String.format("Enable daily auto backup. Last backup: %s", new Date(autoBackup.getSharedPreferences().getLong(Constants.PREF_LAST_AUTO_BACKUP_TIME, 0))));
+		autoBackup.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				if((Boolean) newValue){
+					runAutoBackupService();
+				}
+				else {
+					AutoBackupScheduleReceiver.removeSchedule(getApplicationContext());
+				}
+				return true;
+			}
+		});
+
+		// DB Backup Location
+		final EditTextPreference backupLocation = (EditTextPreference) findPreference(Constants.PREF_BACKUP_LOCATION);
+		backupLocation.setText(UIHelper.getBackupRoot(this));
+		backupLocation.setSummary(String.format("Backup Location: %s", UIHelper.getBackupRoot(this)));
+		backupLocation.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				String newPath = (String) newValue;
+				boolean result = checkBackupStoragePath(newPath);
+				if (result)
+					backupLocation.setSummary(String.format("Backup Location: %s", newPath));
+				return result;
 			}
 		});
 
@@ -609,6 +648,32 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		}
 	}
 
+	private boolean checkBackupStoragePath(String newPath) {
+		if (Util.isStringNullOrEmpty(newPath)) {
+			newPath = UIHelper.getBackupRoot(this);
+		}
+		File dir = new File(newPath);
+		if (!dir.exists()) {
+			Log.e(TAG, String.format("Directory %s not exists, trying to create dir.", newPath));
+			boolean result = dir.mkdirs();
+			if (result) {
+				Log.i(TAG, String.format("Directory %s created.", newPath));
+				return true;
+			} else {
+				String message = String.format("Directory %s cannot be created.", newPath);
+				Log.e(TAG, message);
+				Toast.makeText(this, String.format("Directory %s cannot be created.", newPath), Toast.LENGTH_SHORT).show();
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
+
+	private void runAutoBackupService() {
+		LNReaderApplication.getInstance().runAutoBackupService(this);
+	}
+
 	private void checkDB() {
 		String result = NovelsDao.getInstance(this).checkDB();
 		Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
@@ -646,9 +711,34 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			task.execute();
 	}
 
-	@SuppressLint({ "InlinedApi", "NewApi" })
-	private void copyDB(boolean makeBackup, String source) {
-		CopyDBTask task = new CopyDBTask(makeBackup, this, source, null);
+	private void showBackupsDB() {
+		ArrayList<File> backups = AutoBackupService.getBackupFiles(this);
+		final FileListAdapter adapter = new FileListAdapter(this, R.layout.file_list_item, backups);
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Choose Backup File");
+		builder.setAdapter(adapter, new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				File f = adapter.getItem(which);
+				restoreDB(f.getAbsolutePath());
+			}
+		});
+		builder.create().show();
+
+	}
+
+	@SuppressLint("NewApi")
+	private void restoreDB(String filename) {
+		CopyDBTask task = new CopyDBTask(false, this, Constants.PREF_RESTORE_DB, filename);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		else
+			task.execute();
+	}
+
+	@SuppressLint("NewApi")
+	private void backupDB() {
+		CopyDBTask task = new CopyDBTask(true, this, Constants.PREF_BACKUP_DB, null);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		else
@@ -971,6 +1061,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	protected void onStop() {
 		super.onStop();
 		LNReaderApplication.getInstance().setUpdateServiceListener(null);
+		LNReaderApplication.getInstance().setAutoBackupServiceListener(null);
 	}
 
 	private void DeleteRecursive(File fileOrDirectory) {

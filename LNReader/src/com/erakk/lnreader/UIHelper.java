@@ -172,7 +172,7 @@ public class UIHelper {
 								}
 							}
 						});
-			}	
+			}
 			// Hide action bar for supported versions
 			else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				ActionBar actionBar = activity.getActionBar();
@@ -190,7 +190,7 @@ public class UIHelper {
 			activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		}
 	}
-	
+
 	@SuppressLint("NewApi")
 	public static void hideSystemUi(Activity activity) {
 		activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -426,5 +426,16 @@ public class UIHelper {
 
 	public static boolean getShowRedlink(Context ctx) {
 		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_SHOW_REDLINK, true);
+	}
+
+	public static String getBackupRoot(Context ctx) {
+		String loc = PreferenceManager.getDefaultSharedPreferences(ctx).getString(Constants.PREF_BACKUP_LOCATION, "");
+		if (Util.isStringNullOrEmpty(loc)) {
+			Log.w(TAG, "Empty Path, use default path for backup storage.");
+			loc = Environment.getExternalStorageDirectory().getAbsolutePath();
+		}
+		if (loc.endsWith("/"))
+			loc = loc.substring(0, loc.length() - 1);
+		return loc;
 	}
 }

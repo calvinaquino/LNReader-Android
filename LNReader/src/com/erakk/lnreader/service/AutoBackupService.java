@@ -1,13 +1,15 @@
 package com.erakk.lnreader.service;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
-import android.os.Environment;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -51,23 +53,25 @@ public class AutoBackupService extends Service{
 
 		if(!isRunning) {
 			AutoBackupService.isRunning = true;
+			if(notifier != null)
+				notifier.onCallback(new CallbackEventData("Auto Backup is running...", AutoBackupService.class.toString()));
 
 			int backupCount = UIHelper.getIntFromPreferences(Constants.PREF_AUTO_BACKUP_COUNT, 4);
 			int nextIndex = UIHelper.getIntFromPreferences(Constants.PREF_LAST_AUTO_BACKUP_INDEX, 0) + 1;
 			if(nextIndex > backupCount) nextIndex = 0;
 
-			String backupFilename = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_pages.db." + nextIndex;
+			String backupFilename = UIHelper.getBackupRoot(this) + "/Backup_pages.db." + nextIndex;
 
 			try {
 				NovelsDao.getInstance(this).copyDB(true, backupFilename);
 			} catch (IOException e) {
 				Log.e(TAG, "Failed to auto backup DB", e);
 				if(notifier != null)
-					notifier.onCallback(new CallbackEventData("Failed to auto backup DB."));
+					notifier.onCallback(new CallbackEventData("Failed to auto backup DB.", AutoBackupService.class.toString()));
 			}
 
 			if(notifier != null)
-				notifier.onCallback(new CallbackEventData("Auto Backup to: " + backupFilename));
+				notifier.onCallback(new CallbackEventData("Auto Backup to: " + backupFilename, AutoBackupService.class.toString()));
 
 			// update last backup information
 			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -91,8 +95,9 @@ public class AutoBackupService extends Service{
 			long lastBackupTime = preferences.getLong(Constants.PREF_LAST_AUTO_BACKUP_TIME, 0);
 
 			// last backup time + 1 day
-			Date nextBackupTime = new Date(lastBackupTime + 86400000L);
-			if (nextBackupTime.after(new Date())) {
+			Date nextBackupTime = new Date(lastBackupTime + 86400000);
+			Date currentTime = new Date();
+			if (nextBackupTime.before(currentTime)) {
 				result = true;
 			}
 			else {
@@ -100,7 +105,6 @@ public class AutoBackupService extends Service{
 				result = false;
 			}
 		}
-
 		return result;
 	}
 
@@ -112,10 +116,29 @@ public class AutoBackupService extends Service{
 		this.notifier = notifier;
 	}
 
+	public static ArrayList<File> getBackupFiles(Context ctx) {
+		ArrayList<File> backups = new ArrayList<File>();
+		String rootPath = UIHelper.getBackupRoot(ctx);
+		int backupCount = UIHelper.getIntFromPreferences(Constants.PREF_AUTO_BACKUP_COUNT, 4);
+
+		String backupFilename = rootPath + "/Backup_pages.db";
+		File f = new File(backupFilename);
+		if(f.exists()) backups.add(f);
+
+		for(int i = 0; i < backupCount; ++i) {
+			backupFilename = rootPath + "/Backup_pages.db." + i;
+			f = new File(backupFilename);
+			if(f.exists()) backups.add(f);
+		}
+		Log.i(TAG, "Found backups: " + backups.size());
+		return backups;
+	}
+
 	public class AutoBackupServiceBinder extends Binder {
 		public AutoBackupService getService() {
 			Log.d(TAG, "getService");
 			return AutoBackupService.this;
 		}
 	}
+
 }

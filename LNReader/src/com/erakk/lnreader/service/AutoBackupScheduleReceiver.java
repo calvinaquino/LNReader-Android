@@ -19,13 +19,12 @@ public class AutoBackupScheduleReceiver extends BroadcastReceiver {
 	public static void reschedule(Context context) {
 
 		long repeatTime = 86400000L;
-
-		AlarmManager service = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		Intent intent = new Intent(context, AutoBackupStartServiceReceiver.class);
-		PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-
 		if (repeatTime > 0) {
 			Log.d(AutoBackupService.TAG, "Setting up schedule");
+
+			AlarmManager service = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+			Intent intent = new Intent(context, AutoBackupStartServiceReceiver.class);
+			PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
 			// Start repeatTime seconds after boot completed
 			Calendar cal = Calendar.getInstance();
@@ -37,8 +36,17 @@ public class AutoBackupScheduleReceiver extends BroadcastReceiver {
 			service.set(AlarmManager.RTC, cal.getTimeInMillis() + repeatTime, pending);
 		}
 		else {
-			Log.i(AutoBackupService.TAG, "Canceling Schedule");
-			service.cancel(pending);
+			removeSchedule(context);
 		}
+	}
+
+	public static void removeSchedule(Context context) {
+		Log.i(AutoBackupService.TAG, "Canceling Schedule");
+
+		AlarmManager service = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		Intent intent = new Intent(context, AutoBackupStartServiceReceiver.class);
+		PendingIntent pending = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+		service.cancel(pending);
 	}
 }

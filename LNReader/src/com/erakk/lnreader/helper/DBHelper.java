@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.helper.db.BookModelHelper;
 import com.erakk.lnreader.helper.db.BookmarkModelHelper;
 import com.erakk.lnreader.helper.db.ImageModelHelper;
@@ -178,7 +179,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	public String copyDB(Context context, boolean makeBackup, String filename) throws IOException {
 		if(Util.isStringNullOrEmpty(filename)) {
-			filename = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Backup_pages.db";
+			filename = UIHelper.getBackupRoot(context) + "/Backup_pages.db";
 		}
 		File srcPath;
 		File dstPath;

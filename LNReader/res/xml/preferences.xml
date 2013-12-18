@@ -98,6 +98,7 @@
             
             <CheckBoxPreference android:key="auto_backup_enabled" android:title="Auto Backup" android:defaultValue="false" android:summary="Enable daily auto backup."/>
             <EditTextPreference android:key="auto_backup_count" android:title="Auto Backup Count" android:defaultValue="4" android:summary="Number of auto backup created (rolling backup)"/>
+            <EditTextPreference android:summary="Save location for backups." android:title="Backup Location" android:key="backup_location"/>
 </PreferenceCategory>
             
             

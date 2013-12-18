@@ -36,7 +36,7 @@ public class UpdateService extends Service {
 	public boolean force = false;
 	public final static String TAG = UpdateService.class.toString();
 	private static boolean isRunning;
-	public ICallbackNotifier notifier;
+	private ICallbackNotifier notifier;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -248,13 +248,14 @@ public class UpdateService extends Service {
 		editor.putString(Constants.PREF_RUN_UPDATES_STATUS, status);
 		editor.commit();
 		if (notifier != null)
-			notifier.onCallback(new CallbackEventData("Last Run: " + date + "\nStatus: " + status));
+			notifier.onCallback(new CallbackEventData("Last Run: " + date + "\nStatus: " + status, UpdateService.class.toString()));
 	}
 
 	private boolean getConsolidateNotificationPref() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_CONSOLIDATE_NOTIFICATION, true);
 	}
 
+	@SuppressWarnings("deprecation")
 	private boolean shouldRun(boolean forced) {
 		if (forced) {
 			Log.i(TAG, "Forced run");
@@ -305,5 +306,9 @@ public class UpdateService extends Service {
 
 	public boolean isForced() {
 		return force;
+	}
+
+	public void setOnCallbackNotifier(ICallbackNotifier notifier) {
+		this.notifier = notifier;
 	}
 }

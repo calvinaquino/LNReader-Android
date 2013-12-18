@@ -24,6 +24,7 @@ import com.erakk.lnreader.activity.DownloadListActivity;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.DownloadModel;
+import com.erakk.lnreader.service.AutoBackupService;
 import com.erakk.lnreader.service.UpdateService;
 
 /*
@@ -33,7 +34,8 @@ public class LNReaderApplication extends Application {
 	private static final String TAG = LNReaderApplication.class.toString();
 	private static NovelsDao novelsDao = null;
 	private static DownloadListActivity downloadListActivity = null;
-	private static UpdateService service = null;
+	private static UpdateService updateService = null;
+	private static AutoBackupService autoBackupService = null;
 	private static LNReaderApplication instance;
 	private static Hashtable<String, AsyncTask<?, ?, ?>> runningTasks;
 	private static ArrayList<DownloadModel> downloadList;
@@ -50,6 +52,7 @@ public class LNReaderApplication extends Application {
 		instance = this;
 
 		doBindService();
+		doBindAutoBackupService();
 		Log.d(TAG, "Application created.");
 	}
 
@@ -236,14 +239,14 @@ public class LNReaderApplication extends Application {
 
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder binder) {
-			service = ((UpdateService.MyBinder) binder).getService();
+			updateService = ((UpdateService.MyBinder) binder).getService();
 			Log.d(UpdateService.TAG, "onServiceConnected");
 			Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName className) {
-			service = null;
+			updateService = null;
 			Log.d(UpdateService.TAG, "onServiceDisconnected");
 		}
 	};
@@ -254,20 +257,17 @@ public class LNReaderApplication extends Application {
 	}
 
 	public void setUpdateServiceListener(ICallbackNotifier notifier) {
-		if (service != null) {
-			service.notifier = notifier;
+		if (updateService != null) {
+			updateService.setOnCallbackNotifier(notifier);
 		}
 	}
 
 	public void runUpdateService(boolean force, ICallbackNotifier notifier) {
-		if (service == null) {
+		if (updateService == null)
 			doBindService();
-			service.force = force;
-			service.notifier = notifier;
-		} else
-			service.force = force;
-		service.notifier = notifier;
-		service.onStartCommand(null, BIND_AUTO_CREATE, (int) (new Date().getTime() / 1000));
+		updateService.force = force;
+		updateService.setOnCallbackNotifier(notifier);
+		updateService.onStartCommand(null, BIND_AUTO_CREATE, (int) (new Date().getTime() / 1000));
 	}
 
 	@Override
@@ -277,14 +277,23 @@ public class LNReaderApplication extends Application {
 		 * java.lang.IllegalArgumentException
 		 * in android.app.LoadedApk.forgetServiceDispatcher
 		 * 
-		 * probable crash: service is not checked if it exists after onLowMemory.
+		 * probable crash: updateService is not checked if it exists after onLowMemory.
 		 * Technically fixed. needs checking.
 		 */
 		if (mConnection != null) {
-			Log.w(TAG, "Low Memory, Trying to unbind service...");
+			Log.w(TAG, "Low Memory, Trying to unbind updateService...");
 			try {
 				unbindService(mConnection);
-				Log.i(TAG, "Unbind service done.");
+				Log.i(TAG, "Unbind updateService done.");
+			} catch (Exception ex) {
+				Log.e(TAG, "Failed to unbind.", ex);
+			}
+		}
+		if (mConnection2 != null) {
+			Log.w(TAG, "Low Memory, Trying to unbind autoBackupService...");
+			try {
+				unbindService(mConnection2);
+				Log.i(TAG, "Unbind autoBackupService done.");
 			} catch (Exception ex) {
 				Log.e(TAG, "Failed to unbind.", ex);
 			}
@@ -317,5 +326,41 @@ public class LNReaderApplication extends Application {
 		Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(i);
+	}
+
+
+	/*
+	 * AutoBackup Service method
+	 */
+	private final ServiceConnection mConnection2 = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder binder) {
+			autoBackupService = ((AutoBackupService.AutoBackupServiceBinder) binder).getService();
+			Log.d(AutoBackupService.TAG, "onServiceConnected");
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName className) {
+			autoBackupService = null;
+			Log.d(AutoBackupService.TAG, "onServiceDisconnected");
+		}
+	};
+
+	private void doBindAutoBackupService() {
+		bindService(new Intent(this, AutoBackupService.class), mConnection2, Context.BIND_AUTO_CREATE);
+		Log.d(AutoBackupService.TAG, "doBindService");
+	}
+
+	public void setAutoBackupServiceListener(ICallbackNotifier notifier) {
+		if (autoBackupService != null) {
+			autoBackupService.setOnCallbackNotifier(notifier);
+		}
+	}
+	public void runAutoBackupService(ICallbackNotifier notifier) {
+		if (autoBackupService == null)
+			doBindAutoBackupService();
+		autoBackupService.setOnCallbackNotifier(notifier);
+		autoBackupService.onStartCommand(null, BIND_AUTO_CREATE, (int) (new Date().getTime() / 1000));
 	}
 }
