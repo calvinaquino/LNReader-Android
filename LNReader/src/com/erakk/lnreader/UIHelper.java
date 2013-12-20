@@ -232,20 +232,32 @@ public class UIHelper {
 	}
 
 	public static int getIntFromPreferences(String key, int defaultValue) {
-		String value = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getString(key, "");
-		try {
-			return Integer.parseInt(value);
-		} catch (NumberFormatException ex) {
-			return defaultValue;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext());
+		try{
+			String value = prefs.getString(key, "");
+			try {
+				return Integer.parseInt(value);
+			} catch (NumberFormatException ex) {
+				return defaultValue;
+			}
+		}		catch(ClassCastException cex) {
+			return prefs.getInt(key, defaultValue);
 		}
 	}
 
 	public static float getFloatFromPreferences(String key, float defaultValue) {
-		String value = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getString(key, "");
-		try {
-			return Float.parseFloat(value);
-		} catch (NumberFormatException ex) {
-			return defaultValue;
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext());
+		try{
+			String value = prefs.getString(key, "");
+
+			try {
+				return Float.parseFloat(value);
+			} catch (NumberFormatException ex) {
+				return defaultValue;
+			}
+		}
+		catch(ClassCastException cex) {
+			return prefs.getFloat(key, defaultValue);
 		}
 	}
 
