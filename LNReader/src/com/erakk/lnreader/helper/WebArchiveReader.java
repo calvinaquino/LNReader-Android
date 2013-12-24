@@ -18,6 +18,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
+import android.annotation.SuppressLint;
 import android.util.Base64;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -153,6 +154,7 @@ public abstract class WebArchiveReader {
 	}
 
 	private class WebClient extends WebViewClient {
+		@SuppressLint("NewApi")
 		@Override
 		public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
 			if (!myLoadingArchive)

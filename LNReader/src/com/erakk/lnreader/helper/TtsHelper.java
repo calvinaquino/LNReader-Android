@@ -11,6 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.speech.tts.TextToSpeech;
@@ -157,6 +158,7 @@ public class TtsHelper implements OnInitListener {
 		}
 	}
 
+	@SuppressLint("NewApi")
 	@SuppressWarnings("deprecation")
 	public void setupOnCompleteListener() {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {

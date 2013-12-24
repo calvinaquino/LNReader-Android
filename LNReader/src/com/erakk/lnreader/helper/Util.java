@@ -21,6 +21,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import android.annotation.SuppressLint;
+import android.os.Build;
+import android.os.StatFs;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
@@ -274,5 +277,24 @@ public class Util {
 		int exp = (int) (Math.log(bytes) / Math.log(unit));
 		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
 		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+	}
+	
+	@SuppressLint("NewApi")
+	public static long getFreeSpace(File path) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+			return path.getFreeSpace();
+		} else {
+			long availableSpace = -1L;
+			try {
+				StatFs stat = new StatFs(path.getPath());
+				stat.restat(path.getPath());
+				availableSpace = (long) stat.getAvailableBlocks()
+						* (long) stat.getBlockSize();
+			} catch (Exception e) {
+				Log.e(TAG, "Failed to get free space.", e);
+			}
+
+			return availableSpace;
+		}
 	}
 }

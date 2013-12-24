@@ -26,7 +26,7 @@
     <string name="novel_chapter">Bab Novel</string>
     <string name="novel_chapter_dl">(Unduh)</string>
     <string name="list_empty">Daftar kosong</string>
-    <string name="service_name">Memperbaharui LNReader</string>
+    <string name="update_service_name">Memperbaharui LNReader</string>
     <string name="hint_search">Cari</string>
     <string name="teasers">Daftar Teaser</string>
     <string name="search">Cari</string>
@@ -182,7 +182,6 @@
     <string name="loading_image">Mengunduh Gambar...</string>
     <string name="first_available_chapter">Bab yang pertama kali tersedia.</string>
     <string name="last_available_chapter">Bab terakhir yang tersedia.</string>
-    <string name="error_parsing_url">Gagal dalam memproses url</string>
     <string name="background_task_load">Sedang dalam pemrosesan...</string>
     <string name="content_may_updated">Isi mungkin telah diperbaharui</string>
     <string name="css_layout_not_exist">Tampilan CSS tidak ditemukan. Menggunakan preferensi bawaan.</string>
@@ -230,7 +229,7 @@
     <string name="aggresive_title_clean_up_summary">Enable aggresive book title clean up (remove everything after bracket / \'(\' )</string>    
     <string name="use_https_title">Use HTTPS</string>
     <string name="use_https_summary">Use HTTPS when connecting to Baka-Tsuki.</string>
-    <string name="error_parsing_url">Error when parsing url: %1$s</string>
+        <string name="error_parsing_url">Gagal dalam memproses url: %1$s</string>
     <string name="refreshing_detail">Refreshing Details...</string>
     <string name="toast_clear_volume">Clear this Volume: %1$s</string>
     <string name="toast_mark_volume">Mark Volume as Read</string>

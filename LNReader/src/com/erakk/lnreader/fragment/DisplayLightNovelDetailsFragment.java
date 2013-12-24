@@ -132,7 +132,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
 				startActivity(browserIntent);
 			} catch (Exception ex) {
-				String message = String.format(getResources().getString(R.string.error_parsing_url), chapter.getPage());
+				String message = getResources().getString(R.string.error_parsing_url, chapter.getPage());
 				Log.e(TAG, message, ex);
 				Toast.makeText(getSherlockActivity(), message, Toast.LENGTH_SHORT).show();
 			}

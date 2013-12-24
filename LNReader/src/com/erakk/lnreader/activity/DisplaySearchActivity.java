@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -227,6 +228,7 @@ public class DisplaySearchActivity extends SherlockActivity {
 			this.context = context;
 		}
 
+		@SuppressLint("NewApi")
 		@Override
 		public void run() {
 			Log.d(TAG, "Time: " + time + " Start Time: " + mStartTime);

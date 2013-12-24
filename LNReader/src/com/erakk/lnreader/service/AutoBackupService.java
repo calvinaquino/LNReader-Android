@@ -48,7 +48,7 @@ public class AutoBackupService extends Service {
 		return mBinder;
 	}
 
-	@SuppressLint("InlinedApi")
+	@SuppressLint({ "InlinedApi", "NewApi" })
 	private void execute() {
 		if (!shouldRun()) {
 			return;

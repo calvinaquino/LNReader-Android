@@ -25,7 +25,7 @@
     <string name="novel_chapter">Rozdział Powieści</string>
     <string name="novel_chapter_dl">(DL)</string>
     <string name="list_empty">Lista jest pusta</string>
-    <string name="service_name">LNReader Aktualizacja</string>
+    <string name="update_service_name">LNReader Aktualizacja</string>
     <string name="hint_search">Szukaj</string>
     <string name="teasers">Lista Zwiastunów</string>
     <string name="search">Szukaj</string>
@@ -179,7 +179,6 @@
     <string name="loading_image">Ładowanie obrazu...</string>
     <string name="first_available_chapter">Pierwszy dostępny rozdział.</string>
     <string name="last_available_chapter">Ostatni dostępny rozdział.</string>
-    <string name="error_parsing_url">Błąd podczas przetwarzania URL</string>
     <string name="background_task_load">Ładowanie w tle aktywne...</string>
     <string name="content_may_updated">Treść może być nieaktualna</string>
     <string name="css_layout_not_exist">Własny CSS nie został znaleziony. Przywrócono domyślny.</string>

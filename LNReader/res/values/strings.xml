@@ -181,7 +181,6 @@
     <string name="loading_image">Loading Image...</string>
     <string name="first_available_chapter">First available chapter.</string>
     <string name="last_available_chapter">Last available chapter.</string>
-    <string name="error_parsing_url">Error when parsing url</string>
     <string name="background_task_load">Background task still loading...</string>
     <string name="content_may_updated">Content might be updated</string>
     <string name="css_layout_not_exist">CSS Layout does not exists at the assigned path. Using default.</string>

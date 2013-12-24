@@ -26,7 +26,9 @@
     <string name="novel_chapter">Chapitre du roman</string>
     <string name="novel_chapter_dl">(DL)</string>
     <string name="list_empty">La liste est vide</string>
-    <string name="service_name">LNReader M&#224;J</string>
+    <string name="update_service_name">LNReader M&#224;J</string>
+    <string name="tts_service_name">LNReader TTS Service</string>
+    <string name="auto_backup_service_name">LNReader Auto Backup Service</string>
     <string name="hint_search">Recherche</string>
     <string name="teasers">Liste des Teasers</string>
     <string name="search">Recherche</string>
@@ -182,7 +184,6 @@
     <string name="loading_image">Chargement de l\'image...</string>
     <string name="first_available_chapter">Premier chapitre disponible.</string>
     <string name="last_available_chapter">Dernier chapitre disponible.</string>
-    <string name="error_parsing_url">Erreur lors de la lecture de l\'url</string>
     <string name="background_task_load">Tâche de fond encore en cours de chargement...</string>
     <string name="content_may_updated">Le contenu peut &#234;tre mis &#224; jour</string>
     <string name="css_layout_not_exist">Le layout CSS n\'existe pas au chemin indiqu&#233;. Utilisation de celui par d&#233;faut.</string>
@@ -230,7 +231,7 @@
     <string name="aggresive_title_clean_up_summary">Enable aggresive book title clean up (remove everything after bracket / \'(\' )</string>    
     <string name="use_https_title">Use HTTPS</string>
     <string name="use_https_summary">Use HTTPS when connecting to Baka-Tsuki.</string>
-    <string name="error_parsing_url">Error when parsing url: %1$s</string>
+    <string name="error_parsing_url">Erreur lors de la lecture de l\'url: %1$s</string>
     <string name="refreshing_detail">Refreshing Details...</string>
     <string name="toast_clear_volume">Clear this Volume: %1$s</string>
     <string name="toast_mark_volume">Mark Volume as Read</string>
