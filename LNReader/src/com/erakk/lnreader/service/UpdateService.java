@@ -248,7 +248,7 @@ public class UpdateService extends Service {
 		editor.putString(Constants.PREF_RUN_UPDATES_STATUS, status);
 		editor.commit();
 		if (notifier != null)
-			notifier.onCallback(new CallbackEventData("Last Run: " + date + "\nStatus: " + status, UpdateService.class.toString()));
+			notifier.onCallback(new CallbackEventData("Last Run: " + date + "\nStatus: " + status, Constants.PREF_RUN_UPDATES));
 	}
 
 	private boolean getConsolidateNotificationPref() {

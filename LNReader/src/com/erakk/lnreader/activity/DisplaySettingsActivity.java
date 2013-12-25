@@ -1107,7 +1107,8 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			runUpdates.setSummary("Status: " + message.getMessage());
 		} else {
 			Preference pref = findPreference(msg.getSource());
-			pref.setSummary("Status: " + message.getMessage());
+			if (pref != null)
+				pref.setSummary("Status: " + message.getMessage());
 		}
 	}
 

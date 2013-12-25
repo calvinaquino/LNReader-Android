@@ -7,6 +7,7 @@
 - Enhace DB restore: allow to choose backup version.
 - Update Settings Screen.
 - Update free space check for backup.
+- Fix null pointer exception on Setting when updating.
 
 1.1.12:
 - Fix External Page Refresh.
