@@ -1,3 +1,7 @@
+1.1.14
+- Fix Chapter parser.
+- Optimize Main Novel list parsing.
+
 1.1.13-Merry-Christmas:
 - Update parser to handle ToAru Index.
 - Update immersive mode for KitKat (liyhcharles).

@@ -26,7 +26,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 	private int lastProgress;
 	private final boolean autoDownloadUpdatedContent;
 	private final UpdateService service;
-	private final ICallbackNotifier notifier;
+	private ICallbackNotifier notifier;
 
 	public GetUpdatedChaptersTask(UpdateService service, boolean autoDownloadUpdatedContent, ICallbackNotifier notifier) {
 		this.autoDownloadUpdatedContent = autoDownloadUpdatedContent;
@@ -243,5 +243,9 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 		if (notifier != null)
 			notifier.onCallback(new CallbackEventData(values[0]));
 		LNReaderApplication.getInstance().updateDownload(TAG, lastProgress, values[0]);
+	}
+
+	public void setCallbackNotifier(ICallbackNotifier notifier) {
+		this.notifier = notifier;
 	}
 }

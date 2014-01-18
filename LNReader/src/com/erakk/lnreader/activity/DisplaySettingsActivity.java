@@ -1069,6 +1069,15 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	}
 
 	@Override
+	protected void onResume() {
+		super.onResume();
+
+		// relisting all handler
+		LNReaderApplication.getInstance().setUpdateServiceListener(this);
+		LNReaderApplication.getInstance().setAutoBackupServiceListener(this);
+	}
+
+	@Override
 	protected void onStop() {
 		super.onStop();
 		LNReaderApplication.getInstance().setUpdateServiceListener(null);

@@ -16,7 +16,7 @@ import com.erakk.lnreader.dao.NovelsDao;
 public class CopyDBTask extends AsyncTask<Void, ICallbackEventData, Void> implements ICallbackNotifier {
 
 	private static final String TAG = CopyDBTask.class.toString();
-	private final ICallbackNotifier callback;
+	private ICallbackNotifier callback;
 	private final String source;
 	private final boolean makeBackup;
 	private final String filename;
@@ -75,5 +75,9 @@ public class CopyDBTask extends AsyncTask<Void, ICallbackEventData, Void> implem
 			else
 				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.copy_db_task_restore_complete)));
 		}
+	}
+
+	public void setCallbackNotifier(ICallbackNotifier notifier) {
+		this.callback = notifier;
 	}
 }

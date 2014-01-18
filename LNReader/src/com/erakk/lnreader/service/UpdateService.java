@@ -37,6 +37,7 @@ public class UpdateService extends Service {
 	public final static String TAG = UpdateService.class.toString();
 	private static boolean isRunning;
 	private ICallbackNotifier notifier;
+	private GetUpdatedChaptersTask task;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -74,7 +75,7 @@ public class UpdateService extends Service {
 			editor.putString(Constants.PREF_RUN_UPDATES_STATUS, "");
 			editor.commit();
 
-			GetUpdatedChaptersTask task = new GetUpdatedChaptersTask(this, GetAutoDownloadUpdatedChapterPreferences(), notifier);
+			task = new GetUpdatedChaptersTask(this, GetAutoDownloadUpdatedChapterPreferences(), notifier);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			else
@@ -310,5 +311,7 @@ public class UpdateService extends Service {
 
 	public void setOnCallbackNotifier(ICallbackNotifier notifier) {
 		this.notifier = notifier;
+		if (task != null)
+			task.setCallbackNotifier(notifier);
 	}
 }

@@ -27,6 +27,7 @@ public class AutoBackupService extends Service {
 	private final IBinder mBinder = new AutoBackupServiceBinder();
 	private static boolean isRunning;
 	private ICallbackNotifier notifier;
+	private CopyDBTask task;
 
 	@Override
 	public void onCreate() {
@@ -66,7 +67,7 @@ public class AutoBackupService extends Service {
 
 			String backupFilename = UIHelper.getBackupRoot(this) + "/Backup_pages.db." + nextIndex;
 
-			CopyDBTask task = new CopyDBTask(true, notifier, Constants.PREF_BACKUP_DB, backupFilename);
+			task = new CopyDBTask(true, notifier, Constants.PREF_BACKUP_DB, backupFilename);
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			else
@@ -114,6 +115,9 @@ public class AutoBackupService extends Service {
 
 	public void setOnCallbackNotifier(ICallbackNotifier notifier) {
 		this.notifier = notifier;
+		if (task != null) {
+			task.setCallbackNotifier(notifier);
+		}
 	}
 
 	public static ArrayList<File> getBackupFiles(Context ctx) {

@@ -328,7 +328,6 @@ public class LNReaderApplication extends Application {
 		startActivity(i);
 	}
 
-
 	/*
 	 * AutoBackup Service method
 	 */
@@ -357,6 +356,7 @@ public class LNReaderApplication extends Application {
 			autoBackupService.setOnCallbackNotifier(notifier);
 		}
 	}
+
 	public void runAutoBackupService(ICallbackNotifier notifier) {
 		if (autoBackupService == null)
 			doBindAutoBackupService();
