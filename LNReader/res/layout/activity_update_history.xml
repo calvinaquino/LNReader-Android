@@ -4,8 +4,28 @@
     android:layout_height="match_parent"
     tools:context=".UpdateHistoryActivity" >
 
+   <LinearLayout
+       android:id="@+id/layout_update_status"
+       android:orientation="vertical" 
+       android:layout_width="fill_parent"
+	   android:layout_height="wrap_content"
+       android:visibility="gone">
+	    <TextView
+	        android:id="@+id/txtUpdate"
+	        android:layout_width="fill_parent"
+	        android:layout_height="50dip"/>
+	    <ProgressBar
+	        android:id="@+id/download_progress_bar"
+	        style="?android:attr/progressBarStyleHorizontal"
+	        android:max="100"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" />
+	    
+    </LinearLayout>
+    
     <ListView
         android:id="@+id/update_list"
+        android:layout_below="@+id/layout_update_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true" >

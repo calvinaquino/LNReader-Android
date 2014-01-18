@@ -241,7 +241,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 	@Override
 	protected void onProgressUpdate(String... values) {
 		if (notifier != null)
-			notifier.onCallback(new CallbackEventData(values[0]));
+			notifier.onCallback(new CallbackEventData(values[0], lastProgress, Constants.PREF_RUN_UPDATES));
 		LNReaderApplication.getInstance().updateDownload(TAG, lastProgress, values[0]);
 	}
 

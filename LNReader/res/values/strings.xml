@@ -21,7 +21,7 @@
     <string name="title_activity_display_novel_content">Novel Content</string>
     <string name="invert_colors">Invert Colors</string>
     <string name="title_activity_display_image">Image Viewer</string>
-    <string name="novel_last_update">last update</string>
+    <string name="novel_last_update">Last Update</string>
     <string name="novel_chapter">Novel Chapter</string>
     <string name="novel_chapter_dl">(DL)</string>
     <string name="list_empty">List is Empty</string>
@@ -371,4 +371,6 @@
     <string name="pref_db_auto_backup_count_title">Number of Auto Backup</string>
     <string name="pref_db_auto_backup_count_summary">Number of auto backup created (rolling backup): %1$s.</string>
     <string name="cat_image_backup">Image Backup</string>
+    <string name="svc_update_complete">Update Service completed.</string>
+    <string name="svc_update_status">Last Run: %1$s\nStatus: %2$s</string>
 </resources>

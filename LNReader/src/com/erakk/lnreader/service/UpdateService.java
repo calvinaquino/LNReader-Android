@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
 import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.activity.UpdateHistoryActivity;
 import com.erakk.lnreader.callback.CallbackEventData;
@@ -168,7 +169,9 @@ public class UpdateService extends Service {
 
 		updateStatus("OK");
 		Toast.makeText(this, "Update Service completed", Toast.LENGTH_SHORT).show();
-		LNReaderApplication.getInstance().updateDownload(TAG, 100, "Update Service completed");
+		LNReaderApplication.getInstance().updateDownload(TAG, 100, getString(R.string.svc_update_complete));
+		if (notifier != null)
+			notifier.onCallback(new CallbackEventData(getString(R.string.svc_update_complete), 100, Constants.PREF_RUN_UPDATES));
 
 		// remove from download list
 		LNReaderApplication.getInstance().removeDownload(TAG);
@@ -249,7 +252,7 @@ public class UpdateService extends Service {
 		editor.putString(Constants.PREF_RUN_UPDATES_STATUS, status);
 		editor.commit();
 		if (notifier != null)
-			notifier.onCallback(new CallbackEventData("Last Run: " + date + "\nStatus: " + status, Constants.PREF_RUN_UPDATES));
+			notifier.onCallback(new CallbackEventData(getString(R.string.svc_update_status, date, status), Constants.PREF_RUN_UPDATES));
 	}
 
 	private boolean getConsolidateNotificationPref() {

@@ -1,6 +1,8 @@
 1.1.14
 - Fix Chapter parser.
 - Optimize Main Novel list parsing.
+- Fix Run Update status notifier on Settings activity when orientation changed
+- Add option menu to run update from Update History activity.
 
 1.1.13-Merry-Christmas:
 - Update parser to handle ToAru Index.

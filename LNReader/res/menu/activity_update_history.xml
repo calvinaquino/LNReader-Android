@@ -10,5 +10,6 @@
     <item android:id="@+id/menu_show_new" android:checkable="true" android:checked="true" android:title="@string/menu_show_new"></item>
 	<item android:id="@+id/menu_show_updated" android:checkable="true" android:checked="true" android:title="@string/menu_show_updated"></item>
     <item android:id="@+id/menu_show_deleted" android:checkable="true" android:checked="true" android:title="@string/menu_show_deleted"></item>
+    <item android:id="@+id/menu_run_update" android:title="@string/run_update_text" android:showAsAction="ifRoom|withText"></item>
 
 </menu>
