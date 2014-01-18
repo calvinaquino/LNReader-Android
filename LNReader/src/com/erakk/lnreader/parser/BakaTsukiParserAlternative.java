@@ -58,7 +58,7 @@ public class BakaTsukiParserAlternative {
 				Element link = element.select("a").first();
 				PageModel page = new PageModel();
 				page.setParent(category);
-				String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL_HTTPS, "").replace(Constants.BASE_URL, "");
+				String tempPage = CommonParser.normalizeInternalUrl(link.attr("href"));
 				page.setPage(tempPage);
 				page.setLanguage(language);
 				page.setType(PageModel.TYPE_NOVEL);

@@ -6,9 +6,9 @@ import android.graphics.Color;
 
 public class Constants {
 
-	// public static final String BaseURL = "http://www.baka-tsuki.org/project/";
-	public static final String BASE_URL_HTTPS = "https://www.baka-tsuki.org";
-	public static final String BASE_URL = "http://www.baka-tsuki.org";
+	public static final String ROOT_URL = "//www.baka-tsuki.org";
+	public static final String ROOT_HTTP = "http:";
+	public static final String ROOT_HTTPS = "https:";
 
 	// Intent parameter list
 	public static final String EXTRA_NOVEL = "com.erakk.lnreader.NOVEL";

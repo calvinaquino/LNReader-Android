@@ -765,7 +765,6 @@ public class NovelsDao {
 				if (notifier != null) {
 					notifier.onCallback(new CallbackEventData("Getting chapters information for: " + page.getPage()));
 				}
-
 				ArrayList<PageModel> chapters = getUpdateInfo(novel.getFlattedChapterList(), notifier);
 
 				if (notifier != null) {
@@ -1228,8 +1227,8 @@ public class NovelsDao {
 					Log.i(TAG, "Image found in DB, but doesn't exist in URL decoded path: " + java.net.URLDecoder.decode(imageTemp.getPath(), java.nio.charset.Charset.defaultCharset().displayName()));
 					downloadBigImage = true;
 				} // else Log.i(TAG, "Image found in DB with URL decoded path: " +
-				// java.net.URLDecoder.decode(imageTemp.getPath(),
-				// java.nio.charset.Charset.defaultCharset().displayName()));
+					// java.net.URLDecoder.decode(imageTemp.getPath(),
+					// java.nio.charset.Charset.defaultCharset().displayName()));
 
 			} catch (Exception e) {
 				Log.i(TAG, "Image found in DB, but path string seems to be broken: " + imageTemp.getPath()

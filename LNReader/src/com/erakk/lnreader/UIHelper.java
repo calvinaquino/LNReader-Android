@@ -233,21 +233,21 @@ public class UIHelper {
 
 	public static int getIntFromPreferences(String key, int defaultValue) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext());
-		try{
+		try {
 			String value = prefs.getString(key, "");
 			try {
 				return Integer.parseInt(value);
 			} catch (NumberFormatException ex) {
 				return defaultValue;
 			}
-		}		catch(ClassCastException cex) {
+		} catch (ClassCastException cex) {
 			return prefs.getInt(key, defaultValue);
 		}
 	}
 
 	public static float getFloatFromPreferences(String key, float defaultValue) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext());
-		try{
+		try {
 			String value = prefs.getString(key, "");
 
 			try {
@@ -255,8 +255,7 @@ public class UIHelper {
 			} catch (NumberFormatException ex) {
 				return defaultValue;
 			}
-		}
-		catch(ClassCastException cex) {
+		} catch (ClassCastException cex) {
 			return prefs.getFloat(key, defaultValue);
 		}
 	}
@@ -361,9 +360,9 @@ public class UIHelper {
 	public static String getBaseUrl(Context activity) {
 		boolean useHttps = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_USE_HTTPS, false);
 		if (useHttps)
-			return Constants.BASE_URL_HTTPS;
+			return Constants.ROOT_HTTPS + Constants.ROOT_URL;
 		else
-			return Constants.BASE_URL;
+			return Constants.ROOT_HTTP + Constants.ROOT_URL;
 	}
 
 	/**

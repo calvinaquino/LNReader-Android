@@ -362,7 +362,7 @@ public class CommonParser {
 			// Log.d(TAG, "Found external link for " + p.getTitle() + ": " + link.attr("href"));
 		} else {
 			p.setExternal(false);
-			String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL_HTTPS, "").replace(Constants.BASE_URL, "");
+			String tempPage = normalizeInternalUrl(link.attr("href"));
 			p.setPage(tempPage);
 		}
 		return p;
@@ -486,5 +486,15 @@ public class CommonParser {
 			}
 		} while (walkChapter);
 		return chapterCollection;
+	}
+
+	/**
+	 * Remove http(s)://www.baka-tsuki.org/project/index.php?title=
+	 * 
+	 * @param url
+	 * @return
+	 */
+	public static String normalizeInternalUrl(String url) {
+		return url.replace("/project/index.php?title=", "").replace(Constants.ROOT_HTTPS, "").replace(Constants.ROOT_HTTP, "").replace(Constants.ROOT_URL, "");
 	}
 }

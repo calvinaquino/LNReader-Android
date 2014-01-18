@@ -57,7 +57,7 @@ public class BakaTsukiParser {
 				Element novel = i.next();
 				Element link = novel.select("a").first();
 				PageModel page = new PageModel();
-				String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL_HTTPS, "").replace(Constants.BASE_URL, "");
+				String tempPage = CommonParser.normalizeInternalUrl(link.attr("href"));
 				int anchorIndex = tempPage.indexOf("#");
 				if (anchorIndex > -1) {
 					tempPage = tempPage.substring(0, anchorIndex);
@@ -125,7 +125,7 @@ public class BakaTsukiParser {
 				Element link = element.select("a").first();
 				PageModel page = new PageModel();
 				page.setParent("Category:Teasers");
-				String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL_HTTPS, "").replace(Constants.BASE_URL, "");
+				String tempPage = CommonParser.normalizeInternalUrl(link.attr("href"));
 				page.setPage(tempPage);
 				page.setLanguage(Constants.LANG_ENGLISH);
 				page.setType(PageModel.TYPE_NOVEL);
@@ -160,7 +160,7 @@ public class BakaTsukiParser {
 				Element link = element.select("a").first();
 				PageModel page = new PageModel();
 				page.setParent("Category:Original");
-				String tempPage = link.attr("href").replace("/project/index.php?title=", "").replace(Constants.BASE_URL_HTTPS, "").replace(Constants.BASE_URL, "");
+				String tempPage = CommonParser.normalizeInternalUrl(link.attr("href"));
 				page.setPage(tempPage);
 				page.setLanguage(Constants.LANG_ENGLISH);
 				page.setType(PageModel.TYPE_NOVEL);
