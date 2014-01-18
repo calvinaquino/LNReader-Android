@@ -37,61 +37,14 @@ public class BakaTsukiParser {
 	private static final String TAG = BakaTsukiParser.class.toString();
 
 	/**
+	 * parsed page from Main_Page
+	 * 
 	 * @param doc
-	 *            parsed page from Main_Page
 	 * @return list of novels in PageModel
+	 * @throws BakaReaderException
 	 */
-	public static ArrayList<PageModel> ParseNovelList(Document doc) {
-		ArrayList<PageModel> result = new ArrayList<PageModel>();
-
-		if (doc == null)
-			throw new NullPointerException("Document cannot be null.");
-
-		Element stage = doc.select("#p-Light_Novels").first();
-		if (stage != null) {
-			// Log.d(TAG, "Found: #p-Light_Novels");
-
-			Elements novels = stage.select("li");
-			int order = 0;
-			for (Iterator<Element> i = novels.iterator(); i.hasNext();) {
-				Element novel = i.next();
-				Element link = novel.select("a").first();
-				PageModel page = new PageModel();
-				String tempPage = CommonParser.normalizeInternalUrl(link.attr("href"));
-				int anchorIndex = tempPage.indexOf("#");
-				if (anchorIndex > -1) {
-					tempPage = tempPage.substring(0, anchorIndex);
-				}
-				int paramIndex = tempPage.indexOf("?");
-				if (paramIndex > -1) {
-					tempPage = tempPage.substring(0, paramIndex);
-				}
-				page.setPage(tempPage);
-				page.setLanguage(Constants.LANG_ENGLISH);
-				page.setType(PageModel.TYPE_NOVEL);
-				page.setTitle(link.text());
-
-				page.setLastUpdate(new Date(0)); // set to min value if never open
-				try {
-					// get the saved data if available
-					PageModel temp = NovelsDao.getInstance().getPageModel(page, null, false);
-					if (temp != null) {
-						page.setLastUpdate(temp.getLastUpdate());
-						page.setWatched(temp.isWatched());
-						page.setFinishedRead(temp.isFinishedRead());
-						page.setDownloaded(temp.isDownloaded());
-					}
-				} catch (Exception e) {
-					Log.e(TAG, "Error when getting pageModel: " + page.getPage(), e);
-				}
-				page.setLastCheck(new Date());
-				page.setParent("Main_Page");
-				page.setOrder(order);
-				result.add(page);
-				// Log.d(TAG, "Add: "+ link.text());
-				++order;
-			}
-		}
+	public static ArrayList<PageModel> ParseNovelList(String content) throws BakaReaderException {
+		ArrayList<PageModel> result = parseSidebar(content, "Light Novels");
 
 		if (result != null && result.size() > 0) {
 			// get updated novel list info
@@ -577,5 +530,64 @@ public class BakaTsukiParser {
 		content.setLastYScroll(0);
 		content.setLastZoom(Constants.DISPLAY_SCALE);
 		return content;
+	}
+
+	/**
+	 * Parse contents from https://baka-tsuki.org/project/index.php?action=raw&title=MediaWiki:Sidebar
+	 * 
+	 * @param contents
+	 * @return
+	 * @throws BakaReaderException
+	 */
+	public static ArrayList<PageModel> parseSidebar(String contents, String key) throws BakaReaderException {
+		if (Util.isStringNullOrEmpty(contents))
+			throw new BakaReaderException("Empty content!", BakaReaderException.EMPTY_CONTENT);
+
+		ArrayList<PageModel> result = new ArrayList<PageModel>();
+
+		String[] lines = contents.split("\n");
+		boolean start = false;
+		int order = 0;
+		for (int i = 0; i < lines.length; i++) {
+			// sub nav = ** Antimagic_Academy_35th_Test_Platoon|Antimagic Academy 35th Test Platoon
+			if (lines[i].startsWith("**") && start) {
+				String[] subNav = lines[i].replace("**", "").trim().split("\\|");
+				PageModel page = new PageModel(subNav[0]);
+				page.setLanguage(Constants.LANG_ENGLISH);
+				page.setType(PageModel.TYPE_NOVEL);
+				page.setTitle(subNav[1]);
+
+				page.setLastUpdate(new Date(0)); // set to min value if never open
+				try {
+					// get the saved data if available
+					PageModel temp = NovelsDao.getInstance().getPageModel(page, null, false);
+					if (temp != null) {
+						page.setLastUpdate(temp.getLastUpdate());
+						page.setWatched(temp.isWatched());
+						page.setFinishedRead(temp.isFinishedRead());
+						page.setDownloaded(temp.isDownloaded());
+					}
+				} catch (Exception e) {
+					Log.e(TAG, "Error when getting pageModel: " + page.getPage(), e);
+				}
+				page.setLastCheck(new Date());
+				page.setParent("Main_Page");
+				page.setOrder(order);
+				result.add(page);
+				++order;
+			}
+			// nav
+			else if (lines[i].startsWith("*")) {
+				String nav = lines[i].replace("*", "").trim();
+				if (nav.equalsIgnoreCase(key)) {
+					start = true;
+				}
+				else {
+					start = false;
+				}
+			}
+		}
+
+		return result;
 	}
 }

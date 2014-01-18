@@ -183,14 +183,13 @@ public class NovelsDao {
 				// now get the novel list
 				list = new ArrayList<PageModel>();
 
-				String url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project";
+				String url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?action=raw&title=MediaWiki:Sidebar";
 				int retry = 0;
 				while (retry < getRetry()) {
 					try {
 						Response response = Jsoup.connect(url).timeout(getTimeout(retry)).execute();
-						Document doc = response.parse();
+						list = BakaTsukiParser.ParseNovelList(response.body());
 
-						list = BakaTsukiParser.ParseNovelList(doc);
 						Log.d(TAG, "Found from internet: " + list.size() + " Novels");
 
 						// saved to db and get saved value
