@@ -1,41 +1,35 @@
-LATEST RELEASED VERSION
-====================================================
-[Google Play Store](https://play.google.com/store/apps/details?id=com.erakk.lnreader)
+## Latest released version
+* [Google Play Store](https://play.google.com/store/apps/details?id=com.erakk.lnreader)
 
-DEVELOPMENT REQUIREMENT:
-====================================================
+## Development requirements:
 * Android SDK
 * eclipse Juno + ADT
 * JSoup 1.7.2
 * ActionBarSherlock
 * Android 3+ (Honeycomb)
 
-APPLICATION REQUIREMENT:
-====================================================
-* Recommended Android 3.0+ (API Level 11)
-* Minimum     Android 2.2  (API Level 8)
+## Application requirements:
+* Recommended: Android 3.0+ (API Level 11)
+* Minimum: Android 2.2 (API Level 8)
 * Some features might not working if running below the recommended version.
 
-LINE-ENDINGS & SOURCE ENCODING CONFIG
-====================================================
+## Line endings & source encoding config
 * Git Config:
   - https://help.github.com/articles/dealing-with-line-endings
   - https://stackoverflow.com/questions/1889559/git-diff-to-ignore-m
 * Eclipse Config:
   - http://stackoverflow.com/questions/1886185/eclipse-and-windows-newlines
 
-FAQ
-====================================================
-Q1: I cannot load the Main Novel List/empty novel list!
+## FAQ
+Q1: I cannot load the Main Novel List/empty novel list!  
 A1: Try to disable the AdBlocker/Firewall.
 
-Q2: The last updated date is showing 43 years ago!
+Q2: The last updated date is showing 43 years ago!  
 A2: Try to disable the AdBlocker/Firewall.
 
-(Old Version 20130106)
-TASK LIST - Version 1.1.0 beta build 31
-====================================================
-//DONE
+
+## TASK LIST — Version 1.1.0 beta build 31 (Old Version 20130106)
+### Done
 - inverted default VolumeRocker scroll direction.
 - Removed annoying sound when using VolumeRocker.
 - Database backup/restore implemented
@@ -76,26 +70,26 @@ TASK LIST - Version 1.1.0 beta build 31
 - Added options menu in Novels lists
 - Fixed database location issues
 
-//CRASH FIXES
+### Crash fixes
 - Fixed a crash that would occur if trying to unbind an unregistered service on low memory warning.
 - Fixed a crash that related to scrolling while reading a novel.
 
-//TODO
+### TODO
 - Manual Add Crash fix
 - Tabs not showing correctly on Android ver 2.2 - 2.3.7
 - Light Novel List / Main Menu Layouts
-<low priority/>
+
+#### low priority
 - Add first time Tutorial for new users to show off functionalities, skipable. // May go to next version only, or will be added later.
 - EULA/BT Copyrights on first time run // Need to prepare a EULA.
 - Manual add series tutorial for new users
 
-
-//TODO NEXT VERSION ONLY
+#### TODO next version only
 - let finished downloads stay unless deleted*
 
 maybe ill add an option to "remove complete downloads automatically" for those who dont like removing manually...
 
-//NEEDS RETHINKING/CHECKING
+#### Needs rethinking/checking
 - Reduce image download message sizes on download list
 - make external chapters open in an internal customized webview (not all externals open the same way?)
 - Verify clicking mascot in chapter and going to jump to screen.
@@ -104,26 +98,24 @@ maybe ill add an option to "remove complete downloads automatically" for those w
 
 this mascot (is the icon on the upper left, only shows on newer android versions, like a back button) bug is not checked yet.
 
-//FUTURE IDEAS
+### Future ideas
 - Advanced Customization options
 - Integration with external cloud apps for image/database saving:
-> DropBox
-> Box
-> Skydrive
-> Google Drive
-> This is just an IDEA, and as such, not to worry for now.
+   * DropBox
+   * Box
+   * Skydrive
+   * Google Drive
 
+(This is just an IDEA, and as such, not to worry for now.)
 
-
-ANDROID PERMISSION LIST
-====================================================
-* android.permission.ACCESS_NETWORK_STATE
-  - For checking internet state.
-* android.permission.INTERNET
+## Android permission list
+* `android.permission.ACCESS_NETWORK_STATE`
+  - For checking Internet state.
+* `android.permission.INTERNET`
   - For downloading data from Baka Tsuki.
-* android.permission.WRITE_EXTERNAL_STORAGE
+* `android.permission.WRITE_EXTERNAL_STORAGE`
   - For saving image cache.
-* android.permission.READ_EXTERNAL_STORAGE
+* `android.permission.READ_EXTERNAL_STORAGE`
   - For reading image cache.
-* android.permission.VIBRATE
+* `android.permission.VIBRATE`
   - For notification.
