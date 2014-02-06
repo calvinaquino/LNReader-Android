@@ -22,6 +22,12 @@ public class Constants {
 	public static final String EXTRA_P_INDEX = "pIndex";
 	public static final String EXTRA_CALLER_ACTIVITY = "caller_activity";
 
+	public static final String EXTRA_FIND_MISSING_MODE = "find_missing_mode";
+	public static final String PREF_MISSING_CHAPTER = "find_missing_chapter";
+	public static final String PREF_REDLINK_CHAPTER = "find_redlink_chapter";
+	public static final String PREF_EMPTY_BOOK = "find_empty_book";
+	public static final String PREF_EMPTY_NOVEL = "find_empty_novel";
+
 	public static final String NOVEL_BOOK_DIVIDER = "%NOVEL_BOOK_DIVIDER%";
 	public static final int CHECK_INTERVAL = 7;
 
@@ -128,4 +134,5 @@ public class Constants {
 	/* You just need to add a new alternative language here and in AlternativeLanguageInfo -> initSingleton */
 	public static final String[] languageList = { Constants.LANG_ENGLISH, Constants.LANG_FRENCH, Constants.LANG_BAHASA_INDONESIA, Constants.LANG_POLISH };
 	public static final int BUFFER = 1024;
+
 }

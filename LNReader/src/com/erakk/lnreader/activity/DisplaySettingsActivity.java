@@ -157,6 +157,8 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 		storagePreferences();
 
+		maintenancePreferences();
+
 		// TOS activity
 		Preference tos = findPreference("tos");
 		tos.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -217,6 +219,57 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		LNReaderApplication.getInstance().setUpdateServiceListener(this);
 		LNReaderApplication.getInstance().setAutoBackupServiceListener(this);
 		isInverted = UIHelper.getColorPreferences(this);
+	}
+
+	@SuppressWarnings("deprecation")
+	private void maintenancePreferences() {
+		Preference findMissingChapter = findPreference(Constants.PREF_MISSING_CHAPTER);
+		findMissingChapter.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				Intent intent = new Intent(getApplicationContext(), FindMissingActivity.class);
+				intent.putExtra(Constants.EXTRA_FIND_MISSING_MODE, Constants.PREF_MISSING_CHAPTER);
+				startActivity(intent);
+				return true;
+			}
+		});
+
+		Preference findRedlinkChapter = findPreference(Constants.PREF_REDLINK_CHAPTER);
+		findRedlinkChapter.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				Intent intent = new Intent(getApplicationContext(), FindMissingActivity.class);
+				intent.putExtra(Constants.EXTRA_FIND_MISSING_MODE, Constants.PREF_REDLINK_CHAPTER);
+				startActivity(intent);
+				return true;
+			}
+		});
+
+		Preference findEmptyBook = findPreference(Constants.PREF_EMPTY_BOOK);
+		findEmptyBook.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				Intent intent = new Intent(getApplicationContext(), FindMissingActivity.class);
+				intent.putExtra(Constants.EXTRA_FIND_MISSING_MODE, Constants.PREF_EMPTY_BOOK);
+				startActivity(intent);
+				return true;
+			}
+		});
+
+		Preference findEmptyNovel = findPreference(Constants.PREF_EMPTY_NOVEL);
+		findEmptyNovel.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				Intent intent = new Intent(getApplicationContext(), FindMissingActivity.class);
+				intent.putExtra(Constants.EXTRA_FIND_MISSING_MODE, Constants.PREF_EMPTY_NOVEL);
+				startActivity(intent);
+				return true;
+			}
+		});
 	}
 
 	@SuppressWarnings("deprecation")

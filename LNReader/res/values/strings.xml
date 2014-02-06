@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">BakaReader EX</string>
     <string name="menu_settings">Settings</string>
     <string name="light_novels">Light Novels</string>
@@ -301,7 +302,7 @@
     <string name="load_novel_content_task_refreshing">Refreshing content...</string>
     <string name="load_novel_content_task_loading">Loading content...</string>
     <string name="load_novel_content_task_complete">Content Loaded.</string>
-    <string name="load_novel_content_task_error">Error when getting content: %1$s.</string>    
+    <string name="load_novel_content_task_error">Error when getting content: %1$s.</string>
     <string name="load_image_task_refreshing">Refreshing image...</string>
     <string name="load_image_task_loading">Loading image...</string>
     <string name="load_image_task_complete">Image loaded.</string>
@@ -373,4 +374,13 @@
     <string name="cat_image_backup">Image Backup</string>
     <string name="svc_update_complete">Update Service completed.</string>
     <string name="svc_update_status">Last Run: %1$s\nStatus: %2$s</string>
+    <string name="maintenance">Maintenance</string>
+    <string name="find_empty_novel">Find Empty Novel</string>
+    <string name="find_empty_book">Find Empty Book</string>
+    <string name="find_missing_chapter">Find Missing Chapter</string>
+    <string name="find_redlink_chapter">Find Redlink Chapter</string>
+    <string name="title_activity_find_missing">Find Missing</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+
 </resources>

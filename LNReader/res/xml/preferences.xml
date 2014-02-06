@@ -1,135 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    <PreferenceCategory
-        android:key="preferences"
-        android:title="Preferences" >
-        <PreferenceScreen
-            android:key="general_category"
-            android:title="@string/general_preference" >
-            <PreferenceCategory android:title="@string/pref_ui"><ListPreference android:defaultValue="0" android:entries="@array/uiSelection" android:entryValues="@array/uiSelectionValues" android:key="ui_selection" android:title="@string/UI_selection_title" /><CheckBoxPreference android:defaultValue="true" android:key="invert_colors" android:summary="@string/invert_color_summary" android:title="@string/invert_color_title" /><ListPreference android:defaultValue="0" android:entries="@array/orientationSelection" android:entryValues="@array/orientationSelectionValues" android:key="orientation_lock" android:summary="@string/orientation_summary" android:title="@string/orientation_preferences" /><CheckBoxPreference android:defaultValue="false" android:key="use_internal_webview" android:summary="@string/use_internal_webview_summary" android:title="@string/use_internal_webview_title" /><CheckBoxPreference android:defaultValue="false" android:key="strech_detail_image" android:summary="@string/strech_detail_image_summary" android:title="@string/strech_detail_image_title" /><ListPreference android:defaultValue="en" android:entries="@array/languageSelection" android:entryValues="@array/languageSelectionValues" android:key="language_selection" android:title="@string/language_selection" /></PreferenceCategory><Preference android:key="select_alternative_language" android:summary="@string/alternative_language_summary" android:title="@string/alternative_language_title" />
-            <PreferenceCategory android:title="@string/pref_listing"><CheckBoxPreference android:defaultValue="false" android:key="touch_download_chapter" android:summary="@string/auto_download_chapter_summary" android:title="@string/auto_download_chapter_title" /><CheckBoxPreference android:defaultValue="false" android:key="alphabet_order" android:summary="@string/alphabet_order_summary" android:title="@string/alphabet_order_title" /><CheckBoxPreference android:defaultValue="false" android:summary="@string/hide_empty_volume_summary" android:key="hide_empty_volume" android:title="@string/hide_empty_volume_title" /><CheckBoxPreference android:defaultValue="true" android:key="show_missing" android:summary="@string/show_missing_summary" android:title="@string/show_missing_title" /><CheckBoxPreference android:defaultValue="true" android:key="show_redlink" android:summary="@string/pref_show_redlink_summary" android:title="@string/pref_show_redlink_title" /><CheckBoxPreference android:defaultValue="true" android:key="show_external" android:summary="@string/show_external_summary" android:title="@string/show_external_title" /><CheckBoxPreference android:defaultValue="false" android:summary="@string/bookmark_order_summary" android:key="bookmark_order" android:title="@string/bookmark_order_title" />
-            
-</PreferenceCategory>
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-        </PreferenceScreen>
-        <PreferenceScreen
-            android:key="update_category"
-            android:title="@string/update_preferences" >
-            <ListPreference
-                android:defaultValue="0"
-                android:entries="@array/updateInterval"
-                android:entryValues="@array/updateIntervalValues"
-                android:key="updates_interval"
-                android:summary="@string/update_interval_summary"
-                android:title="@string/update_interval_title" />
-
-            <CheckBoxPreference android:summary="@string/auto_download_updated_chapter_summary" android:defaultValue="false" android:key="auto_download_updated_chapter" android:title="@string/auto_download_updated_chapter_title"/><Preference
-                android:key="run_update"
-                android:title="@string/run_update_text" />
-
-            <PreferenceCategory android:title="@string/pref_notif"><CheckBoxPreference android:defaultValue="true" android:key="update_use_sound" android:summary="@string/use_sound_summary" android:title="@string/use_sound_title" /><CheckBoxPreference android:defaultValue="true" android:key="update_use_vibration" android:summary="@string/use_vibration_summary" android:title="@string/use_vibration_title" /><CheckBoxPreference android:defaultValue="false" android:key="persist_notification" android:summary="@string/persist_notification_summary" android:title="@string/persist_notification_title" /><CheckBoxPreference android:defaultValue="true" android:key="consolidate_notification" android:summary="@string/consolidate_notification_summary" android:title="@string/consolidate_notification_title" /></PreferenceCategory>
-            
-            
-            
-            <PreferenceCategory android:title="@string/pref_network"><CheckBoxPreference android:defaultValue="false" android:summary="@string/use_https_summary" android:title="@string/use_https_title" android:key="use_https" /><EditTextPreference android:summary="@string/pref_timeout_summary" android:key="timeout" android:title="@string/pref_timeout_title" android:defaultValue="60" /><EditTextPreference android:summary="@string/pref_retry_summary" android:title="@string/pref_retry_title" android:defaultValue="3" android:key="retry" /><CheckBoxPreference android:key="increase_retry" android:summary="@string/increase_retry_summary" android:title="@string/increase_retry_title" android:defaultValue="false" /></PreferenceCategory>
-            
-            
-            
-            <CheckBoxPreference android:summary="@string/aggresive_title_clean_up_summary" android:title="@string/aggresive_title_clean_up_title" android:key="aggresive_title_clean_up" android:defaultValue="true" />
-            
-            
-            
-        </PreferenceScreen>
-        <PreferenceScreen
-            android:key="reading_category"
-            android:title="@string/reading_layout" >
-            <PreferenceCategory android:title="Group 1"><CheckBoxPreference android:defaultValue="false" android:key="keep_awake" android:summary="@string/keep_awake_summary" android:title="@string/keep_awake_title" /><CheckBoxPreference android:defaultValue="true" android:key="enable_zoom" android:summary="@string/enable_zoom_summary" android:title="@string/enable_zoom_title" /><CheckBoxPreference android:defaultValue="true" android:key="show_zoom_control" android:summary="@string/show_zoom_control_summary" android:title="@string/show_zoom_control_title" /><CheckBoxPreference android:defaultValue="true" android:key="enable_bookmark" android:summary="@string/enable_bookmark_summary" android:title="@string/enable_bookmark_title" />
-            <CheckBoxPreference android:defaultValue="false" android:summary="@string/pref_webview_kitkat_fix_sum" android:key="webview_kitkat_fix" android:title="@string/pref_webview_kitkat_fix_title"/>
-            <EditTextPreference android:key="webview_kitkat_fix_delay" android:title="@string/pref_webview_kitkat_fix_delay_title" android:summary="@string/pref_webview_kitkat_fix_delay_sum" android:dependency="webview_kitkat_fix" android:defaultValue="500"/>
-</PreferenceCategory><PreferenceCategory android:title="@string/pref_scrolling"><CheckBoxPreference android:defaultValue="false" android:key="use_volume_to_scroll" android:summary="@string/use_volume_to_scroll_summary" android:title="@string/use_volume_to_scroll_title" /><EditTextPreference android:defaultValue="5" android:dependency="use_volume_to_scroll" android:key="scroll_size" android:summary="@string/scroll_size_summary" android:title="@string/scroll_size_title" /><CheckBoxPreference android:defaultValue="false" android:dependency="use_volume_to_scroll" android:key="invert_scroll" android:summary="@string/invert_scroll_summary" android:title="@string/invert_scroll_title" /><CheckBoxPreference android:defaultValue="false" android:key="enable_webview_buttons" android:summary="@string/show_webview_summary" android:title="@string/show_webview_title" /></PreferenceCategory><PreferenceCategory android:title="Group 2"><CheckBoxPreference android:defaultValue="true" android:key="show_images" android:summary="@string/show_images_summary" android:title="@string/show_images_title" /><CheckBoxPreference android:defaultValue="false" android:key="fullscreen" android:summary="@string/fullscreen_summary" android:title="@string/fullscreen_title" /><PreferenceScreen android:title="@string/css_layout_title" android:summary="@string/css_layout_summary">
-                <CheckBoxPreference android:defaultValue="false" android:key="use_custom_css" android:summary="@string/custom_css_summary" android:title="@string/custom_css_title" />
-
-                <EditTextPreference android:defaultValue="/mnt/sdcard/custom.css" android:dependency="use_custom_css" android:key="custom_css_path" android:summary="@string/custom_css_path_summary" android:title="@string/custom_css_path_title" />
-
-                <CheckBoxPreference android:defaultValue="false" android:key="force_justified" android:summary="@string/force_justified_summary" android:title="@string/force_justified_title" />
-
-                <EditTextPreference android:defaultValue="150" android:dialogMessage="@string/line_spacing_dialog_content" android:dialogTitle="@string/line_spacing_dialog_title" android:inputType="number" android:key="line_spacing" android:negativeButtonText="@string/cancel" android:positiveButtonText="@string/set" android:summary="@string/line_spacing_summary" android:title="@string/line_spacing_title" />
-                <EditTextPreference android:defaultValue="5" android:dialogMessage="@string/margin_dialog" android:dialogTitle="@string/margin_title" android:inputType="number" android:key="margin_space" android:negativeButtonText="@string/cancel" android:positiveButtonText="@string/set" android:summary="@string/margin_summary" android:title="@string/margin_title" />
-            </PreferenceScreen><PreferenceScreen android:title="@string/pref_tts" android:summary="@string/pref_tss_summary">
-                    <Preference android:key="tts_engine" android:summary="@string/pref_tts_engine_summary" android:title="@string/pref_tts_engine_title" /><EditTextPreference android:title="@string/tts_pitch_title" android:key="tts_pitch" android:defaultValue="1.0" android:summary="@string/tts_pitch_summary" />
-                    <EditTextPreference android:key="tts_reading_speed" android:title="@string/tts_reading_speed_title" android:defaultValue="1.0" android:summary="@string/tts_reading_speed_summary" />
-                    <EditTextPreference android:key="tts_whitespace_delay" android:title="@string/tts_whitespace_delay_title" android:defaultValue="500" android:summary="@string/tts_whitespace_delay_summary" />
-                    <CheckBoxPreference android:key="tts_stop_on_lost_focus" android:summary="@string/tts_stop_on_lost_focus_summary" android:title="@string/tts_stop_on_lost_focus_title" android:defaultValue="true" />
-                    
-                </PreferenceScreen></PreferenceCategory>
-            
-            
-            
-            
-            
-
-            
-
-            
-            
-            
-                
-                
-                
-                
-            
-        </PreferenceScreen>
-        <PreferenceScreen
-            android:key="storage_category"
-            android:title="@string/storage" >
-            <PreferenceCategory android:title="@string/pref_cat_database"><Preference android:key="clear_database" android:summary="@string/clear_database_summary" android:title="@string/clear_database_title" /><Preference android:key="db_location" android:title="@string/db_location_title" /><Preference android:key="restore_database" android:summary="@string/restore_database_summary" android:title="@string/restore_database_title" />
-            
-            
-            
-            
-            
-</PreferenceCategory><PreferenceCategory android:title="@string/cat_db_backup_and_restore"><Preference android:key="backup_database" android:summary="@string/backup_database_summary" android:title="@string/backup_database_title" /><EditTextPreference android:key="backup_location" android:summary="@string/pref_db_backup_location_summary" android:title="@string/pref_db_backup_location_title" /><CheckBoxPreference android:key="auto_backup_enabled" android:defaultValue="false" android:summary="@string/pref_db_auto_backup_summary" android:title="@string/pref_db_auto_backup_title" /><EditTextPreference android:key="auto_backup_count" android:defaultValue="4" android:summary="@string/pref_db_auto_backup_count_summary" android:title="@string/pref_db_auto_backup_count_title" /></PreferenceCategory>
-            
-            
-            <PreferenceCategory android:title="@string/pref_cat_images"><CheckBoxPreference android:key="download_big_image" android:summary="@string/download_big_image_summary" android:title="@string/download_big_image_title" /><Preference android:key="clear_image_cache" android:summary="@string/clear_cache_summary" android:title="@string/clear_cache_title" /><EditTextPreference android:key="save_location" android:title="@string/save_location_title" />
-            
-            
-</PreferenceCategory><PreferenceCategory android:title="@string/cat_image_backup"><CheckBoxPreference android:title="@string/pref_process_all_images_title" android:summary="@string/pref_process_all_images_summary" android:key="process_all_images" android:defaultValue="false" /><Preference android:key="backup_thumb_images" android:title="@string/backup_thumb_images_title" android:summary="@string/backup_thumb_images_summary" /><Preference android:title="@string/restore_thumb_images_title" android:summary="@string/restore_thumb_images_summary" android:key="restore_thumb_images" /><Preference android:title="@string/relink_images_title" android:summary="@string/relink_images_summary" android:key="relink_images" /></PreferenceCategory>
-            
-            
-
-            
-            
-            
-            
-            
-            
-        </PreferenceScreen>
-    </PreferenceCategory>
-    <PreferenceCategory
-        android:key="application_info"
-        android:title="@string/application_info" >
-        <Preference
-            android:key="tos"
-            android:title="@string/copyright" />
-        <Preference
-            android:key="app_version"
-            android:title="@string/version" />
-        <Preference
-            android:key="credits"
-            android:title="@string/title_activity_display_credit" />
-    </PreferenceCategory>
-
+	<PreferenceCategory android:key="preferences" android:title="Preferences" >
+		<PreferenceScreen android:key="general_category" android:title="@string/general_preference" >
+			<PreferenceCategory android:title="@string/pref_ui">
+				<ListPreference android:defaultValue="0" android:entries="@array/uiSelection" android:entryValues="@array/uiSelectionValues" android:key="ui_selection" android:title="@string/UI_selection_title" />
+				<CheckBoxPreference android:defaultValue="true" android:key="invert_colors" android:summary="@string/invert_color_summary" android:title="@string/invert_color_title" />
+				<ListPreference android:defaultValue="0" android:entries="@array/orientationSelection" android:entryValues="@array/orientationSelectionValues" android:key="orientation_lock" android:summary="@string/orientation_summary" android:title="@string/orientation_preferences" />
+				<CheckBoxPreference android:defaultValue="false" android:key="use_internal_webview" android:summary="@string/use_internal_webview_summary" android:title="@string/use_internal_webview_title" />
+				<CheckBoxPreference android:defaultValue="false" android:key="strech_detail_image" android:summary="@string/strech_detail_image_summary" android:title="@string/strech_detail_image_title" />
+				<ListPreference android:defaultValue="en" android:entries="@array/languageSelection" android:entryValues="@array/languageSelectionValues" android:key="language_selection" android:title="@string/language_selection" />
+			</PreferenceCategory>
+			<Preference android:key="select_alternative_language" android:summary="@string/alternative_language_summary" android:title="@string/alternative_language_title" />
+			<PreferenceCategory android:title="@string/pref_listing">
+				<CheckBoxPreference android:defaultValue="false" android:key="touch_download_chapter" android:summary="@string/auto_download_chapter_summary" android:title="@string/auto_download_chapter_title" />
+				<CheckBoxPreference android:defaultValue="false" android:key="alphabet_order" android:summary="@string/alphabet_order_summary" android:title="@string/alphabet_order_title" />
+				<CheckBoxPreference android:defaultValue="false" android:summary="@string/hide_empty_volume_summary" android:key="hide_empty_volume" android:title="@string/hide_empty_volume_title" />
+				<CheckBoxPreference android:defaultValue="true" android:key="show_missing" android:summary="@string/show_missing_summary" android:title="@string/show_missing_title" />
+				<CheckBoxPreference android:defaultValue="true" android:key="show_redlink" android:summary="@string/pref_show_redlink_summary" android:title="@string/pref_show_redlink_title" />
+				<CheckBoxPreference android:defaultValue="true" android:key="show_external" android:summary="@string/show_external_summary" android:title="@string/show_external_title" />
+				<CheckBoxPreference android:defaultValue="false" android:summary="@string/bookmark_order_summary" android:key="bookmark_order" android:title="@string/bookmark_order_title" />
+			</PreferenceCategory>
+		</PreferenceScreen>
+		<PreferenceScreen android:key="update_category" android:title="@string/update_preferences" >
+			<ListPreference android:defaultValue="0" android:entries="@array/updateInterval" android:entryValues="@array/updateIntervalValues" android:key="updates_interval" android:summary="@string/update_interval_summary" android:title="@string/update_interval_title" />
+			<CheckBoxPreference android:summary="@string/auto_download_updated_chapter_summary" android:defaultValue="false" android:key="auto_download_updated_chapter" android:title="@string/auto_download_updated_chapter_title"/>
+			<Preference android:key="run_update" android:title="@string/run_update_text" />
+			<PreferenceCategory android:title="@string/pref_notif">
+				<CheckBoxPreference android:defaultValue="true" android:key="update_use_sound" android:summary="@string/use_sound_summary" android:title="@string/use_sound_title" />
+				<CheckBoxPreference android:defaultValue="true" android:key="update_use_vibration" android:summary="@string/use_vibration_summary" android:title="@string/use_vibration_title" />
+				<CheckBoxPreference android:defaultValue="false" android:key="persist_notification" android:summary="@string/persist_notification_summary" android:title="@string/persist_notification_title" />
+				<CheckBoxPreference android:defaultValue="true" android:key="consolidate_notification" android:summary="@string/consolidate_notification_summary" android:title="@string/consolidate_notification_title" />
+			</PreferenceCategory>
+			<PreferenceCategory android:title="@string/pref_network">
+				<CheckBoxPreference android:defaultValue="false" android:summary="@string/use_https_summary" android:title="@string/use_https_title" android:key="use_https" />
+				<EditTextPreference android:summary="@string/pref_timeout_summary" android:key="timeout" android:title="@string/pref_timeout_title" android:defaultValue="60" />
+				<EditTextPreference android:summary="@string/pref_retry_summary" android:title="@string/pref_retry_title" android:defaultValue="3" android:key="retry" />
+				<CheckBoxPreference android:key="increase_retry" android:summary="@string/increase_retry_summary" android:title="@string/increase_retry_title" android:defaultValue="false" />
+			</PreferenceCategory>
+			<CheckBoxPreference android:summary="@string/aggresive_title_clean_up_summary" android:title="@string/aggresive_title_clean_up_title" android:key="aggresive_title_clean_up" android:defaultValue="true" />
+		</PreferenceScreen>
+		<PreferenceScreen android:key="reading_category" android:title="@string/reading_layout" >
+			<PreferenceCategory android:title="Group 1">
+				<CheckBoxPreference android:defaultValue="false" android:key="keep_awake" android:summary="@string/keep_awake_summary" android:title="@string/keep_awake_title" />
+				<CheckBoxPreference android:defaultValue="true" android:key="enable_zoom" android:summary="@string/enable_zoom_summary" android:title="@string/enable_zoom_title" />
+				<CheckBoxPreference android:defaultValue="true" android:key="show_zoom_control" android:summary="@string/show_zoom_control_summary" android:title="@string/show_zoom_control_title" />
+				<CheckBoxPreference android:defaultValue="true" android:key="enable_bookmark" android:summary="@string/enable_bookmark_summary" android:title="@string/enable_bookmark_title" />
+				<CheckBoxPreference android:defaultValue="false" android:summary="@string/pref_webview_kitkat_fix_sum" android:key="webview_kitkat_fix" android:title="@string/pref_webview_kitkat_fix_title"/>
+				<EditTextPreference android:key="webview_kitkat_fix_delay" android:title="@string/pref_webview_kitkat_fix_delay_title" android:summary="@string/pref_webview_kitkat_fix_delay_sum" android:dependency="webview_kitkat_fix" android:defaultValue="500"/>
+			</PreferenceCategory>
+			<PreferenceCategory android:title="@string/pref_scrolling">
+				<CheckBoxPreference android:defaultValue="false" android:key="use_volume_to_scroll" android:summary="@string/use_volume_to_scroll_summary" android:title="@string/use_volume_to_scroll_title" />
+				<EditTextPreference android:defaultValue="5" android:dependency="use_volume_to_scroll" android:key="scroll_size" android:summary="@string/scroll_size_summary" android:title="@string/scroll_size_title" />
+				<CheckBoxPreference android:defaultValue="false" android:dependency="use_volume_to_scroll" android:key="invert_scroll" android:summary="@string/invert_scroll_summary" android:title="@string/invert_scroll_title" />
+				<CheckBoxPreference android:defaultValue="false" android:key="enable_webview_buttons" android:summary="@string/show_webview_summary" android:title="@string/show_webview_title" />
+			</PreferenceCategory>
+			<PreferenceCategory android:title="Group 2">
+				<CheckBoxPreference android:defaultValue="true" android:key="show_images" android:summary="@string/show_images_summary" android:title="@string/show_images_title" />
+				<CheckBoxPreference android:defaultValue="false" android:key="fullscreen" android:summary="@string/fullscreen_summary" android:title="@string/fullscreen_title" />
+				<PreferenceScreen android:title="@string/css_layout_title" android:summary="@string/css_layout_summary">
+					<CheckBoxPreference android:defaultValue="false" android:key="use_custom_css" android:summary="@string/custom_css_summary" android:title="@string/custom_css_title" />
+					<EditTextPreference android:defaultValue="/mnt/sdcard/custom.css" android:dependency="use_custom_css" android:key="custom_css_path" android:summary="@string/custom_css_path_summary" android:title="@string/custom_css_path_title" />
+					<CheckBoxPreference android:defaultValue="false" android:key="force_justified" android:summary="@string/force_justified_summary" android:title="@string/force_justified_title" />
+					<EditTextPreference android:defaultValue="150" android:dialogMessage="@string/line_spacing_dialog_content" android:dialogTitle="@string/line_spacing_dialog_title" android:inputType="number" android:key="line_spacing" android:negativeButtonText="@string/cancel" android:positiveButtonText="@string/set" android:summary="@string/line_spacing_summary" android:title="@string/line_spacing_title" />
+					<EditTextPreference android:defaultValue="5" android:dialogMessage="@string/margin_dialog" android:dialogTitle="@string/margin_title" android:inputType="number" android:key="margin_space" android:negativeButtonText="@string/cancel" android:positiveButtonText="@string/set" android:summary="@string/margin_summary" android:title="@string/margin_title" />
+				</PreferenceScreen>
+				<PreferenceScreen android:title="@string/pref_tts" android:summary="@string/pref_tss_summary">
+					<Preference android:key="tts_engine" android:summary="@string/pref_tts_engine_summary" android:title="@string/pref_tts_engine_title" />
+					<EditTextPreference android:title="@string/tts_pitch_title" android:key="tts_pitch" android:defaultValue="1.0" android:summary="@string/tts_pitch_summary" />
+					<EditTextPreference android:key="tts_reading_speed" android:title="@string/tts_reading_speed_title" android:defaultValue="1.0" android:summary="@string/tts_reading_speed_summary" />
+					<EditTextPreference android:key="tts_whitespace_delay" android:title="@string/tts_whitespace_delay_title" android:defaultValue="500" android:summary="@string/tts_whitespace_delay_summary" />
+					<CheckBoxPreference android:key="tts_stop_on_lost_focus" android:summary="@string/tts_stop_on_lost_focus_summary" android:title="@string/tts_stop_on_lost_focus_title" android:defaultValue="true" />
+				</PreferenceScreen>
+			</PreferenceCategory>
+		</PreferenceScreen>
+		<PreferenceScreen android:key="storage_category" android:title="@string/storage" >
+			<PreferenceCategory android:title="@string/pref_cat_database">
+				<Preference android:key="clear_database" android:summary="@string/clear_database_summary" android:title="@string/clear_database_title" />
+				<Preference android:key="db_location" android:title="@string/db_location_title" />
+				<Preference android:key="restore_database" android:summary="@string/restore_database_summary" android:title="@string/restore_database_title" />
+			</PreferenceCategory>
+			<PreferenceCategory android:title="@string/cat_db_backup_and_restore">
+				<Preference android:key="backup_database" android:summary="@string/backup_database_summary" android:title="@string/backup_database_title" />
+				<EditTextPreference android:key="backup_location" android:summary="@string/pref_db_backup_location_summary" android:title="@string/pref_db_backup_location_title" />
+				<CheckBoxPreference android:key="auto_backup_enabled" android:defaultValue="false" android:summary="@string/pref_db_auto_backup_summary" android:title="@string/pref_db_auto_backup_title" />
+				<EditTextPreference android:key="auto_backup_count" android:defaultValue="4" android:summary="@string/pref_db_auto_backup_count_summary" android:title="@string/pref_db_auto_backup_count_title" />
+			</PreferenceCategory>
+			<PreferenceCategory android:title="@string/pref_cat_images">
+				<CheckBoxPreference android:key="download_big_image" android:summary="@string/download_big_image_summary" android:title="@string/download_big_image_title" />
+				<Preference android:key="clear_image_cache" android:summary="@string/clear_cache_summary" android:title="@string/clear_cache_title" />
+				<EditTextPreference android:key="save_location" android:title="@string/save_location_title" />
+			</PreferenceCategory>
+			<PreferenceCategory android:title="@string/cat_image_backup">
+				<CheckBoxPreference android:title="@string/pref_process_all_images_title" android:summary="@string/pref_process_all_images_summary" android:key="process_all_images" android:defaultValue="false" />
+				<Preference android:key="backup_thumb_images" android:title="@string/backup_thumb_images_title" android:summary="@string/backup_thumb_images_summary" />
+				<Preference android:title="@string/restore_thumb_images_title" android:summary="@string/restore_thumb_images_summary" android:key="restore_thumb_images" />
+				<Preference android:title="@string/relink_images_title" android:summary="@string/relink_images_summary" android:key="relink_images" />
+			</PreferenceCategory>
+		</PreferenceScreen>
+		<PreferenceScreen android:key="maintenance_category" android:title="@string/maintenance">
+			<Preference android:title="@string/find_missing_chapter" android:key="find_missing_chapter" />
+			<Preference android:title="@string/find_redlink_chapter" android:key="find_redlink_chapter" />
+			<Preference android:title="@string/find_empty_book" android:key="find_empty_book" />
+			<Preference android:title="@string/find_empty_novel" android:key="find_empty_novel"/>
+		</PreferenceScreen>
+	</PreferenceCategory>
+	<PreferenceCategory android:key="application_info" android:title="@string/application_info" >
+		<Preference android:key="tos" android:title="@string/copyright" />
+		<Preference android:key="app_version" android:title="@string/version" />
+		<Preference android:key="credits" android:title="@string/title_activity_display_credit" />
+	</PreferenceCategory>
 </PreferenceScreen>

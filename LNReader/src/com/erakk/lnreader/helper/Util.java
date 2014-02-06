@@ -85,6 +85,11 @@ public class Util {
 		FileChannel outChannel = null;
 		try {
 			inChannel = new FileInputStream(src).getChannel();
+			if(!dst.exists()){
+				Log.w(TAG, "Destination File doesn't exists, try to create dummy file");
+				boolean result = dst.createNewFile();
+				if(!result) Log.e(TAG, "Failed ot create file");
+			}
 			outChannel = new FileOutputStream(dst).getChannel();
 			inChannel.transferTo(0, inChannel.size(), outChannel);
 		} finally {
@@ -144,7 +149,7 @@ public class Util {
 		return false;
 	}
 
-/**
+	/**
 	 * Remove | \ ? * < " : > + [ ] / ' from filename
 	 * @param filename
 	 * @return
@@ -278,7 +283,7 @@ public class Util {
 		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
 		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
 	}
-	
+
 	@SuppressLint("NewApi")
 	public static long getFreeSpace(File path) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {

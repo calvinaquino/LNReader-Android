@@ -77,16 +77,16 @@
         </activity>
         <activity
             android:name="com.erakk.lnreader.activity.DisplayLightNovelDetailsActivity"
-            android:label="@string/title_activity_light_novel_chapters" 
-            android:configChanges="orientation">
+            android:configChanges="orientation"
+            android:label="@string/title_activity_light_novel_chapters" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.erakk.lnreader.activity.DisplayLightNovelListActivity" />
         </activity>
         <activity
             android:name="com.erakk.lnreader.activity.DisplayLightNovelContentActivity"
-            android:label="@string/title_activity_display_novel_content" 
-            android:configChanges="orientation">
+            android:configChanges="orientation"
+            android:label="@string/title_activity_display_novel_content" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.erakk.lnreader.activity.DisplayLightNovelDetailsActivity" />
@@ -189,7 +189,6 @@
         </receiver>
         <receiver android:name="com.erakk.lnreader.service.UpdateStartServiceReceiver" >
         </receiver>
-        
         <receiver android:name="com.erakk.lnreader.service.AutoBackupScheduleReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -202,10 +201,17 @@
             android:name="com.erakk.lnreader.activity.DisplayCreditActivity"
             android:label="@string/title_activity_display_credit" >
         </activity>
-        
         <activity
             android:name="com.erakk.lnreader.activity.DisplayChangelogActivity"
             android:label="@string/title_activity_display_changelog" >
+        </activity>
+        <activity
+            android:name="com.erakk.lnreader.activity.FindMissingActivity"
+            android:label="@string/title_activity_find_missing"
+            android:parentActivityName="com.erakk.lnreader.activity.DisplaySettingsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.erakk.lnreader.activity.DisplaySettingsActivity" />
         </activity>
     </application>
 

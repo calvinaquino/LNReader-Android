@@ -40,6 +40,7 @@ import com.erakk.lnreader.helper.db.PageModelHelper;
 import com.erakk.lnreader.helper.db.UpdateInfoModelHelper;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.BookmarkModel;
+import com.erakk.lnreader.model.FindMissingModel;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
@@ -1226,8 +1227,8 @@ public class NovelsDao {
 					Log.i(TAG, "Image found in DB, but doesn't exist in URL decoded path: " + java.net.URLDecoder.decode(imageTemp.getPath(), java.nio.charset.Charset.defaultCharset().displayName()));
 					downloadBigImage = true;
 				} // else Log.i(TAG, "Image found in DB with URL decoded path: " +
-					// java.net.URLDecoder.decode(imageTemp.getPath(),
-					// java.nio.charset.Charset.defaultCharset().displayName()));
+				// java.net.URLDecoder.decode(imageTemp.getPath(),
+				// java.nio.charset.Charset.defaultCharset().displayName()));
 
 			} catch (Exception e) {
 				Log.i(TAG, "Image found in DB, but path string seems to be broken: " + imageTemp.getPath()
@@ -1455,5 +1456,14 @@ public class NovelsDao {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			return dbh.checkDB(db);
 		}
+	}
+
+	public ArrayList<FindMissingModel> getMissingItems(String extra) {
+		ArrayList<FindMissingModel> list = new ArrayList<FindMissingModel>();
+		FindMissingModel dummy = new FindMissingModel();
+		dummy.setTitle("Dummy Title: " + extra);
+		dummy.setDetails("Dummy Details");
+		list.add(dummy);
+		return list;
 	}
 }
