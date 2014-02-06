@@ -359,8 +359,10 @@ public class BakaTsukiParser {
 							Element link = links.first();
 							PageModel p = CommonParser.processA(link.text(), parent, chapterOrder, link, Constants.LANG_ENGLISH);
 							// Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
-							chapterCollection.add(p);
-							++chapterOrder;
+							if (p != null) {
+								chapterCollection.add(p);
+								++chapterOrder;
+							}
 						}
 					}
 					book.setChapterCollection(chapterCollection);

@@ -392,4 +392,6 @@
     <string name="find_empty_novel_summary">Find all novel without any book/chapter, usually because of novel renaming from the Server.</string>
 	<string name="maint_warning_text">Please backup your DB before proceeding!</string>
     <string name="maint_warning_title">Maintenance Warning</string>
+    <string name="update_include_redlink_title">Include Redlink Chapter</string>
+    <string name="update_include_redlink_summary">Include placeholder chapter (redlink=1) in the update process.</string>
 </resources>

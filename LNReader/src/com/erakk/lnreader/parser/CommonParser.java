@@ -347,6 +347,11 @@ public class CommonParser {
 	 * @return
 	 */
 	public static PageModel processA(String title, String parent, int chapterOrder, Element link, String language) {
+		String href = link.attr("href");
+		if (!UIHelper.getUpdateIncludeRedlink(LNReaderApplication.getInstance().getApplicationContext()) && href.contains("&redlink=1")) {
+			return null;
+		}
+
 		PageModel p = new PageModel();
 		p.setTitle(CommonParser.sanitize(title, false));
 		p.setParent(parent);
@@ -358,11 +363,11 @@ public class CommonParser {
 		// External link
 		if (link.className().contains("external text")) {
 			p.setExternal(true);
-			p.setPage(link.attr("href"));
+			p.setPage(href);
 			// Log.d(TAG, "Found external link for " + p.getTitle() + ": " + link.attr("href"));
 		} else {
 			p.setExternal(false);
-			String tempPage = normalizeInternalUrl(link.attr("href"));
+			String tempPage = normalizeInternalUrl(href);
 			p.setPage(tempPage);
 		}
 		return p;
@@ -436,7 +441,8 @@ public class CommonParser {
 					Log.e(TAG, "Got linked Volume without chapter list: " + a.text() + " => " + a.attr("href"));
 					if (a.attr("href").startsWith(UIHelper.getBaseUrl(LNReaderApplication.getInstance()))) {
 						PageModel p = processA(a.text(), parent, 0, a, language);
-						chapterCollection.add(p);
+						if (p != null)
+							chapterCollection.add(p);
 						break;
 					}
 				}

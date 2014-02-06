@@ -306,8 +306,10 @@ public class BakaTsukiParserAlternative {
 							Element link = links.first();
 							PageModel p = CommonParser.processA(link.text(), parent, chapterOrder, link, chapterCollection.get(0).getLanguage());
 							// Log.d(TAG, "chapter: " + p.getTitle() + " = " + p.getPage());
-							chapterCollection.add(p);
-							++chapterOrder;
+							if (p != null) {
+								chapterCollection.add(p);
+								++chapterOrder;
+							}
 						}
 					}
 					book.setChapterCollection(chapterCollection);

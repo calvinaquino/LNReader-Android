@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.UpdateInfoModel;
 
@@ -198,6 +199,16 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
 			holder.txtUpdateTitle.setText(page.getUpdateTitle());
 			if (freshData)
 				holder.txtUpdateTitle.setTypeface(null, Typeface.BOLD);
+			if (page.getUpdatePage().contains("&redlink=1"))
+				holder.txtUpdateTitle.setTextColor(Constants.COLOR_REDLINK);
+			else {
+				if (UIHelper.getColorPreferences(context)) {
+					holder.txtUpdateTitle.setTextColor(Constants.COLOR_UNREAD);
+				}
+				else {
+					holder.txtUpdateTitle.setTextColor(Constants.COLOR_UNREAD_DARK);
+				}
+			}
 		}
 
 		holder.txtUpdateDate = (TextView) row.findViewById(R.id.update_date);

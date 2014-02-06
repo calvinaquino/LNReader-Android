@@ -443,6 +443,10 @@ public class UIHelper {
 		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_SHOW_MAINT_WARNING, true);
 	}
 
+	public static boolean getUpdateIncludeRedlink(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_UPDATE_INCLUDE_REDLINK, true);
+	}
+
 	public static String getBackupRoot(Context ctx) {
 		String loc = PreferenceManager.getDefaultSharedPreferences(ctx).getString(Constants.PREF_BACKUP_LOCATION, "");
 		if (Util.isStringNullOrEmpty(loc)) {
