@@ -229,8 +229,8 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 			if (info.position > -1) {
 				toggleProgressBar(true);
 				PageModel novel = listItems.get(info.position);
-				boolean result = NovelsDao.getInstance(getSherlockActivity()).deleteNovel(novel);
-				if (result) {
+				int result = NovelsDao.getInstance(getSherlockActivity()).deleteNovel(novel);
+				if (result > 0) {
 					listItems.remove(novel);
 					adapter.notifyDataSetChanged();
 				}

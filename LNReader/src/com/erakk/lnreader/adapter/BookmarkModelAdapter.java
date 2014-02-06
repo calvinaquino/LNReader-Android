@@ -139,6 +139,7 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 		holder.chkSelection = (CheckBox) row.findViewById(R.id.chk_selection);
 		if (holder.chkSelection != null) {
 			if (showCheckBox) {
+				holder.chkSelection.setChecked(bookmark.isSelected());
 				holder.chkSelection.setVisibility(View.VISIBLE);
 				holder.chkSelection.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 

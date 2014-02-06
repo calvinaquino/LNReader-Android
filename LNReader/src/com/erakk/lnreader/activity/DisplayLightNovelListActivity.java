@@ -272,8 +272,8 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 			if (info.position > -1) {
 				toggleProgressBar(true);
 				PageModel novel = listItems.get(info.position);
-				boolean result = NovelsDao.getInstance(this).deleteNovel(novel);
-				if (result) {
+				int result = NovelsDao.getInstance(this).deleteNovel(novel);
+				if (result > 0) {
 					listItems.remove(novel);
 					adapter.notifyDataSetChanged();
 				}

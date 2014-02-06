@@ -969,34 +969,41 @@ public class NovelsDao {
 		page.setLastCheck(new Date());
 	}
 
-	public void deleteBooks(BookModel bookDel) {
+	public int deleteBooks(BookModel bookDel) {
 		synchronized (dbh) {
 			// get from db
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try {
-				BookModel tempBook = BookModelHelper.getBookModel(db, bookDel.getId());
+				BookModel tempBook = null;
+				if (bookDel.getId() > 0) {
+					tempBook = BookModelHelper.getBookModel(db, bookDel.getId());
+				} else if (!Util.isStringNullOrEmpty(bookDel.getPage()) && !Util.isStringNullOrEmpty(bookDel.getTitle())) {
+					tempBook = BookModelHelper.getBookModel(db, bookDel.getPage(), bookDel.getTitle());
+				}
 				if (tempBook != null) {
 					ArrayList<PageModel> chapters = tempBook.getChapterCollection();
 					for (PageModel chapter : chapters) {
 						NovelContentModelHelper.deleteNovelContent(db, chapter);
 					}
-					BookModelHelper.deleteBookModel(db, tempBook);
+					return BookModelHelper.deleteBookModel(db, tempBook);
 				}
 			} finally {
 				db.close();
 			}
 		}
+		return 0;
 	}
 
-	public void deletePage(PageModel page) {
+	public int deletePage(PageModel page) {
 		synchronized (dbh) {
 			// get from db
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try {
-				PageModel tempPage = PageModelHelper.getPageModel(db, page.getId());
-				if (tempPage != null) {
-					PageModelHelper.deletePageModel(db, tempPage);
-				}
+				return PageModelHelper.deletePageModel(db, page);
+				// PageModel tempPage = PageModelHelper.getPageModel(db, page.getId());
+				// if (tempPage != null) {
+				// return PageModelHelper.deletePageModel(db, tempPage);
+				// }
 			} finally {
 				db.close();
 			}
@@ -1228,8 +1235,8 @@ public class NovelsDao {
 					Log.i(TAG, "Image found in DB, but doesn't exist in URL decoded path: " + java.net.URLDecoder.decode(imageTemp.getPath(), java.nio.charset.Charset.defaultCharset().displayName()));
 					downloadBigImage = true;
 				} // else Log.i(TAG, "Image found in DB with URL decoded path: " +
-				// java.net.URLDecoder.decode(imageTemp.getPath(),
-				// java.nio.charset.Charset.defaultCharset().displayName()));
+					// java.net.URLDecoder.decode(imageTemp.getPath(),
+					// java.nio.charset.Charset.defaultCharset().displayName()));
 
 			} catch (Exception e) {
 				Log.i(TAG, "Image found in DB, but path string seems to be broken: " + imageTemp.getPath()
@@ -1334,13 +1341,11 @@ public class NovelsDao {
 		return result;
 	}
 
-	public boolean deleteNovel(PageModel novel) {
-		boolean result = false;
+	public int deleteNovel(PageModel novel) {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			result = NovelCollectionModelHelper.deleteNovel(db, novel);
+			return NovelCollectionModelHelper.deleteNovel(db, novel);
 		}
-		return result;
 	}
 
 	public ArrayList<BookmarkModel> getBookmarks(PageModel novel) {
@@ -1462,25 +1467,25 @@ public class NovelsDao {
 	public ArrayList<FindMissingModel> getMissingItems(String extra) {
 		ArrayList<FindMissingModel> list = null;
 
-		if(extra.equalsIgnoreCase(Constants.PREF_REDLINK_CHAPTER)) {
+		if (extra.equalsIgnoreCase(Constants.PREF_REDLINK_CHAPTER)) {
 			synchronized (dbh) {
 				SQLiteDatabase db = dbh.getReadableDatabase();
 				list = FindMissingModelHelper.getAllRedlinkChapter(db);
 			}
 		}
-		else if(extra.equalsIgnoreCase(Constants.PREF_MISSING_CHAPTER)) {
+		else if (extra.equalsIgnoreCase(Constants.PREF_MISSING_CHAPTER)) {
 			synchronized (dbh) {
 				SQLiteDatabase db = dbh.getReadableDatabase();
 				list = FindMissingModelHelper.getAllMissingChapter(db);
 			}
 		}
-		else if(extra.equalsIgnoreCase(Constants.PREF_EMPTY_BOOK)) {
+		else if (extra.equalsIgnoreCase(Constants.PREF_EMPTY_BOOK)) {
 			synchronized (dbh) {
 				SQLiteDatabase db = dbh.getReadableDatabase();
 				list = FindMissingModelHelper.getAllEmptyBook(db);
 			}
 		}
-		else if(extra.equalsIgnoreCase(Constants.PREF_EMPTY_NOVEL)) {
+		else if (extra.equalsIgnoreCase(Constants.PREF_EMPTY_NOVEL)) {
 			synchronized (dbh) {
 				SQLiteDatabase db = dbh.getReadableDatabase();
 				list = FindMissingModelHelper.getAllEmptyNovel(db);
@@ -1494,5 +1499,24 @@ public class NovelsDao {
 			list.add(dummy);
 		}
 		return list;
+	}
+
+	public int deleteMissingItem(FindMissingModel missing, String mode) {
+		if (mode.equalsIgnoreCase(Constants.PREF_REDLINK_CHAPTER)) {
+			return deletePage(new PageModel(missing.getPage()));
+		}
+		else if (mode.equalsIgnoreCase(Constants.PREF_MISSING_CHAPTER)) {
+			return deletePage(new PageModel(missing.getPage()));
+		}
+		else if (mode.equalsIgnoreCase(Constants.PREF_EMPTY_BOOK)) {
+			BookModel book = new BookModel();
+			book.setPage(missing.getPage());
+			book.setTitle(missing.getTitle());
+			return deleteBooks(book);
+		}
+		else if (mode.equalsIgnoreCase(Constants.PREF_EMPTY_NOVEL)) {
+			return deleteNovel(new PageModel(missing.getPage()));
+		}
+		return 0;
 	}
 }

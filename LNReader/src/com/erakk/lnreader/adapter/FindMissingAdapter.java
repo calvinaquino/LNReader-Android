@@ -23,6 +23,7 @@ import com.erakk.lnreader.model.FindMissingModel;
 
 public class FindMissingAdapter extends ArrayAdapter<FindMissingModel> {
 
+	protected static final String TAG = FindMissingAdapter.class.toString();
 	private final int layoutResourceId;
 	private final Context context;
 	private List<FindMissingModel> data;
@@ -39,6 +40,10 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel> {
 		this.mode = extra;
 		this.originalData = data.toArray(originalData);
 		filterData();
+	}
+
+	public List<FindMissingModel> getItems() {
+		return data;
 	}
 
 	@Override
@@ -74,6 +79,7 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel> {
 		FindMissingModelHolder holder = new FindMissingModelHolder();
 
 		final FindMissingModel model = data.get(position);
+		final int pos2 = position;
 
 		LayoutInflater inflater = ((Activity) context).getLayoutInflater();
 		row = inflater.inflate(layoutResourceId, parent, false);
@@ -108,6 +114,7 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel> {
 
 		holder.chkSelection = (CheckBox) row.findViewById(R.id.chk_selection);
 		if (holder.chkSelection != null) {
+			holder.chkSelection.setChecked(model.isSelected());
 			holder.chkSelection.setVisibility(View.VISIBLE);
 			holder.chkSelection.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 

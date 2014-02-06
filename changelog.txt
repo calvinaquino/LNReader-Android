@@ -1,3 +1,12 @@
+1.1.15-beta
+- Differentiate between Missing chapter (Red) with relink=1 chapter (Pink).
+- New Feature for maintenance.
+  - Find and Delete Missing Chapter
+  - Find and Delete Redlink Chapter
+  - Find and Delete Empty Book
+  - Find and Delete Empty Novel
+- New option to parse redlink chapter.
+
 1.1.14
 - Fix Chapter parser.
 - Optimize Main Novel list parsing.

@@ -1,10 +1,12 @@
 package com.erakk.lnreader.activity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
@@ -21,6 +23,7 @@ public class FindMissingActivity extends SherlockListActivity {
 	private boolean isInverted;
 	private ArrayList<FindMissingModel> models = null;
 	private FindMissingAdapter adapter = null;
+	private String mode;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +34,9 @@ public class FindMissingActivity extends SherlockListActivity {
 		isInverted = UIHelper.getColorPreferences(this);
 		setContentView(R.layout.activity_find_missing);
 
-		String extra = getIntent().getStringExtra(Constants.EXTRA_FIND_MISSING_MODE);
-		getItems(extra);
-		setTitle("Maintenance: " + getString(getResources().getIdentifier(extra, "string", getPackageName())));
+		mode = getIntent().getStringExtra(Constants.EXTRA_FIND_MISSING_MODE);
+		getItems(mode);
+		setTitle("Maintenance: " + getString(getResources().getIdentifier(mode, "string", getPackageName())));
 
 		checkWarning();
 	}
@@ -91,6 +94,34 @@ public class FindMissingActivity extends SherlockListActivity {
 			if (adapter != null) {
 				item.setChecked(!item.isChecked());
 				adapter.filterEverythingElse(item.isChecked());
+			}
+			return true;
+		case R.id.menu_clear_all:
+			if (adapter != null) {
+				int count = 0;
+				List<FindMissingModel> items = adapter.getItems();
+				if (items != null) {
+					for (FindMissingModel missing : items) {
+						count += NovelsDao.getInstance(this).deleteMissingItem(missing, mode);
+					}
+				}
+				Toast.makeText(this, getString(R.string.toast_show_deleted_count, count), Toast.LENGTH_SHORT).show();
+				getItems(mode);
+			}
+			return true;
+		case R.id.menu_clear_selected:
+			if (adapter != null) {
+				List<FindMissingModel> items = adapter.getItems();
+				int count = 0;
+				if (items != null) {
+					for (FindMissingModel missing : items) {
+						if (missing.isSelected()) {
+							count += NovelsDao.getInstance(this).deleteMissingItem(missing, mode);
+						}
+					}
+				}
+				Toast.makeText(this, getString(R.string.toast_show_deleted_count, count), Toast.LENGTH_SHORT).show();
+				getItems(mode);
 			}
 			return true;
 		case android.R.id.home:

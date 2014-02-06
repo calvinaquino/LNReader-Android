@@ -13,6 +13,7 @@ import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.DBHelper;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.PageModel;
 
 public class PageModelHelper {
@@ -300,9 +301,14 @@ public class PageModelHelper {
 	/*
 	 * Delete Stuff
 	 */
-	public static void deletePageModel(SQLiteDatabase db, PageModel tempPage) {
-		int result = helper.delete(db, DBHelper.TABLE_PAGE, DBHelper.COLUMN_ID + " = ?", new String[] { "" + tempPage.getId() });
+	public static int deletePageModel(SQLiteDatabase db, PageModel tempPage) {
+		int result = 0;
+		if (tempPage.getId() > 0) {
+			result = helper.delete(db, DBHelper.TABLE_PAGE, DBHelper.COLUMN_ID + " = ?", new String[] { "" + tempPage.getId() });
+		} else if (!Util.isStringNullOrEmpty(tempPage.getPage())) {
+			result = helper.delete(db, DBHelper.TABLE_PAGE, DBHelper.COLUMN_PAGE + " = ?", new String[] { tempPage.getPage() });
+		}
 		Log.w(TAG, "PageModel Deleted: " + result);
+		return result;
 	}
-
 }
