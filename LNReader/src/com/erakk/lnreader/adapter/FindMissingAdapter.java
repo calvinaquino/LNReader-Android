@@ -32,12 +32,14 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel> {
 	private boolean showDownloaded = false;
 	private boolean showEverythingElse = true;
 
-	public FindMissingAdapter(Context context, int resourceId, List<FindMissingModel> objects, String extra) {
+	public FindMissingAdapter(Context context, int resourceId, List<FindMissingModel> objects, String extra, boolean dowloadSelected, boolean elseSelected) {
 		super(context, resourceId, objects);
 		this.layoutResourceId = resourceId;
 		this.context = context;
-		this.data = objects;
+		this.showDownloaded = dowloadSelected;
+		this.showEverythingElse = elseSelected;
 		this.mode = extra;
+		this.data = objects;
 		this.originalData = data.toArray(originalData);
 		filterData();
 	}
@@ -79,7 +81,6 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel> {
 		FindMissingModelHolder holder = new FindMissingModelHolder();
 
 		final FindMissingModel model = data.get(position);
-		final int pos2 = position;
 
 		LayoutInflater inflater = ((Activity) context).getLayoutInflater();
 		row = inflater.inflate(layoutResourceId, parent, false);
@@ -140,17 +141,19 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel> {
 	}
 
 	private void filterData() {
-		this.clear();
-		data.clear();
-		for (FindMissingModel item : originalData) {
-			if (item.isDownloaded() && this.showDownloaded) {
-				data.add(item);
+		synchronized (this) {
+			this.clear();
+			data.clear();
+			for (FindMissingModel item : originalData) {
+				if (item.isDownloaded() && this.showDownloaded) {
+					data.add(item);
+				}
+				else if (!item.isDownloaded() && this.showEverythingElse) {
+					data.add(item);
+				}
 			}
-			else if (!item.isDownloaded() && this.showEverythingElse) {
-				data.add(item);
-			}
+			this.notifyDataSetChanged();
 		}
-		super.notifyDataSetChanged();
 	}
 
 	static class FindMissingModelHolder {
