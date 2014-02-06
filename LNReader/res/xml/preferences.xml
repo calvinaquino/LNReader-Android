@@ -98,10 +98,11 @@
 			</PreferenceCategory>
 		</PreferenceScreen>
 		<PreferenceScreen android:key="maintenance_category" android:title="@string/maintenance">
-			<Preference android:title="@string/find_missing_chapter" android:key="find_missing_chapter" />
-			<Preference android:title="@string/find_redlink_chapter" android:key="find_redlink_chapter" />
-			<Preference android:title="@string/find_empty_book" android:key="find_empty_book" />
-			<Preference android:title="@string/find_empty_novel" android:key="find_empty_novel"/>
+			<Preference android:title="@string/find_missing_chapter" android:key="find_missing_chapter" android:summary="@string/find_missing_chapter_summary"/>
+			<Preference android:title="@string/find_redlink_chapter" android:key="find_redlink_chapter" android:summary="@string/find_missing_redlink_summary"/>
+			<Preference android:title="@string/find_empty_book" android:key="find_empty_book" android:summary="@string/find_empty_book_summary"/>
+			<Preference android:title="@string/find_empty_novel" android:key="find_empty_novel" android:summary="@string/find_empty_novel_summary"/>
+			<CheckBoxPreference android:key="maint_show_warning" android:title="@string/maint_show_warning_title" android:defaultValue="true" android:summary="@string/maint_show_warning_summary"/>
 		</PreferenceScreen>
 	</PreferenceCategory>
 	<PreferenceCategory android:key="application_info" android:title="@string/application_info" >

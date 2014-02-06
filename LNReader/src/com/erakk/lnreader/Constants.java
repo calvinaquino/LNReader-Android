@@ -27,6 +27,7 @@ public class Constants {
 	public static final String PREF_REDLINK_CHAPTER = "find_redlink_chapter";
 	public static final String PREF_EMPTY_BOOK = "find_empty_book";
 	public static final String PREF_EMPTY_NOVEL = "find_empty_novel";
+	public static final String PREF_SHOW_MAINT_WARNING = "maint_show_warning";
 
 	public static final String NOVEL_BOOK_DIVIDER = "%NOVEL_BOOK_DIVIDER%";
 	public static final int CHECK_INTERVAL = 7;

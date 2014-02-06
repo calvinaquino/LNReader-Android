@@ -2,6 +2,8 @@ package com.erakk.lnreader.activity;
 
 import java.util.ArrayList;
 
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 
 import com.actionbarsherlock.app.SherlockListActivity;
@@ -31,7 +33,27 @@ public class FindMissingActivity extends SherlockListActivity {
 
 		String extra = getIntent().getStringExtra(Constants.EXTRA_FIND_MISSING_MODE);
 		getItems(extra);
-		setTitle(getTitle() + ": " + extra);
+		setTitle("Maintenance: " + getString(getResources().getIdentifier(extra, "string", getPackageName())));
+
+		checkWarning();
+	}
+
+	private void checkWarning() {
+		if (UIHelper.getShowMaintWarning(this)) {
+			UIHelper.createYesNoDialog(
+					this
+					, getResources().getString(R.string.maint_warning_text)
+					, getResources().getString(R.string.maint_warning_title)
+					, new OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							if (which == DialogInterface.BUTTON_NEGATIVE) {
+								finish();
+							}
+						}
+					}).show();
+		}
 	}
 
 	private void getItems(String extra) {

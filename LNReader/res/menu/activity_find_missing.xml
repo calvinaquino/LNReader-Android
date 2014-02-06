@@ -7,7 +7,7 @@
         android:title="@string/menu_settings"/>
     <item android:id="@+id/menu_clear_all" android:title="@string/menu_show_clear_all"></item>
     <item android:id="@+id/menu_clear_selected" android:title="@string/menu_show_clear_selected"></item>
-    <item android:id="@+id/menu_show_downloaded" android:title="@string/menu_show_downloaded" android:checkable="true" android:checked="true"></item>
+    <item android:id="@+id/menu_show_downloaded" android:title="@string/menu_show_downloaded" android:checkable="true" android:checked="false" android:icon="@drawable/ic_downloaded"></item>
     <item android:id="@+id/menu_show_everything_else" android:title="@string/menu_show_everything_else" android:checkable="true" android:checked="true"></item>
 
 </menu>

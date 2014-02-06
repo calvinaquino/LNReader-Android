@@ -384,5 +384,12 @@
     <string name="hello_world">Hello world!</string>
     <string name="menu_show_downloaded">Show Downloaded</string>
     <string name="menu_show_everything_else">Show Everything Else</string>
-
+    <string name="maint_show_warning_title">Show Backup Warning</string>
+    <string name="maint_show_warning_summary">Show reminder to backup your DB before doing anything.</string>
+    <string name="find_missing_chapter_summary">Find all missing/deleted chapter from the Server (shown with RED).</string>
+    <string name="find_missing_redlink_summary">Find all chapter with redlink=1 in the source url (usually placeholder chapter without content).</string>
+    <string name="find_empty_book_summary">Find all book without chapter, usually because of book renaming from the Server.</string>
+    <string name="find_empty_novel_summary">Find all novel without any book/chapter, usually because of novel renaming from the Server.</string>
+	<string name="maint_warning_text">Please backup your DB before proceeding!</string>
+    <string name="maint_warning_title">Maintenance Warning</string>
 </resources>

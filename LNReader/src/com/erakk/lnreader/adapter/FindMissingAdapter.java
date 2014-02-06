@@ -21,16 +21,15 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.model.FindMissingModel;
 
-
-public class FindMissingAdapter extends ArrayAdapter<FindMissingModel>{
+public class FindMissingAdapter extends ArrayAdapter<FindMissingModel> {
 
 	private final int layoutResourceId;
 	private final Context context;
 	private List<FindMissingModel> data;
 	public FindMissingModel[] originalData = new FindMissingModel[0];
 	private final String mode;
-	private boolean showDownloaded=true;
-	private boolean showEverythingElse=true;
+	private boolean showDownloaded = false;
+	private boolean showEverythingElse = true;
 
 	public FindMissingAdapter(Context context, int resourceId, List<FindMissingModel> objects, String extra) {
 		super(context, resourceId, objects);
@@ -39,6 +38,7 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel>{
 		this.data = objects;
 		this.mode = extra;
 		this.originalData = data.toArray(originalData);
+		filterData();
 	}
 
 	@Override
@@ -81,9 +81,9 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel>{
 		holder.txtTitle = (TextView) row.findViewById(R.id.title);
 		if (holder.txtTitle != null) {
 			holder.txtTitle.setText(model.getTitle());
-			if(mode.equalsIgnoreCase(Constants.PREF_MISSING_CHAPTER))
+			if (mode.equalsIgnoreCase(Constants.PREF_MISSING_CHAPTER))
 				holder.txtTitle.setTextColor(Constants.COLOR_MISSING);
-			else if(mode.equalsIgnoreCase(Constants.PREF_REDLINK_CHAPTER))
+			else if (mode.equalsIgnoreCase(Constants.PREF_REDLINK_CHAPTER))
 				holder.txtTitle.setTextColor(Constants.COLOR_REDLINK);
 			else {
 				holder.txtTitle.setTextColor(Constants.COLOR_READ);
@@ -96,8 +96,8 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel>{
 		}
 
 		holder.imgIsDownloaded = (ImageView) row.findViewById(R.id.is_downloaded);
-		if(holder.imgIsDownloaded != null) {
-			if(model.isDownloaded()) {
+		if (holder.imgIsDownloaded != null) {
+			if (model.isDownloaded()) {
 				holder.imgIsDownloaded.setVisibility(View.VISIBLE);
 				UIHelper.setColorFilter(holder.imgIsDownloaded);
 			}
@@ -136,10 +136,10 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel>{
 		this.clear();
 		data.clear();
 		for (FindMissingModel item : originalData) {
-			if(item.isDownloaded() && this.showDownloaded) {
+			if (item.isDownloaded() && this.showDownloaded) {
 				data.add(item);
 			}
-			else if(this.showEverythingElse) {
+			else if (!item.isDownloaded() && this.showEverythingElse) {
 				data.add(item);
 			}
 		}

@@ -1,6 +1,7 @@
 *.class
 R.java
 LNReader/gen/*
+*.apk
 
 #################
 ## Eclipse
