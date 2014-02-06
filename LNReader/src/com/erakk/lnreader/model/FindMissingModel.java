@@ -6,6 +6,7 @@ public class FindMissingModel {
 	private String details;
 
 	private String page;
+	private boolean isDownloaded;
 	private PageModel pageModel;
 
 	public boolean isSelected() {
@@ -31,6 +32,12 @@ public class FindMissingModel {
 	}
 	public void setPage(String page) {
 		this.page = page;
+	}
+	public boolean isDownloaded() {
+		return isDownloaded;
+	}
+	public void setDownloaded(boolean isDownloaded) {
+		this.isDownloaded = isDownloaded;
 	}
 	public PageModel getPageModel() {
 		return pageModel;

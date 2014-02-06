@@ -13,22 +13,32 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.model.FindMissingModel;
+
 
 public class FindMissingAdapter extends ArrayAdapter<FindMissingModel>{
 
 	private final int layoutResourceId;
 	private final Context context;
 	private List<FindMissingModel> data;
+	public FindMissingModel[] originalData = new FindMissingModel[0];
+	private final String mode;
+	private boolean showDownloaded=true;
+	private boolean showEverythingElse=true;
 
-	public FindMissingAdapter(Context context, int resourceId, List<FindMissingModel> objects) {
+	public FindMissingAdapter(Context context, int resourceId, List<FindMissingModel> objects, String extra) {
 		super(context, resourceId, objects);
 		this.layoutResourceId = resourceId;
 		this.context = context;
 		this.data = objects;
+		this.mode = extra;
+		this.originalData = data.toArray(originalData);
 	}
 
 	@Override
@@ -57,6 +67,7 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel>{
 			this.notifyDataSetChanged();
 		}
 	}
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View row = convertView;
@@ -70,11 +81,29 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel>{
 		holder.txtTitle = (TextView) row.findViewById(R.id.title);
 		if (holder.txtTitle != null) {
 			holder.txtTitle.setText(model.getTitle());
+			if(mode.equalsIgnoreCase(Constants.PREF_MISSING_CHAPTER))
+				holder.txtTitle.setTextColor(Constants.COLOR_MISSING);
+			else if(mode.equalsIgnoreCase(Constants.PREF_REDLINK_CHAPTER))
+				holder.txtTitle.setTextColor(Constants.COLOR_REDLINK);
+			else {
+				holder.txtTitle.setTextColor(Constants.COLOR_READ);
+			}
 		}
 
 		holder.txtDetails = (TextView) row.findViewById(R.id.details);
 		if (holder.txtDetails != null) {
 			holder.txtDetails.setText(model.getDetails());
+		}
+
+		holder.imgIsDownloaded = (ImageView) row.findViewById(R.id.is_downloaded);
+		if(holder.imgIsDownloaded != null) {
+			if(model.isDownloaded()) {
+				holder.imgIsDownloaded.setVisibility(View.VISIBLE);
+				UIHelper.setColorFilter(holder.imgIsDownloaded);
+			}
+			else {
+				holder.imgIsDownloaded.setVisibility(View.GONE);
+			}
 		}
 
 		holder.chkSelection = (CheckBox) row.findViewById(R.id.chk_selection);
@@ -93,9 +122,34 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel>{
 		return row;
 	}
 
+	public void filterDownloaded(boolean value) {
+		this.showDownloaded = value;
+		filterData();
+	}
+
+	public void filterEverythingElse(boolean value) {
+		this.showEverythingElse = value;
+		filterData();
+	}
+
+	private void filterData() {
+		this.clear();
+		data.clear();
+		for (FindMissingModel item : originalData) {
+			if(item.isDownloaded() && this.showDownloaded) {
+				data.add(item);
+			}
+			else if(this.showEverythingElse) {
+				data.add(item);
+			}
+		}
+		super.notifyDataSetChanged();
+	}
+
 	static class FindMissingModelHolder {
 		TextView txtTitle;
 		TextView txtDetails;
+		ImageView imgIsDownloaded;
 		CheckBox chkSelection;
 	}
 }

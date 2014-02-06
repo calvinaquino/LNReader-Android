@@ -117,6 +117,7 @@ public class Constants {
 	public static final int COLOR_UNREAD_DARK = Color.parseColor("#222222");
 	public static final int COLOR_MISSING = Color.parseColor("#ff0000");
 	public static final int COLOR_EXTERNAL = Color.parseColor("#3333ff");
+	public static final int COLOR_REDLINK = Color.parseColor("#ff69b4");;
 
 	public static final String ROOT_NOVEL = "Main_Page";
 

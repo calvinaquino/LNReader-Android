@@ -31,12 +31,13 @@ public class FindMissingActivity extends SherlockListActivity {
 
 		String extra = getIntent().getStringExtra(Constants.EXTRA_FIND_MISSING_MODE);
 		getItems(extra);
+		setTitle(getTitle() + ": " + extra);
 	}
 
 	private void getItems(String extra) {
 		int resourceId = R.layout.find_missing_list_item;
 		models = NovelsDao.getInstance(this).getMissingItems(extra);
-		adapter = new FindMissingAdapter(this, resourceId, models);
+		adapter = new FindMissingAdapter(this, resourceId, models, extra);
 		setListAdapter(adapter);
 	}
 
@@ -51,13 +52,25 @@ public class FindMissingActivity extends SherlockListActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getSupportMenuInflater().inflate(R.menu.find_missing, menu);
+		getSupportMenuInflater().inflate(R.menu.activity_find_missing, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.menu_show_downloaded:
+			if (adapter != null) {
+				item.setChecked(!item.isChecked());
+				adapter.filterDownloaded(item.isChecked());
+			}
+			return true;
+		case R.id.menu_show_everything_else:
+			if (adapter != null) {
+				item.setChecked(!item.isChecked());
+				adapter.filterEverythingElse(item.isChecked());
+			}
+			return true;
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;

@@ -33,6 +33,7 @@ import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.helper.db.BookModelHelper;
 import com.erakk.lnreader.helper.db.BookmarkModelHelper;
+import com.erakk.lnreader.helper.db.FindMissingModelHelper;
 import com.erakk.lnreader.helper.db.ImageModelHelper;
 import com.erakk.lnreader.helper.db.NovelCollectionModelHelper;
 import com.erakk.lnreader.helper.db.NovelContentModelHelper;
@@ -1459,11 +1460,39 @@ public class NovelsDao {
 	}
 
 	public ArrayList<FindMissingModel> getMissingItems(String extra) {
-		ArrayList<FindMissingModel> list = new ArrayList<FindMissingModel>();
-		FindMissingModel dummy = new FindMissingModel();
-		dummy.setTitle("Dummy Title: " + extra);
-		dummy.setDetails("Dummy Details");
-		list.add(dummy);
+		ArrayList<FindMissingModel> list = null;
+
+		if(extra.equalsIgnoreCase(Constants.PREF_REDLINK_CHAPTER)) {
+			synchronized (dbh) {
+				SQLiteDatabase db = dbh.getReadableDatabase();
+				list = FindMissingModelHelper.getAllRedlinkChapter(db);
+			}
+		}
+		else if(extra.equalsIgnoreCase(Constants.PREF_MISSING_CHAPTER)) {
+			synchronized (dbh) {
+				SQLiteDatabase db = dbh.getReadableDatabase();
+				list = FindMissingModelHelper.getAllMissingChapter(db);
+			}
+		}
+		else if(extra.equalsIgnoreCase(Constants.PREF_EMPTY_BOOK)) {
+			synchronized (dbh) {
+				SQLiteDatabase db = dbh.getReadableDatabase();
+				list = FindMissingModelHelper.getAllEmptyBook(db);
+			}
+		}
+		else if(extra.equalsIgnoreCase(Constants.PREF_EMPTY_NOVEL)) {
+			synchronized (dbh) {
+				SQLiteDatabase db = dbh.getReadableDatabase();
+				list = FindMissingModelHelper.getAllEmptyNovel(db);
+			}
+		}
+		else {
+			list = new ArrayList<FindMissingModel>();
+			FindMissingModel dummy = new FindMissingModel();
+			dummy.setTitle("Dummy Title: " + extra);
+			dummy.setDetails("Dummy Details");
+			list.add(dummy);
+		}
 		return list;
 	}
 }

@@ -106,6 +106,9 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		if (child.isMissing()) {
 			tv.setTextColor(Constants.COLOR_MISSING);
 		}
+		if (child.isRedlink()) {
+			tv.setTextColor(Constants.COLOR_REDLINK);
+		}
 		if (child.isExternal()) {
 			container.addView(ivExternal);
 			UIHelper.setColorFilter(ivExternal);

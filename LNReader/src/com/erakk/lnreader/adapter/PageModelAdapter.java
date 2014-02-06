@@ -99,6 +99,9 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			if (page.isMissing()) {
 				holder.txtNovel.setTextColor(Constants.COLOR_MISSING);
 			}
+			if (page.isRedlink()) {
+				holder.txtNovel.setTextColor(Constants.COLOR_REDLINK);
+			}
 			if (page.isExternal()) {
 				holder.txtNovel.setTextColor(Constants.COLOR_EXTERNAL);
 			}
