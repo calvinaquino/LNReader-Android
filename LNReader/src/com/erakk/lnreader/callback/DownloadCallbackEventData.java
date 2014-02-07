@@ -1,11 +1,12 @@
 package com.erakk.lnreader.callback;
 
+import com.erakk.lnreader.helper.Util;
+
 public class DownloadCallbackEventData extends CallbackEventData implements ICallbackEventData {
 	private final long totalSize;
 	private final long downloadedSize;
 	private String url;
 	private String filePath;
-
 
 	public DownloadCallbackEventData(String message, long downloadedSize, long totalSize, String source) {
 		super(message, source);
@@ -47,9 +48,9 @@ public class DownloadCallbackEventData extends CallbackEventData implements ICal
 	@Override
 	public String getMessage() {
 		if(this.message == null || this.message.length() == 0) {
-			this.message = "Downloading: " + this.url + "\nProgress: " + downloadedSize + " bytes";
+			this.message = String.format("Downloading: %s \nProgress: %s", this.url, Util.humanReadableByteCount(downloadedSize, false));
 			if(getPercentage() > -1) {
-				this.message += " of " + this.totalSize + " bytes (" + this.getPercentage() + "%)";
+				this.message = String.format("%s of %s (%s%%)", this.message, Util.humanReadableByteCount(this.totalSize, false), this.getPercentage());
 			}
 		}
 		return message;
