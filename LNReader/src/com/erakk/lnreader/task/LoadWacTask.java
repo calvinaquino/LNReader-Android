@@ -7,22 +7,22 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.helper.WebArchiveReader;
 
 public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskResult<Boolean>> implements ICallbackNotifier {
 	private static final String TAG = LoadWacTask.class.toString();
 	private final WebView wv;
 	private final String wacName;
-	private final IAsyncTaskOwner owner;
+	private final IExtendedCallbackNotifier<AsyncTaskResult<?>> owner;
 	private final WebArchiveReader wr;
 	private String source;
 
-	public LoadWacTask(IAsyncTaskOwner owner, WebView wv, String wacName, final WebViewClient client) {
+	public LoadWacTask(IExtendedCallbackNotifier<AsyncTaskResult<?>> owner, WebView wv, String wacName, final WebViewClient client) {
 		this.wv = wv;
 		this.wacName = wacName;
 		this.owner = owner;
@@ -38,13 +38,20 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 	}
 
 	@Override
+	protected void onPreExecute() {
+		// executed on UI thread.
+		owner.downloadListSetup(wacName, wacName, 0, false);
+		owner.onProgressCallback(new CallbackEventData("", source));
+	}
+
+	@Override
 	protected AsyncTaskResult<Boolean> doInBackground(Void... arg0) {
 		return new AsyncTaskResult<Boolean>(loadFromWac(this.wacName));
 	}
 
 	@Override
 	protected void onProgressUpdate(ICallbackEventData... values) {
-		owner.setMessageDialog(values[0]);
+		owner.onProgressCallback(values[0]);
 	}
 
 	private boolean loadFromWac(String wacName) {
@@ -68,10 +75,11 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 			message = "Load from: " + wacName;
 		}
 		else {
-			message = "Failed";
+			message = "Load WAC Failed";
 		}
-		owner.setMessageDialog(new CallbackEventData(message, source));
-		Toast.makeText(owner.getContext(), message, Toast.LENGTH_SHORT).show();
+
+		owner.onCompleteCallback(new CallbackEventData(message, source), result);
+		owner.downloadListSetup(wacName, wacName, 2, result.getError() != null ? true : false);
 	}
 
 	@Override

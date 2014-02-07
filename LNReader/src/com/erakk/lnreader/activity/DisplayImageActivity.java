@@ -136,7 +136,6 @@ public class DisplayImageActivity extends SherlockActivity implements IExtendedC
 		if (imgWebView == null || loadingBar == null || loadingText == null)
 			return;
 		if (show) {
-			loadingText.setText("Loading image, please wait...");
 			loadingText.setVisibility(TextView.VISIBLE);
 			loadingBar.setVisibility(ProgressBar.VISIBLE);
 			imgWebView.setVisibility(View.GONE);

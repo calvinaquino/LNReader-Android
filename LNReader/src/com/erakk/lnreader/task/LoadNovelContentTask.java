@@ -4,24 +4,29 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 
-public class LoadNovelContentTask extends AsyncTask<PageModel, ICallbackEventData, AsyncTaskResult<NovelContentModel>> implements ICallbackNotifier {
+public class LoadNovelContentTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskResult<NovelContentModel>> implements ICallbackNotifier {
 	private static final String TAG = LoadNovelContentTask.class.toString();
-	public volatile IAsyncTaskOwner owner;
+	public volatile IExtendedCallbackNotifier<AsyncTaskResult<?>> owner;
 	private final boolean refresh;
-	private String source;
+	private final String source;
+	private final PageModel pageModel;
 
-	public LoadNovelContentTask(boolean isRefresh, IAsyncTaskOwner owner) {
+	public LoadNovelContentTask(PageModel p, boolean isRefresh, IExtendedCallbackNotifier<AsyncTaskResult<?>> owner) {
 		super();
 		this.refresh = isRefresh;
 		this.owner = owner;
+		this.pageModel = p;
+		this.source = p.getPage();
 	}
 
 	@Override
@@ -32,21 +37,21 @@ public class LoadNovelContentTask extends AsyncTask<PageModel, ICallbackEventDat
 	@Override
 	protected void onPreExecute() {
 		// executed on UI thread.
-		owner.toggleProgressBar(true);
+		owner.downloadListSetup(pageModel.getPage(), pageModel.getPage(), 0, false);
+		owner.onProgressCallback(new CallbackEventData("", source));
 	}
 
 	@Override
-	protected AsyncTaskResult<NovelContentModel> doInBackground(PageModel... params) {
-		Context ctx = owner.getContext();
+	protected AsyncTaskResult<NovelContentModel> doInBackground(Void... params) {
+		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		try {
-			PageModel p = params[0];
 			if (refresh) {
 				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_refreshing), source));
-				return new AsyncTaskResult<NovelContentModel>(NovelsDao.getInstance().getNovelContentFromInternet(p, this));
+				return new AsyncTaskResult<NovelContentModel>(NovelsDao.getInstance().getNovelContentFromInternet(pageModel, this));
 			}
 			else {
 				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_loading), source));
-				return new AsyncTaskResult<NovelContentModel>(NovelsDao.getInstance().getNovelContent(p, true, this));
+				return new AsyncTaskResult<NovelContentModel>(NovelsDao.getInstance().getNovelContent(pageModel, true, this));
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting novel content: " + e.getMessage(), e);
@@ -58,12 +63,14 @@ public class LoadNovelContentTask extends AsyncTask<PageModel, ICallbackEventDat
 	@Override
 	protected void onProgressUpdate(ICallbackEventData... values) {
 		// executed on UI thread.
-		owner.setMessageDialog(values[0]);
+		owner.onProgressCallback(values[0]);
 	}
 
 	@Override
 	protected void onPostExecute(AsyncTaskResult<NovelContentModel> result) {
-		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novel_content_task_complete), source));
-		owner.onGetResult(result, NovelContentModel.class);
+		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
+		CallbackEventData message = new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_complete), source);
+		owner.onCompleteCallback(message, result);
+		owner.downloadListSetup(pageModel.getPage(), pageModel.getPage(), 2, result.getError() != null ? true : false);
 	}
 }

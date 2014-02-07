@@ -48,6 +48,7 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.BookmarkModelAdapter;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.BakaTsukiWebChromeClient;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
@@ -63,11 +64,10 @@ import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.service.TtsService;
 import com.erakk.lnreader.service.TtsService.TtsBinder;
 import com.erakk.lnreader.task.AsyncTaskResult;
-import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelContentTask;
 import com.erakk.lnreader.task.LoadWacTask;
 
-public class DisplayLightNovelContentActivity extends SherlockActivity implements IAsyncTaskOwner, OnInitListener, OnCompleteListener {
+public class DisplayLightNovelContentActivity extends SherlockActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>>, OnInitListener, OnCompleteListener {
 	private static final String TAG = DisplayLightNovelContentActivity.class.toString();
 	public NovelContentModel content;
 	private NovelCollectionModel novelDetails;
@@ -176,12 +176,12 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		
+
 		// re-enter immersive mode on restart
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && getFullscreenPreferences()){
 			UIHelper.Recreate(this);
 		}
-		
+
 		restored = true;
 		Log.d(TAG, "onRestart Completed");
 	}
@@ -696,14 +696,14 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			loadExternalUrl(pageModel, refresh);
 		} else {
 			isPageLoaded = false;
-			task = new LoadNovelContentTask(refresh, this);
+			task = new LoadNovelContentTask(pageModel, refresh, this);
 			String key = TAG + ":" + pageModel.getPage();
 			boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 			if (isAdded) {
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-					task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] { pageModel });
+					task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 				else
-					task.execute(new PageModel[] { pageModel });
+					task.execute();
 			} else {
 				if (UIHelper.getColorPreferences(this))
 					webView.loadData("<p style='background: black; color: white;'>" + getResources().getString(R.string.background_task_load) + "</p>", "text/html", "utf-8");
@@ -796,7 +796,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 					@Override
 					public void onReceiveValue(String value) {
 						Log.i(TAG, "Saved to: " + value);
-						Toast.makeText(getContext(), "Page saved to: " + value, Toast.LENGTH_SHORT).show();
+						Toast.makeText(LNReaderApplication.getInstance().getApplicationContext(), "Page saved to: " + value, Toast.LENGTH_SHORT).show();
 					}
 				});
 			}
@@ -914,22 +914,65 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			wv.loadUrl("javascript:toogleEnableBookmark(" + getBookmarkPreferences() + ")");
 	}
 
+
 	@Override
-	public void setMessageDialog(ICallbackEventData message) {
-		if (loadingText.getVisibility() == TextView.VISIBLE) {
-			loadingText.setText(message.getMessage());
-			loadingText.setBackgroundColor(Color.BLACK);
+	public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<?> result) {
+		Exception e = result.getError();
+		if (e == null) {
+			if (result.getResultType() == NovelContentModel.class) {
+				NovelContentModel loadedContent = (NovelContentModel) result.getResult();
+				setContent(loadedContent);
+			}
+			else if(result.getResultType() == Boolean.class) {
+				// Load WAC
+				Toast.makeText(this, message.getMessage(), Toast.LENGTH_SHORT).show();
+				boolean res = (Boolean) result.getResult();
+				if(!res) {
+					PageModel p = new PageModel(getIntent().getStringExtra(Constants.EXTRA_PAGE));
+					loadExternalUrl(p, true);
+				}
+
+			}
+			else {
+				Log.w(TAG, "Unexpected result: " + result.getResultType().getName());
+			}
+		} else {
+			Log.e(TAG, "Error when loading novel content: " + e.getMessage(), e);
+			Toast.makeText(this, e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
 		}
+		toggleProgressBar(false);
+
 	}
 
 	@Override
+	public void onProgressCallback(ICallbackEventData message) {
+		toggleProgressBar(true);
+		loadingText.setText(message.getMessage());
+		loadingText.setBackgroundColor(Color.BLACK);
+
+		//		synchronized (this) {
+		//			if (message.getPercentage() > -1) {
+		//				// android progress bar bug
+		//				// see: http://stackoverflow.com/a/4352073
+		//				loadingBar.setIndeterminate(false);
+		//				loadingBar.setMax(100);
+		//				loadingBar.setProgress(message.getPercentage());
+		//				loadingBar.setProgress(0);
+		//				loadingBar.setProgress(message.getPercentage());
+		//				loadingBar.setMax(100);
+		//			} else {
+		//				loadingBar.setIndeterminate(true);
+		//			}
+		//		}
+	}
+
 	public void toggleProgressBar(boolean show) {
+		if (webView == null || loadingBar == null || loadingText == null)
+			return;
 		synchronized (this) {
 			if (show) {
-				loadingText.setText("Loading content, please wait...");
 				loadingText.setVisibility(TextView.VISIBLE);
 				loadingBar.setVisibility(ProgressBar.VISIBLE);
-				loadingBar.setIndeterminate(true);
 				webView.setVisibility(ListView.GONE);
 			} else {
 				loadingText.setVisibility(TextView.GONE);
@@ -939,23 +982,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 	}
 
-	@Override
-	public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
-		Exception e = result.getError();
-		if (e == null) {
-			if (t == NovelContentModel.class) {
-				NovelContentModel loadedContent = (NovelContentModel) result.getResult();
-				setContent(loadedContent);
-			}
-			else {
-				Log.w(TAG, "Unexpected result: " + t.getName());
-			}
-		} else {
-			Log.e(TAG, "Error when loading novel content: " + e.getMessage(), e);
-			Toast.makeText(this, e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
-		}
-		toggleProgressBar(false);
-	}
 
 	public void refreshBookmarkData() {
 		if (bookmarkAdapter != null)
@@ -973,19 +999,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			invalidateOptionsMenu();
 		}
 		openOptionsMenu();
-	}
-
-	@Override
-	public void updateProgress(String id, int current, int total, String messString) {
-		Log.d(TAG, "Progress of " + id + ": " + messString + " (" + current + "/" + total + ")");
-		if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
-			loadingBar.setIndeterminate(false);
-			loadingBar.setMax(total);
-			loadingBar.setProgress(current);
-			loadingBar.setProgress(0);
-			loadingBar.setProgress(current);
-			loadingBar.setMax(total);
-		}
 	}
 
 	@Override
@@ -1197,8 +1210,4 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 	}
 
-	@Override
-	public Context getContext() {
-		return this;
-	}
 }
