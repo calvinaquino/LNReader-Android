@@ -1,7 +1,6 @@
 package com.erakk.lnreader.activity;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -20,16 +19,15 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.callback.DownloadCallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
-import com.erakk.lnreader.helper.AsyncTaskResult;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.helper.NonLeakingWebView;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.ImageModel;
-import com.erakk.lnreader.task.IAsyncTaskOwner;
+import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.LoadImageTask;
 
-public class DisplayImageActivity extends SherlockActivity implements IAsyncTaskOwner {
+public class DisplayImageActivity extends SherlockActivity implements IExtendedCallbackNotifier<AsyncTaskResult<ImageModel>> {
 	private static final String TAG = DisplayImageActivity.class.toString();
 	private NonLeakingWebView imgWebView;
 	private LoadImageTask task;
@@ -38,7 +36,6 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 	private TextView loadingText;
 	private ProgressBar loadingBar;
 
-	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -99,23 +96,10 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 			LoadImageTask tempTask = (LoadImageTask) LNReaderApplication.getInstance().getTask(key);
 			if (tempTask != null) {
 				task = tempTask;
-				task.owner = this;
+				task.callback = this;
 			}
 			toggleProgressBar(true);
 		}
-	}
-
-	@Override
-	protected void onStop() {
-		// // check running task
-		// if (task != null) {
-		// if (!(task.getStatus() == Status.FINISHED)) {
-		// Toast.makeText(this, getResources().getString(R.string.cancel_task) + task.toString(),
-		// Toast.LENGTH_SHORT).show();
-		// task.cancel(true);
-		// }
-		// }
-		super.onStop();
 	}
 
 	@Override
@@ -148,7 +132,6 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		return super.onOptionsItemSelected(item);
 	}
 
-	@Override
 	public void toggleProgressBar(boolean show) {
 		if (imgWebView == null || loadingBar == null || loadingText == null)
 			return;
@@ -165,40 +148,20 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 	}
 
 	@Override
-	public void setMessageDialog(ICallbackEventData message) {
-		if (loadingText.getVisibility() == TextView.VISIBLE) {
-			loadingText.setText(message.getMessage());
-
-			if (message.getClass() == DownloadCallbackEventData.class) {
-				DownloadCallbackEventData downloadData = (DownloadCallbackEventData) message;
-				int percent = downloadData.getPercentage();
-				synchronized (this) {
-					if (percent > -1) {
-						// android progress bar bug
-						// see: http://stackoverflow.com/a/4352073
-						loadingBar.setIndeterminate(false);
-						loadingBar.setMax(100);
-						loadingBar.setProgress(percent);
-						loadingBar.setProgress(0);
-						loadingBar.setProgress(percent);
-						loadingBar.setMax(100);
-					} else {
-						loadingBar.setIndeterminate(true);
-					}
-				}
-			}
-		}
+	public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
+		Log.d(TAG, "Setup of " + id + ": " + toastText + " (type: " + type + ")" + "hasError: " + hasError);
+		return false;
 	}
 
 	@Override
-	public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
+	public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<ImageModel> result) {
 		if (result == null)
 			return;
 
 		Exception e = result.getError();
 		if (e == null) {
-			if (t == ImageModel.class) {
-				ImageModel imageModel = (ImageModel) result.getResult();
+			if (result.getResultType() == ImageModel.class) {
+				ImageModel imageModel = result.getResult();
 				if (!Util.isStringNullOrEmpty(imageModel.getPath())) {
 					String imageUrl = "file:///" + Util.sanitizeFilename(imageModel.getPath());
 					imageUrl = imageUrl.replace("file:////", "file:///");
@@ -215,7 +178,7 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 				}
 			}
 			else {
-				Log.w(TAG, "Getting unexpected class: " + t.getName());
+				Log.w(TAG, "Getting unexpected class: " + result.getResultType().getName());
 			}
 		} else {
 			Log.e(TAG, "Cannot load image.", e);
@@ -223,28 +186,29 @@ public class DisplayImageActivity extends SherlockActivity implements IAsyncTask
 		}
 
 		toggleProgressBar(false);
+
 	}
 
 	@Override
-	public void updateProgress(String id, int current, int total, String messString) {
-		if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
-			loadingBar.setIndeterminate(false);
-			loadingBar.setMax(total);
-			loadingBar.setProgress(current);
-			loadingBar.setProgress(0);
-			loadingBar.setProgress(current);
-			loadingBar.setMax(total);
+	public void onProgressCallback(ICallbackEventData message) {
+		toggleProgressBar(true);
+
+		loadingText.setText(message.getMessage());
+
+		synchronized (this) {
+			if (message.getPercentage() > -1) {
+				// android progress bar bug
+				// see: http://stackoverflow.com/a/4352073
+				loadingBar.setIndeterminate(false);
+				loadingBar.setMax(100);
+				loadingBar.setProgress(message.getPercentage());
+				loadingBar.setProgress(0);
+				loadingBar.setProgress(message.getPercentage());
+				loadingBar.setMax(100);
+			} else {
+				loadingBar.setIndeterminate(true);
+			}
 		}
-	}
 
-	@Override
-	public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
-		Log.d(TAG, "Setup of " + id + ": " + toastText + " (type: " + type + ")" + "hasError: " + hasError);
-		return false;
-	}
-
-	@Override
-	public Context getContext() {
-		return this;
 	}
 }

@@ -4,24 +4,24 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
-import com.erakk.lnreader.callback.DownloadCallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
-import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.model.ImageModel;
 
 public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTaskResult<ImageModel>> implements ICallbackNotifier {
 	private static final String TAG = LoadImageTask.class.toString();
-	public volatile IAsyncTaskOwner owner;
+	public volatile IExtendedCallbackNotifier<AsyncTaskResult<ImageModel>> callback;
 	private String url = "";
 	private final boolean refresh;
 	private final String taskId;
 
-	public LoadImageTask(boolean refresh, IAsyncTaskOwner owner) {
-		this.owner = owner;
+	public LoadImageTask(boolean refresh, IExtendedCallbackNotifier<AsyncTaskResult<ImageModel>> callback) {
+		this.callback = callback;
 		this.refresh = refresh;
 		this.taskId = this.toString();
 	}
@@ -34,12 +34,12 @@ public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTa
 	@Override
 	protected void onPreExecute() {
 		// executed on UI thread.
-		owner.toggleProgressBar(true);
+		callback.onProgressCallback(new CallbackEventData("Starting Download Image", this.taskId));
 	}
 
 	@Override
 	protected AsyncTaskResult<ImageModel> doInBackground(String... params) {
-		Context ctx = owner.getContext();
+		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		this.url = params[0];
 		ImageModel image = new ImageModel();
 		image.setName(url);
@@ -62,20 +62,14 @@ public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTa
 	@Override
 	protected void onProgressUpdate(ICallbackEventData... values) {
 		// executed on UI thread.
-		owner.setMessageDialog(values[0]);
-		if (values[0].getClass() == DownloadCallbackEventData.class) {
-			DownloadCallbackEventData data = (DownloadCallbackEventData) values[0];
-			owner.updateProgress(this.taskId, data.getPercentage(), 100, data.getMessage());
-		}
-		else if (values[0].getClass() == CallbackEventData.class) {
-			owner.setMessageDialog(values[0]);
-		}
+		callback.onProgressCallback(values[0]);
 	}
 
 	@Override
 	protected void onPostExecute(AsyncTaskResult<ImageModel> result) {
-		owner.onGetResult(result, ImageModel.class);
-		owner.downloadListSetup(this.taskId, null, 2, result.getError() != null ? true : false);
-		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_image_task_complete), this.taskId));
+		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
+		CallbackEventData message = new CallbackEventData(ctx.getResources().getString(R.string.load_image_task_complete), this.taskId);
+		callback.onCompleteCallback(message, result);
+		callback.downloadListSetup(this.taskId, null, 2, result.getError() != null ? true : false);
 	}
 }

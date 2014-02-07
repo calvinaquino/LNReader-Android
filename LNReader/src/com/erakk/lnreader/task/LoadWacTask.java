@@ -12,7 +12,6 @@ import android.widget.Toast;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
-import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.WebArchiveReader;
 
 public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskResult<Boolean>> implements ICallbackNotifier {

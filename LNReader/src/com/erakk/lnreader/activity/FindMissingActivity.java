@@ -24,13 +24,12 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.FindMissingAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
-import com.erakk.lnreader.callback.ICallbackNotifier;
-import com.erakk.lnreader.callback.ICompleteCallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.FindMissingModel;
 import com.erakk.lnreader.task.DeleteMissingTask;
 
-public class FindMissingActivity extends SherlockListActivity implements ICallbackNotifier, ICompleteCallbackNotifier<Integer> {
+public class FindMissingActivity extends SherlockListActivity implements IExtendedCallbackNotifier<Integer> {
 
 	private static final String TAG = FindMissingActivity.class.toString();
 	private boolean isInverted;
@@ -201,5 +200,8 @@ public class FindMissingActivity extends SherlockListActivity implements ICallba
 		return super.onOptionsItemSelected(item);
 	}
 
-
+	@Override
+	public boolean downloadListSetup(String taskId, String message, int setupType, boolean hasError) {
+		return false;
+	}
 }

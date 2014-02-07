@@ -10,34 +10,27 @@ import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
-import com.erakk.lnreader.callback.ICallbackNotifier;
-import com.erakk.lnreader.callback.ICompleteCallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.FindMissingModel;
 
 public class DeleteMissingTask extends AsyncTask<Void, ICallbackEventData, Integer>{
 
 	private static final String TAG = DeleteMissingTask.class.toString();
-	private ICallbackNotifier callback;
-	private ICompleteCallbackNotifier<Integer> completeCallback;
+	private IExtendedCallbackNotifier<Integer> callback;
 	private String source;
 	private final List<FindMissingModel> items;
 	private final String mode;
 	private boolean hasError;
 
-	public DeleteMissingTask(List<FindMissingModel> items, String mode, ICallbackNotifier callback, String source ) {
+	public DeleteMissingTask(List<FindMissingModel> items, String mode, IExtendedCallbackNotifier<Integer> callback, String source ) {
 		this.items = items;
 		this.mode = mode;
 		this.setCallback(callback, source);
 	}
 
-	public void setCallback(ICallbackNotifier callback, String source) {
+	public void setCallback(IExtendedCallbackNotifier<Integer> callback, String source) {
 		this.callback = callback;
-
-		if(callback instanceof ICompleteCallbackNotifier<?>) {
-			// TODO merge ICallbackNotifier with ICompleteCallbackNotifier
-			this.completeCallback = (ICompleteCallbackNotifier<Integer>) callback;
-		}
 		this.source = source;
 	}
 
@@ -73,8 +66,7 @@ public class DeleteMissingTask extends AsyncTask<Void, ICallbackEventData, Integ
 		if (!hasError) {
 			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.task_delete_complete, items.size());
 			Log.d(TAG, message);
-			if (completeCallback != null)
-				completeCallback.onCompleteCallback(new CallbackEventData(message, source), result);
+			callback.onCompleteCallback(new CallbackEventData(message, source), result);
 		}
 	}
 }

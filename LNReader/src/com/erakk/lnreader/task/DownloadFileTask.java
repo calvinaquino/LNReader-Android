@@ -20,7 +20,6 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.DownloadCallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
-import com.erakk.lnreader.helper.AsyncTaskResult;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.ImageModel;
 

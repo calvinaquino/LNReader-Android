@@ -6,7 +6,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
 
-import com.erakk.lnreader.helper.AsyncTaskResult;
 
 import android.os.AsyncTask;
 import android.util.Log;
