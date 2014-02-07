@@ -25,7 +25,7 @@ public class LoadNovelContentTask extends AsyncTask<PageModel, ICallbackEventDat
 	}
 
 	@Override
-	public void onCallback(ICallbackEventData message) {
+	public void onProgressCallback(ICallbackEventData message) {
 		publishProgress(message);
 	}
 

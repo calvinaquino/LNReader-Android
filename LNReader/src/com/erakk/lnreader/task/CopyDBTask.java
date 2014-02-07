@@ -29,7 +29,7 @@ public class CopyDBTask extends AsyncTask<Void, ICallbackEventData, Void> implem
 	}
 
 	@Override
-	public void onCallback(ICallbackEventData message) {
+	public void onProgressCallback(ICallbackEventData message) {
 		publishProgress(message);
 	}
 
@@ -56,7 +56,7 @@ public class CopyDBTask extends AsyncTask<Void, ICallbackEventData, Void> implem
 	protected void onProgressUpdate(ICallbackEventData... values) {
 		Log.d(TAG, values[0].getMessage());
 		if (callback != null)
-			callback.onCallback(new CallbackEventData(values[0].getMessage(), source));
+			callback.onProgressCallback(new CallbackEventData(values[0].getMessage(), source));
 	}
 
 	private void copyDB(boolean makeBackup) throws IOException {

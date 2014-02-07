@@ -50,7 +50,7 @@ public class UnZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> im
 	}
 
 	@Override
-	public void onCallback(ICallbackEventData message) {
+	public void onProgressCallback(ICallbackEventData message) {
 		publishProgress(message);
 	}
 
@@ -73,7 +73,7 @@ public class UnZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> im
 	protected void onProgressUpdate(ICallbackEventData... values) {
 		Log.d(TAG, values[0].getMessage());
 		if (callback != null)
-			callback.onCallback(new CallbackEventData(values[0].getMessage(), source));
+			callback.onProgressCallback(new CallbackEventData(values[0].getMessage(), source));
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class UnZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> im
 			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.unzip_files_task_complete, zipName, rootPath);
 			Log.d(TAG, message);
 			if (callback != null)
-				callback.onCallback(new CallbackEventData(message, source));
+				callback.onProgressCallback(new CallbackEventData(message, source));
 		}
 	}
 }

@@ -395,4 +395,8 @@
     <string name="update_include_redlink_title">Include Redlink Chapter</string>
     <string name="update_include_redlink_summary">Include placeholder chapter (redlink=1) in the update process.</string>
     <string name="toast_show_deleted_count">%1$s item(s) deleted.</string>
+    <string name="task_delete_error">Error when deleting item(s): %1$s.</string>
+    <string name="task_delete_progress">Deleting %1$s of %2$s item(s).</string>
+    <string name="task_delete_complete">Completed deleting %1$s item(s).</string>
+    <string name="task_delete_running">Delete Task still running!</string>
 </resources>

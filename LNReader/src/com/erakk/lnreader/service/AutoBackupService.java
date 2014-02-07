@@ -58,7 +58,7 @@ public class AutoBackupService extends Service {
 		if (!isRunning) {
 			AutoBackupService.isRunning = true;
 			if (notifier != null)
-				notifier.onCallback(new CallbackEventData("Auto Backup is running...", Constants.PREF_AUTO_BACKUP_ENABLED));
+				notifier.onProgressCallback(new CallbackEventData("Auto Backup is running...", Constants.PREF_AUTO_BACKUP_ENABLED));
 
 			int backupCount = UIHelper.getIntFromPreferences(Constants.PREF_AUTO_BACKUP_COUNT, 4);
 			int nextIndex = UIHelper.getIntFromPreferences(Constants.PREF_LAST_AUTO_BACKUP_INDEX, 0) + 1;
@@ -74,7 +74,7 @@ public class AutoBackupService extends Service {
 				task.execute();
 
 			if (notifier != null)
-				notifier.onCallback(new CallbackEventData("Auto Backup to: " + backupFilename, Constants.PREF_AUTO_BACKUP_ENABLED));
+				notifier.onProgressCallback(new CallbackEventData("Auto Backup to: " + backupFilename, Constants.PREF_AUTO_BACKUP_ENABLED));
 
 			// update last backup information
 			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);

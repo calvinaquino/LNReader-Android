@@ -3,29 +3,43 @@ package com.erakk.lnreader.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockListActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.FindMissingAdapter;
+import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.ICompleteCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.FindMissingModel;
+import com.erakk.lnreader.task.DeleteMissingTask;
 
-public class FindMissingActivity extends SherlockListActivity {
+public class FindMissingActivity extends SherlockListActivity implements ICallbackNotifier, ICompleteCallbackNotifier<Integer> {
 
+	private static final String TAG = FindMissingActivity.class.toString();
 	private boolean isInverted;
 	private ArrayList<FindMissingModel> models = null;
 	private FindMissingAdapter adapter = null;
 	private String mode;
 	private boolean dowloadSelected = false;
 	private boolean elseSelected = true;
+	private DeleteMissingTask task;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +97,56 @@ public class FindMissingActivity extends SherlockListActivity {
 		return true;
 	}
 
+	@SuppressLint("NewApi")
+	private void executeDeleteTask(List<FindMissingModel> items, String mode) {
+		task = new DeleteMissingTask(items, mode, this, TAG);
+		String key = TAG + ":" + mode;
+		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
+		if (isAdded) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			else
+				task.execute();
+		} else {
+			Log.i(TAG, "Continue delete task: " + key);
+			DeleteMissingTask tempTask = (DeleteMissingTask) LNReaderApplication.getInstance().getTask(key);
+			if (tempTask != null) {
+				task = tempTask;
+				task.setCallback(this, TAG);
+			}
+			toggleProgressBar(true);
+		}
+	}
+
+	public void toggleProgressBar(boolean show) {
+		TextView loadingText = (TextView) findViewById(R.id.emptyList);
+		if(loadingText != null) {
+			if (show) {
+				loadingText.setVisibility(TextView.VISIBLE);
+				getListView().setVisibility(ListView.GONE);
+			} else {
+				loadingText.setVisibility(TextView.GONE);
+				getListView().setVisibility(ListView.VISIBLE);
+			}
+		}
+	}
+
+	@Override
+	public void onProgressCallback(ICallbackEventData message) {
+		toggleProgressBar(true);
+		TextView loadingText = (TextView) findViewById(R.id.emptyList);
+		if(loadingText != null) {
+			loadingText.setText(message.getMessage());
+		}
+	}
+
+	@Override
+	public void onCompleteCallback(ICallbackEventData message, Integer result) {
+		Toast.makeText(this, getString(R.string.toast_show_deleted_count, result), Toast.LENGTH_SHORT).show();
+		toggleProgressBar(false);
+		setItems(mode);
+	}
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -101,31 +165,33 @@ public class FindMissingActivity extends SherlockListActivity {
 			}
 			return true;
 		case R.id.menu_clear_all:
+			if(task != null && task.getStatus() !=Status.FINISHED) {
+				Toast.makeText(this, getString(R.string.task_delete_running), Toast.LENGTH_SHORT).show();
+				return true;
+			}
 			if (adapter != null) {
-				int count = 0;
 				List<FindMissingModel> items = adapter.getItems();
 				if (items != null) {
-					for (FindMissingModel missing : items) {
-						count += NovelsDao.getInstance(this).deleteMissingItem(missing, mode);
-					}
+					executeDeleteTask(items, mode);
 				}
-				Toast.makeText(this, getString(R.string.toast_show_deleted_count, count), Toast.LENGTH_SHORT).show();
-				setItems(mode);
 			}
 			return true;
 		case R.id.menu_clear_selected:
+			if(task != null && task.getStatus() !=Status.FINISHED) {
+				Toast.makeText(this, getString(R.string.task_delete_running), Toast.LENGTH_SHORT).show();
+				return true;
+			}
 			if (adapter != null) {
 				List<FindMissingModel> items = adapter.getItems();
-				int count = 0;
 				if (items != null) {
+					List<FindMissingModel> selectedItems = new ArrayList<FindMissingModel>();
 					for (FindMissingModel missing : items) {
 						if (missing.isSelected()) {
-							count += NovelsDao.getInstance(this).deleteMissingItem(missing, mode);
+							selectedItems.add(missing);
 						}
 					}
+					executeDeleteTask(selectedItems, mode);
 				}
-				Toast.makeText(this, getString(R.string.toast_show_deleted_count, count), Toast.LENGTH_SHORT).show();
-				setItems(mode);
 			}
 			return true;
 		case android.R.id.home:
@@ -134,5 +200,6 @@ public class FindMissingActivity extends SherlockListActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
 
 }

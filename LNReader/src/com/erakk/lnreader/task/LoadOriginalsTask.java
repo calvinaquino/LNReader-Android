@@ -28,7 +28,7 @@ public class LoadOriginalsTask extends AsyncTask<Void, ICallbackEventData, Async
 	}
 
 	@Override
-	public void onCallback(ICallbackEventData message) {
+	public void onProgressCallback(ICallbackEventData message) {
 		publishProgress(message);
 	}
 

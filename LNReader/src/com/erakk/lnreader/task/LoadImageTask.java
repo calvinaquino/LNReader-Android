@@ -27,7 +27,7 @@ public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTa
 	}
 
 	@Override
-	public void onCallback(ICallbackEventData message) {
+	public void onProgressCallback(ICallbackEventData message) {
 		publishProgress(message);
 	}
 

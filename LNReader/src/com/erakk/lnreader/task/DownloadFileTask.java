@@ -124,7 +124,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 							message.setTotalSize(fileLength);
 							message.setDownloadedSize(total);
 							message.setFilePath(decodedUrl);
-							notifier.onCallback(message);// "Downloading: " + url + "\nProgress: " + progress + "%");
+							notifier.onProgressCallback(message);// "Downloading: " + url + "\nProgress: " + progress + "%");
 						}
 						// Log.d(TAG, "Downloading: " + url + " " + progress + "%");
 						output.write(data, 0, count);
@@ -138,7 +138,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 						throw ex;
 					} else {
 						if (notifier != null) {
-							notifier.onCallback(new CallbackEventData("Downloading: " + url + "\nRetry: " + i + "x"));
+							notifier.onProgressCallback(new CallbackEventData("Downloading: " + url + "\nRetry: " + i + "x"));
 						}
 					}
 				} finally {

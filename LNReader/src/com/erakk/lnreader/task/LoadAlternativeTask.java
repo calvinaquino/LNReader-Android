@@ -34,7 +34,7 @@ public class LoadAlternativeTask extends AsyncTask<Void, ICallbackEventData, Asy
 	}
 
 	@Override
-	public void onCallback(ICallbackEventData message) {
+	public void onProgressCallback(ICallbackEventData message) {
 		publishProgress(message);
 	}
 

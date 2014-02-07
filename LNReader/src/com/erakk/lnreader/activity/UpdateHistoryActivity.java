@@ -29,11 +29,11 @@ import com.erakk.lnreader.model.UpdateInfoModel;
 import com.erakk.lnreader.model.UpdateType;
 import com.erakk.lnreader.service.UpdateService;
 
-public class UpdateHistoryActivity extends SherlockActivity implements ICallbackNotifier {
+public class UpdateHistoryActivity extends SherlockActivity implements ICallbackNotifier{
 	private static final String TAG = UpdateHistoryActivity.class.toString();
-	ArrayList<UpdateInfoModel> updateList;
-	ListView updateListView;
-	UpdateInfoModelAdapter adapter;
+	private ArrayList<UpdateInfoModel> updateList;
+	private ListView updateListView;
+	private UpdateInfoModelAdapter adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -165,7 +165,7 @@ public class UpdateHistoryActivity extends SherlockActivity implements ICallback
 	}
 
 	@Override
-	public void onCallback(ICallbackEventData message) {
+	public void onProgressCallback(ICallbackEventData message) {
 		LinearLayout panel = (LinearLayout) findViewById(R.id.layout_update_status);
 		if (panel != null) {
 			panel.setVisibility(View.VISIBLE);

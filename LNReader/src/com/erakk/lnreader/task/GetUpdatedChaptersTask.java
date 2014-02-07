@@ -92,7 +92,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 
 		// check only watched novel
 		if (callback != null)
-			callback.onCallback(new CallbackEventData("Getting watched novel."));
+			callback.onProgressCallback(new CallbackEventData("Getting watched novel."));
 		ArrayList<PageModel> watchedNovels = dao.getWatchedNovel();
 		if (watchedNovels != null) {
 			double total = watchedNovels.size() + 1;
@@ -124,7 +124,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 		Log.i(TAG, message);
 		NovelsDao dao = NovelsDao.getInstance();
 		if (callback != null) {
-			callback.onCallback(new CallbackEventData(message));
+			callback.onProgressCallback(new CallbackEventData(message));
 		}
 		if (!chapter.isMissing() && !chapter.isExternal()) {
 			dao.getNovelContentFromInternet(chapter, callback);
@@ -137,7 +137,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 
 		// get last update date from internet
 		if (callback != null)
-			callback.onCallback(new CallbackEventData("Checking: " + novel.getTitle()));
+			callback.onProgressCallback(new CallbackEventData("Checking: " + novel.getTitle()));
 		PageModel updatedNovel = dao.getPageModelFromInternet(novel.getPageModel(), callback);
 
 		// different timestamp
@@ -151,7 +151,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 			ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, callback).getFlattedChapterList();
 
 			if (callback != null)
-				callback.onCallback(new CallbackEventData("Getting updated chapters: " + novel.getTitle()));
+				callback.onProgressCallback(new CallbackEventData("Getting updated chapters: " + novel.getTitle()));
 			NovelCollectionModel updatedNovelDetails = dao.getNovelDetailsFromInternet(novel, callback);
 			if (updatedNovelDetails != null) {
 				ArrayList<PageModel> updates = updatedNovelDetails.getFlattedChapterList();
@@ -163,7 +163,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 					for (int j = 0; j < updates.size(); j++) {
 						PageModel newChapter = updates.get(j);
 						if (callback != null)
-							callback.onCallback(new CallbackEventData("Checking: " + oldChapter.getTitle() + " ==> " + newChapter.getTitle()));
+							callback.onProgressCallback(new CallbackEventData("Checking: " + oldChapter.getTitle() + " ==> " + newChapter.getTitle()));
 						// check if the same page
 						if (newChapter.getPage().compareTo(oldChapter.getPage()) == 0) {
 							// check if last update date is newer
@@ -234,14 +234,14 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 	}
 
 	@Override
-	public void onCallback(ICallbackEventData message) {
+	public void onProgressCallback(ICallbackEventData message) {
 		publishProgress(message.getMessage());
 	}
 
 	@Override
 	protected void onProgressUpdate(String... values) {
 		if (notifier != null)
-			notifier.onCallback(new CallbackEventData(values[0], lastProgress, Constants.PREF_RUN_UPDATES));
+			notifier.onProgressCallback(new CallbackEventData(values[0], lastProgress, Constants.PREF_RUN_UPDATES));
 		LNReaderApplication.getInstance().updateDownload(TAG, lastProgress, values[0]);
 	}
 

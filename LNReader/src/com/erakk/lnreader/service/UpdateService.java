@@ -171,7 +171,7 @@ public class UpdateService extends Service {
 		Toast.makeText(this, "Update Service completed", Toast.LENGTH_SHORT).show();
 		LNReaderApplication.getInstance().updateDownload(TAG, 100, getString(R.string.svc_update_complete));
 		if (notifier != null)
-			notifier.onCallback(new CallbackEventData(getString(R.string.svc_update_complete), 100, Constants.PREF_RUN_UPDATES));
+			notifier.onProgressCallback(new CallbackEventData(getString(R.string.svc_update_complete), 100, Constants.PREF_RUN_UPDATES));
 
 		// remove from download list
 		LNReaderApplication.getInstance().removeDownload(TAG);
@@ -252,7 +252,7 @@ public class UpdateService extends Service {
 		editor.putString(Constants.PREF_RUN_UPDATES_STATUS, status);
 		editor.commit();
 		if (notifier != null)
-			notifier.onCallback(new CallbackEventData(getString(R.string.svc_update_status, date, status), Constants.PREF_RUN_UPDATES));
+			notifier.onProgressCallback(new CallbackEventData(getString(R.string.svc_update_status, date, status), Constants.PREF_RUN_UPDATES));
 	}
 
 	private boolean getConsolidateNotificationPref() {

@@ -57,7 +57,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 	}
 
 	@Override
-	public void onCallback(ICallbackEventData message) {
+	public void onProgressCallback(ICallbackEventData message) {
 		publishProgress(message);
 	}
 
@@ -157,7 +157,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 	protected void onProgressUpdate(ICallbackEventData... values) {
 		Log.d(TAG, values[0].getMessage());
 		if (callback != null)
-			callback.onCallback(new CallbackEventData(values[0].getMessage(), source));
+			callback.onProgressCallback(new CallbackEventData(values[0].getMessage(), source));
 	}
 
 	@Override
@@ -166,7 +166,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_complete, rootPath, updated);
 			Log.i(TAG, message);
 			if (callback != null)
-				callback.onCallback(new CallbackEventData(message, source));
+				callback.onProgressCallback(new CallbackEventData(message, source));
 		}
 	}
 }

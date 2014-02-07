@@ -1162,7 +1162,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 	@Override
 	@SuppressWarnings("deprecation")
-	public void onCallback(ICallbackEventData message) {
+	public void onProgressCallback(ICallbackEventData message) {
 		CallbackEventData msg = (CallbackEventData) message;
 		if (Util.isStringNullOrEmpty(msg.getSource())) {
 			Preference runUpdates = findPreference(Constants.PREF_RUN_UPDATES);

@@ -30,7 +30,7 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
 	}
 
 	@Override
-	public void onCallback(ICallbackEventData message) {
+	public void onProgressCallback(ICallbackEventData message) {
 		publishProgress(message);
 	}
 

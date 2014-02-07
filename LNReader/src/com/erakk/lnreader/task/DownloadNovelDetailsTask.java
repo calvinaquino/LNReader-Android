@@ -37,7 +37,7 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 	}
 
 	@Override
-	public void onCallback(ICallbackEventData message) {
+	public void onProgressCallback(ICallbackEventData message) {
 		publishProgress(message);
 	}
 

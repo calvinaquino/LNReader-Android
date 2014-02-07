@@ -193,7 +193,7 @@ public class Util {
 			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.zip_files_task_progress_count, fileCount, total, absPath);
 			Log.d(TAG, message);
 			if (callback != null)
-				callback.onCallback(new CallbackEventData(message));
+				callback.onProgressCallback(new CallbackEventData(message));
 			FileInputStream fi = new FileInputStream(file);
 			origin = new BufferedInputStream(fi, Constants.BUFFER);
 			ZipEntry entry = new ZipEntry(absPath.replace(replacedRootPath, ""));
@@ -244,7 +244,7 @@ public class Util {
 			Log.d(TAG, "Unzipping: " + filename);
 			if (callback != null) {
 				String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.unzip_files_task_progress_count, fileCount, filename);
-				callback.onCallback(new CallbackEventData(message));
+				callback.onProgressCallback(new CallbackEventData(message));
 			}
 			FileOutputStream fout = new FileOutputStream(filename);
 
