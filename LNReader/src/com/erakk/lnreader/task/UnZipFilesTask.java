@@ -59,11 +59,11 @@ public class UnZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> im
 		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		// unzip the files
 		try {
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.unzip_files_task_progress)));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.unzip_files_task_progress), source));
 			Util.unzipFiles(zipName, rootPath, this);
 		} catch (IOException e) {
 			Log.e(TAG, "Failed to unzip files.", e);
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.unzip_files_task_error, e.getMessage())));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.unzip_files_task_error, e.getMessage()), source));
 			hasError = true;
 		}
 		return null;

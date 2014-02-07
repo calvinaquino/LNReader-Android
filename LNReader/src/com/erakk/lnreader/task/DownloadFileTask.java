@@ -27,6 +27,7 @@ import com.erakk.lnreader.model.ImageModel;
 public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<ImageModel>> {
 	private static final String TAG = DownloadFileTask.class.toString();
 	private ICallbackNotifier notifier = null;
+	private String source;
 
 	public DownloadFileTask(ICallbackNotifier notifier) {
 		super();
@@ -109,28 +110,26 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 					output = new FileOutputStream(tempFilename);
 
 					byte data[] = new byte[1024];
-					long total = 0;
+					long downloaded = 0;
 					int count;
 					while ((count = input.read(data)) != -1) {
-						total += count;
+						downloaded += count;
 						// publishing the progress....
-						int progress = (int) (total * 100 / fileLength);
+						int progress = (int) (downloaded * 100 / fileLength);
 						publishProgress(progress);
 
 						// via notifier, C# style :)
 						if (notifier != null) {
-							DownloadCallbackEventData message = new DownloadCallbackEventData();
+							DownloadCallbackEventData message = new DownloadCallbackEventData(null, downloaded, fileLength, source);
 							message.setUrl(url.toString());
-							message.setTotalSize(fileLength);
-							message.setDownloadedSize(total);
 							message.setFilePath(decodedUrl);
-							notifier.onProgressCallback(message);// "Downloading: " + url + "\nProgress: " + progress + "%");
+							notifier.onProgressCallback(message);
 						}
 						// Log.d(TAG, "Downloading: " + url + " " + progress + "%");
 						output.write(data, 0, count);
 					}
-					Log.d(TAG, "Filesize: " + total);
-					if (total > 0)
+					Log.d(TAG, "Filesize: " + downloaded);
+					if (downloaded > 0)
 						break;
 				} catch (Exception ex) {
 					if (i > UIHelper.getIntFromPreferences(Constants.PREF_RETRY, 3)) {
@@ -138,7 +137,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 						throw ex;
 					} else {
 						if (notifier != null) {
-							notifier.onProgressCallback(new CallbackEventData("Downloading: " + url + "\nRetry: " + i + "x"));
+							notifier.onProgressCallback(new CallbackEventData("Downloading: " + url + "\nRetry: " + i + "x", source));
 						}
 					}
 				} finally {

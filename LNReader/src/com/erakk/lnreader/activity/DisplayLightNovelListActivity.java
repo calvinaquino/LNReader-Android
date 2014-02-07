@@ -469,7 +469,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 			}
 			// from DownloadNovelDetailsTask
 			else if (t == NovelCollectionModel[].class) {
-				setMessageDialog(new CallbackEventData("Download complete."));
+				setMessageDialog(new CallbackEventData("Download complete.", "DownloadNovelDetailsTask"));
 				NovelCollectionModel[] list = (NovelCollectionModel[]) result.getResult();
 				if (list.length > 0) {
 					for (NovelCollectionModel novelCol : list) {

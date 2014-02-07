@@ -20,6 +20,7 @@ public class LoadTeasersTask extends AsyncTask<Void, ICallbackEventData, AsyncTa
 	private boolean refreshOnly = false;
 	private boolean alphOrder = false;
 	public volatile IAsyncTaskOwner owner;
+	private String source;
 
 	public LoadTeasersTask(IAsyncTaskOwner owner, boolean refreshOnly, boolean alphOrder) {
 		this.refreshOnly = refreshOnly;
@@ -45,17 +46,17 @@ public class LoadTeasersTask extends AsyncTask<Void, ICallbackEventData, AsyncTa
 		try {
 			ArrayList<PageModel> novels = new ArrayList<PageModel>();
 			if (refreshOnly) {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_teaser_task_refreshing)));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_teaser_task_refreshing), source));
 				novels = NovelsDao.getInstance().getTeaserFromInternet(this);
 			}
 			else {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_teaser_task_loading)));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_teaser_task_loading), source));
 				novels = NovelsDao.getInstance().getTeaser(this, alphOrder);
 			}
 			return new AsyncTaskResult<PageModel[]>(novels.toArray(new PageModel[novels.size()]));
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting teaser list: " + e.getMessage(), e);
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_teaser_task_error, e.getMessage())));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_teaser_task_error, e.getMessage()), source));
 			return new AsyncTaskResult<PageModel[]>(e);
 		}
 	}
@@ -68,7 +69,7 @@ public class LoadTeasersTask extends AsyncTask<Void, ICallbackEventData, AsyncTa
 	@Override
 	protected void onPostExecute(AsyncTaskResult<PageModel[]> result) {
 		// executed on UI thread.
-		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_teaser_task_complete)));
+		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_teaser_task_complete), source));
 		owner.onGetResult(result, PageModel[].class);
 	}
 }

@@ -45,16 +45,16 @@ public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTa
 		image.setName(url);
 		try {
 			if (refresh) {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_image_task_refreshing)));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_image_task_refreshing), this.taskId));
 				return new AsyncTaskResult<ImageModel>(NovelsDao.getInstance().getImageModelFromInternet(image, this));
 			}
 			else {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_image_task_loading)));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_image_task_loading), this.taskId));
 				return new AsyncTaskResult<ImageModel>(NovelsDao.getInstance().getImageModel(image, this));
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting image: " + e.getMessage(), e);
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_image_task_error, e.getMessage())));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_image_task_error, e.getMessage()), this.taskId));
 			return new AsyncTaskResult<ImageModel>(e);
 		}
 	}
@@ -76,6 +76,6 @@ public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTa
 	protected void onPostExecute(AsyncTaskResult<ImageModel> result) {
 		owner.onGetResult(result, ImageModel.class);
 		owner.downloadListSetup(this.taskId, null, 2, result.getError() != null ? true : false);
-		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_image_task_complete)));
+		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_image_task_complete), this.taskId));
 	}
 }

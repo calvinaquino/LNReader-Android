@@ -18,6 +18,7 @@ public class LoadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEventDat
 	private static final String TAG = LoadNovelDetailsTask.class.toString();
 	private boolean refresh = false;
 	public volatile IAsyncTaskOwner owner;
+	private String source;
 
 	public LoadNovelDetailsTask(boolean refresh, IAsyncTaskOwner owner) {
 		super();
@@ -42,18 +43,18 @@ public class LoadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEventDat
 		PageModel page = arg0[0];
 		try {
 			if (refresh) {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_detail_task_refreshing)));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_detail_task_refreshing), source));
 				NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetailsFromInternet(page, this);
 				return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 			}
 			else {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_detail_task_loading)));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_detail_task_loading), source));
 				NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetails(page, this);
 				return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 			}
 		} catch (Exception e) {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_detail_task_error, e.getMessage())));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_detail_task_error, e.getMessage()), source));
 			return new AsyncTaskResult<NovelCollectionModel>(e);
 		}
 	}
@@ -65,7 +66,7 @@ public class LoadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEventDat
 
 	@Override
 	protected void onPostExecute(AsyncTaskResult<NovelCollectionModel> result) {
-		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novel_detail_task_complete)));
+		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novel_detail_task_complete), source));
 		owner.onGetResult(result, NovelCollectionModel.class);
 	}
 }

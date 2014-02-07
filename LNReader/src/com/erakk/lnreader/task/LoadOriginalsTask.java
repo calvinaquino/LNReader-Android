@@ -20,6 +20,7 @@ public class LoadOriginalsTask extends AsyncTask<Void, ICallbackEventData, Async
 	private boolean refreshOnly = false;
 	private boolean alphOrder = false;
 	public volatile IAsyncTaskOwner owner;
+	private String source;
 
 	public LoadOriginalsTask(IAsyncTaskOwner owner, boolean refreshOnly, boolean alphOrder) {
 		this.refreshOnly = refreshOnly;
@@ -45,17 +46,17 @@ public class LoadOriginalsTask extends AsyncTask<Void, ICallbackEventData, Async
 		try {
 			ArrayList<PageModel> novels = new ArrayList<PageModel>();
 			if (refreshOnly) {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_refreshing)));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_refreshing), source));
 				novels = NovelsDao.getInstance().getOriginalFromInternet(this);
 			}
 			else {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_loading)));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_loading), source));
 				novels = NovelsDao.getInstance().getOriginal(this, alphOrder);
 			}
 			return new AsyncTaskResult<PageModel[]>(novels.toArray(new PageModel[novels.size()]));
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting original list: " + e.getMessage(), e);
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_error, e.getMessage())));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_error, e.getMessage()), source));
 			return new AsyncTaskResult<PageModel[]>(e);
 		}
 	}
@@ -68,7 +69,7 @@ public class LoadOriginalsTask extends AsyncTask<Void, ICallbackEventData, Async
 	@Override
 	protected void onPostExecute(AsyncTaskResult<PageModel[]> result) {
 		// executed on UI thread.
-		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_original_task_complete)));
+		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_original_task_complete), source));
 		owner.onGetResult(result, PageModel[].class);
 	}
 }

@@ -57,14 +57,14 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
 					message = ctx.getResources().getString(R.string.download_novel_content_task_update, chapters[i].getTitle());
 				}
 				Log.i(TAG, message);
-				publishProgress(new CallbackEventData(message));
+				publishProgress(new CallbackEventData(message, this.taskId));
 
 				try {
 					NovelContentModel temp = NovelsDao.getInstance().getNovelContentFromInternet(chapters[i], this);
 					contents[i] = temp;
 				} catch (Exception e) {
 					Log.e(TAG, String.format("Error when downloading: %s", chapters[i].getTitle()), e);
-					publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_content_task_error, chapters[i].getTitle(), e.getMessage())));
+					publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_content_task_error, chapters[i].getTitle(), e.getMessage()), this.taskId));
 					exceptionList.add(e);
 				}
 
@@ -75,7 +75,7 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
 			return new AsyncTaskResult<NovelContentModel[]>(contents);
 		} catch (Exception e) {
 			Log.e(TAG, String.format("Error when downloading: %s", chapters[currentChapter - 1].getPage(), e));
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_content_task_error, chapters[currentChapter - 1].getPage(), e.getMessage())));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_content_task_error, chapters[currentChapter - 1].getPage(), e.getMessage()), this.taskId));
 			return new AsyncTaskResult<NovelContentModel[]>(e);
 		}
 	}
@@ -89,7 +89,7 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
 
 	@Override
 	protected void onPostExecute(AsyncTaskResult<NovelContentModel[]> result) {
-		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.download_novel_content_task_complete)));
+		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.download_novel_content_task_complete), this.taskId));
 		owner.onGetResult(result, NovelContentModel[].class);
 		owner.downloadListSetup(this.taskId, null, 2, result.getError() != null ? true : false);
 	}

@@ -17,6 +17,7 @@ public class LoadNovelContentTask extends AsyncTask<PageModel, ICallbackEventDat
 	private static final String TAG = LoadNovelContentTask.class.toString();
 	public volatile IAsyncTaskOwner owner;
 	private final boolean refresh;
+	private String source;
 
 	public LoadNovelContentTask(boolean isRefresh, IAsyncTaskOwner owner) {
 		super();
@@ -41,16 +42,16 @@ public class LoadNovelContentTask extends AsyncTask<PageModel, ICallbackEventDat
 		try {
 			PageModel p = params[0];
 			if (refresh) {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_refreshing)));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_refreshing), source));
 				return new AsyncTaskResult<NovelContentModel>(NovelsDao.getInstance().getNovelContentFromInternet(p, this));
 			}
 			else {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_loading)));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_loading), source));
 				return new AsyncTaskResult<NovelContentModel>(NovelsDao.getInstance().getNovelContent(p, true, this));
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting novel content: " + e.getMessage(), e);
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_error, e.getMessage())));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_error, e.getMessage()), source));
 			return new AsyncTaskResult<NovelContentModel>(e);
 		}
 	}
@@ -63,7 +64,7 @@ public class LoadNovelContentTask extends AsyncTask<PageModel, ICallbackEventDat
 
 	@Override
 	protected void onPostExecute(AsyncTaskResult<NovelContentModel> result) {
-		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novel_content_task_complete)));
+		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novel_content_task_complete), source));
 		owner.onGetResult(result, NovelContentModel.class);
 	}
 }

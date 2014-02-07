@@ -15,6 +15,7 @@ import com.erakk.lnreader.model.PageModel;
 
 public class AddNovelTask extends AsyncTask<PageModel, ICallbackEventData, AsyncTaskResult<NovelCollectionModel>> implements ICallbackNotifier {
 	public volatile IAsyncTaskOwner owner;
+	private String source;
 
 	public AddNovelTask(IAsyncTaskOwner displayLightNovelListActivity) {
 		this.owner = displayLightNovelListActivity;
@@ -30,7 +31,7 @@ public class AddNovelTask extends AsyncTask<PageModel, ICallbackEventData, Async
 		Context ctx = owner.getContext();
 		PageModel page = params[0];
 		try {
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.add_novel_task_check, page.getPage())));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.add_novel_task_check, page.getPage()), source));
 			page = NovelsDao.getInstance().getUpdateInfo(page, this);
 			if (page.isMissing()) {
 				return new AsyncTaskResult<NovelCollectionModel>(new Exception(ctx.getResources().getString(R.string.add_novel_task_missing, page.getPage())));
@@ -41,7 +42,7 @@ public class AddNovelTask extends AsyncTask<PageModel, ICallbackEventData, Async
 			return new AsyncTaskResult<NovelCollectionModel>(novelCol);
 		} catch (Exception e) {
 			Log.e("AddNovelTask", e.getClass().toString() + ": " + e.getMessage(), e);
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.add_novel_task_error, page.getPage(), e.getMessage())));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.add_novel_task_error, page.getPage(), e.getMessage()), source));
 			return new AsyncTaskResult<NovelCollectionModel>(e);
 		}
 	}
@@ -54,7 +55,7 @@ public class AddNovelTask extends AsyncTask<PageModel, ICallbackEventData, Async
 
 	@Override
 	protected void onPostExecute(AsyncTaskResult<NovelCollectionModel> result) {
-		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.add_novel_task_complete)));
+		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.add_novel_task_complete), source));
 		owner.onGetResult(result, NovelCollectionModel.class);
 	}
 }

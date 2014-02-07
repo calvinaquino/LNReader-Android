@@ -49,13 +49,13 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 		for (PageModel pageModel : params) {
 			currentPart++;
 			try {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_details_task_progress, pageModel.getTitle())));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_details_task_progress, pageModel.getTitle()), this.taskId));
 				NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetailsFromInternet(pageModel, this);
 				Log.d("DownloadNovelDetailsTask", "Downloaded: " + novelCol.getPage());
 				result.add(novelCol);
 			} catch (Exception e) {
 				Log.e("DownloadNovelDetailsTask", "Failed to download novel details for " + pageModel.getPage() + ": " + e.getMessage(), e);
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_details_task_error, pageModel.getPage(), e.getMessage())));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_details_task_error, pageModel.getPage(), e.getMessage()), this.taskId));
 				return new AsyncTaskResult<NovelCollectionModel[]>(e);
 			}
 		}
@@ -71,7 +71,7 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 
 	@Override
 	protected void onPostExecute(AsyncTaskResult<NovelCollectionModel[]> result) {
-		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.download_novel_details_task_complete)));
+		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.download_novel_details_task_complete), this.taskId));
 		owner.onGetResult(result, NovelCollectionModel[].class);
 		owner.downloadListSetup(this.taskId, null, 2, result.getError() != null ? true : false);
 	}

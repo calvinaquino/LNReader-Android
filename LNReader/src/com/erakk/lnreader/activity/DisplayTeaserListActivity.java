@@ -363,7 +363,7 @@ public class DisplayTeaserListActivity extends SherlockListActivity implements I
 			}
 			// from DownloadNovelDetailsTask
 			else if (t == NovelCollectionModel[].class) {
-				setMessageDialog(new CallbackEventData("Download complete."));
+				setMessageDialog(new CallbackEventData("Download complete.", "DownloadNovelDetailsTask"));
 				NovelCollectionModel[] list = (NovelCollectionModel[]) result.getResult();
 				for (NovelCollectionModel novelCol : list) {
 					try {

@@ -430,7 +430,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 			}
 			// from DownloadNovelDetailsTask
 			else if (t == NovelCollectionModel[].class) {
-				setMessageDialog(new CallbackEventData("Download complete."));
+				setMessageDialog(new CallbackEventData("Download complete.", "DownloadNovelDetailsTask"));
 				NovelCollectionModel[] list = (NovelCollectionModel[]) result.getResult();
 				for (NovelCollectionModel novelCol : list) {
 					try {

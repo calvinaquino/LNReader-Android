@@ -25,6 +25,7 @@ public class LoadAlternativeTask extends AsyncTask<Void, ICallbackEventData, Asy
 	private boolean alphOrder = false;
 	private String language = null;
 	public volatile IAsyncTaskOwner owner;
+	private String source;
 
 	public LoadAlternativeTask(IAsyncTaskOwner owner, boolean refreshOnly, boolean alphOrder, String language) {
 		this.refreshOnly = refreshOnly;
@@ -51,18 +52,18 @@ public class LoadAlternativeTask extends AsyncTask<Void, ICallbackEventData, Asy
 		try {
 			ArrayList<PageModel> novels = new ArrayList<PageModel>();
 			if (refreshOnly) {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_alt_task_refreshing, language)));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_alt_task_refreshing, language), source));
 				novels = NovelsDao.getInstance().getAlternativeFromInternet(this, language);
 
 			}
 			else {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_alt_task_loading, language)));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_alt_task_loading, language), source));
 				novels = NovelsDao.getInstance().getAlternative(this, alphOrder, language);
 			}
 			return new AsyncTaskResult<PageModel[]>(novels.toArray(new PageModel[novels.size()]));
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting " + language + " list: " + e.getMessage(), e);
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_alt_task_error, language, e.getMessage())));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_alt_task_error, language, e.getMessage()), source));
 			return new AsyncTaskResult<PageModel[]>(e);
 		}
 	}
@@ -75,7 +76,7 @@ public class LoadAlternativeTask extends AsyncTask<Void, ICallbackEventData, Asy
 	@Override
 	protected void onPostExecute(AsyncTaskResult<PageModel[]> result) {
 		// executed on UI thread.
-		owner.setMessageDialog(new CallbackEventData(LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.load_novel_alt_task_complete, language)));
+		owner.setMessageDialog(new CallbackEventData(LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.load_novel_alt_task_complete, language), source));
 		owner.onGetResult(result, PageModel[].class);
 	}
 }

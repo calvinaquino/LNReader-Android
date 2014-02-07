@@ -2,9 +2,7 @@ package com.erakk.lnreader.callback;
 
 public interface ICallbackEventData {
 
-	public abstract String getMessage();
-
-	public abstract void setMessage(String message);
-
-	public abstract int getPercentage();
+	String getMessage();
+	int getPercentage();
+	String getSource();
 }

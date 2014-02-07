@@ -21,6 +21,7 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 	private final String wacName;
 	private final IAsyncTaskOwner owner;
 	private final WebArchiveReader wr;
+	private String source;
 
 	public LoadWacTask(IAsyncTaskOwner owner, WebView wv, String wacName, final WebViewClient client) {
 		this.wv = wv;
@@ -49,7 +50,7 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 
 	private boolean loadFromWac(String wacName) {
 		Log.d(TAG, "Loading from WAC: " + wacName);
-		publishProgress(new CallbackEventData("Loading from WAC: " + wacName));
+		publishProgress(new CallbackEventData("Loading from WAC: " + wacName, source));
 		try {
 			FileInputStream is;
 			is = new FileInputStream(wacName);
@@ -70,7 +71,7 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 		else {
 			message = "Failed";
 		}
-		owner.setMessageDialog(new CallbackEventData(message));
+		owner.setMessageDialog(new CallbackEventData(message, source));
 		Toast.makeText(owner.getContext(), message, Toast.LENGTH_SHORT).show();
 	}
 

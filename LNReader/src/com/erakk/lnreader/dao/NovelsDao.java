@@ -161,7 +161,7 @@ public class NovelsDao {
 		if (!LNReaderApplication.getInstance().isOnline())
 			throw new BakaReaderException("No Network Connectifity", BakaReaderException.NO_NETWORK_CONNECTIFITY);
 		if (notifier != null) {
-			notifier.onProgressCallback(new CallbackEventData("Downloading Main Novels list..."));
+			notifier.onProgressCallback(new CallbackEventData("Downloading Main Novels list...", TAG));
 		}
 		// get last updated main page revision from internet
 
@@ -200,13 +200,13 @@ public class NovelsDao {
 						// db.setTransactionSuccessful();
 
 						if (notifier != null) {
-							notifier.onProgressCallback(new CallbackEventData("Found: " + list.size() + " novels."));
+							notifier.onProgressCallback(new CallbackEventData("Found: " + list.size() + " novels.", TAG));
 						}
 						break;
 					} catch (EOFException eof) {
 						++retry;
 						if (notifier != null) {
-							notifier.onProgressCallback(new CallbackEventData("Retrying: Main_Page (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
+							notifier.onProgressCallback(new CallbackEventData("Retrying: Main_Page (" + retry + " of " + getRetry() + ")\n" + eof.getMessage(), TAG));
 						}
 						if (retry > getRetry())
 							throw eof;
@@ -214,7 +214,7 @@ public class NovelsDao {
 						++retry;
 						String message = "Retrying: Main_Page (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 						if (notifier != null) {
-							notifier.onProgressCallback(new CallbackEventData(message));
+							notifier.onProgressCallback(new CallbackEventData(message, TAG));
 						}
 						Log.d(TAG, message, eof);
 						if (retry > getRetry())
@@ -284,7 +284,7 @@ public class NovelsDao {
 		if (!LNReaderApplication.getInstance().isOnline())
 			throw new BakaReaderException("No Network Connectifity", BakaReaderException.NO_NETWORK_CONNECTIFITY);
 		if (notifier != null) {
-			notifier.onProgressCallback(new CallbackEventData("Downloading Teaser Novels list..."));
+			notifier.onProgressCallback(new CallbackEventData("Downloading Teaser Novels list...", TAG));
 		}
 
 		// parse Category:Teasers information
@@ -315,13 +315,13 @@ public class NovelsDao {
 				Log.d(TAG, "Found from internet: " + list.size() + " Teaser");
 
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData("Found: " + list.size() + " teaser."));
+					notifier.onProgressCallback(new CallbackEventData("Found: " + list.size() + " teaser.", TAG));
 				}
 				break;
 			} catch (EOFException eof) {
 				++retry;
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData("Retrying: Category:Teasers (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
+					notifier.onProgressCallback(new CallbackEventData("Retrying: Category:Teasers (" + retry + " of " + getRetry() + ")\n" + eof.getMessage(), TAG));
 				}
 				if (retry > getRetry())
 					throw eof;
@@ -329,7 +329,7 @@ public class NovelsDao {
 				++retry;
 				String message = "Retrying: Category:Teasers (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData(message));
+					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				Log.d(TAG, message, eof);
 				if (retry > getRetry())
@@ -386,7 +386,7 @@ public class NovelsDao {
 		if (!LNReaderApplication.getInstance().isOnline())
 			throw new Exception("No Network Connectifity");
 		if (notifier != null) {
-			notifier.onProgressCallback(new CallbackEventData("Downloading Original Novels list..."));
+			notifier.onProgressCallback(new CallbackEventData("Downloading Original Novels list...", TAG));
 		}
 
 		// parse Category:Teasers information
@@ -417,13 +417,13 @@ public class NovelsDao {
 				Log.d(TAG, "Found from internet: " + list.size() + " Teaser");
 
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData("Found: " + list.size() + " original."));
+					notifier.onProgressCallback(new CallbackEventData("Found: " + list.size() + " original.", TAG));
 				}
 				break;
 			} catch (EOFException eof) {
 				++retry;
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData("Retrying: Category:Original (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
+					notifier.onProgressCallback(new CallbackEventData("Retrying: Category:Original (" + retry + " of " + getRetry() + ")\n" + eof.getMessage(), TAG));
 				}
 				if (retry > getRetry())
 					throw eof;
@@ -431,7 +431,7 @@ public class NovelsDao {
 				++retry;
 				String message = "Retrying: Category:Original (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData(message));
+					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				Log.d(TAG, message, eof);
 				if (retry > getRetry())
@@ -488,7 +488,7 @@ public class NovelsDao {
 		if (!LNReaderApplication.getInstance().isOnline())
 			throw new BakaReaderException("No Network Connectifity", BakaReaderException.NO_NETWORK_CONNECTIFITY);
 		if (notifier != null) {
-			notifier.onProgressCallback(new CallbackEventData("Downloading " + language + " Novels list..."));
+			notifier.onProgressCallback(new CallbackEventData("Downloading " + language + " Novels list...", TAG));
 		}
 
 		// parse information
@@ -524,13 +524,13 @@ public class NovelsDao {
 				Log.d(TAG, "Found from internet: " + list.size() + " " + language + " Novel");
 
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData("Found: " + list.size() + " " + language + " ."));
+					notifier.onProgressCallback(new CallbackEventData("Found: " + list.size() + " " + language + " .", TAG));
 				}
 				break;
 			} catch (EOFException eof) {
 				++retry;
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData("Retrying: " + language + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
+					notifier.onProgressCallback(new CallbackEventData("Retrying: " + language + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage(), TAG));
 				}
 				if (retry > getRetry())
 					throw eof;
@@ -538,7 +538,7 @@ public class NovelsDao {
 				++retry;
 				String message = "Retrying: " + language + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData(message));
+					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				Log.d(TAG, message, eof);
 				if (retry > getRetry())
@@ -627,7 +627,7 @@ public class NovelsDao {
 		while (retry < getRetry()) {
 			try {
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData("Fetching " + page.getTitle() + " list... First time may be slow."));
+					notifier.onProgressCallback(new CallbackEventData("Fetching " + page.getTitle() + " list... First time may be slow.", TAG));
 				}
 				String encodedTitle = Util.UrlEncode(page.getPage());
 				String fullUrl = "http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=" + encodedTitle;
@@ -652,7 +652,7 @@ public class NovelsDao {
 			} catch (EOFException eof) {
 				++retry;
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
+					notifier.onProgressCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage(), TAG));
 				}
 				if (retry > getRetry())
 					throw eof;
@@ -660,7 +660,7 @@ public class NovelsDao {
 				++retry;
 				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData(message));
+					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				Log.d(TAG, message, eof);
 				if (retry > getRetry())
@@ -713,7 +713,7 @@ public class NovelsDao {
 		while (retry < getRetry()) {
 			try {
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData("Downloading novel details page for: " + page.getPage()));
+					notifier.onProgressCallback(new CallbackEventData("Downloading novel details page for: " + page.getPage(), TAG));
 				}
 				String encodedTitle = Util.UrlEncode(page.getPage());
 				String fullUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?action=render&title=" + encodedTitle;
@@ -730,7 +730,7 @@ public class NovelsDao {
 			} catch (EOFException eof) {
 				++retry;
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
+					notifier.onProgressCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage(), TAG));
 				}
 				if (retry > getRetry())
 					throw eof;
@@ -738,7 +738,7 @@ public class NovelsDao {
 				++retry;
 				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData(message));
+					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				Log.d(TAG, message, eof);
 				if (retry > getRetry())
@@ -764,12 +764,12 @@ public class NovelsDao {
 
 				// update info for each chapters
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData("Getting chapters information for: " + page.getPage()));
+					notifier.onProgressCallback(new CallbackEventData("Getting chapters information for: " + page.getPage(), TAG));
 				}
 				ArrayList<PageModel> chapters = getUpdateInfo(novel.getFlattedChapterList(), notifier);
 
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData("Saving chapter information..."));
+					notifier.onProgressCallback(new CallbackEventData("Saving chapter information...", TAG));
 				}
 				for (PageModel pageModel : chapters) {
 					if (pageModel.getPage().endsWith("&action=edit&redlink=1")) {
@@ -781,7 +781,7 @@ public class NovelsDao {
 				// download cover image
 				if (novel.getCoverUrl() != null) {
 					if (notifier != null) {
-						notifier.onProgressCallback(new CallbackEventData("Getting cover image."));
+						notifier.onProgressCallback(new CallbackEventData("Getting cover image.", TAG));
 					}
 					DownloadFileTask task = new DownloadFileTask(notifier);
 					ImageModel image = task.downloadImage(novel.getCoverUrl());
@@ -802,7 +802,7 @@ public class NovelsDao {
 
 		// get the last update time from internet
 		if (notifier != null) {
-			notifier.onProgressCallback(new CallbackEventData("Getting novel information for: " + page.getPage()));
+			notifier.onProgressCallback(new CallbackEventData("Getting novel information for: " + page.getPage(), TAG));
 		}
 		PageModel novelPageTemp = getPageModelFromInternet(page, notifier);
 		if (novelPageTemp != null) {
@@ -893,13 +893,13 @@ public class NovelsDao {
 
 					if (notifier != null) {
 						pageCounter += checkedPageModel.size();
-						notifier.onProgressCallback(new CallbackEventData(String.format("Updating chapter information: [%s of %s]", pageCounter, pageModels.size())));
+						notifier.onProgressCallback(new CallbackEventData(String.format("Updating chapter information: [%s of %s]", pageCounter, pageModels.size()), TAG));
 					}
 					break;
 				} catch (EOFException eof) {
 					++retry;
 					if (notifier != null) {
-						notifier.onProgressCallback(new CallbackEventData("Retrying: Get Pages Info (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
+						notifier.onProgressCallback(new CallbackEventData("Retrying: Get Pages Info (" + retry + " of " + getRetry() + ")\n" + eof.getMessage(), TAG));
 					}
 					if (retry > getRetry())
 						throw eof;
@@ -907,7 +907,7 @@ public class NovelsDao {
 					++retry;
 					String message = "Retrying: Get Pages Info (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 					if (notifier != null) {
-						notifier.onProgressCallback(new CallbackEventData(message));
+						notifier.onProgressCallback(new CallbackEventData(message, TAG));
 					}
 					Log.d(TAG, message, eof);
 					if (retry > getRetry())
@@ -919,14 +919,14 @@ public class NovelsDao {
 		resultPageModel.addAll(noInfoPageModel);
 		if (notifier != null) {
 			pageCounter += noInfoPageModel.size();
-			notifier.onProgressCallback(new CallbackEventData(String.format("Updating chapter information: [%s of %s]", pageCounter, pageModels.size())));
+			notifier.onProgressCallback(new CallbackEventData(String.format("Updating chapter information: [%s of %s]", pageCounter, pageModels.size()), TAG));
 		}
 
 		for (PageModel page : externalPageModel) {
 			getExternalUpdateInfo(page);
 			if (notifier != null) {
 				pageCounter++;
-				notifier.onProgressCallback(new CallbackEventData(String.format("Updating external chapter information: [%s of %s]", pageCounter, pageModels.size())));
+				notifier.onProgressCallback(new CallbackEventData(String.format("Updating external chapter information: [%s of %s]", pageCounter, pageModels.size()), TAG));
 			}
 		}
 		resultPageModel.addAll(externalPageModel);
@@ -1095,7 +1095,7 @@ public class NovelsDao {
 			} catch (EOFException eof) {
 				++retry;
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
+					notifier.onProgressCallback(new CallbackEventData("Retrying: " + page.getPage() + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage(), TAG));
 				}
 				if (retry > getRetry())
 					throw eof;
@@ -1103,7 +1103,7 @@ public class NovelsDao {
 				++retry;
 				String message = "Retrying: " + page.getPage() + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData(message));
+					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				Log.d(TAG, message, eof);
 				if (retry > getRetry())
@@ -1115,7 +1115,7 @@ public class NovelsDao {
 			DownloadFileTask task = new DownloadFileTask(notifier);
 			for (ImageModel image : content.getImages()) {
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData("Start downloading: " + image.getUrl()));
+					notifier.onProgressCallback(new CallbackEventData("Start downloading: " + image.getUrl(), TAG));
 				}
 				image = task.downloadImage(image.getUrl());
 				// TODO: need to save image to db? mostly thumbnail only
@@ -1235,8 +1235,8 @@ public class NovelsDao {
 					Log.i(TAG, "Image found in DB, but doesn't exist in URL decoded path: " + java.net.URLDecoder.decode(imageTemp.getPath(), java.nio.charset.Charset.defaultCharset().displayName()));
 					downloadBigImage = true;
 				} // else Log.i(TAG, "Image found in DB with URL decoded path: " +
-					// java.net.URLDecoder.decode(imageTemp.getPath(),
-					// java.nio.charset.Charset.defaultCharset().displayName()));
+				// java.net.URLDecoder.decode(imageTemp.getPath(),
+				// java.nio.charset.Charset.defaultCharset().displayName()));
 
 			} catch (Exception e) {
 				Log.i(TAG, "Image found in DB, but path string seems to be broken: " + imageTemp.getPath()
@@ -1268,7 +1268,7 @@ public class NovelsDao {
 			url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + url;
 
 		if (notifier != null) {
-			notifier.onProgressCallback(new CallbackEventData("Parsing File Page: " + url));
+			notifier.onProgressCallback(new CallbackEventData("Parsing File Page: " + url, TAG));
 		}
 
 		int retry = 0;
@@ -1288,7 +1288,7 @@ public class NovelsDao {
 				break;
 			} catch (EOFException eof) {
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData("Retrying: " + url + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage()));
+					notifier.onProgressCallback(new CallbackEventData("Retrying: " + url + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage(), TAG));
 				}
 				++retry;
 				if (retry > getRetry())
@@ -1297,7 +1297,7 @@ public class NovelsDao {
 				++retry;
 				String message = "Retrying: " + url + " (" + retry + " of " + getRetry() + ")\n" + eof.getMessage();
 				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData(message));
+					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				Log.d(TAG, message, eof);
 				if (retry > getRetry())

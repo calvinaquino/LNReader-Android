@@ -49,13 +49,13 @@ public class DeleteMissingTask extends AsyncTask<Void, ICallbackEventData, Integ
 			if (items != null) {
 				for (FindMissingModel missing : items) {
 					count += NovelsDao.getInstance().deleteMissingItem(missing, mode);
-					publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.task_delete_progress, count, items.size())));
+					publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.task_delete_progress, count, items.size()), source));
 				}
 			}
 			return count;
 		}catch(Exception ex) {
 			Log.e(TAG, "Failed to delete missing item.", ex);
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.task_delete_error, ex.getMessage())));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.task_delete_error, ex.getMessage()), source));
 			hasError = true;
 			return 0;
 		}

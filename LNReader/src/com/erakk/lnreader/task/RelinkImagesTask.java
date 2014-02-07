@@ -74,7 +74,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 		int count = 1;
 		for (ImageModel image : images) {
 			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_progress2, image.getName(), count, images.size());
-			publishProgress(new CallbackEventData(message));
+			publishProgress(new CallbackEventData(message, source));
 			String oldPath = image.getPath();
 
 			// skip if file exists
@@ -105,7 +105,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 		int count = 1;
 		for (PageModel page : pages) {
 			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_progress, page.getPage(), count, pages.size());
-			publishProgress(new CallbackEventData(message));
+			publishProgress(new CallbackEventData(message, source));
 
 			try {
 				// get the contents
@@ -147,7 +147,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 			} catch (Exception e) {
 				message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_error, page.getPage());
 				Log.e(TAG, message, e);
-				publishProgress(new CallbackEventData(message));
+				publishProgress(new CallbackEventData(message, source));
 			}
 			++count;
 		}

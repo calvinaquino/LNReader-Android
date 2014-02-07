@@ -46,7 +46,7 @@ public class CopyDBTask extends AsyncTask<Void, ICallbackEventData, Void> implem
 			else {
 				message = ctx.getResources().getString(R.string.copy_db_task_restore_error);
 			}
-			publishProgress(new CallbackEventData(message));
+			publishProgress(new CallbackEventData(message, source));
 			Log.e(TAG, message, e);
 		}
 		return null;
@@ -62,18 +62,18 @@ public class CopyDBTask extends AsyncTask<Void, ICallbackEventData, Void> implem
 	private void copyDB(boolean makeBackup) throws IOException {
 		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		if (makeBackup)
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.copy_db_task_backup_start)));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.copy_db_task_backup_start), source));
 		else
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.copy_db_task_restore_start)));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.copy_db_task_restore_start), source));
 
 		String filePath = NovelsDao.getInstance().copyDB(makeBackup, filename);
 		if (filePath == "null") {
 			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.database_not_found), source));
 		} else {
 			if (makeBackup)
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.copy_db_task_backup_complete, filePath)));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.copy_db_task_backup_complete, filePath), source));
 			else
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.copy_db_task_restore_complete)));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.copy_db_task_restore_complete), source));
 		}
 	}
 

@@ -60,7 +60,7 @@ public class ZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> impl
 	protected Void doInBackground(Void... params) {
 		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		// get thumb images
-		publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.zip_files_task_get_files, rootPath)));
+		publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.zip_files_task_get_files, rootPath), source));
 
 		// Java ref cheating using array
 		Long totalSize[] = { 0L };
@@ -72,18 +72,18 @@ public class ZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> impl
 		if (freeSpaceInBytes < totalSize[0]) {
 			String errorMessage = String.format("Not enough free space in %s (%s > %s)", rootPath, Util.humanReadableByteCount(freeSpaceInBytes, true), Util.humanReadableByteCount(totalSize[0], true));
 			Log.e(TAG, errorMessage);
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.zip_files_task_error, errorMessage)));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.zip_files_task_error, errorMessage), source));
 			hasError = true;
 			return null;
 		}
 
 		// zip the files
 		try {
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.zip_files_task_zipping_files)));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.zip_files_task_zipping_files), source));
 			Util.zipFiles(filenames, zipName, rootPath, this);
 		} catch (IOException e) {
 			Log.e(TAG, "Failed to zip files.", e);
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.zip_files_task_error, e.getMessage())));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.zip_files_task_error, e.getMessage()), source));
 			hasError = true;
 		}
 		return null;

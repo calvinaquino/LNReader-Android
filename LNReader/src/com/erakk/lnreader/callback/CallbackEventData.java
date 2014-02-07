@@ -5,13 +5,6 @@ public class CallbackEventData implements ICallbackEventData {
 	protected String source;
 	protected int percentage = -1;
 
-	public CallbackEventData() {
-	};
-
-	public CallbackEventData(String message) {
-		this.message = message;
-	}
-
 	public CallbackEventData(String message, String source) {
 		this.message = message;
 		this.source = source;
@@ -29,14 +22,11 @@ public class CallbackEventData implements ICallbackEventData {
 	}
 
 	@Override
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
 	public String getSource() {
 		return source;
 	}
 
+	@Override
 	public int getPercentage() {
 		return percentage;
 	}

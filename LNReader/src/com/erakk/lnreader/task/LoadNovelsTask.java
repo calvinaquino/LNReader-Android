@@ -21,6 +21,7 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
 	private boolean onlyWatched = false;
 	private boolean alphOrder = false;
 	public volatile IAsyncTaskOwner owner;
+	private String source;
 
 	public LoadNovelsTask(IAsyncTaskOwner owner, boolean refreshOnly, boolean onlyWatched, boolean alphOrder) {
 		this.refreshOnly = refreshOnly;
@@ -47,23 +48,23 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
 		try {
 			ArrayList<PageModel> novels = new ArrayList<PageModel>();
 			if (onlyWatched) {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_watched)));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_watched), source));
 				novels = NovelsDao.getInstance().getWatchedNovel();
 			}
 			else {
 				if (refreshOnly) {
-					publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_refreshing)));
+					publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_refreshing), source));
 					novels = NovelsDao.getInstance().getNovelsFromInternet(this);
 				}
 				else {
-					publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_loading)));
+					publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_loading), source));
 					novels = NovelsDao.getInstance().getNovels(this, alphOrder);
 				}
 			}
 			return new AsyncTaskResult<PageModel[]>(novels.toArray(new PageModel[novels.size()]));
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting novel list: " + e.getMessage(), e);
-			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_error, e.getMessage())));
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_error, e.getMessage()), source));
 			return new AsyncTaskResult<PageModel[]>(e);
 		}
 	}
@@ -77,9 +78,9 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
 	protected void onPostExecute(AsyncTaskResult<PageModel[]> result) {
 		// executed on UI thread.
 		if (onlyWatched) {
-			owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novels_task_watched_complete)));
+			owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novels_task_watched_complete), source));
 		} else {
-			owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novels_task_complete)));
+			owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novels_task_complete), source));
 		}
 		owner.onGetResult(result, PageModel[].class);
 	}
