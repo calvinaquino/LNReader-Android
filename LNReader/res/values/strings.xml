@@ -399,4 +399,5 @@
     <string name="task_delete_progress">Deleting %1$s of %2$s item(s).</string>
     <string name="task_delete_complete">Completed deleting %1$s item(s).</string>
     <string name="task_delete_running">Delete Task still running!</string>
+    <string name="https_ignore_cert_title">Ignore Certificate Error</string>
 </resources>

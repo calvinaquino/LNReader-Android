@@ -20,12 +20,14 @@ import org.w3c.dom.Text;
 
 import android.annotation.SuppressLint;
 import android.util.Base64;
+import android.util.Log;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public abstract class WebArchiveReader {
+	private static final String TAG = WebArchiveReader.class.toString();
 	private Document myDoc = null;
 	private static boolean myLoadingArchive = false;
 	private WebView myWebView = null;
@@ -66,7 +68,7 @@ public abstract class WebArchiveReader {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.e(TAG, "Failed to read web archive", e);
 			myDoc = null;
 		}
 		return myDoc != null;

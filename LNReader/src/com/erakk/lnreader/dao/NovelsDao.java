@@ -189,7 +189,7 @@ public class NovelsDao {
 				int retry = 0;
 				while (retry < getRetry()) {
 					try {
-						Response response = Jsoup.connect(url).timeout(getTimeout(retry)).execute();
+						Response response = connect(url, retry);
 						list = BakaTsukiParser.ParseNovelList(response.body());
 
 						Log.d(TAG, "Found from internet: " + list.size() + " Novels");
@@ -227,6 +227,14 @@ public class NovelsDao {
 			}
 		}
 		return list;
+	}
+
+	private boolean getIgnoreSecure() {
+		boolean result = UIHelper.getIgnoreCert(LNReaderApplication.getInstance().getApplicationContext());
+		if (result) {
+			Log.w(TAG, "Using non-secure connection!");
+		}
+		return result;
 	}
 
 	public ArrayList<PageModel> getWatchedNovel() {
@@ -308,7 +316,7 @@ public class NovelsDao {
 		int retry = 0;
 		while (retry < getRetry()) {
 			try {
-				Response response = Jsoup.connect(url).timeout(getTimeout(retry)).execute();
+				Response response = connect(url, retry);
 				Document doc = response.parse();
 
 				list = BakaTsukiParser.ParseTeaserList(doc);
@@ -410,7 +418,7 @@ public class NovelsDao {
 		int retry = 0;
 		while (retry < getRetry()) {
 			try {
-				Response response = Jsoup.connect(url).timeout(getTimeout(retry)).execute();
+				Response response = connect(url, retry);
 				Document doc = response.parse();
 
 				list = BakaTsukiParser.ParseOriginalList(doc);
@@ -518,7 +526,7 @@ public class NovelsDao {
 		int retry = 0;
 		while (retry < getRetry()) {
 			try {
-				Response response = Jsoup.connect(url).timeout(getTimeout(retry)).execute();
+				Response response = connect(url, retry);
 				Document doc = response.parse();
 				list = BakaTsukiParserAlternative.ParseAlternativeList(doc, language);
 				Log.d(TAG, "Found from internet: " + list.size() + " " + language + " Novel");
@@ -631,7 +639,7 @@ public class NovelsDao {
 				}
 				String encodedTitle = Util.UrlEncode(page.getPage());
 				String fullUrl = "http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=" + encodedTitle;
-				Response response = Jsoup.connect(fullUrl).timeout(getTimeout(retry)).execute();
+				Response response = connect(fullUrl, retry);
 				PageModel pageModel = null;
 				String lang = page.getLanguage();
 				if (lang != null)
@@ -717,7 +725,7 @@ public class NovelsDao {
 				}
 				String encodedTitle = Util.UrlEncode(page.getPage());
 				String fullUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?action=render&title=" + encodedTitle;
-				Response response = Jsoup.connect(fullUrl).timeout(getTimeout(retry)).execute();
+				Response response = connect(fullUrl, retry);
 				Document doc = response.parse();
 				/*
 				 * Add your section of alternative language here, create own
@@ -886,7 +894,7 @@ public class NovelsDao {
 				try {
 					// Log.d(TAG, "Trying to get: " + baseUrl + titles);
 					String url = baseUrl + titles;
-					Response response = Jsoup.connect(url).timeout(getTimeout(retry)).execute();
+					Response response = connect(url, retry);
 					Document doc = response.parse();
 					ArrayList<PageModel> updatedPageModels = CommonParser.parsePageAPI(checkedPageModel, doc, url);
 					resultPageModel.addAll(updatedPageModels);
@@ -942,7 +950,7 @@ public class NovelsDao {
 		retry = 0;
 		while (retry < getRetry()) {
 			try {
-				headers = Jsoup.connect(page.getPage()).timeout(getTimeout(retry)).maxBodySize(1).execute().headers();
+				headers = connect(page.getPage(), retry).headers();
 				break;
 			} catch (Exception e) {
 				Log.e(TAG, "Error when getting updated date for: " + page.getPage(), e);
@@ -1074,7 +1082,7 @@ public class NovelsDao {
 			try {
 				String encodedUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/api.php?action=parse&format=xml&prop=text|images&redirects=yes&page=" + Util.UrlEncode(page.getPage());
 				if (!page.getPage().endsWith("&action=edit&redlink=1")) {
-					Response response = Jsoup.connect(encodedUrl).timeout(getTimeout(retry)).execute();
+					Response response = connect(encodedUrl, retry);
 					doc = response.parse();
 					page.setMissing(false);
 				}
@@ -1235,8 +1243,8 @@ public class NovelsDao {
 					Log.i(TAG, "Image found in DB, but doesn't exist in URL decoded path: " + java.net.URLDecoder.decode(imageTemp.getPath(), java.nio.charset.Charset.defaultCharset().displayName()));
 					downloadBigImage = true;
 				} // else Log.i(TAG, "Image found in DB with URL decoded path: " +
-				// java.net.URLDecoder.decode(imageTemp.getPath(),
-				// java.nio.charset.Charset.defaultCharset().displayName()));
+					// java.net.URLDecoder.decode(imageTemp.getPath(),
+					// java.nio.charset.Charset.defaultCharset().displayName()));
 
 			} catch (Exception e) {
 				Log.i(TAG, "Image found in DB, but path string seems to be broken: " + imageTemp.getPath()
@@ -1274,7 +1282,7 @@ public class NovelsDao {
 		int retry = 0;
 		while (retry < getRetry()) {
 			try {
-				Response response = Jsoup.connect(url).timeout(getTimeout(retry)).execute();
+				Response response = connect(url, retry);
 				Document doc = response.parse();
 
 				// only return the full image url
@@ -1518,5 +1526,9 @@ public class NovelsDao {
 			return deleteNovel(new PageModel(missing.getPage()));
 		}
 		return 0;
+	}
+
+	private Response connect(String url, int retry) throws IOException {
+		return Jsoup.connect(url).setSecure(!getIgnoreSecure()).timeout(getTimeout(retry)).execute();
 	}
 }

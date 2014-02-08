@@ -457,4 +457,8 @@ public class UIHelper {
 			loc = loc.substring(0, loc.length() - 1);
 		return loc;
 	}
+
+	public static boolean getIgnoreCert(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_IGNORE_CERT, true);
+	}
 }

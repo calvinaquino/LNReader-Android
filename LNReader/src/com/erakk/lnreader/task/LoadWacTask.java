@@ -1,7 +1,6 @@
 package com.erakk.lnreader.task;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -12,6 +11,7 @@ import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.helper.WebArchiveReader;
 
 public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskResult<Boolean>> implements ICallbackNotifier {
@@ -61,8 +61,14 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 			FileInputStream is;
 			is = new FileInputStream(wacName);
 			return wr.readWebArchive(is);
-		} catch (FileNotFoundException e) {
-			Log.e(TAG, "Failed to load saved web archive: " + wacName, e);
+		} catch (Exception e) {
+			Log.e(TAG, "Failed to load saved web archive: " + wacName + " Try to use 2nd method.", e);
+			try {
+				String rawData = Util.getStringFromFile(wacName);
+				wv.loadDataWithBaseURL(wacName, rawData, "application/x-webarchive-xml", "UTF-8", null);
+			} catch (Exception ex) {
+				Log.e(TAG, "Failed to load saved web archive: " + wacName, e);
+			}
 		}
 		return false;
 	}

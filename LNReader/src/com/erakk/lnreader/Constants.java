@@ -100,6 +100,7 @@ public class Constants {
 	public static final String PREF_AUTO_BACKUP_ENABLED = "auto_backup_enabled";
 	public static final String PREF_BACKUP_LOCATION = "backup_location";
 	public static final String PREF_UPDATE_INCLUDE_REDLINK = "update_include_redlink";
+	public static final String PREF_IGNORE_CERT = "https_ignore_cert";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 

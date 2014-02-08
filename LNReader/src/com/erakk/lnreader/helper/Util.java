@@ -2,12 +2,14 @@ package com.erakk.lnreader.helper;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
@@ -85,10 +87,11 @@ public class Util {
 		FileChannel outChannel = null;
 		try {
 			inChannel = new FileInputStream(src).getChannel();
-			if(!dst.exists()){
+			if (!dst.exists()) {
 				Log.w(TAG, "Destination File doesn't exists, try to create dummy file");
 				boolean result = dst.createNewFile();
-				if(!result) Log.e(TAG, "Failed ot create file");
+				if (!result)
+					Log.e(TAG, "Failed ot create file");
 			}
 			outChannel = new FileOutputStream(dst).getChannel();
 			inChannel.transferTo(0, inChannel.size(), outChannel);
@@ -149,7 +152,7 @@ public class Util {
 		return false;
 	}
 
-	/**
+/**
 	 * Remove | \ ? * < " : > + [ ] / ' from filename
 	 * @param filename
 	 * @return
@@ -302,4 +305,25 @@ public class Util {
 			return availableSpace;
 		}
 	}
+
+	public static String convertStreamToString(InputStream is) throws Exception {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		StringBuilder sb = new StringBuilder();
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			sb.append(line).append("\n");
+		}
+		reader.close();
+		return sb.toString();
+	}
+
+	public static String getStringFromFile(String filePath) throws Exception {
+		File fl = new File(filePath);
+		FileInputStream fin = new FileInputStream(fl);
+		String ret = convertStreamToString(fin);
+		// Make sure you close all streams.
+		fin.close();
+		return ret;
+	}
+
 }

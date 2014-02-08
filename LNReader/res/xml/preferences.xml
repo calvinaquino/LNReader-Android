@@ -33,9 +33,10 @@
 			</PreferenceCategory>
 			<PreferenceCategory android:title="@string/pref_network">
 				<CheckBoxPreference android:defaultValue="false" android:summary="@string/use_https_summary" android:title="@string/use_https_title" android:key="use_https" />
-				<EditTextPreference android:summary="@string/pref_timeout_summary" android:key="timeout" android:title="@string/pref_timeout_title" android:defaultValue="60" />
+				<CheckBoxPreference android:title="@string/https_ignore_cert_title" android:defaultValue="false" android:key="https_ignore_cert" android:dependency="use_https"/><EditTextPreference android:summary="@string/pref_timeout_summary" android:key="timeout" android:title="@string/pref_timeout_title" android:defaultValue="60" />
 				<EditTextPreference android:summary="@string/pref_retry_summary" android:title="@string/pref_retry_title" android:defaultValue="3" android:key="retry" />
 				<CheckBoxPreference android:key="increase_retry" android:summary="@string/increase_retry_summary" android:title="@string/increase_retry_title" android:defaultValue="false" />
+				
 			</PreferenceCategory><CheckBoxPreference android:summary="@string/update_include_redlink_summary" android:key="update_include_redlink" android:title="@string/update_include_redlink_title" android:defaultValue="true"/>
 			<CheckBoxPreference android:summary="@string/aggresive_title_clean_up_summary" android:title="@string/aggresive_title_clean_up_title" android:key="aggresive_title_clean_up" android:defaultValue="true" />
 			
