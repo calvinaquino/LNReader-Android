@@ -10,6 +10,8 @@ import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.Date;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -77,6 +79,11 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		int timeout = UIHelper.getIntFromPreferences(Constants.PREF_TIMEOUT, 60) * 1000;
 		connection.setConnectTimeout(timeout);
 		connection.setReadTimeout(timeout);
+		if (UIHelper.getIgnoreCert(LNReaderApplication.getInstance().getApplicationContext()))
+			if (connection instanceof HttpsURLConnection) {
+				((HttpsURLConnection) connection).setSSLSocketFactory(Util.initUnSecureSSL());
+			}
+
 		connection.connect();
 
 		// this will be useful so that you can show a typical 0-100% progress bar

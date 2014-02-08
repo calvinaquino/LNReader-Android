@@ -13,6 +13,9 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -22,6 +25,11 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
@@ -326,4 +334,37 @@ public class Util {
 		return ret;
 	}
 
+	public static SSLSocketFactory initUnSecureSSL() throws IOException {
+		SSLSocketFactory sslSocketFactory = null;
+		// Create a trust manager that does not validate certificate chains
+		final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+
+			@Override
+			public void checkClientTrusted(final X509Certificate[] chain, final String authType) {
+			}
+
+			@Override
+			public void checkServerTrusted(final X509Certificate[] chain, final String authType) {
+			}
+
+			@Override
+			public X509Certificate[] getAcceptedIssuers() {
+				return null;
+			}
+		} };
+
+		// Install the all-trusting trust manager
+		final SSLContext sslContext;
+		try {
+			sslContext = SSLContext.getInstance("SSL");
+			sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+			// Create an ssl socket factory with our all-trusting manager
+			sslSocketFactory = sslContext.getSocketFactory();
+		} catch (NoSuchAlgorithmException e) {
+			throw new IOException("Can't create unsecure trust manager");
+		} catch (KeyManagementException e) {
+			throw new IOException("Can't create unsecure trust manager");
+		}
+		return sslSocketFactory;
+	}
 }
