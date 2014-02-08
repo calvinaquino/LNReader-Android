@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.jsoup.Connection.Response;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -952,6 +953,11 @@ public class NovelsDao {
 			try {
 				headers = connect(page.getPage(), retry).headers();
 				break;
+			} catch (HttpStatusException hex) {
+				Log.e(TAG, "Error when getting updated date for: " + page.getPage(), hex);
+				if (hex.getStatusCode() == 404) {
+					break;
+				}
 			} catch (Exception e) {
 				Log.e(TAG, "Error when getting updated date for: " + page.getPage(), e);
 				++retry;
