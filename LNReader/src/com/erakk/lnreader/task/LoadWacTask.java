@@ -67,7 +67,7 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 				String rawData = Util.getStringFromFile(wacName);
 				wv.loadDataWithBaseURL(wacName, rawData, "application/x-webarchive-xml", "UTF-8", null);
 			} catch (Exception ex) {
-				Log.e(TAG, "Failed to load saved web archive: " + wacName, e);
+				Log.e(TAG, "Failed to load saved web archive: " + wacName, ex);
 			}
 		}
 		return false;
