@@ -118,6 +118,7 @@ public class MainActivity extends SherlockActivity {
 
 	public void openNovelListNoTab(View view) {
 		Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
+		intent.putExtra(Constants.EXTRA_NOVEL_LIST_MODE, Constants.EXTRA_NOVEL_LIST_MODE_MAIN);
 		intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
 		startActivity(intent);
 	}
@@ -128,7 +129,8 @@ public class MainActivity extends SherlockActivity {
 	}
 
 	public void openOriginalsList(View view) {
-		Intent intent = new Intent(this, DisplayOriginalListActivity.class);
+		Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
+		intent.putExtra(Constants.EXTRA_NOVEL_LIST_MODE, Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL);
 		startActivity(intent);
 	}
 

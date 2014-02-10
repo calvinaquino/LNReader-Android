@@ -29,6 +29,10 @@ public class Constants {
 	public static final String PREF_EMPTY_NOVEL = "find_empty_novel";
 	public static final String PREF_SHOW_MAINT_WARNING = "maint_show_warning";
 
+	public static final String EXTRA_NOVEL_LIST_MODE = "novel_list_mode";
+	public static final String EXTRA_NOVEL_LIST_MODE_MAIN = "main";
+	public static final String EXTRA_NOVEL_LIST_MODE_ORIGINAL = "original";
+
 	public static final String NOVEL_BOOK_DIVIDER = "%NOVEL_BOOK_DIVIDER%";
 	public static final int CHECK_INTERVAL = 7;
 

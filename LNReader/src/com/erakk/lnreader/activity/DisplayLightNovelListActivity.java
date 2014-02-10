@@ -35,6 +35,7 @@ import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.task.AddNovelTask;
@@ -42,6 +43,7 @@ import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.DownloadNovelDetailsTask;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelsTask;
+import com.erakk.lnreader.task.LoadOriginalsTask;
 
 /*
  * Author: Nandaka
@@ -53,8 +55,10 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 	private final ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	private PageModelAdapter adapter;
 	private LoadNovelsTask task = null;
+	private LoadOriginalsTask oriTask = null;
 	private DownloadNovelDetailsTask downloadTask = null;
 	private AddNovelTask addTask = null;
+	private String mode;
 
 	private boolean isInverted;
 	private boolean onlyWatched = false;
@@ -73,13 +77,24 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 		loadingBar = (ProgressBar) findViewById(R.id.empttListProgress);
 
 		registerForContextMenu(getListView());
-		onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
 
-		if (onlyWatched) {
-			setTitle(getResources().getString(R.string.watched_light_novels));
-		} else {
-			setTitle(getResources().getString(R.string.light_novels));
+		mode = getIntent().getStringExtra(Constants.EXTRA_NOVEL_LIST_MODE);
+		if(Util.isStringNullOrEmpty(mode))
+			mode = Constants.EXTRA_NOVEL_LIST_MODE_MAIN;
+
+		if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+			onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
+
+			if (onlyWatched) {
+				setTitle(getResources().getString(R.string.watched_light_novels));
+			} else {
+				setTitle(getResources().getString(R.string.light_novels));
+			}
 		}
+		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+			setTitle("Light Novels: Original");
+		}
+
 		registerForContextMenu(getListView());
 		isInverted = UIHelper.getColorPreferences(this);
 
@@ -107,25 +122,6 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
 		return true;
-	}
-
-	@Override
-	protected void onStop() {
-		// cancel running task
-		// disable cancel so the task can run in background
-		// if(task != null) {
-		// if(!(task.getStatus() == Status.FINISHED)) {
-		// task.cancel(true);
-		// Log.d(TAG, "Stopping running task.");
-		// }
-		// }
-		// if(downloadTask != null) {
-		// if(!(downloadTask.getStatus() == Status.FINISHED)) {
-		// downloadTask.cancel(true);
-		// Log.d(TAG, "Stopping running download task.");
-		// }
-		// }
-		super.onStop();
 	}
 
 	@Override
@@ -184,10 +180,14 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 
 	@Override
 	public void downloadAllNovelInfo() {
-		if (onlyWatched)
-			touchedForDownload = "Watched Light Novels information";
-		else
-			touchedForDownload = "All Main Light Novels information";
+		if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+			if (onlyWatched)
+				touchedForDownload = "Watched Light Novels information";
+			else
+				touchedForDownload = "All Main Light Novels information";
+		} else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+			touchedForDownload = "All Original Light Novels information";
+		}
 		executeDownloadTask(listItems);
 	}
 
@@ -221,7 +221,13 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 			temp.setPage(novel);
 			temp.setTitle(title);
 			temp.setType(PageModel.TYPE_NOVEL);
-			temp.setParent("Main_Page");
+			if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+				temp.setParent("Main_Page");
+			}
+			else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+				temp.setParent("Category:Original");
+				temp.setStatus(Constants.STATUS_ORIGINAL);
+			}
 			executeAddTask(temp);
 		} else {
 			Toast.makeText(this, "Empty Input", Toast.LENGTH_LONG).show();
@@ -272,6 +278,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 			if (info.position > -1) {
 				toggleProgressBar(true);
 				PageModel novel = listItems.get(info.position);
+				Log.d(TAG, "Deleting novel: " + novel.getTitle());
 				int result = NovelsDao.getInstance(this).deleteNovel(novel);
 				if (result > 0) {
 					listItems.remove(novel);
@@ -308,22 +315,43 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 
 	@SuppressLint("NewApi")
 	private void executeTask(boolean isRefresh, boolean onlyWatched, boolean alphOrder) {
-		task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder);
-		String key = TAG + ":Main+Page";
-		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
-		if (isAdded) {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-			else
-				task.execute();
-		} else {
-			Log.i(TAG, "Continue execute task: " + key);
-			LoadNovelsTask tempTask = (LoadNovelsTask) LNReaderApplication.getInstance().getTask(key);
-			if (tempTask != null) {
-				task = tempTask;
-				task.owner = this;
+		if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+			task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder);
+			String key = TAG + ":Main+Page";
+			boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
+			if (isAdded) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+					task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+				else
+					task.execute();
+			} else {
+				Log.i(TAG, "Continue execute task: " + key);
+				LoadNovelsTask tempTask = (LoadNovelsTask) LNReaderApplication.getInstance().getTask(key);
+				if (tempTask != null) {
+					task = tempTask;
+					task.owner = this;
+				}
+				toggleProgressBar(true);
 			}
-			toggleProgressBar(true);
+		}
+		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+			oriTask  = new LoadOriginalsTask(this, isRefresh, alphOrder);
+			String key = TAG + ":Category:Original";
+			boolean isAdded = LNReaderApplication.getInstance().addTask(key, oriTask);
+			if (isAdded) {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+					oriTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+				else
+					oriTask.execute();
+			} else {
+				Log.i(TAG, "Continue execute task: " + key);
+				LoadOriginalsTask tempTask = (LoadOriginalsTask) LNReaderApplication.getInstance().getTask(key);
+				if (tempTask != null) {
+					oriTask = tempTask;
+					oriTask.owner = this;
+				}
+				toggleProgressBar(true);
+			}
 		}
 	}
 
@@ -377,7 +405,12 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 		}
 		String key = DisplayLightNovelDetailsActivity.TAG + ":" + novels.get(0).getPage();
 		if (novels.size() > 1) {
-			key = DisplayLightNovelDetailsActivity.TAG + ":All_Novels";
+			if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+				key = DisplayLightNovelDetailsActivity.TAG + ":All_Novels";
+			}
+			else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+				key = DisplayLightNovelDetailsActivity.TAG + ":All_Original";
+			}
 		}
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, downloadTask);
 		if (isAdded) {

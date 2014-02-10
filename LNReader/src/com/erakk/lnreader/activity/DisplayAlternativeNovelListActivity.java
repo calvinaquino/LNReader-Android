@@ -18,7 +18,6 @@ import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -36,6 +35,7 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.task.AddNovelTask;
@@ -227,29 +227,47 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 
 	@Override
 	public boolean onContextItemSelected(android.view.MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		switch (item.getItemId()) {
 		case R.id.add_to_watch:
 			/*
 			 * Implement code to toggle watch of this novel
 			 */
-			CheckBox checkBox = (CheckBox) findViewById(R.id.novel_is_watched);
-			if (checkBox.isChecked()) {
-				checkBox.setChecked(false);
-			} else {
-				checkBox.setChecked(true);
+			if (info.position > -1) {
+				PageModel novel = listItems.get(info.position);
+				if (novel.isWatched()) {
+					novel.setWatched(false);
+					Toast.makeText(this, getResources().getString(R.string.removed_from_watchlist) + ": " + novel.getTitle(), Toast.LENGTH_SHORT).show();
+				} else {
+					novel.setWatched(true);
+					Toast.makeText(this, getResources().getString(R.string.added_to_watchlist) + ": " + novel.getTitle(), Toast.LENGTH_SHORT).show();
+				}
+				NovelsDao.getInstance(this).updatePageModel(novel);
+				adapter.notifyDataSetChanged();
 			}
 			return true;
 		case R.id.download_novel:
 			/*
 			 * Implement code to download novel synopsis
 			 */
-			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 			if (info.position > -1) {
 				PageModel novel = listItems.get(info.position);
 				ArrayList<PageModel> novels = new ArrayList<PageModel>();
 				novels.add(novel);
 				touchedForDownload = novel.getTitle() + "'s information";
 				executeDownloadTask(novels);
+			}
+			return true;
+		case R.id.delete_novel:
+			if (info.position > -1) {
+				PageModel novel = listItems.get(info.position);
+				Log.d(TAG, "Deleting novel: " + novel.getTitle());
+				int result = NovelsDao.getInstance(this).deleteNovel(novel);
+				if (result > 0) {
+					listItems.remove(novel);
+					adapter.notifyDataSetChanged();
+					Toast.makeText(this, "Novel deleted: " + novel.getTitle(), Toast.LENGTH_SHORT).show();
+				}
 			}
 			return true;
 		default:
