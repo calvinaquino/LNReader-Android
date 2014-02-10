@@ -102,19 +102,21 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
 	@Override
 	protected void onPostExecute(AsyncTaskResult<PageModel[]> result) {
 		// executed on UI thread.
+		CallbackEventData message = null;
 		if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
 			if (onlyWatched) {
-				owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novels_task_watched_complete), source));
+				message = new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novels_task_watched_complete), source);
 			} else {
-				owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novels_task_complete), source));
+				message = new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novels_task_complete), source);
 			}
 		}
 		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
-			owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_original_task_complete), source));
+			message = new CallbackEventData(owner.getContext().getResources().getString(R.string.load_original_task_complete), source);
 		}
 		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
-			owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.load_teaser_task_complete), source));
+			message = new CallbackEventData(owner.getContext().getResources().getString(R.string.load_teaser_task_complete), source);
 		}
+		owner.setMessageDialog(message);
 		owner.onGetResult(result, PageModel[].class);
 	}
 }

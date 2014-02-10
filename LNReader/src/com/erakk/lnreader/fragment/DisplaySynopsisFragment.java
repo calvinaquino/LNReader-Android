@@ -3,7 +3,6 @@ package com.erakk.lnreader.fragment;
 import java.net.URL;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -30,6 +29,7 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.activity.DisplayImageActivity;
 import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
@@ -37,10 +37,9 @@ import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.parser.CommonParser;
 import com.erakk.lnreader.task.AsyncTaskResult;
-import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelDetailsTask;
 
-public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncTaskOwner {
+public class DisplaySynopsisFragment extends SherlockFragment implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
 	public static final String TAG = DisplaySynopsisFragment.class.toString();
 	NovelsDao dao = NovelsDao.getInstance(getSherlockActivity());
 	NovelCollectionModel novelCol;
@@ -80,14 +79,14 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel, boolean willRefresh) {
-		task = new LoadNovelDetailsTask(willRefresh, this);
+		task = new LoadNovelDetailsTask(pageModel, willRefresh, this);
 		String key = TAG + ":" + pageModel.getPage();
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if (isAdded) {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] { pageModel });
+				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			else
-				task.execute(new PageModel[] { pageModel });
+				task.execute();
 		} else {
 			Log.i(TAG, "Continue execute task: " + key);
 			LoadNovelDetailsTask tempTask = (LoadNovelDetailsTask) LNReaderApplication.getInstance().getTask(key);
@@ -100,56 +99,52 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 	}
 
 	@Override
-	public void updateProgress(String id, int current, int total, String message) {
-		double cur = current;
-		double tot = total;
-		double result = (cur / tot) * 100;
-		LNReaderApplication.getInstance().updateDownload(id, (int) result, message);
-		if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
-			loadingBar.setIndeterminate(false);
-			loadingBar.setMax(total);
-			loadingBar.setProgress(current);
-			loadingBar.setProgress(0);
-			loadingBar.setProgress(current);
-			loadingBar.setMax(total);
-		}
-	}
-
-	@Override
 	public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
 		return false;
 	}
 
 	@Override
+	public void onProgressCallback(ICallbackEventData message) {
+		toggleProgressBar(true);
+		loadingText.setText(message.getMessage());
+
+		if(message.getPercentage() > 0) {
+			LNReaderApplication.getInstance().updateDownload(message.getSource(), message.getPercentage(), message.getMessage());
+			if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
+				loadingBar.setIndeterminate(false);
+				loadingBar.setMax(100);
+				loadingBar.setProgress(message.getPercentage());
+				loadingBar.setProgress(0);
+				loadingBar.setProgress(message.getPercentage());
+				loadingBar.setMax(100);
+			}
+		}
+		else {
+			loadingBar.setIndeterminate(true);
+		}
+	}
+
 	public void toggleProgressBar(boolean show) {
 		if (show) {
 			loadingText.setText("Loading List, please wait...");
 			loadingText.setVisibility(TextView.VISIBLE);
 			loadingBar.setVisibility(ProgressBar.VISIBLE);
-			loadingBar.setIndeterminate(true);
 		} else {
 			loadingText.setVisibility(TextView.GONE);
 			loadingBar.setVisibility(ProgressBar.GONE);
-
 		}
 	}
 
 	@Override
-	public void setMessageDialog(ICallbackEventData message) {
-		if (loadingText.getVisibility() == TextView.VISIBLE)
-			loadingText.setText(message.getMessage());
-	}
-
-	@Override
 	@SuppressLint("NewApi")
-	public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
+	public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<?> result) {
 		if (!isAdded())
 			return;
 
 		Exception e = result.getError();
 		if (e == null) {
 			// from DownloadNovelContentTask
-			if (t == NovelContentModel[].class) {
+			if (result.getResultType() == NovelContentModel[].class) {
 				NovelContentModel[] content = (NovelContentModel[]) result.getResult();
 				if (content != null) {
 					for (BookModel book : novelCol.getBookCollections()) {
@@ -164,7 +159,7 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 				}
 			}
 			// from LoadNovelDetailsTask
-			else if (t == NovelCollectionModel.class) {
+			else if (result.getResultType() == NovelCollectionModel.class) {
 				novelCol = (NovelCollectionModel) result.getResult();
 				// now add the volume and chapter list.
 				try {
@@ -254,13 +249,5 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IAsyncT
 		Intent intent = new Intent(getSherlockActivity(), DisplayImageActivity.class);
 		intent.putExtra(Constants.EXTRA_IMAGE_URL, bigCoverUrl);
 		startActivity(intent);
-	}
-
-	@Override
-	public Context getContext() {
-		Context ctx = this.getSherlockActivity();
-		if (ctx == null)
-			return LNReaderApplication.getInstance().getApplicationContext();
-		return ctx;
 	}
 }

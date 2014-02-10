@@ -354,27 +354,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 
 	@Override
 	public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
-		boolean exists = false;
-		String name = touchedForDownload;
-		if (type == 0) {
-			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
-				exists = true;
-				Toast.makeText(this, getResources().getString(R.string.download_on_queue), Toast.LENGTH_SHORT).show();
-			} else {
-				Toast.makeText(this, getResources().getString(R.string.downloading) + name + ".", Toast.LENGTH_SHORT).show();
-				LNReaderApplication.getInstance().addDownload(id, name);
-			}
-		} else if (type == 1) {
-			Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show();
-		} else if (type == 2) {
-			String message = String.format("%s's download finished!", LNReaderApplication.getInstance().getDownloadDescription(id));
-			if (hasError)
-				message = String.format("%s's download finished with error(s)!", LNReaderApplication.getInstance().getDownloadDescription(id));
-
-			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-			LNReaderApplication.getInstance().removeDownload(id);
-		}
-		return exists;
+		return UIHelper.downloadListSetup(this, touchedForDownload, id, toastText, type, hasError);
 	}
 
 	@Override

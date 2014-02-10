@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -41,6 +41,7 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.BookModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
@@ -49,10 +50,9 @@ import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.parser.CommonParser;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.DownloadNovelContentTask;
-import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelDetailsTask;
 
-public class DisplayLightNovelDetailsActivity extends SherlockActivity implements IAsyncTaskOwner {
+public class DisplayLightNovelDetailsActivity extends SherlockActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
 	public static final String TAG = DisplayLightNovelDetailsActivity.class.toString();
 	private PageModel page;
 	private NovelCollectionModel novelCol;
@@ -376,15 +376,15 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel, boolean willRefresh) {
-		task = new LoadNovelDetailsTask(willRefresh, this);
+		task = new LoadNovelDetailsTask(pageModel, willRefresh, this);
 		String key = TAG + Constants.KEY_LOAD_CHAPTER + pageModel.getPage();
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 
 		if (isAdded) {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] { pageModel });
+				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			else
-				task.execute(new PageModel[] { pageModel });
+				task.execute();
 		} else {
 			Log.i(TAG, "Continue execute task: " + key);
 			LoadNovelDetailsTask tempTask = (LoadNovelDetailsTask) LNReaderApplication.getInstance().getTask(key);
@@ -424,51 +424,37 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 
 	@Override
 	public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
-		boolean exists = false;
 		String name = page.getTitle() + " " + touchedForDownload;
-		if (type == 0) {
-			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
-				exists = true;
-				Toast.makeText(this, getResources().getString(R.string.download_on_queue), Toast.LENGTH_SHORT).show();
-			} else {
-				Toast.makeText(this, getResources().getString(R.string.toast_downloading, name), Toast.LENGTH_SHORT).show();
-				LNReaderApplication.getInstance().addDownload(id, name);
+		return UIHelper.downloadListSetup(this, name, id, toastText, type, hasError);
+	}
+
+	@Override
+	public void onProgressCallback(ICallbackEventData message) {
+		toggleProgressBar(true);
+		loadingText.setText(message.getMessage());
+		loadingText.setBackgroundColor(Color.BLACK);
+
+		LNReaderApplication.getInstance().updateDownload(message.getSource(), message.getPercentage(), message.getMessage());
+		if(message.getPercentage()> 0) {
+			if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
+				loadingBar.setIndeterminate(false);
+				loadingBar.setMax(100);
+				loadingBar.setProgress(message.getPercentage());
+				loadingBar.setProgress(0);
+				loadingBar.setProgress(message.getPercentage());
+				loadingBar.setMax(100);
 			}
-		} else if (type == 1) {
-			Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show();
-		} else if (type == 2) {
-			String message = getResources().getString(R.string.toast_download_finish, page.getTitle(), LNReaderApplication.getInstance().getDownloadDescription(id));
-			if (hasError)
-				message = getResources().getString(R.string.toast_download_finish_with_error, page.getTitle(), LNReaderApplication.getInstance().getDownloadDescription(id));
-			Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-			LNReaderApplication.getInstance().removeDownload(id);
 		}
-		return exists;
-	}
-
-	@Override
-	public void updateProgress(String id, int current, int total, String message) {
-		double cur = current;
-		double tot = total;
-		double result = (cur / tot) * 100;
-		LNReaderApplication.getInstance().updateDownload(id, (int) result, message);
-		if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
-			loadingBar.setIndeterminate(false);
-			loadingBar.setMax(total);
-			loadingBar.setProgress(current);
-			loadingBar.setProgress(0);
-			loadingBar.setProgress(current);
-			loadingBar.setMax(total);
+		else {
+			loadingBar.setIndeterminate(true);
 		}
 	}
 
-	@Override
 	public void toggleProgressBar(boolean show) {
 		if (show) {
 			loadingText.setText("Loading List, please wait...");
 			loadingText.setVisibility(TextView.VISIBLE);
 			loadingBar.setVisibility(ProgressBar.VISIBLE);
-			loadingBar.setIndeterminate(true);
 			expandList.setVisibility(ListView.GONE);
 		} else {
 			loadingText.setVisibility(TextView.GONE);
@@ -477,21 +463,14 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		}
 	}
 
-	@Override
-	public void setMessageDialog(ICallbackEventData message) {
-		if (loadingText.getVisibility() == View.VISIBLE) {
-			loadingText.setText(message.getMessage());
-		}
-	}
-
-	@Override
 	@SuppressLint("NewApi")
-	public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
+	@Override
+	public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<?> result) {
 		Exception e = result.getError();
 
 		if (e == null) {
 			// from DownloadNovelContentTask
-			if (t == NovelContentModel[].class) {
+			if (result.getResultType() == NovelContentModel[].class) {
 				NovelContentModel[] content = (NovelContentModel[]) result.getResult();
 				if (content != null) {
 					for (BookModel book : novelCol.getBookCollections()) {
@@ -507,7 +486,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 				}
 			}
 			// from LoadNovelDetailsTask
-			else if (t == NovelCollectionModel.class) {
+			else if (result.getResultType() == NovelCollectionModel.class) {
 				novelCol = (NovelCollectionModel) result.getResult();
 				expandList = (ExpandableListView) findViewById(R.id.chapter_list);
 				// now add the volume and chapter list.
@@ -617,10 +596,5 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		Intent intent = new Intent(this, DisplayImageActivity.class);
 		intent.putExtra(Constants.EXTRA_IMAGE_URL, bigCoverUrl);
 		startActivity(intent);
-	}
-
-	@Override
-	public Context getContext() {
-		return this;
 	}
 }

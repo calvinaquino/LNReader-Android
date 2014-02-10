@@ -20,7 +20,7 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 	private final String wacName;
 	private final IExtendedCallbackNotifier<AsyncTaskResult<?>> owner;
 	private final WebArchiveReader wr;
-	private String source;
+	private final String source;
 
 	public LoadWacTask(IExtendedCallbackNotifier<AsyncTaskResult<?>> owner, WebView wv, String wacName, final WebViewClient client) {
 		this.wv = wv;
@@ -35,12 +35,12 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 				Log.d(TAG, "WAC loaded");
 			}
 		};
+		this.source = TAG + ":" + wacName;
 	}
 
 	@Override
 	protected void onPreExecute() {
 		// executed on UI thread.
-		owner.downloadListSetup(wacName, wacName, 0, false);
 		owner.onProgressCallback(new CallbackEventData("", source));
 	}
 
@@ -85,7 +85,6 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 		}
 
 		owner.onCompleteCallback(new CallbackEventData(message, source), result);
-		owner.downloadListSetup(wacName, wacName, 2, result.getError() != null ? true : false);
 	}
 
 	@Override

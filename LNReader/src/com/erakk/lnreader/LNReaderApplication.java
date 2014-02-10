@@ -181,8 +181,7 @@ public class LNReaderApplication extends Application {
 		 * Although this may seem an attempt at a fake incremental download bar
 		 * its actually a progressbar smoother.
 		 */
-
-		int index = 0;
+		int index = -1;
 		Integer oldProgress;
 		final Integer Increment;
 		int smoothTime = 1000;
@@ -193,6 +192,9 @@ public class LNReaderApplication extends Application {
 				index = i;
 			}
 		}
+
+		if(index < 0) return;
+
 		final int idx = index;
 
 		// Download status message

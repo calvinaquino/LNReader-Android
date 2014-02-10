@@ -26,7 +26,7 @@ public class LoadNovelContentTask extends AsyncTask<Void, ICallbackEventData, As
 		this.refresh = isRefresh;
 		this.owner = owner;
 		this.pageModel = p;
-		this.source = p.getPage();
+		this.source = TAG + ":" + pageModel.getPage();
 	}
 
 	@Override
@@ -37,7 +37,6 @@ public class LoadNovelContentTask extends AsyncTask<Void, ICallbackEventData, As
 	@Override
 	protected void onPreExecute() {
 		// executed on UI thread.
-		owner.downloadListSetup(pageModel.getPage(), pageModel.getPage(), 0, false);
 		owner.onProgressCallback(new CallbackEventData("", source));
 	}
 
@@ -71,6 +70,5 @@ public class LoadNovelContentTask extends AsyncTask<Void, ICallbackEventData, As
 		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		CallbackEventData message = new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_complete), source);
 		owner.onCompleteCallback(message, result);
-		owner.downloadListSetup(pageModel.getPage(), pageModel.getPage(), 2, result.getError() != null ? true : false);
 	}
 }

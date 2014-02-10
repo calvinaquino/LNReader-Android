@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -43,6 +42,7 @@ import com.erakk.lnreader.activity.DisplayImageActivity;
 import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.adapter.BookModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
@@ -52,10 +52,9 @@ import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.parser.CommonParser;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.DownloadNovelContentTask;
-import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelDetailsTask;
 
-public class DisplayLightNovelDetailsFragment extends SherlockFragment implements IAsyncTaskOwner {
+public class DisplayLightNovelDetailsFragment extends SherlockFragment implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
 	public static final String TAG = DisplayLightNovelDetailsFragment.class.toString();
 	private PageModel page;
 	private NovelCollectionModel novelCol;
@@ -178,11 +177,11 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 				if (pageModel.isMissing() || pageModel.isExternal())
 					continue;
 				else if (!pageModel.isDownloaded() // add to list if not
-													// downloaded
+						// downloaded
 						|| (pageModel.isDownloaded() && NovelsDao.getInstance(getSherlockActivity()).isContentUpdated(pageModel))) // or
-																																	// the
-																																	// update
-																																	// available.
+					// the
+					// update
+					// available.
 				{
 					notDownloadedChapters.add(pageModel);
 				}
@@ -347,14 +346,14 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel, boolean willRefresh) {
-		task = new LoadNovelDetailsTask(willRefresh, this);
+		task = new LoadNovelDetailsTask(pageModel, willRefresh, this);
 		String key = TAG + ":" + pageModel.getPage();
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if (isAdded) {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[] { pageModel });
+				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			else
-				task.execute(new PageModel[] { pageModel });
+				task.execute();
 		} else {
 			Log.i(TAG, "Continue execute task: " + key);
 			LoadNovelDetailsTask tempTask = (LoadNovelDetailsTask) LNReaderApplication.getInstance().getTask(key);
@@ -424,22 +423,25 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 	}
 
 	@Override
-	public void updateProgress(String id, int current, int total, String message) {
-		double cur = current;
-		double tot = total;
-		double result = (cur / tot) * 100;
-		LNReaderApplication.getInstance().updateDownload(id, (int) result, message);
-		if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
-			loadingBar.setIndeterminate(false);
-			loadingBar.setMax(total);
-			loadingBar.setProgress(current);
-			loadingBar.setProgress(0);
-			loadingBar.setProgress(current);
-			loadingBar.setMax(total);
+	public void onProgressCallback(ICallbackEventData message) {
+		toggleProgressBar(true);
+		loadingText.setText(message.getMessage());
+		if(message.getPercentage() > 0) {
+			LNReaderApplication.getInstance().updateDownload(message.getSource(), message.getPercentage(), message.getMessage());
+			if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
+				loadingBar.setIndeterminate(false);
+				loadingBar.setMax(100);
+				loadingBar.setProgress(message.getPercentage());
+				loadingBar.setProgress(0);
+				loadingBar.setProgress(message.getPercentage());
+				loadingBar.setMax(100);
+			}
+		}
+		else {
+			loadingBar.setIndeterminate(true);
 		}
 	}
 
-	@Override
 	public void toggleProgressBar(boolean show) {
 		if (show) {
 			loadingText.setText("Loading List, please wait...");
@@ -453,23 +455,17 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		}
 	}
 
-	@Override
-	public void setMessageDialog(ICallbackEventData message) {
-		if (loadingText.getVisibility() == View.VISIBLE) {
-			loadingText.setText(message.getMessage());
-		}
-	}
 
 	@Override
 	@SuppressLint("NewApi")
-	public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
+	public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<?> result) {
 		if (!isAdded())
 			return;
 
 		Exception e = result.getError();
 		if (e == null) {
 			// from DownloadNovelContentTask
-			if (t == NovelContentModel[].class) {
+			if (result.getResultType() == NovelContentModel[].class) {
 				NovelContentModel[] content = (NovelContentModel[]) result.getResult();
 				if (content != null) {
 					for (BookModel book : novelCol.getBookCollections()) {
@@ -485,7 +481,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 				}
 			}
 			// from LoadNovelDetailsTask
-			else if (t == NovelCollectionModel.class) {
+			else if (result.getResultType() == NovelCollectionModel.class) {
 				novelCol = (NovelCollectionModel) result.getResult();
 				// now add the volume and chapter list.
 				try {
@@ -571,11 +567,11 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 				}
 			}
 		} else {
-			String message = e.getClass().toString();
+			String msg = e.getClass().toString();
 			if (e.getMessage() != null)
-				message += ": " + e.getMessage();
-			Log.e(TAG, message, e);
-			Toast.makeText(getSherlockActivity(), message, Toast.LENGTH_SHORT).show();
+				msg += ": " + e.getMessage();
+			Log.e(TAG, msg, e);
+			Toast.makeText(getSherlockActivity(), msg, Toast.LENGTH_SHORT).show();
 		}
 		toggleProgressBar(false);
 	}
@@ -585,13 +581,5 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		Intent intent = new Intent(getSherlockActivity(), DisplayImageActivity.class);
 		intent.putExtra(Constants.EXTRA_IMAGE_URL, bigCoverUrl);
 		startActivity(intent);
-	}
-
-	@Override
-	public Context getContext() {
-		Context ctx = this.getSherlockActivity();
-		if (ctx == null)
-			return LNReaderApplication.getInstance().getApplicationContext();
-		return ctx;
 	}
 }

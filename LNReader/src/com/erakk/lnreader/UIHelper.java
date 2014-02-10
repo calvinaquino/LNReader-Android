@@ -28,6 +28,7 @@ import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.erakk.lnreader.helper.Util;
 
@@ -460,5 +461,29 @@ public class UIHelper {
 
 	public static boolean getIgnoreCert(Context ctx) {
 		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_IGNORE_CERT, true);
+	}
+
+	public static boolean downloadListSetup(Context ctx, String name, String id, String toastText, int type, boolean hasError) {
+		boolean exists = false;
+		String desc = LNReaderApplication.getInstance().getDownloadDescription(id);
+		if (type == 0) {
+			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
+				exists = true;
+				Toast.makeText(ctx, ctx.getResources().getString(R.string.download_on_queue), Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(ctx, ctx.getResources().getString(R.string.toast_downloading, desc), Toast.LENGTH_SHORT).show();
+				LNReaderApplication.getInstance().addDownload(id, name);
+			}
+		} else if (type == 1) {
+			Toast.makeText(ctx, toastText, Toast.LENGTH_SHORT).show();
+		} else if (type == 2) {
+
+			String message = ctx.getResources().getString(R.string.toast_download_finish, desc, LNReaderApplication.getInstance().getDownloadDescription(id));
+			if (hasError)
+				message = ctx.getResources().getString(R.string.toast_download_finish_with_error, desc, LNReaderApplication.getInstance().getDownloadDescription(id));
+			Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show();
+			LNReaderApplication.getInstance().removeDownload(id);
+		}
+		return exists;
 	}
 }
