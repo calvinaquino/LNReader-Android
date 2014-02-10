@@ -124,7 +124,8 @@ public class MainActivity extends SherlockActivity {
 	}
 
 	public void openTeaserList(View view) {
-		Intent intent = new Intent(this, DisplayTeaserListActivity.class);
+		Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
+		intent.putExtra(Constants.EXTRA_NOVEL_LIST_MODE, Constants.EXTRA_NOVEL_LIST_MODE_TEASER);
 		startActivity(intent);
 	}
 

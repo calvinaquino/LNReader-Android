@@ -58,7 +58,8 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
 		// Second Tab - Teasers
 		TabSpec secondSpec = tabHost.newTabSpec(TEASER_SPEC);
 		secondSpec.setIndicator(TEASER_SPEC);
-		Intent secondIntent = new Intent(this, DisplayTeaserListActivity.class);
+		Intent secondIntent = new Intent(this, DisplayLightNovelListActivity.class);
+		secondIntent.putExtra(Constants.EXTRA_NOVEL_LIST_MODE, Constants.EXTRA_NOVEL_LIST_MODE_TEASER);
 		secondSpec.setContent(secondIntent);
 
 		// Third Tab - Original

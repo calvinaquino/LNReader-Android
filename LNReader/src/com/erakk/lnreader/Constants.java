@@ -30,8 +30,9 @@ public class Constants {
 	public static final String PREF_SHOW_MAINT_WARNING = "maint_show_warning";
 
 	public static final String EXTRA_NOVEL_LIST_MODE = "novel_list_mode";
-	public static final String EXTRA_NOVEL_LIST_MODE_MAIN = "main";
-	public static final String EXTRA_NOVEL_LIST_MODE_ORIGINAL = "original";
+	public static final String EXTRA_NOVEL_LIST_MODE_MAIN = "Main";
+	public static final String EXTRA_NOVEL_LIST_MODE_ORIGINAL = "Original";
+	public static final String EXTRA_NOVEL_LIST_MODE_TEASER = "Teaser";
 
 	public static final String NOVEL_BOOK_DIVIDER = "%NOVEL_BOOK_DIVIDER%";
 	public static final int CHECK_INTERVAL = 7;
@@ -142,5 +143,4 @@ public class Constants {
 	/* You just need to add a new alternative language here and in AlternativeLanguageInfo -> initSingleton */
 	public static final String[] languageList = { Constants.LANG_ENGLISH, Constants.LANG_FRENCH, Constants.LANG_BAHASA_INDONESIA, Constants.LANG_POLISH };
 	public static final int BUFFER = 1024;
-
 }

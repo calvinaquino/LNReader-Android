@@ -202,7 +202,7 @@
     <string name="agree">I Agree</string>
     <string name="disagree">Exit App</string>
     <string name="watched_light_novels">Watched Light Novels</string>
-    <string name="add_novel_main">Add Novel (Main)</string>
+    <string name="add_novel_main">Add Novel (%1$s)</string>
     <string name="last_update">Last Update</string>
     <string name="last_check">Last Check</string>
     <string name="updates">Updates</string>
