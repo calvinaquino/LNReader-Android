@@ -43,8 +43,6 @@ import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.DownloadNovelDetailsTask;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelsTask;
-import com.erakk.lnreader.task.LoadOriginalsTask;
-import com.erakk.lnreader.task.LoadTeasersTask;
 
 /*
  * Author: Nandaka
@@ -56,8 +54,6 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 	private final ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	private PageModelAdapter adapter;
 	private LoadNovelsTask task = null;
-	private LoadOriginalsTask oriTask = null;
-	private LoadTeasersTask teaserTask = null;
 	private DownloadNovelDetailsTask downloadTask = null;
 	private AddNovelTask addTask = null;
 	private String mode;
@@ -326,62 +322,33 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 
 	@SuppressLint("NewApi")
 	private void executeTask(boolean isRefresh, boolean onlyWatched, boolean alphOrder) {
+		String key = null;
 		if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
-			task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder);
-			String key = TAG + ":Main+Page";
-			boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
-			if (isAdded) {
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-					task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-				else
-					task.execute();
-			} else {
-				Log.i(TAG, "Continue execute task: " + key);
-				LoadNovelsTask tempTask = (LoadNovelsTask) LNReaderApplication.getInstance().getTask(key);
-				if (tempTask != null) {
-					task = tempTask;
-					task.owner = this;
-				}
-				toggleProgressBar(true);
-			}
+			key = TAG + ":Main+Page";
 		}
 		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
-			oriTask  = new LoadOriginalsTask(this, isRefresh, alphOrder);
-			String key = TAG + ":Category:Original";
-			boolean isAdded = LNReaderApplication.getInstance().addTask(key, oriTask);
-			if (isAdded) {
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-					oriTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-				else
-					oriTask.execute();
-			} else {
-				Log.i(TAG, "Continue execute task: " + key);
-				LoadOriginalsTask tempTask = (LoadOriginalsTask) LNReaderApplication.getInstance().getTask(key);
-				if (tempTask != null) {
-					oriTask = tempTask;
-					oriTask.owner = this;
-				}
-				toggleProgressBar(true);
-			}
+			key = TAG + ":Category:Original";
 		}
 		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
-			teaserTask = new LoadTeasersTask(this, isRefresh, alphOrder);
-			String key = TAG + ":Category:Teasers";
-			boolean isAdded = LNReaderApplication.getInstance().addTask(key, teaserTask);
-			if (isAdded) {
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-					teaserTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-				else
-					teaserTask.execute();
-			} else {
-				Log.i(TAG, "Continue execute task: " + key);
-				LoadTeasersTask tempTask = (LoadTeasersTask) LNReaderApplication.getInstance().getTask(key);
-				if (tempTask != null) {
-					teaserTask = tempTask;
-					teaserTask.owner = this;
-				}
-				toggleProgressBar(true);
+			key = TAG + ":Category:Teasers";
+		}
+
+		task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder, mode);
+
+		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
+		if (isAdded) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			else
+				task.execute();
+		} else {
+			Log.i(TAG, "Continue execute task: " + key);
+			LoadNovelsTask tempTask = (LoadNovelsTask) LNReaderApplication.getInstance().getTask(key);
+			if (tempTask != null) {
+				task = tempTask;
+				task.owner = this;
 			}
+			toggleProgressBar(true);
 		}
 	}
 

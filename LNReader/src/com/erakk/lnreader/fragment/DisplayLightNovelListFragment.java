@@ -265,7 +265,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 
 	@SuppressLint("NewApi")
 	private void executeTask(boolean isRefresh, boolean onlyWatched, boolean alphOrder) {
-		task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder);
+		task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder, Constants.EXTRA_NOVEL_LIST_MODE_MAIN);
 		String key = TAG + ":Main+Page";
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if (isAdded) {

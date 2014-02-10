@@ -42,7 +42,7 @@ import com.erakk.lnreader.task.AddNovelTask;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.DownloadNovelDetailsTask;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
-import com.erakk.lnreader.task.LoadOriginalsTask;
+import com.erakk.lnreader.task.LoadNovelsTask;
 
 /*
  * Author: Nandaka
@@ -53,7 +53,7 @@ public class DisplayOriginalListFragment extends SherlockListFragment implements
 	private static final String TAG = DisplayOriginalListFragment.class.toString();
 	private final ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	private PageModelAdapter adapter;
-	private LoadOriginalsTask task = null;
+	private LoadNovelsTask task = null;
 	private DownloadNovelDetailsTask downloadTask = null;
 	private AddNovelTask addTask = null;
 	String touchedForDownload;
@@ -242,7 +242,7 @@ public class DisplayOriginalListFragment extends SherlockListFragment implements
 
 	@SuppressLint("NewApi")
 	private void executeTask(boolean isRefresh, boolean alphOrder) {
-		task = new LoadOriginalsTask(this, isRefresh, alphOrder);
+		task = new LoadNovelsTask(this, isRefresh, false, alphOrder, Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL);
 		String key = TAG + ":Category:Original";
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if (isAdded) {
@@ -252,7 +252,7 @@ public class DisplayOriginalListFragment extends SherlockListFragment implements
 				task.execute();
 		} else {
 			Log.i(TAG, "Continue execute task: " + key);
-			LoadOriginalsTask tempTask = (LoadOriginalsTask) LNReaderApplication.getInstance().getTask(key);
+			LoadNovelsTask tempTask = (LoadNovelsTask) LNReaderApplication.getInstance().getTask(key);
 			if (tempTask != null) {
 				task = tempTask;
 				task.owner = this;
