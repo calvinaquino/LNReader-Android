@@ -995,10 +995,6 @@ public class NovelsDao {
 					tempBook = BookModelHelper.getBookModel(db, bookDel.getPage(), bookDel.getTitle());
 				}
 				if (tempBook != null) {
-					ArrayList<PageModel> chapters = tempBook.getChapterCollection();
-					for (PageModel chapter : chapters) {
-						NovelContentModelHelper.deleteNovelContent(db, chapter);
-					}
 					return BookModelHelper.deleteBookModel(db, tempBook);
 				}
 			} finally {
@@ -1193,8 +1189,8 @@ public class NovelsDao {
 		return content;
 	}
 
-	public boolean deleteNovelContent(PageModel ref) {
-		boolean result = false;
+	public int deleteNovelContent(PageModel ref) {
+		int result = 0;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			try {
@@ -1249,8 +1245,8 @@ public class NovelsDao {
 					Log.i(TAG, "Image found in DB, but doesn't exist in URL decoded path: " + java.net.URLDecoder.decode(imageTemp.getPath(), java.nio.charset.Charset.defaultCharset().displayName()));
 					downloadBigImage = true;
 				} // else Log.i(TAG, "Image found in DB with URL decoded path: " +
-					// java.net.URLDecoder.decode(imageTemp.getPath(),
-					// java.nio.charset.Charset.defaultCharset().displayName()));
+				// java.net.URLDecoder.decode(imageTemp.getPath(),
+				// java.nio.charset.Charset.defaultCharset().displayName()));
 
 			} catch (Exception e) {
 				Log.i(TAG, "Image found in DB, but path string seems to be broken: " + imageTemp.getPath()
@@ -1525,7 +1521,8 @@ public class NovelsDao {
 		else if (mode.equalsIgnoreCase(Constants.PREF_EMPTY_BOOK)) {
 			BookModel book = new BookModel();
 			book.setPage(missing.getPage());
-			book.setTitle(missing.getTitle());
+			book.setTitle(missing.getDetails());
+			//Log.d(TAG, "Delete Book: " + book.getPage() + " " + book.getTitle());
 			return deleteBooks(book);
 		}
 		else if (mode.equalsIgnoreCase(Constants.PREF_EMPTY_NOVEL)) {

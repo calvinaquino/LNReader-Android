@@ -136,12 +136,12 @@ public class NovelContentModelHelper {
 		return false;
 	}
 
-	public static boolean deleteNovelContent(SQLiteDatabase db, PageModel ref) {
+	public static int deleteNovelContent(SQLiteDatabase db, PageModel ref) {
 		if (ref != null && !Util.isStringNullOrEmpty(ref.getPage())) {
 			int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT, DBHelper.COLUMN_PAGE + " = ?", new String[] { "" + ref.getPage() });
 			Log.w(TAG, "NovelContent Deleted: " + result);
-			return result > 0 ? true : false;
+			return result;
 		}
-		return false;
+		return 0;
 	}
 }
