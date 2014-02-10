@@ -15,68 +15,45 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.fragment.DisplayLightNovelDetailsFragment;
 import com.erakk.lnreader.fragment.DisplayLightNovelListFragment;
 import com.erakk.lnreader.fragment.DisplayNovelTabFragment;
-import com.erakk.lnreader.fragment.DisplayTeaserListFragment;
-import com.erakk.lnreader.fragment.DisplayOriginalListFragment;
 
-public class TestDisplayNovelActivity extends SherlockFragmentActivity implements 
-	DisplayLightNovelListFragment.FragmentListener,
-	DisplayTeaserListFragment.FragmentListener,
-	DisplayOriginalListFragment.FragmentListener{
+public class TestDisplayNovelActivity extends SherlockFragmentActivity implements
+DisplayLightNovelListFragment.FragmentListener{
 
 	private boolean isInverted;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(null);
-        UIHelper.SetTheme(this, R.layout.fragactivity_framework);
-        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
-        setContentView(R.layout.fragactivity_framework);
-		
-        isInverted = getColorPreferences();
-        
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        
-        if(findViewById(R.id.leftFragment) != null) {
-        	transaction.replace(R.id.leftFragment, new DisplayNovelTabFragment()).commit();
-        } else {
-        	transaction.replace(R.id.mainFrame, new DisplayNovelTabFragment()).commit();
-        }
+		UIHelper.SetTheme(this, R.layout.fragactivity_framework);
+		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
+		setContentView(R.layout.fragactivity_framework);
+
+		isInverted = getColorPreferences();
+
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+		if(findViewById(R.id.leftFragment) != null) {
+			transaction.replace(R.id.leftFragment, new DisplayNovelTabFragment()).commit();
+		} else {
+			transaction.replace(R.id.mainFrame, new DisplayNovelTabFragment()).commit();
+		}
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.fragactivity_display_novel_list, menu);
 		return true;
 	}
-	
+
 	@Override
-	protected void onStop() {
-		// cancel running task
-		// disable cancel so the task can run in background
-//		if(task != null) {
-//			if(!(task.getStatus() == Status.FINISHED)) {
-//				task.cancel(true);
-//				Log.d(TAG, "Stopping running task.");
-//			}
-//		}
-//		if(downloadTask != null) {
-//			if(!(downloadTask.getStatus() == Status.FINISHED)) {
-//				downloadTask.cancel(true);
-//				Log.d(TAG, "Stopping running download task.");
-//			}
-//		}
-		super.onStop();
+	protected void onRestart() {
+		super.onRestart();
+		if(isInverted != getColorPreferences()) {
+			UIHelper.Recreate(this);
+		}
+		//if(adapter != null) adapter.notifyDataSetChanged();
 	}
-	
-	@Override
-    protected void onRestart() {
-        super.onRestart();
-        if(isInverted != getColorPreferences()) {
-        	UIHelper.Recreate(this);
-        }
-        //if(adapter != null) adapter.notifyDataSetChanged();
-    }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -85,18 +62,18 @@ public class TestDisplayNovelActivity extends SherlockFragmentActivity implement
 			Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
 			startActivity(launchNewIntent);
 			return true;
-		case R.id.invert_colors:			
+		case R.id.invert_colors:
 			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);
 			return true;
 		case R.id.menu_bookmarks:
-    		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
-        	startActivity(bookmarkIntent);
-			return true;    
+			Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
+			startActivity(bookmarkIntent);
+			return true;
 		case R.id.menu_downloads_list:
-    		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
-        	startActivity(downloadsItent);;
-			return true; 
+			Intent downloadsItent = new Intent(this, DownloadListActivity.class);
+			startActivity(downloadsItent);;
+			return true;
 		case android.R.id.home:
 			super.onBackPressed();
 			return true;
@@ -105,14 +82,15 @@ public class TestDisplayNovelActivity extends SherlockFragmentActivity implement
 	}
 
 	private boolean getColorPreferences(){
-    	return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 
+	@Override
 	public void changeNextFragment(Bundle bundle) {
 		Fragment novelDetailFrag = new DisplayLightNovelDetailsFragment();
 		bundle.putBoolean("show_list_child", true);
 		novelDetailFrag.setArguments(bundle);
-		
+
 		if(findViewById(R.id.rightFragment) != null) {
 			getSupportFragmentManager().beginTransaction().replace(R.id.rightFragment, novelDetailFrag).commit();
 		} else {

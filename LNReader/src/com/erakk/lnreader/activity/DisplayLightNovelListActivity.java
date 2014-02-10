@@ -348,8 +348,8 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 				task = tempTask;
 				task.owner = this;
 			}
-			toggleProgressBar(true);
 		}
+		toggleProgressBar(true);
 	}
 
 	@Override
