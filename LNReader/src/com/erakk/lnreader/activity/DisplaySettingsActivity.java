@@ -51,6 +51,7 @@ import com.erakk.lnreader.service.AutoBackupScheduleReceiver;
 import com.erakk.lnreader.service.AutoBackupService;
 import com.erakk.lnreader.service.UpdateScheduleReceiver;
 import com.erakk.lnreader.task.CopyDBTask;
+import com.erakk.lnreader.task.DeleteFilesTask;
 import com.erakk.lnreader.task.RelinkImagesTask;
 import com.erakk.lnreader.task.UnZipFilesTask;
 import com.erakk.lnreader.task.ZipFilesTask;
@@ -58,6 +59,7 @@ import com.erakk.lnreader.task.ZipFilesTask;
 public class DisplaySettingsActivity extends SherlockPreferenceActivity implements ICallbackNotifier {
 	private static final String TAG = DisplaySettingsActivity.class.toString();
 	private boolean isInverted;
+	private DeleteFilesTask deleteTask;
 
 	// Context context;
 
@@ -268,6 +270,16 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				intent.putExtra(Constants.EXTRA_FIND_MISSING_MODE, Constants.PREF_EMPTY_NOVEL);
 				startActivity(intent);
 				return true;
+			}
+		});
+
+		Preference cleanExternalTemp = findPreference(Constants.PREF_CLEAR_EXTERNAL_TEMP);
+		cleanExternalTemp.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				deleteExternalTemp();
+				return false;
 			}
 		});
 	}
@@ -829,6 +841,27 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		else
 			task.execute();
+	}
+
+	@SuppressLint("NewApi")
+	private void deleteExternalTemp() {
+		String filename = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + "/wac/temp";
+		deleteTask = new DeleteFilesTask(null, filename);
+		String key = DeleteFilesTask.class.toString() + ":" + deleteTask;
+		boolean isAdded = LNReaderApplication.getInstance().addTask(key, deleteTask);
+		if (isAdded) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				deleteTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			else
+				deleteTask.execute();
+		}
+		else {
+			DeleteFilesTask tempTask = (DeleteFilesTask) LNReaderApplication.getInstance().getTask(key);
+			if (tempTask != null) {
+				deleteTask = tempTask;
+				//deleteTask.owner = this;
+			}
+		}
 	}
 
 	@SuppressWarnings("deprecation")

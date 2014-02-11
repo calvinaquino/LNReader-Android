@@ -106,6 +106,7 @@
 			<Preference android:title="@string/find_empty_book" android:key="find_empty_book" android:summary="@string/find_empty_book_summary"/>
 			<Preference android:title="@string/find_empty_novel" android:key="find_empty_novel" android:summary="@string/find_empty_novel_summary"/>
 			<CheckBoxPreference android:key="maint_show_warning" android:title="@string/maint_show_warning_title" android:defaultValue="true" android:summary="@string/maint_show_warning_summary"/>
+			<Preference android:title="Clear External Temp" android:key="clear_external_temp" android:summary="Clear the temporary folder for External URL."/>
 		</PreferenceScreen>
 	</PreferenceCategory>
 	<PreferenceCategory android:key="application_info" android:title="@string/application_info" >
