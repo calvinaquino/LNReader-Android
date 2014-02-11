@@ -180,7 +180,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		super.onRestart();
 
 		// re-enter immersive mode on restart
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && getFullscreenPreferences()){
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && getFullscreenPreferences()) {
 			UIHelper.Recreate(this);
 		}
 
@@ -767,7 +767,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		if (!isNeedSave)
 			return;
 
-		if(!getAllowSaveExternal())
+		if (!getAllowSaveExternal())
 			return;
 
 		if (page == null) {
@@ -808,6 +808,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	/***
 	 * Try to get the web archive name
 	 * if xx.wac is already exists, use that filename, except on refresh
+	 * 
 	 * @param url
 	 * @param refresh
 	 * @return
@@ -815,7 +816,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	private String getWacName(String url, boolean refresh) {
 		String path = UIHelper.getImageRoot(this) + "/wac";
 		File f = new File(path);
-		if(!f.exists())
+		if (!f.exists())
 			f.mkdirs();
 		Log.i(TAG, "WAC dirs: " + path);
 
@@ -823,8 +824,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		String extension = ".wac";
 
 		File temp = new File(filename + extension);
-		if(temp.exists()) {
-			if(refresh) {
+		if (temp.exists()) {
+			if (refresh) {
 				temp.delete();
 			}
 			else {
@@ -832,7 +833,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			}
 		}
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			extension = ".mht";
 		}
 		return filename + extension;
@@ -950,7 +951,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			wv.loadUrl("javascript:toogleEnableBookmark(" + getBookmarkPreferences() + ")");
 	}
 
-
 	@Override
 	public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<?> result) {
 		Exception e = result.getError();
@@ -959,11 +959,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				NovelContentModel loadedContent = (NovelContentModel) result.getResult();
 				setContent(loadedContent);
 			}
-			else if(result.getResultType() == Boolean.class) {
+			else if (result.getResultType() == Boolean.class) {
 				// Load WAC
 				Toast.makeText(this, message.getMessage(), Toast.LENGTH_SHORT).show();
 				boolean res = (Boolean) result.getResult();
-				if(!res) {
+				if (!res) {
 					PageModel p = new PageModel(getIntent().getStringExtra(Constants.EXTRA_PAGE));
 					loadExternalUrl(p, true);
 				}
@@ -986,20 +986,20 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		loadingText.setText(message.getMessage());
 		loadingText.setBackgroundColor(Color.BLACK);
 
-		//		synchronized (this) {
-		//			if (message.getPercentage() > -1) {
-		//				// android progress bar bug
-		//				// see: http://stackoverflow.com/a/4352073
-		//				loadingBar.setIndeterminate(false);
-		//				loadingBar.setMax(100);
-		//				loadingBar.setProgress(message.getPercentage());
-		//				loadingBar.setProgress(0);
-		//				loadingBar.setProgress(message.getPercentage());
-		//				loadingBar.setMax(100);
-		//			} else {
-		//				loadingBar.setIndeterminate(true);
-		//			}
-		//		}
+		// synchronized (this) {
+		// if (message.getPercentage() > -1) {
+		// // android progress bar bug
+		// // see: http://stackoverflow.com/a/4352073
+		// loadingBar.setIndeterminate(false);
+		// loadingBar.setMax(100);
+		// loadingBar.setProgress(message.getPercentage());
+		// loadingBar.setProgress(0);
+		// loadingBar.setProgress(message.getPercentage());
+		// loadingBar.setMax(100);
+		// } else {
+		// loadingBar.setIndeterminate(true);
+		// }
+		// }
 	}
 
 	public void toggleProgressBar(boolean show) {
@@ -1017,7 +1017,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			}
 		}
 	}
-
 
 	public void refreshBookmarkData() {
 		if (bookmarkAdapter != null)

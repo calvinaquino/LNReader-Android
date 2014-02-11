@@ -21,11 +21,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.erakk.lnreader.activity.DownloadListActivity;
-import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.DownloadModel;
 import com.erakk.lnreader.service.AutoBackupService;
 import com.erakk.lnreader.service.UpdateService;
+import com.erakk.lnreader.task.AsyncTaskResult;
 
 /*
  * http://www.devahead.com/blog/2011/06/extending-the-android-application-class-and-dealing-with-singleton/
@@ -193,7 +194,8 @@ public class LNReaderApplication extends Application {
 			}
 		}
 
-		if(index < 0) return;
+		if (index < 0)
+			return;
 
 		final int idx = index;
 
@@ -258,13 +260,13 @@ public class LNReaderApplication extends Application {
 		Log.d(UpdateService.TAG, "doBindService");
 	}
 
-	public void setUpdateServiceListener(ICallbackNotifier notifier) {
+	public void setUpdateServiceListener(IExtendedCallbackNotifier<AsyncTaskResult<?>> notifier) {
 		if (updateService != null) {
 			updateService.setOnCallbackNotifier(notifier);
 		}
 	}
 
-	public void runUpdateService(boolean force, ICallbackNotifier notifier) {
+	public void runUpdateService(boolean force, IExtendedCallbackNotifier<AsyncTaskResult<?>> notifier) {
 		if (updateService == null)
 			doBindService();
 		updateService.force = force;
@@ -353,13 +355,13 @@ public class LNReaderApplication extends Application {
 		Log.d(AutoBackupService.TAG, "doBindService");
 	}
 
-	public void setAutoBackupServiceListener(ICallbackNotifier notifier) {
+	public void setAutoBackupServiceListener(IExtendedCallbackNotifier<AsyncTaskResult<?>> notifier) {
 		if (autoBackupService != null) {
 			autoBackupService.setOnCallbackNotifier(notifier);
 		}
 	}
 
-	public void runAutoBackupService(ICallbackNotifier notifier) {
+	public void runAutoBackupService(IExtendedCallbackNotifier<AsyncTaskResult<?>> notifier) {
 		if (autoBackupService == null)
 			doBindAutoBackupService();
 		autoBackupService.setOnCallbackNotifier(notifier);

@@ -23,13 +23,14 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.UpdateInfoModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
-import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.UpdateInfoModel;
 import com.erakk.lnreader.model.UpdateType;
 import com.erakk.lnreader.service.UpdateService;
+import com.erakk.lnreader.task.AsyncTaskResult;
 
-public class UpdateHistoryActivity extends SherlockActivity implements ICallbackNotifier{
+public class UpdateHistoryActivity extends SherlockActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
 	private static final String TAG = UpdateHistoryActivity.class.toString();
 	private ArrayList<UpdateInfoModel> updateList;
 	private ListView updateListView;
@@ -187,5 +188,16 @@ public class UpdateHistoryActivity extends SherlockActivity implements ICallback
 				updateContent();
 			}
 		}
+	}
+
+	@Override
+	public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<?> result) {
+		onProgressCallback(message);
+	}
+
+	@Override
+	public boolean downloadListSetup(String taskId, String message, int setupType, boolean hasError) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

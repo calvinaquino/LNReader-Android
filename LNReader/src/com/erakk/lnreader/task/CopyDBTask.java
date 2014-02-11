@@ -11,17 +11,18 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 
 public class CopyDBTask extends AsyncTask<Void, ICallbackEventData, Void> implements ICallbackNotifier {
 
 	private static final String TAG = CopyDBTask.class.toString();
-	private ICallbackNotifier callback;
+	private IExtendedCallbackNotifier<AsyncTaskResult<?>> callback;
 	private final String source;
 	private final boolean makeBackup;
 	private final String filename;
 
-	public CopyDBTask(boolean makeBackup, ICallbackNotifier callback, String source, String filename) {
+	public CopyDBTask(boolean makeBackup, IExtendedCallbackNotifier<AsyncTaskResult<?>> callback, String source, String filename) {
 		this.makeBackup = makeBackup;
 		this.source = source;
 		this.callback = callback;
@@ -77,7 +78,7 @@ public class CopyDBTask extends AsyncTask<Void, ICallbackEventData, Void> implem
 		}
 	}
 
-	public void setCallbackNotifier(ICallbackNotifier notifier) {
+	public void setCallbackNotifier(IExtendedCallbackNotifier<AsyncTaskResult<?>> notifier) {
 		this.callback = notifier;
 	}
 }

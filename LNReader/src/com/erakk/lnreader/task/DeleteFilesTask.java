@@ -9,31 +9,37 @@ import android.util.Log;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
+import com.erakk.lnreader.helper.Util;
 
 public class DeleteFilesTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskResult<Integer>> {
 	private static final String TAG = DeleteFilesTask.class.toString();
-	private final IExtendedCallbackNotifier<AsyncTaskResult<?>> owner;
+	public IExtendedCallbackNotifier<AsyncTaskResult<?>> owner;
 	private final String source;
 	private final String filename;
 
-	public DeleteFilesTask(IExtendedCallbackNotifier<AsyncTaskResult<?>> owner, String filename) {
+	public DeleteFilesTask(IExtendedCallbackNotifier<AsyncTaskResult<?>> owner, String filename, String source) {
 		this.owner = owner;
-		source = TAG + ":" + filename;
+		if (Util.isStringNullOrEmpty(source)) {
+			this.source = TAG + ":" + filename;
+		}
+		else {
+			this.source = source;
+		}
 		this.filename = filename;
 	}
 
 	@Override
 	protected AsyncTaskResult<Integer> doInBackground(Void... params) {
-		try{
+		try {
 			Log.d(TAG, "Start deleting: " + filename);
 			File f = new File(filename);
 			int count = 0;
-			if(f.exists()) {
+			if (f.exists()) {
 				count = delete(f, count);
 			}
 
 			return new AsyncTaskResult<Integer>(count);
-		}catch(Exception e) {
+		} catch (Exception e) {
 			Log.e(TAG, "Failed to delete: " + filename, e);
 			return new AsyncTaskResult<Integer>(e);
 		}
@@ -43,16 +49,16 @@ public class DeleteFilesTask extends AsyncTask<Void, ICallbackEventData, AsyncTa
 		ArrayList<File> list = new ArrayList<File>();
 		ArrayList<File> dirs = new ArrayList<File>();
 
-		if(f.isFile())
+		if (f.isFile())
 			list.add(f);
-		else if(f.isDirectory()) {
+		else if (f.isDirectory()) {
 			publishProgress(new CallbackEventData("Getting file list...", source));
 			addAll(dirs, f.listFiles());
-			for(int i = 0; i < dirs.size(); ++i) {
+			for (int i = 0; i < dirs.size(); ++i) {
 				File temp = dirs.get(i);
-				if(temp.isDirectory()) {
+				if (temp.isDirectory()) {
 					list.add(temp);
-					addAll(dirs,temp.listFiles());	// dirs keep appeding until reach files
+					addAll(dirs, temp.listFiles()); // dirs keep appeding until reach files
 				}
 				else
 					list.add(temp);
@@ -61,7 +67,8 @@ public class DeleteFilesTask extends AsyncTask<Void, ICallbackEventData, AsyncTa
 
 		for (File file : list) {
 			publishProgress(new CallbackEventData("Deleting: " + file.getName(), source));
-			if(file.delete()) ++count;
+			if (file.delete())
+				++count;
 		}
 		return count;
 	}
@@ -74,14 +81,14 @@ public class DeleteFilesTask extends AsyncTask<Void, ICallbackEventData, AsyncTa
 
 	@Override
 	protected void onProgressUpdate(ICallbackEventData... values) {
-		//Log.d(TAG, values[0].getMessage());
-		if(owner != null)
+		// Log.d(TAG, values[0].getMessage());
+		if (owner != null)
 			owner.onProgressCallback(values[0]);
 	}
 
 	@Override
 	protected void onPostExecute(AsyncTaskResult<Integer> result) {
-		if(owner != null){
+		if (owner != null) {
 			CallbackEventData message = new CallbackEventData("Delete completed", source);
 			owner.onCompleteCallback(message, result);
 		}

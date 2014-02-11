@@ -16,6 +16,7 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelContentModel;
@@ -24,7 +25,7 @@ import com.erakk.lnreader.model.PageModel;
 public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> implements ICallbackNotifier {
 	private static final String TAG = RelinkImagesTask.class.toString();
 	private final String rootPath;
-	private ICallbackNotifier callback;
+	private IExtendedCallbackNotifier<AsyncTaskResult<?>> callback;
 	private String source;
 	private final boolean hasError = false;
 	private int updated;
@@ -35,7 +36,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 		return instance;
 	}
 
-	public static RelinkImagesTask getInstance(String rootPath, ICallbackNotifier callback, String source) {
+	public static RelinkImagesTask getInstance(String rootPath, IExtendedCallbackNotifier<AsyncTaskResult<?>> callback, String source) {
 		if (instance == null || instance.getStatus() == Status.FINISHED) {
 			instance = new RelinkImagesTask(rootPath, callback, source);
 		}
@@ -45,12 +46,12 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 		return instance;
 	}
 
-	public void setCallback(ICallbackNotifier callback, String source) {
+	public void setCallback(IExtendedCallbackNotifier<AsyncTaskResult<?>> callback, String source) {
 		this.callback = callback;
 		this.source = source;
 	}
 
-	private RelinkImagesTask(String rootPath, ICallbackNotifier callback, String source) {
+	private RelinkImagesTask(String rootPath, IExtendedCallbackNotifier<AsyncTaskResult<?>> callback, String source) {
 		this.rootPath = rootPath;
 		this.callback = callback;
 		this.source = source;
@@ -109,7 +110,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 
 			try {
 				// get the contents
-				NovelContentModel content = NovelsDao.getInstance().getNovelContent(page, false, callback);
+				NovelContentModel content = NovelsDao.getInstance().getNovelContent(page, false, this);
 
 				if (content != null) {
 
@@ -166,7 +167,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_complete, rootPath, updated);
 			Log.i(TAG, message);
 			if (callback != null)
-				callback.onProgressCallback(new CallbackEventData(message, source));
+				callback.onCompleteCallback(new CallbackEventData(message, source), null);
 		}
 	}
 }

@@ -25,11 +25,12 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.activity.UpdateHistoryActivity;
 import com.erakk.lnreader.callback.CallbackEventData;
-import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.model.UpdateInfoModel;
 import com.erakk.lnreader.model.UpdateType;
+import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.GetUpdatedChaptersTask;
 
 public class UpdateService extends Service {
@@ -37,7 +38,7 @@ public class UpdateService extends Service {
 	public boolean force = false;
 	public final static String TAG = UpdateService.class.toString();
 	private static boolean isRunning;
-	private ICallbackNotifier notifier;
+	private IExtendedCallbackNotifier<AsyncTaskResult<?>> notifier;
 	private GetUpdatedChaptersTask task;
 
 	@Override
@@ -312,7 +313,7 @@ public class UpdateService extends Service {
 		return force;
 	}
 
-	public void setOnCallbackNotifier(ICallbackNotifier notifier) {
+	public void setOnCallbackNotifier(IExtendedCallbackNotifier<AsyncTaskResult<?>> notifier) {
 		this.notifier = notifier;
 		if (task != null)
 			task.setCallbackNotifier(notifier);

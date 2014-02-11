@@ -19,14 +19,15 @@ import android.util.Log;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.CallbackEventData;
-import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
+import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.CopyDBTask;
 
 public class AutoBackupService extends Service {
 	public static final String TAG = AutoBackupService.class.toString();
 	private final IBinder mBinder = new AutoBackupServiceBinder();
 	private static boolean isRunning;
-	private ICallbackNotifier notifier;
+	private IExtendedCallbackNotifier<AsyncTaskResult<?>> notifier;
 	private CopyDBTask task;
 
 	@Override
@@ -113,7 +114,7 @@ public class AutoBackupService extends Service {
 		return AutoBackupService.isRunning;
 	}
 
-	public void setOnCallbackNotifier(ICallbackNotifier notifier) {
+	public void setOnCallbackNotifier(IExtendedCallbackNotifier<AsyncTaskResult<?>> notifier) {
 		this.notifier = notifier;
 		if (task != null) {
 			task.setCallbackNotifier(notifier);

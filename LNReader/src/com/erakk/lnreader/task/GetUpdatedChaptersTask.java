@@ -14,6 +14,7 @@ import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
@@ -25,10 +26,10 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 	private int lastProgress;
 	private final boolean autoDownloadUpdatedContent;
 	private final UpdateService service;
-	private ICallbackNotifier notifier;
+	private IExtendedCallbackNotifier<AsyncTaskResult<?>> notifier;
 	private String source;
 
-	public GetUpdatedChaptersTask(UpdateService service, boolean autoDownloadUpdatedContent, ICallbackNotifier notifier) {
+	public GetUpdatedChaptersTask(UpdateService service, boolean autoDownloadUpdatedContent, IExtendedCallbackNotifier<AsyncTaskResult<?>> notifier) {
 		this.autoDownloadUpdatedContent = autoDownloadUpdatedContent;
 		this.service = service;
 		this.notifier = notifier;
@@ -245,7 +246,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 		LNReaderApplication.getInstance().updateDownload(TAG, lastProgress, values[0]);
 	}
 
-	public void setCallbackNotifier(ICallbackNotifier notifier) {
+	public void setCallbackNotifier(IExtendedCallbackNotifier<AsyncTaskResult<?>> notifier) {
 		this.notifier = notifier;
 	}
 }

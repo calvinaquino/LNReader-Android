@@ -41,25 +41,30 @@ import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.FileListAdapter;
-import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
-import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.service.AutoBackupScheduleReceiver;
 import com.erakk.lnreader.service.AutoBackupService;
 import com.erakk.lnreader.service.UpdateScheduleReceiver;
+import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.CopyDBTask;
 import com.erakk.lnreader.task.DeleteFilesTask;
 import com.erakk.lnreader.task.RelinkImagesTask;
 import com.erakk.lnreader.task.UnZipFilesTask;
 import com.erakk.lnreader.task.ZipFilesTask;
 
-public class DisplaySettingsActivity extends SherlockPreferenceActivity implements ICallbackNotifier {
+public class DisplaySettingsActivity extends SherlockPreferenceActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
 	private static final String TAG = DisplaySettingsActivity.class.toString();
 	private boolean isInverted;
 	private DeleteFilesTask deleteTask;
+	private ZipFilesTask zipTask;
+	private UnZipFilesTask unzipTask;
+	private RelinkImagesTask relinkTask;
+	private CopyDBTask copyDbTask;
+	private CopyDBTask restoreDbTask;
 
 	// Context context;
 
@@ -661,9 +666,6 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				return true;
 			}
 		});
-		if (ZipFilesTask.getInstance() != null && ZipFilesTask.getInstance().getStatus() == Status.RUNNING) {
-			ZipFilesTask.getInstance().setCallback(this, Constants.PREF_BACKUP_THUMB_IMAGES);
-		}
 
 		// Restore Thumbs
 		Preference restoreThumbs = findPreference(Constants.PREF_RESTORE_THUMB_IMAGES);
@@ -690,9 +692,6 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				return true;
 			}
 		});
-		if (UnZipFilesTask.getInstance() != null && UnZipFilesTask.getInstance().getStatus() == Status.RUNNING) {
-			UnZipFilesTask.getInstance().setCallback(this, Constants.PREF_RESTORE_THUMB_IMAGES);
-		}
 
 		// relink thumbs
 		Preference relinkThumbs = findPreference(Constants.PREF_RELINK_THUMB_IMAGES);
@@ -719,9 +718,6 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				return true;
 			}
 		});
-		if (RelinkImagesTask.getInstance() != null && RelinkImagesTask.getInstance().getStatus() == Status.RUNNING) {
-			RelinkImagesTask.getInstance().setCallback(this, Constants.PREF_RELINK_THUMB_IMAGES);
-		}
 	}
 
 	private boolean checkBackupStoragePath(String newPath) {
@@ -757,12 +753,16 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 	@SuppressLint({ "InlinedApi", "NewApi" })
 	private void relinkThumbs() {
+		if (RelinkImagesTask.getInstance() != null && RelinkImagesTask.getInstance().getStatus() == Status.RUNNING) {
+			Toast.makeText(this, "Please wait until relink process completed.", Toast.LENGTH_SHORT).show();
+			return;
+		}
+
 		String rootPath = UIHelper.getImageRoot(this);
-		RelinkImagesTask task = RelinkImagesTask.getInstance(rootPath, this, Constants.PREF_RELINK_THUMB_IMAGES);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		else
-			task.execute();
+		relinkTask = RelinkImagesTask.getInstance(rootPath, this, Constants.PREF_RELINK_THUMB_IMAGES);
+		String key = RelinkImagesTask.class.toString() + ":RelinkImage";
+		relinkTask = setupTaskList(relinkTask, key);
+		relinkTask.setCallback(this, Constants.PREF_RELINK_THUMB_IMAGES);
 	}
 
 	@SuppressLint({ "InlinedApi", "NewApi" })
@@ -780,11 +780,10 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			thumbRootPath = UIHelper.getImageRoot(this) + "/project/images";
 		}
 
-		UnZipFilesTask task = UnZipFilesTask.getInstance(zipName, thumbRootPath, this, Constants.PREF_RESTORE_THUMB_IMAGES);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		else
-			task.execute();
+		unzipTask = UnZipFilesTask.getInstance(zipName, thumbRootPath, this, Constants.PREF_RESTORE_THUMB_IMAGES);
+		String key = UnZipFilesTask.class.toString() + ":" + unzipTask;
+		unzipTask = setupTaskList(unzipTask, key);
+		unzipTask.setCallback(this, Constants.PREF_RESTORE_THUMB_IMAGES);
 	}
 
 	private void showBackupsDB() {
@@ -805,25 +804,23 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 	@SuppressLint("NewApi")
 	private void restoreDB(String filename) {
-		CopyDBTask task = new CopyDBTask(false, this, Constants.PREF_RESTORE_DB, filename);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		else
-			task.execute();
+		copyDbTask = new CopyDBTask(false, this, Constants.PREF_RESTORE_DB, filename);
+		String key = CopyDBTask.class.toString() + ":BackupDB";
+		copyDbTask = setupTaskList(copyDbTask, key);
+		copyDbTask.setCallbackNotifier(this);
 	}
 
 	@SuppressLint("NewApi")
 	private void backupDB() {
-		CopyDBTask task = new CopyDBTask(true, this, Constants.PREF_BACKUP_DB, null);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		else
-			task.execute();
+		restoreDbTask = new CopyDBTask(true, this, Constants.PREF_BACKUP_DB, null);
+		String key = CopyDBTask.class.toString() + ":RestoreDB";
+		restoreDbTask = setupTaskList(restoreDbTask, key);
+		restoreDbTask.setCallbackNotifier(this);
 	}
 
 	@SuppressLint({ "InlinedApi", "NewApi" })
 	private void backupThumbs() {
-		if (UnZipFilesTask.getInstance() != null && UnZipFilesTask.getInstance().getStatus() == Status.RUNNING) {
+		if (ZipFilesTask.getInstance() != null && ZipFilesTask.getInstance().getStatus() == Status.RUNNING) {
 			Toast.makeText(this, "Please wait until all images are restored.", Toast.LENGTH_SHORT).show();
 			return;
 		}
@@ -836,32 +833,37 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			thumbRootPath = UIHelper.getImageRoot(this) + "/project/images";
 		}
 
-		ZipFilesTask task = ZipFilesTask.getInstance(zipName, thumbRootPath, this, Constants.PREF_BACKUP_THUMB_IMAGES);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		else
-			task.execute();
+		zipTask = ZipFilesTask.getInstance(zipName, thumbRootPath, this, Constants.PREF_BACKUP_THUMB_IMAGES);
+		String key = ZipFilesTask.class.toString() + ":" + zipTask;
+		zipTask = setupTaskList(zipTask, key);
+		zipTask.setCallback(this, Constants.PREF_BACKUP_THUMB_IMAGES);
+	}
+
+	private void deleteExternalTemp() {
+		String filename = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + "/wac/temp";
+		deleteTask = new DeleteFilesTask(this, filename, Constants.PREF_CLEAR_EXTERNAL_TEMP);
+		String key = DeleteFilesTask.class.toString() + ":DeleteExternalTemp";
+		deleteTask = setupTaskList(deleteTask, key);
+		deleteTask.owner = this;
 	}
 
 	@SuppressLint("NewApi")
-	private void deleteExternalTemp() {
-		String filename = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + "/wac/temp";
-		deleteTask = new DeleteFilesTask(null, filename);
-		String key = DeleteFilesTask.class.toString() + ":" + deleteTask;
-		boolean isAdded = LNReaderApplication.getInstance().addTask(key, deleteTask);
+	private <T extends AsyncTask<Void, ICallbackEventData, ?>> T setupTaskList(T task, String key) {
+
+		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if (isAdded) {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				deleteTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			else
-				deleteTask.execute();
+				task.execute();
 		}
 		else {
-			DeleteFilesTask tempTask = (DeleteFilesTask) LNReaderApplication.getInstance().getTask(key);
+			T tempTask = (T) LNReaderApplication.getInstance().getTask(key);
 			if (tempTask != null) {
-				deleteTask = tempTask;
-				//deleteTask.owner = this;
+				task = tempTask;
 			}
 		}
+		return task;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -1161,6 +1163,42 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		// relisting all handler
 		LNReaderApplication.getInstance().setUpdateServiceListener(this);
 		LNReaderApplication.getInstance().setAutoBackupServiceListener(this);
+
+		if (ZipFilesTask.getInstance() != null) {
+			zipTask = ZipFilesTask.getInstance();
+			if (zipTask.getStatus() == Status.RUNNING) {
+				zipTask.setCallback(this, Constants.PREF_BACKUP_THUMB_IMAGES);
+			}
+		}
+		if (UnZipFilesTask.getInstance() != null) {
+			unzipTask = UnZipFilesTask.getInstance();
+			if (unzipTask.getStatus() == Status.RUNNING) {
+				unzipTask.setCallback(this, Constants.PREF_RESTORE_THUMB_IMAGES);
+			}
+		}
+
+		if (RelinkImagesTask.getInstance() != null) {
+			relinkTask = RelinkImagesTask.getInstance();
+			if (relinkTask.getStatus() == Status.RUNNING) {
+				relinkTask.setCallback(this, Constants.PREF_RELINK_THUMB_IMAGES);
+			}
+		}
+
+		String key = DeleteFilesTask.class.toString() + ":DeleteExternalTemp";
+		deleteTask = (DeleteFilesTask) LNReaderApplication.getInstance().getTask(key);
+		if (deleteTask != null)
+			deleteTask.owner = this;
+
+		key = CopyDBTask.class.toString() + ":BackupDB";
+		copyDbTask = (CopyDBTask) LNReaderApplication.getInstance().getTask(key);
+		if (copyDbTask != null)
+			copyDbTask.setCallbackNotifier(this);
+
+		key = CopyDBTask.class.toString() + ":RestoreDB";
+		restoreDbTask = (CopyDBTask) LNReaderApplication.getInstance().getTask(key);
+		if (restoreDbTask != null)
+			restoreDbTask.setCallbackNotifier(this);
+
 	}
 
 	@Override
@@ -1196,15 +1234,21 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	@Override
 	@SuppressWarnings("deprecation")
 	public void onProgressCallback(ICallbackEventData message) {
-		CallbackEventData msg = (CallbackEventData) message;
-		if (Util.isStringNullOrEmpty(msg.getSource())) {
+		// default goes to update
+		if (Util.isStringNullOrEmpty(message.getSource())) {
 			Preference runUpdates = findPreference(Constants.PREF_RUN_UPDATES);
 			runUpdates.setSummary("Status: " + message.getMessage());
-		} else {
-			Preference pref = findPreference(msg.getSource());
+		}
+		else {
+			Preference pref = findPreference(message.getSource());
 			if (pref != null)
 				pref.setSummary("Status: " + message.getMessage());
 		}
+	}
+
+	@Override
+	public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<?> result) {
+		onProgressCallback(message);
 	}
 
 	private void recreateUI() {
@@ -1227,5 +1271,11 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public boolean downloadListSetup(String taskId, String message, int setupType, boolean hasError) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

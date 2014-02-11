@@ -13,13 +13,14 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.helper.Util;
 
 public class ZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> implements ICallbackNotifier {
 	private static final String TAG = ZipFilesTask.class.toString();
 	private final String zipName;
 	private final String rootPath;
-	private ICallbackNotifier callback;
+	private IExtendedCallbackNotifier<AsyncTaskResult<?>> callback;
 	private String source;
 	private boolean hasError = false;
 
@@ -29,7 +30,7 @@ public class ZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> impl
 		return instance;
 	}
 
-	public static ZipFilesTask getInstance(String zipName, String rootPath, ICallbackNotifier callback, String source) {
+	public static ZipFilesTask getInstance(String zipName, String rootPath, IExtendedCallbackNotifier<AsyncTaskResult<?>> callback, String source) {
 		if (instance == null || instance.getStatus() == Status.FINISHED) {
 			instance = new ZipFilesTask(zipName, rootPath, callback, source);
 		}
@@ -39,12 +40,12 @@ public class ZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> impl
 		return instance;
 	}
 
-	public void setCallback(ICallbackNotifier callback, String source) {
+	public void setCallback(IExtendedCallbackNotifier<AsyncTaskResult<?>> callback, String source) {
 		this.callback = callback;
 		this.source = source;
 	}
 
-	private ZipFilesTask(String zipName, String rootPath, ICallbackNotifier callback, String source) {
+	private ZipFilesTask(String zipName, String rootPath, IExtendedCallbackNotifier<AsyncTaskResult<?>> callback, String source) {
 		this.zipName = zipName;
 		this.rootPath = rootPath;
 		this.callback = callback;
@@ -102,7 +103,7 @@ public class ZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> impl
 			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.zip_files_task_complete, rootPath, zipName);
 			Log.d(TAG, message);
 			if (callback != null)
-				callback.onProgressCallback(new CallbackEventData(message, source));
+				callback.onCompleteCallback(new CallbackEventData(message, source), null);
 		}
 	}
 }
