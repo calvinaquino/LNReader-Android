@@ -1,17 +1,21 @@
 package com.erakk.lnreader.task;
 
+import java.io.File;
 import java.io.FileInputStream;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
-import com.erakk.lnreader.helper.Util;
+import com.erakk.lnreader.helper.MHTUtil;
 import com.erakk.lnreader.helper.WebArchiveReader;
 
 public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskResult<Boolean>> implements ICallbackNotifier {
@@ -21,6 +25,7 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 	private final IExtendedCallbackNotifier<AsyncTaskResult<?>> owner;
 	private final WebArchiveReader wr;
 	private final String source;
+	private String extractedMhtName;
 
 	public LoadWacTask(IExtendedCallbackNotifier<AsyncTaskResult<?>> owner, WebView wv, String wacName, final WebViewClient client) {
 		this.wv = wv;
@@ -58,17 +63,26 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 		Log.d(TAG, "Loading from WAC: " + wacName);
 		publishProgress(new CallbackEventData("Loading from WAC: " + wacName, source));
 		try {
-			FileInputStream is;
-			is = new FileInputStream(wacName);
-			return wr.readWebArchive(is);
-		} catch (Exception e) {
-			Log.e(TAG, "Failed to load saved web archive: " + wacName + " Try to use 2nd method.", e);
-			try {
-				String rawData = Util.getStringFromFile(wacName);
-				wv.loadDataWithBaseURL(wacName, rawData, "application/x-webarchive-xml", "UTF-8", null);
-			} catch (Exception ex) {
-				Log.e(TAG, "Failed to load saved web archive: " + wacName, ex);
+			if(wacName.endsWith(".mht")) {
+				Log.i(TAG, "MHT Loader");
+				String tempPath = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + "/wac/temp";
+				File f = new File(tempPath);
+				if(!f.exists())
+					f.mkdirs();
+				File w = new File(wacName);
+				extractedMhtName = MHTUtil.exportHtml(wacName, tempPath, w.getName());
+				Log.d(TAG, "Exported to: " + extractedMhtName);
+				return true;
 			}
+			else if(wacName.endsWith(".wac")) {
+				Log.i(TAG, "WAC Loader");
+				FileInputStream is;
+				is = new FileInputStream(wacName);
+				return wr.readWebArchive(is);
+			}
+
+		} catch (Exception e) {
+			Log.e(TAG, "Failed to load saved web archive: " + wacName, e);
 		}
 		return false;
 	}
@@ -77,7 +91,12 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 	protected void onPostExecute(AsyncTaskResult<Boolean> result) {
 		String message = null;
 		if (result.getResult()) {
-			wr.loadToWebView(wv);
+			if(wacName.endsWith(".mht")) {
+				wv.loadUrl("file://"+Uri.encode(extractedMhtName, "/\\"));
+			}
+			else {
+				wr.loadToWebView(wv);
+			}
 			message = "Load from: " + wacName;
 		}
 		else {

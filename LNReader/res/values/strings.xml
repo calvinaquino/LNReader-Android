@@ -400,4 +400,6 @@
     <string name="task_delete_complete">Completed deleting %1$s item(s).</string>
     <string name="task_delete_running">Delete Task still running!</string>
     <string name="https_ignore_cert_title">Ignore Certificate Error</string>
+    <string name="save_external_url_title">Save External URL</string>
+    <string name="save_external_url_summary">Save loaded external page to SD Card as Web Archive.</string>
 </resources>

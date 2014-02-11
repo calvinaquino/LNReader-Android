@@ -7,8 +7,9 @@
 				<CheckBoxPreference android:defaultValue="true" android:key="invert_colors" android:summary="@string/invert_color_summary" android:title="@string/invert_color_title" />
 				<ListPreference android:defaultValue="0" android:entries="@array/orientationSelection" android:entryValues="@array/orientationSelectionValues" android:key="orientation_lock" android:summary="@string/orientation_summary" android:title="@string/orientation_preferences" />
 				<CheckBoxPreference android:defaultValue="false" android:key="use_internal_webview" android:summary="@string/use_internal_webview_summary" android:title="@string/use_internal_webview_title" />
-				<CheckBoxPreference android:defaultValue="false" android:key="strech_detail_image" android:summary="@string/strech_detail_image_summary" android:title="@string/strech_detail_image_title" />
+				<CheckBoxPreference android:key="save_external_url" android:summary="@string/save_external_url_summary" android:dependency="use_internal_webview" android:defaultValue="true" android:title="@string/save_external_url_title"/><CheckBoxPreference android:defaultValue="false" android:key="strech_detail_image" android:summary="@string/strech_detail_image_summary" android:title="@string/strech_detail_image_title" />
 				<ListPreference android:defaultValue="en" android:entries="@array/languageSelection" android:entryValues="@array/languageSelectionValues" android:key="language_selection" android:title="@string/language_selection" />
+				
 			</PreferenceCategory>
 			<Preference android:key="select_alternative_language" android:summary="@string/alternative_language_summary" android:title="@string/alternative_language_title" />
 			<PreferenceCategory android:title="@string/pref_listing">

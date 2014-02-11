@@ -92,7 +92,7 @@ public class BookModelHelper {
 				BookModel book = cursorToBookModel(cursor);
 				book.setParent(novelDetails);
 				bookCollection.add(book);
-				Log.d(TAG, "Found: " + book.toString() + " Order: " + book.getOrder());
+				//Log.d(TAG, "Found: " + book.toString() + " Order: " + book.getOrder());
 				cursor.moveToNext();
 			}
 		} finally {

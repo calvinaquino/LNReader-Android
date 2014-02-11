@@ -93,6 +93,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	private ProgressBar loadingBar;
 	private TtsBinder ttsBinder = null;
 
+	private boolean isNeedSave = true;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -719,15 +721,13 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 	}
 
-	boolean isSaveEnabled;
-
 	public void loadExternalUrl(PageModel pageModel, boolean refresh) {
 		try {
 			// check if .wac available
-			String wacName = UIHelper.getImageRoot(this) + "/wac/" + Util.calculateCRC32(pageModel.getPage()) + ".wac";
+			String wacName = getWacName(pageModel.getPage(), refresh);
 			File f = new File(wacName);
 			if (f.exists() && !refresh) {
-				isSaveEnabled = false;
+				isNeedSave = false;
 				executeLoadWacTask(wacName);
 			}
 			else {
@@ -738,7 +738,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				{
 					Log.w(TAG, "WAC not available: " + wacName);
 				}
-				isSaveEnabled = true;
+				isNeedSave = true;
 				final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 				setWebViewSettings();
 				wv.loadUrl(pageModel.getPage());
@@ -764,7 +764,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	@SuppressLint("NewApi")
 	public void saveWebArchive(String page) {
-		if (!isSaveEnabled)
+		if (!isNeedSave)
+			return;
+
+		if(!getAllowSaveExternal())
 			return;
 
 		if (page == null) {
@@ -781,17 +784,13 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 
 		try {
-			String filename = UIHelper.getImageRoot(this) + "/wac";
-			File f = new File(filename);
-			f.mkdirs();
-			Log.i(TAG, "WAC dirs: " + filename);
-
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 				if (page != wv.getUrl()) {
 					Log.w(TAG, "Different url: " + page + " != " + wv.getUrl());
 				}
-				wv.saveWebArchive(f.getAbsolutePath() + "/" + Util.calculateCRC32(wv.getUrl()) + ".wac", false, new ValueCallback<String>() {
+				String wacName = getWacName(wv.getUrl(), false);
+				wv.saveWebArchive(wacName, false, new ValueCallback<String>() {
 
 					@Override
 					public void onReceiveValue(String value) {
@@ -803,7 +802,44 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to save external page: " + page, e);
 		}
-		isSaveEnabled = false;
+		isNeedSave = false;
+	}
+
+	/***
+	 * Try to get the web archive name
+	 * if xx.wac is already exists, use that filename, except on refresh
+	 * @param url
+	 * @param refresh
+	 * @return
+	 */
+	private String getWacName(String url, boolean refresh) {
+		String path = UIHelper.getImageRoot(this) + "/wac";
+		File f = new File(path);
+		if(!f.exists())
+			f.mkdirs();
+		Log.i(TAG, "WAC dirs: " + path);
+
+		String filename = path + "/" + Util.calculateCRC32(url);
+		String extension = ".wac";
+
+		File temp = new File(filename + extension);
+		if(temp.exists()) {
+			if(refresh) {
+				temp.delete();
+			}
+			else {
+				return filename + extension;
+			}
+		}
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+			extension = ".mht";
+		}
+		return filename + extension;
+	}
+
+	private boolean getAllowSaveExternal() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_SAVE_EXTERNAL_URL, true);
 	}
 
 	public void setContent(NovelContentModel loadedContent) {
