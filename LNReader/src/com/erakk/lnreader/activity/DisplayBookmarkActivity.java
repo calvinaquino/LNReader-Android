@@ -18,6 +18,7 @@ import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookmarkModel;
 
 public class DisplayBookmarkActivity extends SherlockListActivity {
+
 	private boolean isInverted;
 	private BookmarkModelAdapter adapter = null;
 	private ArrayList<BookmarkModel> bookmarks = null;
@@ -51,8 +52,12 @@ public class DisplayBookmarkActivity extends SherlockListActivity {
 		if (isInverted != UIHelper.getColorPreferences(this)) {
 			UIHelper.Recreate(this);
 		}
-		if (adapter != null)
-			adapter.notifyDataSetChanged();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (adapter != null) adapter.notifyDataSetChanged();
 	}
 
 	@Override
@@ -65,31 +70,29 @@ public class DisplayBookmarkActivity extends SherlockListActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.menu_settings:
-			Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
-			startActivity(launchNewIntent);
-			return true;
-		case R.id.invert_colors:
-			UIHelper.ToggleColorPref(this);
-			UIHelper.Recreate(this);
-			return true;
-		case R.id.menu_downloads_list:
-			Intent downloadsItent = new Intent(this, DownloadListActivity.class);
-			startActivity(downloadsItent);
-			return true;
-		case R.id.menu_bookmark_delete_selected:
-			if (bookmarks != null) {
-				for (BookmarkModel bookmark : bookmarks) {
-					if (bookmark.isSelected())
-						NovelsDao.getInstance(this).deleteBookmark(bookmark);
+			case R.id.menu_settings:
+				Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
+				startActivity(launchNewIntent);
+				return true;
+			case R.id.invert_colors:
+				UIHelper.ToggleColorPref(this);
+				UIHelper.Recreate(this);
+				return true;
+			case R.id.menu_downloads_list:
+				Intent downloadsItent = new Intent(this, DownloadListActivity.class);
+				startActivity(downloadsItent);
+				return true;
+			case R.id.menu_bookmark_delete_selected:
+				if (bookmarks != null) {
+					for (BookmarkModel bookmark : bookmarks) {
+						if (bookmark.isSelected()) NovelsDao.getInstance(this).deleteBookmark(bookmark);
+					}
+					if (adapter != null) adapter.refreshData();
 				}
-				if (adapter != null)
-					adapter.refreshData();
-			}
-			return true;
-		case android.R.id.home:
-			super.onBackPressed();
-			return true;
+				return true;
+			case android.R.id.home:
+				super.onBackPressed();
+				return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
