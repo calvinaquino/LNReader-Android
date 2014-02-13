@@ -2,7 +2,7 @@ package com.erakk.lnreader.helper;
 
 public class BakaReaderException extends Exception {
 	private static final long serialVersionUID = -2165746320273542629L;
-	public static final int NO_NETWORK_CONNECTIFITY = -1000;
+	public static final int OFFLINE = -1000;
 	public static final int NULL_NOVELDAO = -2000;
 	public static final int EMPTY_IMAGE = -3000;
 	public static final int EMPTY_CONTENT = -4000;
