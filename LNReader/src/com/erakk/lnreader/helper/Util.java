@@ -61,30 +61,30 @@ public class Util {
 		
 		dif /= 1000; // convert from milliseconds to seconds
 		if (dif < 60)
-			return context.getResources().getString(R.string.timestamp_seconds); // <1 minute ago
+			return context.getResources().getString(R.string.timespan_seconds); // <1 minute ago
 		
 		dif /= 60; // convert from seconds to minutes
 		if (dif < 60)
-			return context.getResources().getQuantityString(R.plurals.timestamp_minutes, (int) dif, (int) dif);
+			return context.getResources().getQuantityString(R.plurals.timespan_minutes, (int) dif, (int) dif);
 
 		dif /= 60; // convert from minutes to hours
 		if (dif < 24)
-			return context.getResources().getQuantityString(R.plurals.timestamp_hours, (int) dif, (int) dif);
+			return context.getResources().getQuantityString(R.plurals.timespan_hours, (int) dif, (int) dif);
 		
 		dif /= 24; // convert from hours to days
 		if (dif < 7)
-			return context.getResources().getQuantityString(R.plurals.timestamp_days, (int) dif, (int) dif);
+			return context.getResources().getQuantityString(R.plurals.timespan_days, (int) dif, (int) dif);
 		
 		dif /= 7; // convert from days to weeks
 		if (dif < 30)
-			return context.getResources().getQuantityString(R.plurals.timestamp_weeks, (int) dif, (int) dif);
+			return context.getResources().getQuantityString(R.plurals.timespan_weeks, (int) dif, (int) dif);
 		
 		dif /= 30; // convert from weeks to months
 		if (dif < 12)
-			return context.getResources().getQuantityString(R.plurals.timestamp_months, (int) dif, (int) dif);
+			return context.getResources().getQuantityString(R.plurals.timespan_months, (int) dif, (int) dif);
 		
 		dif /= 12; // convert from months to years
-		return context.getResources().getQuantityString(R.plurals.timestamp_years, (int) dif, (int) dif);
+		return context.getResources().getQuantityString(R.plurals.timespan_years, (int) dif, (int) dif);
 
 		// + date.toLocaleString();
 	}
