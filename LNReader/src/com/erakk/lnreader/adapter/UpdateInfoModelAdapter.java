@@ -219,7 +219,7 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
 		holder.chkSelected = (CheckBox) row.findViewById(R.id.chk_selection);
 		if (holder.chkSelected != null) {
 			// holder.txtUpdateDate.setText("Update:" + Util.formatDateForDisplay(page.getUpdateDate()));
-			holder.chkSelected.setSelected(page.isSelected());
+			holder.chkSelected.setChecked(page.isSelected());
 
 			holder.chkSelected.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
