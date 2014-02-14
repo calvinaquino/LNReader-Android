@@ -370,4 +370,79 @@
     <string name="cat_image_backup">Kopia Obrazu</string>
     <string name="svc_update_complete">Aktualizacja zakończona.</string>
     <string name="svc_update_status">Ostatnio uruchomiono: %1$s\nStatus: %2$s</string>
+    <string name="maintenance">Maintenance</string>
+    <string name="find_empty_novel">Znajdź pustą nowelę</string>
+    <string name="find_empty_book">Znajdź pustą książkę</string>
+    <string name="find_missing_chapter">Znajdź brakujący rozdział</string>
+    <string name="find_redlink_chapter">Find Redlink Chapter</string>
+    <string name="title_activity_find_missing">Znajdź brakujące</string>
+    <string name="action_settings">Ustawienia</string>
+    <string name="hello_world">Siemanko!</string>
+    <string name="menu_show_downloaded">Pokaż pobrane</string>
+    <string name="menu_show_everything_else">Pokaż pozostałe</string>
+    <string name="maint_show_warning_title">Wyświetlaj ostrzeżenie BD</string>
+    <string name="maint_show_warning_summary">Wyświetlaj ostrzeżenie o potrzebie utworzenia kopii przed każdą zmianą.</string>
+    <string name="find_missing_chapter_summary">Znajdź wszystkie brakujące/usunięte rozdziały na serwerze (zaznaczono na czerwono).</string>
+    <string name="find_missing_redlink_summary">Znajdź wszystkie rozdziały z redlink=1 w treści URL (zazwyczaj pusty rozdział rezerwujący czasowo miejsce).</string>
+    <string name="find_empty_book_summary">Znajdź wszystkie nowele bez rozdziałów (zazwyczaj są wynikiem zmian w nazwie na serwerze).</string>
+    <string name="find_empty_novel_summary">Znajdź wszystkie niepowiązane książki/nowele, (zazwyczaj są wynikiem zmian w nazwie na serwerze).</string>
+    <string name="maint_warning_text">Przed kontynuowaniem zrób kopię bazy danych!</string>
+    <string name="maint_warning_title">Ostrzeżenie o konserwacji</string>
+    <string name="update_include_redlink_title">Uwzględniaj rozdziały zastępcze</string>
+    <string name="update_include_redlink_summary">Uwzględniaj rozdziały zastępcze (redlink=1) przy aktualizacji.</string>
+    <string name="toast_show_deleted_count">%1$s rzeczy usuniętych.</string>
+    <string name="task_delete_error">Błąd przy usuwaniu: %1$s.</string>
+    <string name="task_delete_progress">Usuwanie %1$s z %2$s rzeczy.</string>
+    <string name="task_delete_complete">Zakończono usuwanie %1$s rzeczy.</string>
+    <string name="task_delete_running">Usuwanie w toku!</string>
+    <string name="https_ignore_cert_title">Ignoruj błąd certyfikatu</string>
+    <string name="save_external_url_title">Zapisz zewnętrzny URL</string>
+    <string name="save_external_url_summary">Zapisz stronę zewnętrzną na kartę SD jako Web Archive.</string>
+    <string name="title_novels_page_main">Nowele</string>
+    <string name="title_novels_page_teaser">Zwiastuny</string>
+    <string name="title_novels_page_original">Autorskie nowele</string>
+    <string name="title_novels_page_alternate">%1$s noweli</string>
+    <string name="load_novel_retry">Wznawianie &#8230; próba %1$d z %2$d\n(%3$s)</string>
+    <string name="load_novel_list_fetch">Ładowanie listy nowel %1$s&#8230;\n(Za pierwszym razem idzie wolno...)</string>
+    <string name="load_novel_list_download">Pobieranie listy nowel &#8230;</string>
+    <string name="load_novel_list_alternate">Ładowanie listy nowel w %1$s&#8230;</string>
+    <string name="load_novel_list_finished">Znaleziono %1$d nowel.</string>
+    <string name="load_novel_details_download">Pobieranie szczegółów o %1$s&#8230;</string>
+    <string name="load_novel_details_update">Uaktualnianie szczegółów o %1$s&#8230;</string>
+    <string name="load_novel_cover_image">Pobieranie okładki &#8230;</string>
+    <string name="load_novel_chapters_fetch">Ładowanie rozdziałów w %1$s&#8230;</string>
+    <string name="load_novel_chapters_saving">Zapisywanie rozdziałów &#8230;</string>
+    <string name="load_novel_chapters_download_info">Pobieranie opisu rozdziału %1$d z %2$d&#8230;</string>
+    <string name="load_novel_chapters_download_external">Pobieranie rozdziałów z innego źródła, %1$d z %2$d&#8230;</string>
+    <string name="load_novel_image_download">Pobieranie obrazu %1$s&#8230;</string>
+    <string name="load_novel_image_fetch">Ładowanie obrazu z %1$s&#8230;</string>
+    <string name="added">Dodany</string>
+    <string name="updated">Zaktualizowany</string>
+    <string name="timespan_seconds">&lt;1 minutę temu</string>
+    <plurals name="timespan_minutes">
+        <item quantity="one">1 minutę temu</item>
+        <item quantity="other">%d minut temu</item>
+    </plurals>
+    <plurals name="timespan_hours">
+        <item quantity="one">1 godinę temu</item>
+        <item quantity="other">%d godzin temu</item>
+    </plurals>
+    <plurals name="timespan_days">
+        <item quantity="one">1 dzień temu</item>
+        <item quantity="other">%d dni temu</item>
+    </plurals>
+    <plurals name="timespan_weeks">
+        <item quantity="one">1 tydzień temu</item>
+        <item quantity="other">%d tygodni temu</item>
+    </plurals>
+    <plurals name="timespan_months">
+        <item quantity="one">1 miesiąc temu</item>
+        <item quantity="other">%d miesięcy temu</item>
+    </plurals>
+    <plurals name="timespan_years">
+        <item quantity="one">1 rok temu</item>
+        <item quantity="other">%d lat temu</item>
+    </plurals>
+    <string name="update_include_external_title">Uaktualnij rozdziały z innych źródeł</string>
+    <string name="update_include_external_summary">Uaktualnia rozdziały z innych źródeł podczas aktualizacji.</string>
 </resources>
