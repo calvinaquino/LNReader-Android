@@ -407,7 +407,7 @@
     <string name="title_novels_page_original">original novels</string>
     <string name="title_novels_page_alternate">%1$s novels</string>
     <string name="load_novel_retry">Retrying&#8230;attempt %1$d of %2$d\n(%3$s)</string>
-    <string name="load_novel_list_fetch">Downloading %1$s&#8230;\n(First time may be slow.)</string>
+    <string name="load_novel_list_fetch">Fetching %1$s&#8230;\n(First time may be slow.)</string>
     <string name="load_novel_list_download">Downloading novels&#8230;</string>
     <string name="load_novel_list_alternate">Fetching novels in %1$s&#8230;</string>
     <string name="load_novel_list_finished">Found %1$d novels.</string>
