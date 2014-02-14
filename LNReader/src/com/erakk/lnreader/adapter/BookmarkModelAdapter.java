@@ -91,7 +91,7 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 
 		holder.txtCreateDate = (TextView) row.findViewById(R.id.create_date);
 		if (holder.txtCreateDate != null) {
-			holder.txtCreateDate.setText("Added " + Util.formatDateForDisplay(bookmark.getCreationDate()));
+			holder.txtCreateDate.setText(context.getResources().getString(R.string.added) + " " + Util.formatDateForDisplay(context, bookmark.getCreationDate()));
 		}
 
 		holder.txtExcerpt = (TextView) row.findViewById(R.id.excerpt);
@@ -139,8 +139,8 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 		holder.chkSelection = (CheckBox) row.findViewById(R.id.chk_selection);
 		if (holder.chkSelection != null) {
 			if (showCheckBox) {
-				holder.chkSelection.setChecked(bookmark.isSelected());
 				holder.chkSelection.setVisibility(View.VISIBLE);
+				holder.chkSelection.setChecked(bookmark.isSelected());
 				holder.chkSelection.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 					@Override

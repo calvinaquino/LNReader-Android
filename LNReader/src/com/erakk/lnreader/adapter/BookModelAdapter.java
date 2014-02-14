@@ -129,12 +129,12 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 
 		TextView tvLastUpdate = (TextView) view.findViewById(R.id.novel_last_update);
 		if (tvLastUpdate != null) {
-			tvLastUpdate.setText(context.getResources().getString(R.string.last_update) + ": " + Util.formatDateForDisplay(child.getLastUpdate()));
+			tvLastUpdate.setText(context.getResources().getString(R.string.last_update) + ": " + Util.formatDateForDisplay(context, child.getLastUpdate()));
 		}
 
 		TextView tvLastCheck = (TextView) view.findViewById(R.id.novel_last_check);
 		if (tvLastCheck != null) {
-			tvLastCheck.setText(context.getResources().getString(R.string.last_check) + ": " + Util.formatDateForDisplay(child.getLastCheck()));
+			tvLastCheck.setText(context.getResources().getString(R.string.last_check) + ": " + Util.formatDateForDisplay(context, child.getLastCheck()));
 		}
 
 		return view;

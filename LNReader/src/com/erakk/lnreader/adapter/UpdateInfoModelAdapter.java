@@ -213,7 +213,7 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
 
 		holder.txtUpdateDate = (TextView) row.findViewById(R.id.update_date);
 		if (holder.txtUpdateDate != null) {
-			holder.txtUpdateDate.setText("Update:" + Util.formatDateForDisplay(page.getUpdateDate()));
+			holder.txtUpdateDate.setText(context.getResources().getString(R.string.updated) + " " + Util.formatDateForDisplay(context, page.getUpdateDate()));
 		}
 
 		holder.chkSelected = (CheckBox) row.findViewById(R.id.chk_selection);
