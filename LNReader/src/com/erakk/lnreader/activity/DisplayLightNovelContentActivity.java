@@ -724,9 +724,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	public void loadExternalUrl(PageModel pageModel, boolean refresh) {
 		try {
 			// check if .wac available
-			String wacName = getWacName(pageModel.getPage(), refresh);
-			File f = new File(wacName);
-			if (f.exists() && !refresh) {
+			String wacName = getSavedWacName(pageModel.getPage());
+			if (!Util.isStringNullOrEmpty(wacName) && !refresh) {
 				isNeedSave = false;
 				executeLoadWacTask(wacName);
 			}
@@ -786,10 +785,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		try {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
-				if (page != wv.getUrl()) {
+				if (!page.equalsIgnoreCase(wv.getUrl())) {
 					Log.w(TAG, "Different url: " + page + " != " + wv.getUrl());
 				}
-				String wacName = getWacName(wv.getUrl(), false);
+				String wacName = getWacNameForSaving(wv.getUrl(), false);
 				wv.saveWebArchive(wacName, false, new ValueCallback<String>() {
 
 					@Override
@@ -805,15 +804,24 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		isNeedSave = false;
 	}
 
-	/***
-	 * Try to get the web archive name
-	 * if xx.wac is already exists, use that filename, except on refresh
-	 * 
-	 * @param url
-	 * @param refresh
-	 * @return
-	 */
-	private String getWacName(String url, boolean refresh) {
+
+	private String getSavedWacName(String url) {
+		String path = UIHelper.getImageRoot(this) + "/wac";
+		String filename = path + "/" + Util.calculateCRC32(url);
+		String extensions[] = {".wac", ".mht"};
+		for(String ext : extensions) {
+			File temp = new File(filename + ext);
+			if(temp.exists()) {
+				Log.i(TAG, String.format("Web Archive found for %s: %s", url, temp.getAbsolutePath()));
+				return temp.getAbsolutePath();
+			}
+		}
+		Log.w(TAG, String.format("Web Archive not found for %s", url));
+		return null;
+	}
+
+
+	private String getWacNameForSaving(String url, boolean refresh) {
 		String path = UIHelper.getImageRoot(this) + "/wac";
 		File f = new File(path);
 		if (!f.exists())
@@ -822,16 +830,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 		String filename = path + "/" + Util.calculateCRC32(url);
 		String extension = ".wac";
-
-		File temp = new File(filename + extension);
-		if (temp.exists()) {
-			if (refresh) {
-				temp.delete();
-			}
-			else {
-				return filename + extension;
-			}
-		}
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			extension = ".mht";
