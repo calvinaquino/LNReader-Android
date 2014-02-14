@@ -249,11 +249,14 @@ public class CommonParser {
 			} else if (!pElement.hasAttr("missing")) {
 				// parse date
 				String tempDate = pElement.attr("touched");
+				int wikiId = Integer.parseInt(pElement.attr("pageid"));
+
 				if (!Util.isStringNullOrEmpty(tempDate)) {
 					Date lastUpdate = formatter.parse(tempDate);
 					temp.setLastUpdate(lastUpdate);
 					temp.setMissing(false);
-					Log.i(TAG, "parsePageAPI " + temp.getPage() + " Last Update: " + temp.getLastUpdate());
+					temp.setWikiId(wikiId);
+					Log.i(TAG, String.format("parsePageAPI [%s]%s Last Update: %s ", temp.getPage(), temp.getWikiId(), temp.getLastUpdate()));
 				} else {
 					Log.w(TAG, "parsePageAPI " + temp.getPage() + " No Last Update Information!");
 				}
@@ -422,38 +425,25 @@ public class CommonParser {
 		ArrayList<PageModel> chapterCollection = parseChapters(novel, bookElement, language, parent);
 
 		if (chapterCollection.size() == 0) {
-			// // ToAru Index, the books is on h4
-			// Element neighbor = bookElement.parent();
-			// do {
-			// neighbor = neighbor.nextElementSibling();
-			// if (neighbor != null) {
-			// Elements h4s = neighbor.select("h4");
-			// if (h4s != null) {
-			// for (Element h4 : h4s) {
-			// bookOrder = processH3(novel, books, h4, bookOrder, language);
-			// }
-			// }
-			// }
-			// } while (neighbor != null);
 			Elements bookLinks = bookElement.select("a");
 			if (bookLinks != null) {
 				for (Element a : bookLinks) {
 					Log.e(TAG, "Got linked Volume without chapter list: " + a.text() + " => " + a.attr("href"));
-					if (a.attr("href").startsWith(UIHelper.getBaseUrl(LNReaderApplication.getInstance()))) {
+					if (a.attr("href").startsWith(Constants.ROOT_URL) || a.attr("href").startsWith(UIHelper.getBaseUrl(LNReaderApplication.getInstance()))) {
 						PageModel p = processA(a.text(), parent, 0, a, language);
-						if (p != null)
+						if (p != null) {
+							Log.i(TAG, "Added chapter list: " + a.text() + " => " + a.attr("href"));
 							chapterCollection.add(p);
-						break;
+							break;
+						}
 					}
 				}
 			}
 		}
-		// else {
 		book.setChapterCollection(chapterCollection);
 
 		books.add(book);
 		++bookOrder;
-		// }
 		return bookOrder;
 	}
 

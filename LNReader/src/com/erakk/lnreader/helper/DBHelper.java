@@ -178,7 +178,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	public String copyDB(Context context, boolean makeBackup, String filename) throws IOException {
-		if(Util.isStringNullOrEmpty(filename)) {
+		if (Util.isStringNullOrEmpty(filename)) {
 			filename = UIHelper.getBackupRoot(context) + "/Backup_pages.db";
 		}
 		File srcPath;

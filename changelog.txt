@@ -9,6 +9,7 @@
 - New option to ignore certificate error.
 - Add MHTML support for saving External Url on Android 4.3 and up.
 - Add option to clean up the temp used for MHTML.
+- Externalize alternate language parser info.
 
 1.1.14
 - Fix Chapter parser.

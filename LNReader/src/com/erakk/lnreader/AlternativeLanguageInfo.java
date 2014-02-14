@@ -1,10 +1,14 @@
 package com.erakk.lnreader;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
 
+import org.xmlpull.v1.XmlPullParser;
+
+import android.content.res.XmlResourceParser;
 import android.util.Log;
+
+import com.erakk.lnreader.helper.Util;
 
 /*
  * Author : freedomofkeima
@@ -19,86 +23,161 @@ public class AlternativeLanguageInfo {
 	private String markerSynopsis; /* Marker for Synopsis */
 	private ArrayList<String> parserInfo;
 
-	private static Hashtable<String, AlternativeLanguageInfo> instance = null; //new Hashtable<String, AlternativeLanguageInfo> ();
+	private static Hashtable<String, AlternativeLanguageInfo> instance;
 	private static Object lock = new Object();
 
 	/* List of methods */
-	public static void initHashMap() {
+	private static void initHashMap() {
 		synchronized (lock) {
 			// construct HashTable and populate with proper data with language as the key
-			if(instance == null) instance = new Hashtable<String, AlternativeLanguageInfo> ();
+			if (instance == null)
+				instance = new Hashtable<String, AlternativeLanguageInfo>();
 
-			/* In future, this information could be stored in XML file */
-			/* French Language */
-			instance.put(Constants.LANG_FRENCH , new AlternativeLanguageInfo(
-					Constants.LANG_FRENCH, "French", "#Synopsis",
-					new ArrayList<String>(Arrays.asList("_par", "Texte_Intégral", "Full_Text", "Série_", "série_", "Tome_", "tome_", "Histoire_", "histoire_",  "Histoires_", "histoires_", "Side_Stor", "Short_Stor", "Material"))));
-		    Log.d(TAG,"French Language added");
+			try {
+				XmlResourceParser xpp = LNReaderApplication.getInstance().getResources().getXml(R.xml.parse_lang_info);
+				xpp.next();
+				int eventType = xpp.getEventType();
+				String _language = null;
+				String _category = null;
+				String _markerSynopsis = null;
+				ArrayList<String> _parserInfo = new ArrayList<String>();
+				boolean startLang = false, startCat = false, startMark = false, startRule = false;
+				while (eventType != XmlPullParser.END_DOCUMENT)
+				{
+					if (eventType == XmlPullParser.START_TAG)
+					{
+						if (xpp.getName().equalsIgnoreCase("Language")) {
+							startLang = true;
+						}
+						else if (xpp.getName().equalsIgnoreCase("Category")) {
+							startCat = true;
+						}
+						else if (xpp.getName().equalsIgnoreCase("MarkerSynopsis")) {
+							startMark = true;
+						}
+						else if (xpp.getName().equalsIgnoreCase("Rule")) {
+							startRule = true;
+						}
+					}
+					else if (eventType == XmlPullParser.END_TAG)
+					{
+						if (xpp.getName().equalsIgnoreCase("LanguageInfo")) {
+							AlternativeLanguageInfo temp = new AlternativeLanguageInfo(_language, _category, _markerSynopsis, _parserInfo);
+							instance.put(_language, temp);
+							Log.d(TAG, "Language added: " + temp.toString());
+							_language = null;
+							_category = null;
+							_markerSynopsis = null;
+							_parserInfo = new ArrayList<String>();
+						}
 
-		    /* Indonesian Language */
-			instance.put(Constants.LANG_BAHASA_INDONESIA , new AlternativeLanguageInfo(
-					Constants.LANG_BAHASA_INDONESIA, "Indonesian", "#Sinopsis_Cerita",
-					new ArrayList<String>(Arrays.asList("_oleh", "Full_Text", "Serial_", "serial_", "Seri_", "seri_", "Cerita_Tambah", "Cerita_Singkat", "Cerita_Pendek", "Side_Stor", "Short_Stor"))));
-		    Log.d(TAG,"Bahasa Indonesia Language added");
-		    
-		    /* Polish Language */
-			instance.put(Constants.LANG_POLISH , new AlternativeLanguageInfo(
-					Constants.LANG_POLISH, "Polish", "#Streszczenie_fabu.C5.82y",
-					new ArrayList<String>(Arrays.asList("_autorstwa", "Pe.C5.82ny_tekst", "Seria_", "seria_", "Cerita_Tambah", "Historie_poboczne", "Historie_Poboczne", "Historie_kr.C3.B3tki", "Historie_Kr.C3.B3tki", "Side_Stor", "Short_Stor"))));
-		    Log.d(TAG,"Polish Language added");
+					}
+					else if (eventType == XmlPullParser.TEXT)
+					{
+						if (startLang) {
+							_language = xpp.getText();
+							startLang = false;
+						}
+						else if (startCat) {
+							_category = xpp.getText();
+							startCat = false;
+						}
+						else if (startMark) {
+							_markerSynopsis = xpp.getText();
+							startMark = false;
+						}
+						else if (startRule) {
+							_parserInfo.add(xpp.getText());
+							startRule = false;
+						}
+					}
+					eventType = xpp.next();
+				}
+			} catch (Exception ex) {
+				Log.e(TAG, ex.getMessage(), ex);
+			}
+
+			// /* In future, this information could be stored in XML file */
+			// /* French Language */
+			// instance.put(Constants.LANG_FRENCH, new AlternativeLanguageInfo(
+			// Constants.LANG_FRENCH, "French", "#Synopsis",
+			// new ArrayList<String>(Arrays.asList("_par", "Texte_Intégral", "Full_Text", "Série_", "série_", "Tome_",
+			// "tome_", "Histoire_", "histoire_", "Histoires_", "histoires_", "Side_Stor", "Short_Stor", "Material"))));
+			// Log.d(TAG, "French Language added");
+			//
+			// /* Indonesian Language */
+			// instance.put(Constants.LANG_BAHASA_INDONESIA, new AlternativeLanguageInfo(
+			// Constants.LANG_BAHASA_INDONESIA, "Indonesian", "#Sinopsis_Cerita",
+			// new ArrayList<String>(Arrays.asList("_oleh", "Full_Text", "Serial_", "serial_", "Seri_", "seri_",
+			// "Cerita_Tambah", "Cerita_Singkat", "Cerita_Pendek", "Side_Stor", "Short_Stor"))));
+			// Log.d(TAG, "Bahasa Indonesia Language added");
+			//
+			// /* Polish Language */
+			// instance.put(Constants.LANG_POLISH, new AlternativeLanguageInfo(
+			// Constants.LANG_POLISH, "Polish", "#Streszczenie_fabu.C5.82y",
+			// new ArrayList<String>(Arrays.asList("_autorstwa", "Pe.C5.82ny_tekst", "Seria_", "seria_",
+			// "Cerita_Tambah", "Historie_poboczne", "Historie_Poboczne", "Historie_kr.C3.B3tki",
+			// "Historie_Kr.C3.B3tki", "Side_Stor", "Short_Stor"))));
+			// Log.d(TAG, "Polish Language added");
 		}
 	}
 
 	public static Hashtable<String, AlternativeLanguageInfo> getAlternativeLanguageInfo() {
 		synchronized (lock) {
 			/* if instance is null, then initHashMap */
-		   if(instance == null || instance.isEmpty()) initHashMap();
-		   return instance;
+			if (instance == null || instance.isEmpty())
+				initHashMap();
+			return instance;
 		}
 	}
 
-	public AlternativeLanguageInfo(String _language, String _category, String _markerSynopsis, ArrayList<String> _parserInfo) {
-	  // set the member variables
-	  language = _language;
-	  category = _category;
-	  markerSynopsis = _markerSynopsis;
-	  parserInfo = _parserInfo;
+	private AlternativeLanguageInfo(String _language, String _category, String _markerSynopsis, ArrayList<String> _parserInfo) {
+		// set the member variables
+		language = _language;
+		category = _category;
+		markerSynopsis = _markerSynopsis;
+		parserInfo = _parserInfo;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("language = %s, category = %s, markerSynopsis = %s, parserInfo = {%s}", language, category, markerSynopsis, Util.join(parserInfo, ","));
 	}
 
 	/* Setter & Getter */
-	public String getLanguage(){
+	public String getLanguage() {
 		return language;
 	}
 
-	public String getCategory(){
+	public String getCategory() {
 		return category;
 	}
 
-	public String getCategoryInfo(){
+	public String getCategoryInfo() {
 		return "Category:" + category;
 	}
 
-	public String getMarkerSynopsis(){
+	public String getMarkerSynopsis() {
 		return markerSynopsis;
 	}
 
-	public ArrayList<String> getParserInfo(){
+	public ArrayList<String> getParserInfo() {
 		return parserInfo;
 	}
 
-	public void setLanguage(String _language){
+	public void setLanguage(String _language) {
 		language = _language;
 	}
 
-	public void setCategory(String _category){
+	public void setCategory(String _category) {
 		category = _category;
 	}
 
-	public void setMarkerSynopsis(String _markerSynopsis){
+	public void setMarkerSynopsis(String _markerSynopsis) {
 		markerSynopsis = _markerSynopsis;
 	}
 
-	public void setParserInfo(ArrayList<String> _parserInfo){
+	public void setParserInfo(ArrayList<String> _parserInfo) {
 		parserInfo = _parserInfo;
 	}
 

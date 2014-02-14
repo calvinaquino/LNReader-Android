@@ -36,6 +36,7 @@ public class PageModel {
 	private boolean isHighlighted = false;
 	private boolean isMissing = false;
 	private boolean isExternal = false;
+	private int wikiId = -1;
 
 	private String redirectedTo;
 
@@ -298,5 +299,13 @@ public class PageModel {
 		if (Util.isStringNullOrEmpty(this.page))
 			return false;
 		return this.page.endsWith("&action=edit&redlink=1");
+	}
+
+	public int getWikiId() {
+		return wikiId;
+	}
+
+	public void setWikiId(int wikiId) {
+		this.wikiId = wikiId;
 	}
 }

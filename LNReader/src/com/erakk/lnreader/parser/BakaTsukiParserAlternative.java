@@ -152,14 +152,38 @@ public class BakaTsukiParserAlternative {
 		return page;
 	}
 
+	/***
+	 * find span with id containing "_by" or 'Full_Text'
+	 * or contains with Page Name or "Side_Stor*" or "Short_Stor*"
+	 * or Official_Parody_Stories
+	 * or contains "_Series" (Maru-MA)
+	 * or if redirected, use the redirect page name.
+	 * 
+	 * @param s
+	 * @param novel
+	 * @param language
+	 * @return
+	 */
+	private static boolean validateH2(Element s, NovelCollectionModel novel, String language) {
+		ArrayList<String> parserRule = AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getParserInfo();
+		parserRule.add(novel.getPage());
+		parserRule.add(novel.getRedirectTo());
+
+		for (String rule : parserRule) {
+			if (!Util.isStringNullOrEmpty(rule) && s.id().contains(rule)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	private static void parseNovelChapters(Document doc, NovelCollectionModel novel, String language) {
 		// Log.d(TAG, "Start parsing book collections for " + novel.getPage());
 		// parse the collection
 		ArrayList<BookModel> books = new ArrayList<BookModel>();
 		boolean oneBookOnly = false;
-		ArrayList<String> parser = null;
-		if (language != null)
-			parser = AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getParserInfo();
+
 		try {
 			Elements h2s = doc.select("h1,h2");
 			for (Iterator<Element> i = h2s.iterator(); i.hasNext();) {
@@ -167,19 +191,10 @@ public class BakaTsukiParserAlternative {
 				// Log.d(TAG, "checking h2: " +h2.text() + "\n" + h2.id());
 				Elements spans = h2.select("span");
 				if (spans.size() > 0) {
-					// find span with id containing "_by" or 'Full_Text'
-					// or contains with Page Name or "Side_Stor*" or "Short_Stor*"
-					// or contains "_Series" (Maru-MA)
-					// or if redirected, use the redirect page name.
 					boolean containsBy = false;
-					for (Iterator<Element> iSpan = spans.iterator(); iSpan.hasNext();) {
-						Element s = iSpan.next();
+					for (Element s : spans) {
 						Log.d(TAG, "Checking: " + s.id());
-						boolean tempBool = false;
-						for (int j = 0; j < parser.size(); j++)
-							if (s.id().contains(parser.get(j)))
-								tempBool = true;
-						if (tempBool || s.id().contains(novel.getPage()) || (novel.getRedirectTo() != null && s.id().contains(novel.getRedirectTo()))) {
+						if (validateH2(s, novel, language)) {
 							containsBy = true;
 							Log.d(TAG, "Got valid id: " + s.id());
 							break;

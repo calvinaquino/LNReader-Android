@@ -207,6 +207,31 @@ public class BakaTsukiParser {
 		return page;
 	}
 
+	/***
+	 * find span with id containing "_by" or 'Full_Text'
+	 * or contains with Page Name or "Side_Stor*" or "Short_Stor*"
+	 * or Official_Parody_Stories
+	 * or contains "_Series" (Maru-MA)
+	 * or if redirected, use the redirect page name.
+	 * 
+	 * @param s
+	 * @param novel
+	 * @param language
+	 * @return
+	 */
+	private static boolean validateH2(Element s, NovelCollectionModel novel, String language) {
+		if (language.equalsIgnoreCase(Constants.LANG_ENGLISH)) {
+			String rules[] = { novel.getPage(), novel.getRedirectTo(), "_by", "Full_Text", "_Series", "_series", "Side_Stor", "Short_Stor", "Parody_Stor" };
+			for (String rule : rules) {
+				if (!Util.isStringNullOrEmpty(rule) && s.id().contains(rule)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	private static void parseNovelChapters(Document doc, NovelCollectionModel novel) {
 		// Log.d(TAG, "Start parsing book collections for " + novel.getPage());
 		// parse the collection
@@ -219,15 +244,10 @@ public class BakaTsukiParser {
 				// Log.d(TAG, "checking h2: " +h2.text() + "\n" + h2.id());
 				Elements spans = h2.select("span");
 				if (spans.size() > 0) {
-					// find span with id containing "_by" or 'Full_Text'
-					// or contains with Page Name or "Side_Stor*" or "Short_Stor*"
-					// or contains "_Series" (Maru-MA)
-					// or if redirected, use the redirect page name.
 					boolean containsBy = false;
-					for (Iterator<Element> iSpan = spans.iterator(); iSpan.hasNext();) {
-						Element s = iSpan.next();
+					for (Element s : spans) {
 						Log.d(TAG, "Checking: " + s.id());
-						if (s.id().contains("_by") || s.id().contains("Full_Text") || s.id().contains("_Series") || s.id().contains("_series") || s.id().contains(novel.getPage()) || s.id().contains("Side_Stor") || s.id().contains("Short_Stor") || (novel.getRedirectTo() != null && s.id().contains(novel.getRedirectTo()))) {
+						if (validateH2(s, novel, Constants.LANG_ENGLISH)) {
 							containsBy = true;
 							Log.d(TAG, "Got valid id: " + s.id());
 							break;

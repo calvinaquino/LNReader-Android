@@ -917,7 +917,7 @@ public class NovelsDao {
 
 					if (notifier != null) {
 						pageCounter += checkedPageModel.size();
-						String message = context.getResources().getString(R.string.load_novel_chapters_download, pageCounter, pageModels.size());
+						String message = context.getResources().getString(R.string.load_novel_chapters_download_info, pageCounter, pageModels.size());
 						notifier.onProgressCallback(new CallbackEventData(message, TAG));
 					}
 					break;
@@ -945,11 +945,11 @@ public class NovelsDao {
 		resultPageModel.addAll(noInfoPageModel);
 		if (notifier != null) {
 			pageCounter += noInfoPageModel.size();
-			String message = context.getResources().getString(R.string.load_novel_chapters_download, pageCounter, pageModels.size());
+			String message = context.getResources().getString(R.string.load_novel_chapters_download_info, pageCounter, pageModels.size());
 			notifier.onProgressCallback(new CallbackEventData(message, TAG));
 		}
 
-		if(UIHelper.getUpdateIncludeExternal(context)) {
+		if (UIHelper.getUpdateIncludeExternal(context)) {
 			for (PageModel page : externalPageModel) {
 				getExternalUpdateInfo(page);
 				if (notifier != null) {
@@ -1267,8 +1267,8 @@ public class NovelsDao {
 					Log.i(TAG, "Image found in DB, but doesn't exist in URL decoded path: " + java.net.URLDecoder.decode(imageTemp.getPath(), java.nio.charset.Charset.defaultCharset().displayName()));
 					downloadBigImage = true;
 				} // else Log.i(TAG, "Image found in DB with URL decoded path: " +
-				// java.net.URLDecoder.decode(imageTemp.getPath(),
-				// java.nio.charset.Charset.defaultCharset().displayName()));
+					// java.net.URLDecoder.decode(imageTemp.getPath(),
+					// java.nio.charset.Charset.defaultCharset().displayName()));
 
 			} catch (Exception e) {
 				Log.i(TAG, "Image found in DB, but path string seems to be broken: " + imageTemp.getPath()
@@ -1550,7 +1550,7 @@ public class NovelsDao {
 			BookModel book = new BookModel();
 			book.setPage(missing.getPage());
 			book.setTitle(missing.getDetails());
-			//Log.d(TAG, "Delete Book: " + book.getPage() + " " + book.getTitle());
+			// Log.d(TAG, "Delete Book: " + book.getPage() + " " + book.getTitle());
 			return deleteBooks(book);
 		}
 		else if (mode.equalsIgnoreCase(Constants.PREF_EMPTY_NOVEL)) {
