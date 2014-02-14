@@ -39,7 +39,8 @@
 				<CheckBoxPreference android:key="increase_retry" android:summary="@string/increase_retry_summary" android:title="@string/increase_retry_title" android:defaultValue="false" />
 				
 			</PreferenceCategory><CheckBoxPreference android:summary="@string/update_include_redlink_summary" android:key="update_include_redlink" android:title="@string/update_include_redlink_title" android:defaultValue="true"/>
-			<CheckBoxPreference android:summary="@string/aggresive_title_clean_up_summary" android:title="@string/aggresive_title_clean_up_title" android:key="aggresive_title_clean_up" android:defaultValue="true" />
+			<CheckBoxPreference android:summary="@string/update_include_external_summary" android:title="@string/update_include_external_title" android:defaultValue="true" android:key="update_include_external"/><CheckBoxPreference android:summary="@string/aggresive_title_clean_up_summary" android:title="@string/aggresive_title_clean_up_title" android:key="aggresive_title_clean_up" android:defaultValue="true" />
+			
 			
 		</PreferenceScreen>
 		<PreferenceScreen android:key="reading_category" android:title="@string/reading_layout" >

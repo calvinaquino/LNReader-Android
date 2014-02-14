@@ -447,4 +447,6 @@
         <item quantity="one">1 year ago</item>
         <item quantity="other">%d years ago</item>
     </plurals>
+    <string name="update_include_external_title">Include External Chapter</string>
+    <string name="update_include_external_summary">Include External Chapter when updating the information.</string>
 </resources>

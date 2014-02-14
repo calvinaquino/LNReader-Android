@@ -108,6 +108,7 @@ public class Constants {
 	public static final String PREF_IGNORE_CERT = "https_ignore_cert";
 	public static final String PREF_SAVE_EXTERNAL_URL = "save_external_url";
 	public static final String PREF_CLEAR_EXTERNAL_TEMP = "clear_external_temp";
+	public static final String PREF_UPDATE_INCLUDE_EXTERNAL = "update_include_external";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 
