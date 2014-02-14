@@ -420,4 +420,31 @@
     <string name="load_novel_chapters_download_external">Downloading external chapter %1$d of %2$d&#8230;</string>
     <string name="load_novel_image_download">Downloading image %1$s&#8230;</string>
     <string name="load_novel_image_fetch">Fetching image from %1$s&#8230;</string>
+    <string name="added">Added</string>
+    <string name="updated">Updated</string>
+    <string name="timestamp_seconds">&lt;1 minute ago</string>
+    <plurals name="timestamp_minutes">
+        <item quantity="one">1 minute ago</item>
+        <item quantity="other">%d minutes ago</item>
+    </plurals>
+    <plurals name="timestamp_hours">
+        <item quantity="one">1 hour ago</item>
+        <item quantity="other">%d hours ago</item>
+    </plurals>
+    <plurals name="timestamp_days">
+        <item quantity="one">1 day ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
+    <plurals name="timestamp_weeks">
+        <item quantity="one">1 week ago</item>
+        <item quantity="other">%d weeks ago</item>
+    </plurals>
+    <plurals name="timestamp_months">
+        <item quantity="one">1 month ago</item>
+        <item quantity="other">%d months ago</item>
+    </plurals>
+    <plurals name="timestamp_years">
+        <item quantity="one">1 year ago</item>
+        <item quantity="other">%d years ago</item>
+    </plurals>
 </resources>

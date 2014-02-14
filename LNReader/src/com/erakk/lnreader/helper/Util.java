@@ -32,6 +32,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Build;
 import android.os.StatFs;
 import android.util.Log;
@@ -52,35 +53,40 @@ public class Util {
 	 * @param date
 	 * @return
 	 */
-	public static String formatDateForDisplay(Date date) {
-		String since = "";
+	public static String formatDateForDisplay(Context context, Date date) {
 		// Setup
 		Date now = new Date();
 		long dif = now.getTime() - date.getTime();
-		dif = dif / 3600000; // convert from ms to hours
-		if (dif < 0) {
-			since = "invalid";
-		} else if (dif < 24) {
-			since = "hour";
-		} else if (dif < 168) {
-			dif /= 24;
-			since = "day";
-		} else if (dif < 720) {
-			dif /= 168;
-			since = "week";
-		} else if (dif < 8760) {
-			dif /= 720;
-			since = "month";
-		} else {
-			dif /= 8760;
-			since = "year";
-		}
-		if (dif < 0)
-			return since;
-		else if (dif == 1)
-			return dif + " " + since + " ago ";// + date.toLocaleString();
-		else
-			return dif + " " + since + "s ago ";// + date.toLocaleString();
+		if (dif < 0) return "Unknown";
+		
+		dif /= 1000; // convert from milliseconds to seconds
+		if (dif < 60)
+			return context.getResources().getString(R.string.timestamp_seconds); // <1 minute ago
+		
+		dif /= 60; // convert from seconds to minutes
+		if (dif < 60)
+			return context.getResources().getQuantityString(R.plurals.timestamp_minutes, (int) dif, (int) dif);
+
+		dif /= 60; // convert from minutes to hours
+		if (dif < 24)
+			return context.getResources().getQuantityString(R.plurals.timestamp_hours, (int) dif, (int) dif);
+		
+		dif /= 24; // convert from hours to days
+		if (dif < 7)
+			return context.getResources().getQuantityString(R.plurals.timestamp_days, (int) dif, (int) dif);
+		
+		dif /= 7; // convert from days to weeks
+		if (dif < 30)
+			return context.getResources().getQuantityString(R.plurals.timestamp_weeks, (int) dif, (int) dif);
+		
+		dif /= 30; // convert from weeks to months
+		if (dif < 12)
+			return context.getResources().getQuantityString(R.plurals.timestamp_months, (int) dif, (int) dif);
+		
+		dif /= 12; // convert from months to years
+		return context.getResources().getQuantityString(R.plurals.timestamp_years, (int) dif, (int) dif);
+
+		// + date.toLocaleString();
 	}
 
 	/**
@@ -98,21 +104,19 @@ public class Util {
 			if (!dst.exists()) {
 				Log.w(TAG, "Destination File doesn't exists, try to create dummy file");
 				boolean result = dst.createNewFile();
-				if (!result)
-					Log.e(TAG, "Failed ot create file");
+				if (!result) Log.e(TAG, "Failed ot create file");
 			}
 			outChannel = new FileOutputStream(dst).getChannel();
 			inChannel.transferTo(0, inChannel.size(), outChannel);
 		} finally {
-			if (inChannel != null)
-				inChannel.close();
-			if (outChannel != null)
-				outChannel.close();
+			if (inChannel != null) inChannel.close();
+			if (outChannel != null) outChannel.close();
 		}
 	}
 
 	/**
-	 * http://stackoverflow.com/questions/6350158/check-arraylist-for-instance-of-object
+	 * http://stackoverflow.com/questions/6350158/check-arraylist-for-instance-
+	 * of-object
 	 * 
 	 * @param arrayList
 	 * @param clazz
@@ -120,9 +124,7 @@ public class Util {
 	 */
 	public static boolean isInstanceOf(Collection<?> arrayList, Class<?> clazz) {
 		for (Object o : arrayList) {
-			if (o != null && o.getClass() == clazz) {
-				return true;
-			}
+			if (o != null && o.getClass() == clazz) { return true; }
 		}
 		return false;
 	}
@@ -155,8 +157,7 @@ public class Util {
 	}
 
 	public static boolean isStringNullOrEmpty(String input) {
-		if (input == null || input.length() == 0)
-			return true;
+		if (input == null || input.length() == 0) return true;
 		return false;
 	}
 
@@ -201,10 +202,10 @@ public class Util {
 		Log.d(TAG, "Start zipping to: " + zipFile);
 		for (File file : filenames) {
 			String absPath = file.getAbsolutePath();
-			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.zip_files_task_progress_count, fileCount, total, absPath);
+			String message = LNReaderApplication.getInstance().getApplicationContext().getResources()
+					.getString(R.string.zip_files_task_progress_count, fileCount, total, absPath);
 			Log.d(TAG, message);
-			if (callback != null)
-				callback.onProgressCallback(new CallbackEventData(message, "Util.zipFiles()"));
+			if (callback != null) callback.onProgressCallback(new CallbackEventData(message, "Util.zipFiles()"));
 			FileInputStream fi = new FileInputStream(file);
 			origin = new BufferedInputStream(fi, Constants.BUFFER);
 			ZipEntry entry = new ZipEntry(absPath.replace(replacedRootPath, ""));
@@ -254,7 +255,8 @@ public class Util {
 
 			Log.d(TAG, "Unzipping: " + filename);
 			if (callback != null) {
-				String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.unzip_files_task_progress_count, fileCount, filename);
+				String message = LNReaderApplication.getInstance().getApplicationContext().getResources()
+						.getString(R.string.unzip_files_task_progress_count, fileCount, filename);
 				callback.onProgressCallback(new CallbackEventData(message, "Util.unzipFiles()"));
 			}
 			FileOutputStream fout = new FileOutputStream(filename);
@@ -288,8 +290,7 @@ public class Util {
 	 */
 	public static String humanReadableByteCount(long bytes, boolean si) {
 		int unit = si ? 1000 : 1024;
-		if (bytes < unit)
-			return bytes + " B";
+		if (bytes < unit) return bytes + " B";
 		int exp = (int) (Math.log(bytes) / Math.log(unit));
 		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
 		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
@@ -304,8 +305,7 @@ public class Util {
 			try {
 				StatFs stat = new StatFs(path.getPath());
 				stat.restat(path.getPath());
-				availableSpace = (long) stat.getAvailableBlocks()
-						* (long) stat.getBlockSize();
+				availableSpace = (long) stat.getAvailableBlocks() * (long) stat.getBlockSize();
 			} catch (Exception e) {
 				Log.e(TAG, "Failed to get free space.", e);
 			}
