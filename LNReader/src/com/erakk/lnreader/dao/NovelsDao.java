@@ -949,15 +949,17 @@ public class NovelsDao {
 			notifier.onProgressCallback(new CallbackEventData(message, TAG));
 		}
 
-		for (PageModel page : externalPageModel) {
-			getExternalUpdateInfo(page);
-			if (notifier != null) {
-				pageCounter++;
-				String message = context.getResources().getString(R.string.load_novel_chapters_download_external, pageCounter, pageModels.size());
-				notifier.onProgressCallback(new CallbackEventData(message, TAG));
+		if(UIHelper.getUpdateIncludeExternal(context)) {
+			for (PageModel page : externalPageModel) {
+				getExternalUpdateInfo(page);
+				if (notifier != null) {
+					pageCounter++;
+					String message = context.getResources().getString(R.string.load_novel_chapters_download_external, pageCounter, pageModels.size());
+					notifier.onProgressCallback(new CallbackEventData(message, TAG));
+				}
 			}
+			resultPageModel.addAll(externalPageModel);
 		}
-		resultPageModel.addAll(externalPageModel);
 
 		return resultPageModel;
 	}

@@ -40,7 +40,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 	protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(Void... arg0) {
 		service.setRunning(true);
 		try {
-			ArrayList<PageModel> result = GetUpdatedChapters(this);
+			ArrayList<PageModel> result = getUpdatedChapters(this);
 			return new AsyncTaskResult<ArrayList<PageModel>>(result);
 		} catch (Exception ex) {
 			Log.e("GetUpdatedChaptersTask", "Error when updating", ex);
@@ -72,7 +72,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 
 	}
 
-	private ArrayList<PageModel> GetUpdatedChapters(ICallbackNotifier callback) throws Exception {
+	private ArrayList<PageModel> getUpdatedChapters(ICallbackNotifier callback) throws Exception {
 		Log.d(TAG, "Checking Updates...");
 		ArrayList<PageModel> updatesTotal = new ArrayList<PageModel>();
 		NovelsDao dao = NovelsDao.getInstance();

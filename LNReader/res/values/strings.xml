@@ -420,4 +420,6 @@
     <string name="load_novel_chapters_download_external">Downloading external chapter %1$d of %2$d&#8230;</string>
     <string name="load_novel_image_download">Downloading image %1$s&#8230;</string>
     <string name="load_novel_image_fetch">Fetching image from %1$s&#8230;</string>
+    <string name="update_include_external_title">Include External Chapter</string>
+    <string name="update_include_external_summary">Include External Chapter when updating the information.</string>
 </resources>
