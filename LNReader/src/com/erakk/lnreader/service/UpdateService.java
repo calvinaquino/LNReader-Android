@@ -82,9 +82,6 @@ public class UpdateService extends Service {
 				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			else
 				task.execute();
-
-			// add on Download List
-			LNReaderApplication.getInstance().addDownload(TAG, "Update Service");
 		}
 	}
 
@@ -104,9 +101,6 @@ public class UpdateService extends Service {
 
 		if (updatedChapters != null && updatedChapters.size() > 0) {
 			Log.d(TAG, "sendNotification");
-
-			// remove previous update history.
-			// NovelsDao.getInstance(this).deleteAllUpdateHistory();
 
 			// create UpdateInfoModel list
 			int updateCount = 0;
@@ -173,9 +167,6 @@ public class UpdateService extends Service {
 		LNReaderApplication.getInstance().updateDownload(TAG, 100, getString(R.string.svc_update_complete));
 		if (notifier != null)
 			notifier.onProgressCallback(new CallbackEventData(getString(R.string.svc_update_complete), 100, Constants.PREF_RUN_UPDATES));
-
-		// remove from download list
-		LNReaderApplication.getInstance().removeDownload(TAG);
 	}
 
 	@SuppressWarnings("deprecation")

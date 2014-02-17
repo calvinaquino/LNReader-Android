@@ -38,12 +38,14 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 
 	@Override
 	protected AsyncTaskResult<ArrayList<PageModel>> doInBackground(Void... arg0) {
+		// add on Download List
+		LNReaderApplication.getInstance().addDownload(TAG, "Update Service");
 		service.setRunning(true);
 		try {
 			ArrayList<PageModel> result = getUpdatedChapters(this);
 			return new AsyncTaskResult<ArrayList<PageModel>>(result);
 		} catch (Exception ex) {
-			Log.e("GetUpdatedChaptersTask", "Error when updating", ex);
+			Log.e(TAG, "Error when updating", ex);
 			return new AsyncTaskResult<ArrayList<PageModel>>(ex);
 		}
 	}
@@ -70,6 +72,8 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 		editor.putLong(Constants.PREF_LAST_UPDATE, new Date().getTime());
 		editor.commit();
 
+		// remove from download list
+		LNReaderApplication.getInstance().removeDownload(TAG);
 	}
 
 	private ArrayList<PageModel> getUpdatedChapters(ICallbackNotifier callback) throws Exception {

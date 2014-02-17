@@ -165,17 +165,6 @@ public class LNReaderApplication extends Application {
 		return downloadList;
 	}
 
-	// public void updateDownload(String id, Integer progress){
-	//
-	// for (int i=0;i<downloadList.size();i++) {
-	// if (downloadList.get(i).getDownloadId() == id) {
-	// downloadList.get(i).setDownloadProgress(progress);
-	// }
-	// }
-	// if (DownloadListActivity.getInstance() != null)
-	// DownloadListActivity.getInstance().updateContent();
-	// }
-
 	public void updateDownload(String id, Integer progress, String message) {
 
 		/*

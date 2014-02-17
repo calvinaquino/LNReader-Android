@@ -1,4 +1,4 @@
-1.1.15-beta3
+1.1.15-beta4
 - Differentiate between Missing chapter (Red) with relink=1 chapter (Pink).
 - New Feature for maintenance.
   - Find and Delete Missing Chapter
@@ -10,6 +10,8 @@
 - Add MHTML support for saving External Url on Android 4.3 and up.
 - Add option to clean up the temp used for MHTML.
 - Externalize alternate language parser info.
+- Optimize Bookmark loading.
+- Add option to decrease Novel loading time by skipping updated detection => (!) icon.
 
 1.1.14
 - Fix Chapter parser.
