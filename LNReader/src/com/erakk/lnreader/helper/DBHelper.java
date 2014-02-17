@@ -283,9 +283,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		return result;
 	}
 
-	public ArrayList<PageModel> getAllNovels(SQLiteDatabase db, boolean alphOrder) {
+	public ArrayList<PageModel> getAllNovels(SQLiteDatabase db, boolean alphOrder, boolean quick) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
-		Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder)
+		Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder, quick)
 				, new String[] { Constants.ROOT_NOVEL });
 		try {
 			cursor.moveToFirst();
@@ -301,9 +301,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		return pages;
 	}
 
-	public ArrayList<PageModel> getAllTeaser(SQLiteDatabase db, boolean alphOrder) {
+	public ArrayList<PageModel> getAllTeaser(SQLiteDatabase db, boolean alphOrder, boolean quick) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
-		Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder)
+		Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder, quick)
 				, new String[] { "Category:Teasers" });
 		try {
 			cursor.moveToFirst();
@@ -319,9 +319,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		return pages;
 	}
 
-	public ArrayList<PageModel> getAllOriginal(SQLiteDatabase db, boolean alphOrder) {
+	public ArrayList<PageModel> getAllOriginal(SQLiteDatabase db, boolean alphOrder, boolean quick) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
-		Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder)
+		Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder, quick)
 				, new String[] { "Category:Original" });
 		try {
 			cursor.moveToFirst();
@@ -337,10 +337,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		return pages;
 	}
 
-	public ArrayList<PageModel> getAllAlternative(SQLiteDatabase db, boolean alphOrder, String language) {
+	public ArrayList<PageModel> getAllAlternative(SQLiteDatabase db, boolean alphOrder, boolean quick, String language) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
 		if (language != null) {
-			Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder)
+			Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder, quick)
 					, new String[] { AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo() });
 
 			try {
@@ -358,19 +358,25 @@ public class DBHelper extends SQLiteOpenHelper {
 		return pages;
 	}
 
-	private String getNovelListQuery(boolean alphOrder) {
-		String sql = "select * from " + TABLE_PAGE +
-				" left join ( select " + COLUMN_PAGE + ", sum(UPDATESCOUNT) " +
-				"             from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE +
-				"                         , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
-				"                           then 1 else 0 end as UPDATESCOUNT " +
-				"                    from " + TABLE_NOVEL_DETAILS +
-				"                    join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE +
-				"                    join " + TABLE_PAGE + " on " + TABLE_PAGE + "." + COLUMN_PARENT + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE +
-				"                    join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE + " " +
-				"             ) group by " + COLUMN_PAGE +
-				" ) r on " + TABLE_PAGE + "." + COLUMN_PAGE + " = r." + COLUMN_PAGE +
-				" where " + COLUMN_PARENT + " = ? ";
+	private String getNovelListQuery(boolean alphOrder, boolean isQuickLoad) {
+		String sql = "";
+		if(isQuickLoad) {
+			sql = "select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ? ";
+		}
+		else {
+			sql = "select * from " + TABLE_PAGE +
+					" left join ( select " + COLUMN_PAGE + ", sum(UPDATESCOUNT) " +
+					"             from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE +
+					"                         , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
+					"                           then 1 else 0 end as UPDATESCOUNT " +
+					"                    from " + TABLE_NOVEL_DETAILS +
+					"                    join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE +
+					"                    join " + TABLE_PAGE + " on " + TABLE_PAGE + "." + COLUMN_PARENT + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE +
+					"                    join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE + " " +
+					"             ) group by " + COLUMN_PAGE +
+					" ) r on " + TABLE_PAGE + "." + COLUMN_PAGE + " = r." + COLUMN_PAGE +
+					" where " + COLUMN_PARENT + " = ? ";
+		}
 		if (alphOrder)
 			sql += " ORDER BY " + COLUMN_TITLE;
 		else

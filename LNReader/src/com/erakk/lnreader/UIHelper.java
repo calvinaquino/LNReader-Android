@@ -490,4 +490,8 @@ public class UIHelper {
 	public static boolean getUpdateIncludeExternal(Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_UPDATE_INCLUDE_EXTERNAL, true);
 	}
+
+	public static boolean getQuickLoad(Context context) {
+		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_QUICK_LOAD, false);
+	}
 }

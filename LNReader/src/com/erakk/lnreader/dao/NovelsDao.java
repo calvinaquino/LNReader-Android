@@ -132,31 +132,34 @@ public class NovelsDao {
 		// check if main page exist
 		synchronized (dbh) {
 			try {
+				long start = java.lang.System.currentTimeMillis();
 				db = dbh.getReadableDatabase();
 				page = PageModelHelper.getMainPage(db);
+
+				if(page != null) {
+					list = dbh.getAllNovels(db, alphOrder, isQuickLoad());
+					Log.d(TAG, "Found Main Novels: " + list.size());
+				}
+				Log.i(TAG, String.format("DB Loading Time - Main Novel: %s", java.lang.System.currentTimeMillis() - start));
 			} finally {
-				db.close();
+				if(db != null)
+					db.close();
 			}
 		}
 		if (page == null) {
 			Log.d(TAG, "No Main_Page data!");
 			list = getNovelsFromInternet(notifier);
-		} else {
-			// get from db
-			synchronized (dbh) {
-				try {
-					db = dbh.getReadableDatabase();
-					list = dbh.getAllNovels(db, alphOrder);// dbh.selectAllByColumn(db,
-					// DBHelper.COLUMN_TYPE,
-					// PageModel.TYPE_NOVEL);
-				} finally {
-					db.close();
-				}
-			}
-			Log.d(TAG, "Found: " + list.size());
 		}
 
 		return list;
+	}
+
+	private boolean isQuickLoad() {
+		boolean result = UIHelper.getQuickLoad(LNReaderApplication.getInstance().getApplicationContext());
+		if (result) {
+			Log.w(TAG, "Using non-secure connection!");
+		}
+		return result;
 	}
 
 	public ArrayList<PageModel> getNovelsFromInternet(ICallbackNotifier notifier) throws Exception {
@@ -244,17 +247,15 @@ public class NovelsDao {
 	public ArrayList<PageModel> getWatchedNovel() {
 		ArrayList<PageModel> watchedNovel = null;
 		synchronized (dbh) {
-			SQLiteDatabase db = dbh.getReadableDatabase();
+			SQLiteDatabase db = null;
 			try {
-				// watchedNovel = dbh.selectAllByColumn(db,
-				// DBHelper.COLUMN_IS_WATCHED + " = ? and ("
-				// + DBHelper.COLUMN_PARENT + " = ? or "
-				// + DBHelper.COLUMN_PARENT + " = ? )"
-				// , new String[] { "1", "Main_Page", "Category:Teasers" }
-				// , DBHelper.COLUMN_TITLE );
+				long start = java.lang.System.currentTimeMillis();
+				db = dbh.getReadableDatabase();
 				watchedNovel = dbh.getAllWatchedNovel(db, true);
+				Log.i(TAG, String.format("DB Loading Time - Watched Novel: %s", java.lang.System.currentTimeMillis() - start));
 			} finally {
-				db.close();
+				if(db != null)
+					db.close();
 			}
 		}
 		return watchedNovel;
@@ -264,29 +265,24 @@ public class NovelsDao {
 		SQLiteDatabase db = null;
 		PageModel page = null;
 		ArrayList<PageModel> list = null;
-		// check if main page exist
 		synchronized (dbh) {
 			try {
+				long start = java.lang.System.currentTimeMillis();
 				db = dbh.getReadableDatabase();
 				page = PageModelHelper.getTeaserPage(db);
+				if(page != null) {
+					list = dbh.getAllTeaser(db, alphOrder, isQuickLoad());
+					Log.d(TAG, "Found Teaser: " + list.size());
+				}
+				Log.i(TAG, String.format("DB Loading Time - Teaser Novel: %s", java.lang.System.currentTimeMillis() - start));
 			} finally {
-				db.close();
+				if(db != null)
+					db.close();
 			}
 		}
 
 		if (page == null) {
 			return getTeaserFromInternet(notifier);
-		} else {
-			// get from db
-			synchronized (dbh) {
-				try {
-					db = dbh.getReadableDatabase();
-					list = dbh.getAllTeaser(db, alphOrder);
-				} finally {
-					db.close();
-				}
-			}
-			Log.d(TAG, "Found: " + list.size());
 		}
 
 		return list;
@@ -363,34 +359,29 @@ public class NovelsDao {
 		return list;
 	}
 
-	// Originals, copied from teaser
 	public ArrayList<PageModel> getOriginal(ICallbackNotifier notifier, boolean alphOrder) throws Exception {
 		SQLiteDatabase db = null;
 		PageModel page = null;
 		ArrayList<PageModel> list = null;
-		// check if main page exist
+
 		synchronized (dbh) {
 			try {
+				long start = java.lang.System.currentTimeMillis();
 				db = dbh.getReadableDatabase();
 				page = PageModelHelper.getOriginalPage(db);
+				if(page != null) {
+					list = dbh.getAllOriginal(db, alphOrder, isQuickLoad());
+					Log.d(TAG, "Found: " + list.size());
+				}
+				Log.i(TAG, String.format("DB Loading Time - Original: %s", java.lang.System.currentTimeMillis() - start));
 			} finally {
-				db.close();
+				if(db != null)
+					db.close();
 			}
 		}
 
 		if (page == null) {
 			return getOriginalFromInternet(notifier);
-		} else {
-			// get from db
-			synchronized (dbh) {
-				try {
-					db = dbh.getReadableDatabase();
-					list = dbh.getAllOriginal(db, alphOrder);
-				} finally {
-					db.close();
-				}
-			}
-			Log.d(TAG, "Found: " + list.size());
 		}
 
 		return list;
@@ -467,34 +458,28 @@ public class NovelsDao {
 		return list;
 	}
 
-	// Alternative Language, copied from Original
 	public ArrayList<PageModel> getAlternative(ICallbackNotifier notifier, boolean alphOrder, String language) throws Exception {
 		SQLiteDatabase db = null;
 		PageModel page = null;
 		ArrayList<PageModel> list = null;
-		// check if main page exist
 		synchronized (dbh) {
 			try {
+				long start = java.lang.System.currentTimeMillis();
 				db = dbh.getReadableDatabase();
 				page = PageModelHelper.getAlternativePage(db, language);
+				if(page != null) {
+					list = dbh.getAllAlternative(db, alphOrder, isQuickLoad(), language);
+					Log.d(TAG, "Found: " + list.size());
+				}
+				Log.i(TAG, String.format("DB Loading Time - Alt Novel %s: %s", language ,java.lang.System.currentTimeMillis() - start));
 			} finally {
-				db.close();
+				if(db != null)
+					db.close();
 			}
 		}
 
 		if (page == null) {
 			return getAlternativeFromInternet(notifier, language);
-		} else {
-			// get from db
-			synchronized (dbh) {
-				try {
-					db = dbh.getReadableDatabase();
-					list = dbh.getAllAlternative(db, alphOrder, language);
-				} finally {
-					db.close();
-				}
-			}
-			Log.d(TAG, "Found: " + list.size());
 		}
 
 		return list;
@@ -1267,8 +1252,8 @@ public class NovelsDao {
 					Log.i(TAG, "Image found in DB, but doesn't exist in URL decoded path: " + java.net.URLDecoder.decode(imageTemp.getPath(), java.nio.charset.Charset.defaultCharset().displayName()));
 					downloadBigImage = true;
 				} // else Log.i(TAG, "Image found in DB with URL decoded path: " +
-					// java.net.URLDecoder.decode(imageTemp.getPath(),
-					// java.nio.charset.Charset.defaultCharset().displayName()));
+				// java.net.URLDecoder.decode(imageTemp.getPath(),
+				// java.nio.charset.Charset.defaultCharset().displayName()));
 
 			} catch (Exception e) {
 				Log.i(TAG, "Image found in DB, but path string seems to be broken: " + imageTemp.getPath()

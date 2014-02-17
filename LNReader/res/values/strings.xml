@@ -449,4 +449,7 @@
     </plurals>
     <string name="update_include_external_title">Include External Chapter</string>
     <string name="update_include_external_summary">Include External Chapter when updating the information.</string>
+    <string name="quick_load_title">Quick Load Novel List</string>
+    <string name="quick_load_summary">Enable quick load of novel list, but the update icon will not be shown.</string>
+    <string name="novel_listing">Novel Listing</string>
 </resources>

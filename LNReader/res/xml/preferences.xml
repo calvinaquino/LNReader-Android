@@ -11,16 +11,18 @@
 				<ListPreference android:defaultValue="en" android:entries="@array/languageSelection" android:entryValues="@array/languageSelectionValues" android:key="language_selection" android:title="@string/language_selection" />
 				
 			</PreferenceCategory>
-			<Preference android:key="select_alternative_language" android:summary="@string/alternative_language_summary" android:title="@string/alternative_language_title" />
-			<PreferenceCategory android:title="@string/pref_listing">
+			
+			<PreferenceCategory android:title="@string/novel_listing"><CheckBoxPreference android:defaultValue="false" android:key="alphabet_order" android:summary="@string/alphabet_order_summary" android:title="@string/alphabet_order_title" /><CheckBoxPreference android:title="@string/quick_load_title" android:defaultValue="false" android:key="quick_load" android:summary="@string/quick_load_summary" /><Preference android:key="select_alternative_language" android:summary="@string/alternative_language_summary" android:title="@string/alternative_language_title" /></PreferenceCategory><PreferenceCategory android:title="@string/pref_listing">
 				<CheckBoxPreference android:defaultValue="false" android:key="touch_download_chapter" android:summary="@string/auto_download_chapter_summary" android:title="@string/auto_download_chapter_title" />
-				<CheckBoxPreference android:defaultValue="false" android:key="alphabet_order" android:summary="@string/alphabet_order_summary" android:title="@string/alphabet_order_title" />
+				
 				<CheckBoxPreference android:defaultValue="false" android:summary="@string/hide_empty_volume_summary" android:key="hide_empty_volume" android:title="@string/hide_empty_volume_title" />
 				<CheckBoxPreference android:defaultValue="true" android:key="show_missing" android:summary="@string/show_missing_summary" android:title="@string/show_missing_title" />
 				<CheckBoxPreference android:defaultValue="true" android:key="show_redlink" android:summary="@string/pref_show_redlink_summary" android:title="@string/pref_show_redlink_title" />
 				<CheckBoxPreference android:defaultValue="true" android:key="show_external" android:summary="@string/show_external_summary" android:title="@string/show_external_title" />
 				<CheckBoxPreference android:defaultValue="false" android:summary="@string/bookmark_order_summary" android:key="bookmark_order" android:title="@string/bookmark_order_title" />
+				
 			</PreferenceCategory>
+			
 		</PreferenceScreen>
 		<PreferenceScreen android:key="update_category" android:title="@string/update_preferences" >
 			<ListPreference android:defaultValue="0" android:entries="@array/updateInterval" android:entryValues="@array/updateIntervalValues" android:key="updates_interval" android:summary="@string/update_interval_summary" android:title="@string/update_interval_title" />

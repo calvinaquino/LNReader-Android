@@ -170,13 +170,15 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		synchronized (this) {
 			// refresh the data
 			Log.d(TAG, "Refreshing data: " + data.size() + " items");
-			for (int i = 0; i < data.size(); ++i) {
-				try {
-					PageModel temp = NovelsDao.getInstance(context).getPageModel(data.get(i), null);
-					temp.setUpdateCount(data.get(i).getUpdateCount());
-					data.set(i, temp);
-				} catch (Exception e) {
-					Log.e(TAG, "Error when refreshing PageModel: " + data.get(i).getPage(), e);
+			if(!UIHelper.getQuickLoad(context)) {
+				for (int i = 0; i < data.size(); ++i) {
+					try {
+						PageModel temp = NovelsDao.getInstance(context).getPageModel(data.get(i), null);
+						temp.setUpdateCount(data.get(i).getUpdateCount());
+						data.set(i, temp);
+					} catch (Exception e) {
+						Log.e(TAG, "Error when refreshing PageModel: " + data.get(i).getPage(), e);
+					}
 				}
 			}
 			super.notifyDataSetChanged();
