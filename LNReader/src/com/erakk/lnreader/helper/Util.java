@@ -26,7 +26,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -58,11 +60,11 @@ public class Util {
 		Date now = new Date();
 		long dif = now.getTime() - date.getTime();
 		if (dif < 0) return "Unknown";
-		
+
 		dif /= 1000; // convert from milliseconds to seconds
 		if (dif < 60)
 			return context.getResources().getString(R.string.timespan_seconds); // <1 minute ago
-		
+
 		dif /= 60; // convert from seconds to minutes
 		if (dif < 60)
 			return context.getResources().getQuantityString(R.plurals.timespan_minutes, (int) dif, (int) dif);
@@ -70,19 +72,19 @@ public class Util {
 		dif /= 60; // convert from minutes to hours
 		if (dif < 24)
 			return context.getResources().getQuantityString(R.plurals.timespan_hours, (int) dif, (int) dif);
-		
+
 		dif /= 24; // convert from hours to days
 		if (dif < 7)
 			return context.getResources().getQuantityString(R.plurals.timespan_days, (int) dif, (int) dif);
-		
+
 		dif /= 7; // convert from days to weeks
 		if (dif < 30)
 			return context.getResources().getQuantityString(R.plurals.timespan_weeks, (int) dif, (int) dif);
-		
+
 		dif /= 30; // convert from weeks to months
 		if (dif < 12)
 			return context.getResources().getQuantityString(R.plurals.timespan_months, (int) dif, (int) dif);
-		
+
 		dif /= 12; // convert from months to years
 		return context.getResources().getQuantityString(R.plurals.timespan_years, (int) dif, (int) dif);
 
@@ -161,7 +163,7 @@ public class Util {
 		return false;
 	}
 
-/**
+	/**
 	 * Remove | \ ? * < " : > + [ ] / ' from filename
 	 * @param filename
 	 * @return
@@ -334,6 +336,17 @@ public class Util {
 		return ret;
 	}
 
+
+	/***
+	 * http://stackoverflow.com/a/7410956
+	 */
+	public final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
+		@Override
+		public boolean verify(String hostname, SSLSession session) {
+			return true;
+		}
+	};
+
 	public static SSLSocketFactory initUnSecureSSL() throws IOException {
 		SSLSocketFactory sslSocketFactory = null;
 		// Create a trust manager that does not validate certificate chains
@@ -356,7 +369,8 @@ public class Util {
 		// Install the all-trusting trust manager
 		final SSLContext sslContext;
 		try {
-			sslContext = SSLContext.getInstance("SSL");
+			sslContext = SSLContext.getInstance("TLS");
+			//sslContext = SSLContext.getInstance("SSL");
 			sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
 			// Create an ssl socket factory with our all-trusting manager
 			sslSocketFactory = sslContext.getSocketFactory();

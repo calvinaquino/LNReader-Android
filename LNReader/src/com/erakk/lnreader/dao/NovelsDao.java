@@ -791,8 +791,8 @@ public class NovelsDao {
 						String message = context.getResources().getString(R.string.load_novel_cover_image);
 						notifier.onProgressCallback(new CallbackEventData(message, TAG));
 					}
-					DownloadFileTask task = new DownloadFileTask(notifier);
-					ImageModel image = task.downloadImage(novel.getCoverUrl());
+					DownloadFileTask task = new DownloadFileTask(novel.getCoverUrl(), notifier);
+					ImageModel image = task.downloadImage();
 					// TODO: need to save to db?
 					Log.d(TAG, "Cover Image: " + image.toString());
 				}
@@ -1128,13 +1128,13 @@ public class NovelsDao {
 		}
 		if (doc != null) {
 			// download all attached images
-			DownloadFileTask task = new DownloadFileTask(notifier);
 			for (ImageModel image : content.getImages()) {
 				if (notifier != null) {
 					String message = context.getResources().getString(R.string.load_novel_image_download, image.getUrl());
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
-				image = task.downloadImage(image.getUrl());
+				DownloadFileTask task = new DownloadFileTask(image.getUrl(), notifier);
+				image = task.downloadImage();
 				// TODO: need to save image to db? mostly thumbnail only
 			}
 
@@ -1297,8 +1297,8 @@ public class NovelsDao {
 				// only return the full image url
 				image = CommonParser.parseImagePage(doc);
 
-				DownloadFileTask downloader = new DownloadFileTask(notifier);
-				image = downloader.downloadImage(image.getUrl());
+				DownloadFileTask downloader = new DownloadFileTask(image.getUrl(), notifier);
+				image = downloader.downloadImage();
 				image.setReferer(url);
 
 				image = insertImage(image);
@@ -1309,15 +1309,6 @@ public class NovelsDao {
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				++retry;
-				if (retry > getRetry())
-					throw eof;
-			} catch (IOException eof) {
-				++retry;
-				String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
-				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData(message, TAG));
-				}
-				Log.d(TAG, message, eof);
 				if (retry > getRetry())
 					throw eof;
 			}

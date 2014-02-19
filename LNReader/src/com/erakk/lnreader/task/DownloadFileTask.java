@@ -5,13 +5,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.Date;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -25,31 +26,36 @@ import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.ImageModel;
 
-public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<ImageModel>> {
+public class DownloadFileTask extends AsyncTask<Void, Integer, AsyncTaskResult<ImageModel>> {
 	private static final String TAG = DownloadFileTask.class.toString();
 	private ICallbackNotifier notifier = null;
 	private String source;
+	private final URL url;
 
-	public DownloadFileTask(ICallbackNotifier notifier) {
-		super();
+	public DownloadFileTask(URL url, ICallbackNotifier notifier) {
 		this.notifier = notifier;
+		this.url = url;
 	}
 
 	@Override
-	protected AsyncTaskResult<ImageModel> doInBackground(URL... urls) {
+	protected AsyncTaskResult<ImageModel> doInBackground(Void... urls) {
 		try {
-			ImageModel image = downloadImage(urls[0]);
-			return new AsyncTaskResult<ImageModel>(image);
+			return new AsyncTaskResult<ImageModel>(downloadImage());
 		} catch (Exception e) {
 			return new AsyncTaskResult<ImageModel>(e);
 		}
 	}
 
-	public ImageModel downloadImage(URL url) throws Exception {
-		Log.d(TAG, "Start Downloading: " + url.toString());
+	public ImageModel downloadImage() throws Exception{
+		return downloadImage(this.url);
+	}
+
+	@SuppressLint("DefaultLocale")
+	public ImageModel downloadImage(URL imageUrl) throws Exception {
+		Log.d(TAG, "Start Downloading: " + imageUrl.toString());
 		InputStream input = null;
 		OutputStream output = null;
-		String filepath = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + url.getFile();
+		String filepath = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + imageUrl.getFile();
 		@SuppressWarnings("deprecation")
 		String decodedUrl = Util.sanitizeFilename(URLDecoder.decode(filepath));
 		Log.d(TAG, "Saving to: " + decodedUrl);
@@ -67,22 +73,32 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		File tempFilename = new File(decodedUrl + ".!tmp");
 		File decodedFile = new File(decodedUrl);
 
-		Log.d(TAG, "Start downloading image: " + url);
+		Log.d(TAG, "Start downloading image: " + imageUrl);
 
 		// remove temp file if exist
 		if (tempFilename.exists()) {
 			tempFilename.delete();
 		}
 
-		URLConnection connection = url.openConnection();
+		HttpURLConnection connection = null;
+		if (imageUrl.getProtocol().toLowerCase().equals("https")) {
+			if(UIHelper.getIgnoreCert(LNReaderApplication.getInstance().getApplicationContext())) {
+				// Ignore cert errors!
+				HttpsURLConnection.setDefaultSSLSocketFactory(Util.initUnSecureSSL());
+				HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
+				https.setHostnameVerifier(Util.DO_NOT_VERIFY);
+				connection = https;
+				Log.w(TAG, "Using insecure https: Ignore cert error");
+			}
+		}
+		else {
+			connection = (HttpURLConnection) imageUrl.openConnection();
+		}
 
 		int timeout = UIHelper.getIntFromPreferences(Constants.PREF_TIMEOUT, 60) * 1000;
 		connection.setConnectTimeout(timeout);
 		connection.setReadTimeout(timeout);
-		if (UIHelper.getIgnoreCert(LNReaderApplication.getInstance().getApplicationContext()))
-			if (connection instanceof HttpsURLConnection) {
-				((HttpsURLConnection) connection).setSSLSocketFactory(Util.initUnSecureSSL());
-			}
+
 
 		connection.connect();
 
@@ -112,7 +128,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 					}
 
 					// download the file
-					input = new BufferedInputStream(url.openStream());
+					input = new BufferedInputStream(imageUrl.openStream());
 					output = new FileOutputStream(tempFilename);
 
 					byte data[] = new byte[1024];
@@ -127,7 +143,7 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 						// via notifier, C# style :)
 						if (notifier != null) {
 							DownloadCallbackEventData message = new DownloadCallbackEventData(null, downloaded, fileLength, source);
-							message.setUrl(url.toString());
+							message.setUrl(imageUrl.toString());
 							message.setFilePath(decodedUrl);
 							notifier.onProgressCallback(message);
 						}
@@ -138,12 +154,13 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 					if (downloaded > 0)
 						break;
 				} catch (Exception ex) {
+					Log.e(TAG, ex.getMessage(), ex);
 					if (i > UIHelper.getIntFromPreferences(Constants.PREF_RETRY, 3)) {
-						Log.e(TAG, "Failed to download: " + url.toString(), ex);
+						Log.e(TAG, "Failed to download: " + imageUrl.toString(), ex);
 						throw ex;
 					} else {
 						if (notifier != null) {
-							notifier.onProgressCallback(new CallbackEventData("Downloading: " + url + "\nRetry: " + i + "x", source));
+							notifier.onProgressCallback(new CallbackEventData("Downloading: " + imageUrl + "\nRetry: " + i + "x", source));
 						}
 					}
 				} finally {
@@ -162,12 +179,12 @@ public class DownloadFileTask extends AsyncTask<URL, Integer, AsyncTaskResult<Im
 		}
 
 		ImageModel image = new ImageModel();
-		image.setName(url.getFile());
-		image.setUrl(url);
+		image.setName(imageUrl.getFile());
+		image.setUrl(imageUrl);
 		image.setPath(filepath);
 		image.setLastCheck(new Date());
 		image.setLastUpdate(new Date());
-		Log.d(TAG, "Complete Downloading: " + url.toString());
+		Log.d(TAG, "Complete Downloading: " + imageUrl);
 		return image;
 	}
 }

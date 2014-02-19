@@ -13,17 +13,18 @@ import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.ImageModel;
 
-public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTaskResult<ImageModel>> implements ICallbackNotifier {
+public class LoadImageTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskResult<ImageModel>> implements ICallbackNotifier {
 	private static final String TAG = LoadImageTask.class.toString();
 	public volatile IExtendedCallbackNotifier<AsyncTaskResult<ImageModel>> callback;
 	private String url = "";
 	private final boolean refresh;
 	private final String taskId;
 
-	public LoadImageTask(boolean refresh, IExtendedCallbackNotifier<AsyncTaskResult<ImageModel>> callback) {
+	public LoadImageTask(String url, boolean refresh, IExtendedCallbackNotifier<AsyncTaskResult<ImageModel>> callback) {
 		this.callback = callback;
 		this.refresh = refresh;
 		this.taskId = this.toString();
+		this.url = url;
 	}
 
 	@Override
@@ -38,9 +39,8 @@ public class LoadImageTask extends AsyncTask<String, ICallbackEventData, AsyncTa
 	}
 
 	@Override
-	protected AsyncTaskResult<ImageModel> doInBackground(String... params) {
+	protected AsyncTaskResult<ImageModel> doInBackground(Void... params) {
 		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
-		this.url = params[0];
 		ImageModel image = new ImageModel();
 		image.setName(url);
 		try {

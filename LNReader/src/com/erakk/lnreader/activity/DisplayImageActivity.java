@@ -84,14 +84,14 @@ public class DisplayImageActivity extends SherlockActivity implements IExtendedC
 	@SuppressLint("NewApi")
 	private void executeTask(String url, boolean refresh) {
 		imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
-		task = new LoadImageTask(refresh, this);
+		task = new LoadImageTask(url, refresh, this);
 		String key = TAG + ":" + url;
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if (isAdded) {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new String[] { url });
+				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 			else
-				task.execute(new String[] { url });
+				task.execute();
 		} else {
 			LoadImageTask tempTask = (LoadImageTask) LNReaderApplication.getInstance().getTask(key);
 			if (tempTask != null) {
