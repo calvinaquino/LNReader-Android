@@ -1,4 +1,4 @@
-1.1.15-beta4
+1.1.15
 - Differentiate between Missing chapter (Red) with relink=1 chapter (Pink).
 - New Feature for maintenance.
   - Find and Delete Missing Chapter
