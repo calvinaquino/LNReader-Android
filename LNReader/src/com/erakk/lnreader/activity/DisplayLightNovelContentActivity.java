@@ -28,6 +28,7 @@ import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.ValueCallback;
 import android.widget.Button;
 import android.widget.EditText;
@@ -166,6 +167,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			webView.destroy();
 		}
 		unbindService(mConnection);
+
+		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		super.onDestroy();
 	}
 
