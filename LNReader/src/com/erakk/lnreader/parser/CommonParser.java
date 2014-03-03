@@ -9,7 +9,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -107,14 +106,17 @@ public class CommonParser {
 		ArrayList<PageModel> chapters = book.getChapterCollection();
 		ArrayList<PageModel> validatedChapters = new ArrayList<PageModel>();
 		int chapterOrder = 0;
-		for (Iterator<PageModel> iChapter = chapters.iterator(); iChapter.hasNext();) {
-			PageModel chapter = iChapter.next();
+		for (PageModel chapter : chapters) {
 
-			// redlink=1 means chapter is missing, commented out to include missing chapters
-			if (!(// chapter.getPage().contains("redlink=1") || // missing page
-			chapter.getPage().contains("User:") || // user page
-			chapter.getPage().contains("Special:BookSources") // ISBN handler
-			)) {
+			if( chapter.getPage().contains("User:") // user page
+					|| chapter.getPage().contains("Special:BookSources")// ISBN handler
+					// || chapter.getPage().contains("redlink=1") // missing page
+					)
+			{
+				Log.d(TAG, "Skipping: " + chapter.getPage());
+				continue;
+			}
+			else {
 				chapter.setOrder(chapterOrder);
 				validatedChapters.add(chapter);
 				++chapterOrder;
@@ -132,8 +134,7 @@ public class CommonParser {
 	public static ArrayList<BookModel> validateNovelBooks(ArrayList<BookModel> books) {
 		ArrayList<BookModel> validatedBooks = new ArrayList<BookModel>();
 		int bookOrder = 0;
-		for (Iterator<BookModel> iBooks = books.iterator(); iBooks.hasNext();) {
-			BookModel book = iBooks.next();
+		for (BookModel book: books) {
 			BookModel validatedBook = new BookModel();
 
 			ArrayList<PageModel> validatedChapters = validateNovelChapters(book);
@@ -249,7 +250,13 @@ public class CommonParser {
 			} else if (!pElement.hasAttr("missing")) {
 				// parse date
 				String tempDate = pElement.attr("touched");
-				int wikiId = Integer.parseInt(pElement.attr("pageid"));
+
+				int wikiId = -1;
+				try{
+					wikiId = Integer.parseInt(pElement.attr("pageid"));
+				}catch(NumberFormatException nex) {
+					Log.e(TAG, String.format("Invalid pageid: '%s' for %s", pElement.attr("pageid") , temp.getPage()));
+				}
 
 				if (!Util.isStringNullOrEmpty(tempDate)) {
 					Date lastUpdate = formatter.parse(tempDate);
