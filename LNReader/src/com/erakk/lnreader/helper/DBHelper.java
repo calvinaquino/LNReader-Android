@@ -385,7 +385,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		return sql;
 	}
 
-	public ArrayList<PageModel> getAllWatchedNovel(SQLiteDatabase db, boolean alphOrder) {
+	public ArrayList<PageModel> getAllWatchedNovel(SQLiteDatabase db, boolean alphOrder, boolean isQuickLoad) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
 
 		ArrayList<String> parents = new ArrayList<String>();
@@ -396,22 +396,31 @@ public class DBHelper extends SQLiteOpenHelper {
 			parents.add("'" + info.getCategoryInfo() + "'");
 		}
 
-		String sql = "select * " +
-				" from " + TABLE_PAGE +
-				" left join ( select " + COLUMN_PAGE +
-				"                  , sum(UPDATESCOUNT) " +
-				"             from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE +
-				"                         , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
-				"                           then 1 else 0 end as UPDATESCOUNT " +
-				"                    from " + TABLE_NOVEL_DETAILS +
-				"                    join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE +
-				"                    join " + TABLE_PAGE + " on " + TABLE_PAGE + "." + COLUMN_PARENT + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE +
-				"                                           and " + TABLE_PAGE + "." + COLUMN_IS_MISSING + " != 1 " +
-				"                    join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE + " " +
-				"             ) group by " + COLUMN_PAGE +
-				" ) r on " + TABLE_PAGE + "." + COLUMN_PAGE + " = r." + COLUMN_PAGE +
-				" where " + COLUMN_PARENT + " in (" + Util.join(parents, ", ") + ") " +
-				"   and  " + TABLE_PAGE + "." + COLUMN_IS_WATCHED + " = ? ";
+		String sql = "";
+		if(isQuickLoad) {
+			sql = "select * from " + TABLE_PAGE +
+					" where " + COLUMN_PARENT + " in (" + Util.join(parents, ", ") + ") " +
+					"   and  " + TABLE_PAGE + "." + COLUMN_IS_WATCHED + " = ? ";
+		}
+		else {
+			sql = "select * " +
+					" from " + TABLE_PAGE +
+					" left join ( select " + COLUMN_PAGE +
+					"                  , sum(UPDATESCOUNT) " +
+					"             from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE +
+					"                         , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
+					"                           then 1 else 0 end as UPDATESCOUNT " +
+					"                    from " + TABLE_NOVEL_DETAILS +
+					"                    join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE +
+					"                    join " + TABLE_PAGE + " on " + TABLE_PAGE + "." + COLUMN_PARENT + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE +
+					"                                           and " + TABLE_PAGE + "." + COLUMN_IS_MISSING + " != 1 " +
+					"                    join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE + " " +
+					"             ) group by " + COLUMN_PAGE +
+					" ) r on " + TABLE_PAGE + "." + COLUMN_PAGE + " = r." + COLUMN_PAGE +
+					" where " + COLUMN_PARENT + " in (" + Util.join(parents, ", ") + ") " +
+					"   and  " + TABLE_PAGE + "." + COLUMN_IS_WATCHED + " = ? ";
+		}
+
 		if (alphOrder)
 			sql += " ORDER BY " + COLUMN_TITLE;
 		else

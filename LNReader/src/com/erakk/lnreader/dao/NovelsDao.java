@@ -251,7 +251,7 @@ public class NovelsDao {
 			try {
 				long start = java.lang.System.currentTimeMillis();
 				db = dbh.getReadableDatabase();
-				watchedNovel = dbh.getAllWatchedNovel(db, true);
+				watchedNovel = dbh.getAllWatchedNovel(db, true, isQuickLoad());
 				Log.i(TAG, String.format("DB Loading Time - Watched Novel: %s", java.lang.System.currentTimeMillis() - start));
 			} finally {
 				if(db != null)
