@@ -1,3 +1,9 @@
+1.1.16-beta
+- Implement quick load on Watched Novels.
+- Update parser to handle Special: pages.
+- Update handler for keep awake on novel contents.
+- Update https handler.
+
 1.1.15
 - Differentiate between Missing chapter (Red) with relink=1 chapter (Pink).
 - New Feature for maintenance.

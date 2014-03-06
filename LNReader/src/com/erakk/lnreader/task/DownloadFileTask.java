@@ -46,7 +46,7 @@ public class DownloadFileTask extends AsyncTask<Void, Integer, AsyncTaskResult<I
 		}
 	}
 
-	public ImageModel downloadImage() throws Exception{
+	public ImageModel downloadImage() throws Exception {
 		return downloadImage(this.url);
 	}
 
@@ -82,14 +82,15 @@ public class DownloadFileTask extends AsyncTask<Void, Integer, AsyncTaskResult<I
 
 		HttpURLConnection connection = null;
 		if (imageUrl.getProtocol().toLowerCase().equals("https")) {
-			if(UIHelper.getIgnoreCert(LNReaderApplication.getInstance().getApplicationContext())) {
+			if (UIHelper.getIgnoreCert(LNReaderApplication.getInstance().getApplicationContext())) {
 				// Ignore cert errors!
 				HttpsURLConnection.setDefaultSSLSocketFactory(Util.initUnSecureSSL());
-				HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
-				https.setHostnameVerifier(Util.DO_NOT_VERIFY);
-				connection = https;
 				Log.w(TAG, "Using insecure https: Ignore cert error");
+
 			}
+			HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
+			https.setHostnameVerifier(Util.DO_NOT_VERIFY);
+			connection = https;
 		}
 		else {
 			connection = (HttpURLConnection) imageUrl.openConnection();
@@ -98,7 +99,6 @@ public class DownloadFileTask extends AsyncTask<Void, Integer, AsyncTaskResult<I
 		int timeout = UIHelper.getIntFromPreferences(Constants.PREF_TIMEOUT, 60) * 1000;
 		connection.setConnectTimeout(timeout);
 		connection.setReadTimeout(timeout);
-
 
 		connection.connect();
 

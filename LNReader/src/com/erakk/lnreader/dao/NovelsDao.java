@@ -136,13 +136,13 @@ public class NovelsDao {
 				db = dbh.getReadableDatabase();
 				page = PageModelHelper.getMainPage(db);
 
-				if(page != null) {
+				if (page != null) {
 					list = dbh.getAllNovels(db, alphOrder, isQuickLoad());
 					Log.d(TAG, "Found Main Novels: " + list.size());
 				}
 				Log.i(TAG, String.format("DB Loading Time - Main Novel: %s", java.lang.System.currentTimeMillis() - start));
 			} finally {
-				if(db != null)
+				if (db != null)
 					db.close();
 			}
 		}
@@ -156,9 +156,6 @@ public class NovelsDao {
 
 	private boolean isQuickLoad() {
 		boolean result = UIHelper.getQuickLoad(LNReaderApplication.getInstance().getApplicationContext());
-		if (result) {
-			Log.w(TAG, "Using non-secure connection!");
-		}
 		return result;
 	}
 
@@ -254,7 +251,7 @@ public class NovelsDao {
 				watchedNovel = dbh.getAllWatchedNovel(db, true, isQuickLoad());
 				Log.i(TAG, String.format("DB Loading Time - Watched Novel: %s", java.lang.System.currentTimeMillis() - start));
 			} finally {
-				if(db != null)
+				if (db != null)
 					db.close();
 			}
 		}
@@ -270,13 +267,13 @@ public class NovelsDao {
 				long start = java.lang.System.currentTimeMillis();
 				db = dbh.getReadableDatabase();
 				page = PageModelHelper.getTeaserPage(db);
-				if(page != null) {
+				if (page != null) {
 					list = dbh.getAllTeaser(db, alphOrder, isQuickLoad());
 					Log.d(TAG, "Found Teaser: " + list.size());
 				}
 				Log.i(TAG, String.format("DB Loading Time - Teaser Novel: %s", java.lang.System.currentTimeMillis() - start));
 			} finally {
-				if(db != null)
+				if (db != null)
 					db.close();
 			}
 		}
@@ -369,13 +366,13 @@ public class NovelsDao {
 				long start = java.lang.System.currentTimeMillis();
 				db = dbh.getReadableDatabase();
 				page = PageModelHelper.getOriginalPage(db);
-				if(page != null) {
+				if (page != null) {
 					list = dbh.getAllOriginal(db, alphOrder, isQuickLoad());
 					Log.d(TAG, "Found: " + list.size());
 				}
 				Log.i(TAG, String.format("DB Loading Time - Original: %s", java.lang.System.currentTimeMillis() - start));
 			} finally {
-				if(db != null)
+				if (db != null)
 					db.close();
 			}
 		}
@@ -467,13 +464,13 @@ public class NovelsDao {
 				long start = java.lang.System.currentTimeMillis();
 				db = dbh.getReadableDatabase();
 				page = PageModelHelper.getAlternativePage(db, language);
-				if(page != null) {
+				if (page != null) {
 					list = dbh.getAllAlternative(db, alphOrder, isQuickLoad(), language);
 					Log.d(TAG, "Found: " + list.size());
 				}
-				Log.i(TAG, String.format("DB Loading Time - Alt Novel %s: %s", language ,java.lang.System.currentTimeMillis() - start));
+				Log.i(TAG, String.format("DB Loading Time - Alt Novel %s: %s", language, java.lang.System.currentTimeMillis() - start));
 			} finally {
-				if(db != null)
+				if (db != null)
 					db.close();
 			}
 		}
@@ -1252,8 +1249,8 @@ public class NovelsDao {
 					Log.i(TAG, "Image found in DB, but doesn't exist in URL decoded path: " + java.net.URLDecoder.decode(imageTemp.getPath(), java.nio.charset.Charset.defaultCharset().displayName()));
 					downloadBigImage = true;
 				} // else Log.i(TAG, "Image found in DB with URL decoded path: " +
-				// java.net.URLDecoder.decode(imageTemp.getPath(),
-				// java.nio.charset.Charset.defaultCharset().displayName()));
+					// java.net.URLDecoder.decode(imageTemp.getPath(),
+					// java.nio.charset.Charset.defaultCharset().displayName()));
 
 			} catch (Exception e) {
 				Log.i(TAG, "Image found in DB, but path string seems to be broken: " + imageTemp.getPath()
