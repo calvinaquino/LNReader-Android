@@ -97,28 +97,6 @@ public class AlternativeLanguageInfo {
 				Log.e(TAG, ex.getMessage(), ex);
 			}
 
-			// /* In future, this information could be stored in XML file */
-			// /* French Language */
-			// instance.put(Constants.LANG_FRENCH, new AlternativeLanguageInfo(
-			// Constants.LANG_FRENCH, "French", "#Synopsis",
-			// new ArrayList<String>(Arrays.asList("_par", "Texte_Intégral", "Full_Text", "Série_", "série_", "Tome_",
-			// "tome_", "Histoire_", "histoire_", "Histoires_", "histoires_", "Side_Stor", "Short_Stor", "Material"))));
-			// Log.d(TAG, "French Language added");
-			//
-			// /* Indonesian Language */
-			// instance.put(Constants.LANG_BAHASA_INDONESIA, new AlternativeLanguageInfo(
-			// Constants.LANG_BAHASA_INDONESIA, "Indonesian", "#Sinopsis_Cerita",
-			// new ArrayList<String>(Arrays.asList("_oleh", "Full_Text", "Serial_", "serial_", "Seri_", "seri_",
-			// "Cerita_Tambah", "Cerita_Singkat", "Cerita_Pendek", "Side_Stor", "Short_Stor"))));
-			// Log.d(TAG, "Bahasa Indonesia Language added");
-			//
-			// /* Polish Language */
-			// instance.put(Constants.LANG_POLISH, new AlternativeLanguageInfo(
-			// Constants.LANG_POLISH, "Polish", "#Streszczenie_fabu.C5.82y",
-			// new ArrayList<String>(Arrays.asList("_autorstwa", "Pe.C5.82ny_tekst", "Seria_", "seria_",
-			// "Cerita_Tambah", "Historie_poboczne", "Historie_Poboczne", "Historie_kr.C3.B3tki",
-			// "Historie_Kr.C3.B3tki", "Side_Stor", "Short_Stor"))));
-			// Log.d(TAG, "Polish Language added");
 		}
 	}
 

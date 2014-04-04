@@ -2,7 +2,7 @@
 <LanguageInfos>
 	<LanguageInfo>
 		<Language>Bahasa Indonesia</Language>
-		<Category>Indonesian</Category>
+		<Category>Light_novel_(Indonesian)</Category>
 		<MarkerSynopsis>#Sinopsis_Cerita</MarkerSynopsis>
 		<ParserRules>
 			<Rule>_oleh</Rule>
