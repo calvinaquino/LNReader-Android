@@ -2,7 +2,7 @@
 <LanguageInfos>
 	<LanguageInfo>
 		<Language>Bahasa Indonesia</Language>
-		<Category>Light_novel_(Indonesian)</Category>
+		<Category>Indonesian</Category>
 		<MarkerSynopsis>#Sinopsis_Cerita</MarkerSynopsis>
 		<ParserRules>
 			<Rule>_oleh</Rule>
@@ -20,7 +20,7 @@
 	</LanguageInfo>
 	<LanguageInfo>
 		<Language>Polish</Language>
-		<Category>Polish</Category>
+		<Category>Light_novel_(Polish)</Category>
 		<MarkerSynopsis>#Streszczenie_fabu.C5.82y</MarkerSynopsis>
 		<ParserRules>
 			<Rule>_autorstwa</Rule>
