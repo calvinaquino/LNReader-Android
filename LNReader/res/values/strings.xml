@@ -411,6 +411,7 @@
     <string name="load_novel_list_download">Downloading novels&#8230;</string>
     <string name="load_novel_list_alternate">Fetching novels in %1$s&#8230;</string>
     <string name="load_novel_list_finished">Found %1$d novels.</string>
+    <string name="load_subcategory_list_finished">Found %1$d sub-categories.</string>
     <string name="load_novel_details_download">Downloading details of %1$s&#8230;</string>
     <string name="load_novel_details_update">Updating details of %1$s&#8230;</string>
     <string name="load_novel_cover_image">Downloading cover image&#8230;</string>
