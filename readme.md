@@ -119,3 +119,6 @@ this mascot (is the icon on the upper left, only shows on newer android versions
   - For reading image cache.
 * `android.permission.VIBRATE`
   - For notification.
+
+## Useful link
+- How to get ADB log http://forum.xda-developers.com/showthread.php?t=1726238
