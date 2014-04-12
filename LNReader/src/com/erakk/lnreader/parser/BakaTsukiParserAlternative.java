@@ -51,9 +51,11 @@ public class BakaTsukiParserAlternative {
 			throw new NullPointerException("Document cannot be null.");
 
 		Element stage = doc.select("#mw-pages").first();
+		
 		int order = 0;
 		if (stage != null) {
 			Elements list = stage.select("li");
+			
 			for (Element element : list) {
 				Element link = element.select("a").first();
 				PageModel page = new PageModel();
