@@ -215,7 +215,7 @@ table.wikitable>caption {
 /******************************************************************************
 * HIDING UNWANTED ELEMENTS
 *******************************************************************************/
-#siteSub, #catlinks, #jump-to-nav, .printfooter, .editsection, .collapsed /*, .thumbcaption, .toc*/ {
+#siteSub, #catlinks, #jump-to-nav, .printfooter, .editsection, .collapsed, .mw-editsection /*, .thumbcaption, .toc*/ {
 	display:none !important;
 }
 

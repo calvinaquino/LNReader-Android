@@ -1,8 +1,9 @@
-1.1.16-beta
+1.1.16
 - Implement quick load on Watched Novels.
 - Update parser to handle Special: pages.
 - Update handler for keep awake on novel contents.
 - Update https handler.
+- Update alternate language parser (freedomofkeima).
 
 1.1.15
 - Differentiate between Missing chapter (Red) with relink=1 chapter (Pink).
