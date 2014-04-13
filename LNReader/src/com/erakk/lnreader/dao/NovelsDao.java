@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
@@ -481,35 +483,43 @@ public class NovelsDao {
 
 		return list;
 	}
-
-	public ArrayList<PageModel> getAlternativeFromInternet(ICallbackNotifier notifier, String language) throws Exception {
+	
+	/** 
+	 * Due to several changes in baka-tsuki pages as April 2014, crawling recursively through all subcategories
+	 * @param notifier
+	 * @param language
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<PageModel> getAlternativeFromInternet(final ICallbackNotifier notifier, String language) throws Exception {
 		checkInternetConnection();
 		if (notifier != null) {
 			String message = context.getResources().getString(R.string.load_novel_list_alternate, language);
 			notifier.onProgressCallback(new CallbackEventData(message, TAG));
 		}
-
-		// parse information
-		PageModel teaserPage = new PageModel();
-
+		
+		// parse Information
+		PageModel modelPage = new PageModel();
+		
 		if (language != null) {
-			teaserPage.setPage(AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo());
-			teaserPage.setTitle(context.getResources().getString(R.string.title_novels_page_alternate, language));
-			teaserPage.setLanguage(language);
+			modelPage.setPage(AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo());
+			modelPage.setTitle(context.getResources().getString(R.string.title_novels_page_alternate, language));
+			modelPage.setLanguage(language);
 		}
 
-		teaserPage = getPageModel(teaserPage, notifier);
-		teaserPage.setType(PageModel.TYPE_NOVEL);
-
+		modelPage = getPageModel(modelPage, notifier);
+		modelPage.setType(PageModel.TYPE_NOVEL);
+		
 		// update page model
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
-			teaserPage = PageModelHelper.insertOrUpdatePageModel(db, teaserPage, true);
+			modelPage = PageModelHelper.insertOrUpdatePageModel(db, modelPage, true);
 			Log.d(TAG, "Updated " + language);
 		}
-
-		// get alternative list
-		ArrayList<PageModel> list = null;
+		
+		// get all sub-categories
+		final ArrayList<Document> global_docs = new ArrayList<Document>(); // list of all documents
+		ArrayList<String> links = null;
 		String url = null;
 		if (language != null)
 			url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?title=" + AlternativeLanguageInfo.getAlternativeLanguageInfo().get(language).getCategoryInfo();
@@ -518,11 +528,12 @@ public class NovelsDao {
 			try {
 				Response response = connect(url, retry);
 				Document doc = response.parse();
-				list = BakaTsukiParserAlternative.ParseAlternativeList(doc, language);
-				Log.d(TAG, "Found from internet: " + list.size() + " " + language + " Novel");
+				global_docs.add(doc); // add main category page to global_docs
+				links = BakaTsukiParserAlternative.CrawlAlternativeCategory(doc);
+				Log.d(TAG, "Found from internet: " + links.size() + " Sub-Category");
 
 				if (notifier != null) {
-					String message = context.getResources().getString(R.string.load_novel_list_finished, list.size());
+					String message = context.getResources().getString(R.string.load_subcategory_list_finished, links.size());
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				break;
@@ -545,8 +556,90 @@ public class NovelsDao {
 					throw eof;
 			}
 		}
+		
+		// get all documents from pre-defined links
+		final ArrayList<String> getLinks = new ArrayList<String>(links);
+		final Object sync_lock = new Object(); // locking's object for global_docs
+		final Object sync_lock_log = new Object(); // locking's object for error message
+		
+		// Since there're only about 1 to 4 sub-categories, we'll create all threads at once
+		if (links != null) {
+			
+			Thread[] threads = null;
+			if (getLinks.size() > 0) threads = new Thread[getLinks.size()];
+			
+			for (int i = 0; i < getLinks.size(); i++) {
+				final int access_index = i;
+				threads[access_index] = new Thread() {
+					public void run() {
+						int retry = 0;
+						while (retry < getRetry()) {
+							try {
+								String url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?title=" + getLinks.get(access_index);
+								if (url != null) {
+									Response response = connect(url, retry);
+									Document doc = response.parse();
+									synchronized(sync_lock) {
+										global_docs.add(doc); // add main category page to global_docs
+										Log.d(TAG, "Found from internet: " + url + " page.");	
+									}	
+								}
 
-		// save teaser list
+								break;
+							} catch (EOFException eof) {
+								++retry;
+								synchronized(sync_lock_log) {
+									if (retry > getRetry()) Log.d(TAG, "Timeout when accessing " + getLinks.get(access_index));	
+								}
+							} catch (IOException eof) {
+								++retry;
+
+								synchronized(sync_lock_log) {
+									if (retry > getRetry()) Log.d(TAG, "Timeout when accessing " + getLinks.get(access_index));	
+								}
+							}
+						}
+					}
+				};
+				threads[access_index].start(); // start threads
+			}
+			
+			if (getLinks.size() != 0) {
+				for (int i = 0; i < getLinks.size(); i++) threads[i].join();
+			}
+			
+		}
+		
+		Log.d(TAG, "Number of global_docs found: " + global_docs.size());	
+		
+		// parse all documents (ensure no double entities)
+		ArrayList<PageModel> list = new ArrayList<PageModel>();
+		for (Document current_doc : global_docs) {
+			ArrayList<PageModel> temp_list = BakaTsukiParserAlternative.ParseAlternativeList(current_doc, language);
+			for (PageModel current_list : temp_list) {
+				boolean isExist = false;
+				for (PageModel pointed_list : list) {
+					if (pointed_list.getPage().equals(current_list.getPage())) {
+						isExist = true;
+						break;
+					}
+				}
+				if (!isExist) list.add(current_list);
+			}
+		}
+		
+		// sorts alphabetically
+		Collections.sort(list, new Comparator<PageModel>() {
+	        @Override public int compare(PageModel p1, PageModel p2) {
+	            return p1.getPage().compareTo(p2.getPage());
+	        }
+
+	    });
+		
+		// set orderings
+		for (int i = 0; i < list.size(); i++) list.get(i).setOrder(i);
+		
+		// save lists
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			for (PageModel pageModel : list) {
@@ -554,9 +647,10 @@ public class NovelsDao {
 				Log.d(TAG, "Updated " + language + " novel: " + pageModel.getPage());
 			}
 		}
-
+		
 		return list;
 	}
+
 
 	/**
 	 * Get page model from db. If autoDownload = true, get the pageModel from

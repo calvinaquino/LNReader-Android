@@ -35,6 +35,41 @@ import com.erakk.lnreader.model.PageModel;
 public class BakaTsukiParserAlternative {
 
 	private static final String TAG = BakaTsukiParserAlternative.class.toString();
+	
+	/**
+	 * Crawl all sub-categories
+	 * @param doc
+	 * @return
+	 */
+	public static ArrayList<String> CrawlAlternativeCategory(Document doc) {
+		ArrayList<String> result = new ArrayList<String>();
+		if (doc == null)
+			throw new NullPointerException("Document cannot be null.");
+		
+		Element stage = doc.select("#mw-subcategories").first();
+		
+		if (stage != null) {
+			Elements list = stage.select("li");
+			
+			for (Element element : list) {
+				Element link = element.select("a").first();
+				String subcategory_link = CommonParser.normalizeInternalUrl(link.attr("href"));
+				// Check pattern
+				boolean isPatternFound = false;
+				
+				for (String pattern : Constants.categoryPattern) {
+					if (subcategory_link.indexOf(pattern) != -1) {
+						isPatternFound = true;
+						break;
+					}
+				}
+				
+				if (isPatternFound) result.add(subcategory_link);
+			}
+		}
+		
+		return result;
+	}
 
 	/**
 	 * Parse Alternative Language list from http://www.baka-tsuki.org/project/index.php?title=[Alternative Category]
@@ -52,7 +87,7 @@ public class BakaTsukiParserAlternative {
 
 		Element stage = doc.select("#mw-pages").first();
 		
-		int order = 0;
+		// int order = 0;
 		if (stage != null) {
 			Elements list = stage.select("li");
 			
@@ -66,10 +101,10 @@ public class BakaTsukiParserAlternative {
 				page.setType(PageModel.TYPE_NOVEL);
 				page.setTitle(link.text());
 				page.setStatus(language);
-				page.setOrder(order);
+				// page.setOrder(order);
 
 				result.add(page);
-				++order;
+				// ++order;
 			}
 		}
 		return result;
