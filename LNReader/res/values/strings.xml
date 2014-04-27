@@ -453,4 +453,7 @@
     <string name="quick_load_title">Quick Load Novel List</string>
     <string name="quick_load_summary">Enable quick load of novel list, but the update icon will not be shown.</string>
     <string name="novel_listing">Novel Listing</string>
+    <string name="open_chapter_title">Open Chapter</string>
+    <string name="open_details_title">Open Novel Details</string>
+    <string name="update_delete_selected_title">Delete Update History</string>
 </resources>

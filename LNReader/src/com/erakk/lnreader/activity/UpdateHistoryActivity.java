@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -53,6 +57,7 @@ public class UpdateHistoryActivity extends SherlockActivity implements IExtended
 		});
 		updateContent();
 		LNReaderApplication.getInstance().setUpdateServiceListener(this);
+		registerForContextMenu(updateListView);
 	}
 
 	@Override
@@ -84,6 +89,70 @@ public class UpdateHistoryActivity extends SherlockActivity implements IExtended
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.activity_update_history, menu);
 		return true;
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.update_history_context_menu, menu);
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+		UpdateInfoModel chapter = updateList.get(info.position);
+		if (chapter.getUpdateType() == UpdateType.NewNovel) {
+			menu.findItem(R.id.menu_open_chapter).setVisible(false);
+		}
+		else {
+			menu.findItem(R.id.menu_open_chapter).setVisible(true);
+		}
+	}
+
+	@Override
+	public boolean onContextItemSelected(android.view.MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		switch (item.getItemId()) {
+		case R.id.menu_open_chapter:
+			if (info.position > -1) {
+				UpdateInfoModel chapter = updateList.get(info.position);
+				openChapter(chapter);
+			}
+			return true;
+		case R.id.menu_open_details:
+			if (info.position > -1) {
+				UpdateInfoModel chapter = updateList.get(info.position);
+				openDetails(chapter);
+			}
+			return true;
+		case R.id.menu_update_delete_selected:
+			if (info.position > -1) {
+				UpdateInfoModel chapter = updateList.get(info.position);
+				NovelsDao.getInstance().deleteUpdateHistory(chapter);
+				updateContent();
+			}
+			return true;
+		default:
+			return super.onContextItemSelected(item);
+		}
+	}
+
+	private void openDetails(UpdateInfoModel item) {
+		Intent intent = new Intent(this, DisplayLightNovelDetailsActivity.class);
+		if (item.getUpdateType() == UpdateType.NewNovel) {
+			intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
+		} else if (item.getUpdateType() == UpdateType.New ||
+				item.getUpdateType() == UpdateType.Updated ||
+				item.getUpdateType() == UpdateType.Deleted) {
+			try {
+				String parent = item.getUpdatePageModel().getParent();
+				String details = parent.split(Constants.NOVEL_BOOK_DIVIDER)[0];
+				intent.putExtra(Constants.EXTRA_PAGE, details);
+			} catch (Exception ex) {
+				Log.e(TAG, "Failed to get parent page model", ex);
+				intent = null;
+			}
+		}
+
+		if (intent != null)
+			startActivity(intent);
 	}
 
 	@Override
