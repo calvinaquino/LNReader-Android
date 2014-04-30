@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -74,7 +75,7 @@ public class MainActivity extends SherlockActivity implements IExtendedCallbackN
 		Log.d(TAG, "Main created.");
 
 		//check db access
-		if(true) {
+		if(true && Environment.getExternalStorageState() != Environment.MEDIA_MOUNTED) {
 			checkDBAccess();
 		}
 	}
