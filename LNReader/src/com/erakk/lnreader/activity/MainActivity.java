@@ -3,12 +3,15 @@ package com.erakk.lnreader.activity;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -23,13 +26,21 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
+import com.erakk.lnreader.task.AsyncTaskResult;
+import com.erakk.lnreader.task.CheckDBReadyTask;
 
-public class MainActivity extends SherlockActivity {
+public class MainActivity extends SherlockActivity implements IExtendedCallbackNotifier<AsyncTaskResult<Boolean>> {
 	private static final String TAG = MainActivity.class.toString();
 	private boolean isInverted;
 	private final Context ctx = this;
+
+	private Dialog dialog;
+	private CheckDBReadyTask task = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -61,6 +72,11 @@ public class MainActivity extends SherlockActivity {
 			}).show();
 		}
 		Log.d(TAG, "Main created.");
+
+		//check db access
+		if(true) {
+			checkDBAccess();
+		}
 	}
 
 	@Override
@@ -242,5 +258,50 @@ public class MainActivity extends SherlockActivity {
 		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
 		edit.putBoolean(Constants.PREF_FIRST_RUN, false);
 		edit.commit();
+	}
+
+
+	@SuppressLint({"NewApi" })
+	private void checkDBAccess() {
+		task = new CheckDBReadyTask(this);
+		String key = TAG + ":CheckDBAccess";
+		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
+		if (isAdded) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			else
+				task.execute();
+		} else {
+			CheckDBReadyTask tempTask = (CheckDBReadyTask) LNReaderApplication.getInstance().getTask(key);
+			if (tempTask != null) {
+				task = tempTask;
+				task.owner = this;
+			}
+		}
+		dialog = new Dialog(this);
+		dialog.setTitle("Checking DB access");
+		dialog.setCanceledOnTouchOutside(false);
+		dialog.show();
+	}
+
+	@Override
+	public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<Boolean> result) {
+		if(dialog != null) {
+			dialog.dismiss();
+			Toast.makeText(this, message.getMessage(), Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	@Override
+	public void onProgressCallback(ICallbackEventData message) {
+		if(dialog != null) {
+			dialog.setTitle(message.getMessage());
+		}
+	}
+
+	@Override
+	public boolean downloadListSetup(String taskId, String message, int setupType, boolean hasError) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
