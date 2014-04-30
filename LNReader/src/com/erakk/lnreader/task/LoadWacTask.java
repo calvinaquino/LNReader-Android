@@ -51,7 +51,7 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 
 	@Override
 	protected AsyncTaskResult<Boolean> doInBackground(Void... arg0) {
-		return new AsyncTaskResult<Boolean>(loadFromWac(this.wacName));
+		return new AsyncTaskResult<Boolean>(loadFromWac(this.wacName), Boolean.class);
 	}
 
 	@Override

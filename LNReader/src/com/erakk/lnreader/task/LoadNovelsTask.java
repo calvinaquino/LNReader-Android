@@ -86,7 +86,7 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
 				}
 			}
 
-			return new AsyncTaskResult<PageModel[]>(novels.toArray(new PageModel[novels.size()]));
+			return new AsyncTaskResult<PageModel[]>(novels.toArray(new PageModel[novels.size()]), PageModel[].class);
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting novel list: " + e.getMessage(), e);
 			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_error, e.getMessage()), source));

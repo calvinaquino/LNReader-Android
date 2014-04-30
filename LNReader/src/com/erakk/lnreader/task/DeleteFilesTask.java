@@ -38,7 +38,7 @@ public class DeleteFilesTask extends AsyncTask<Void, ICallbackEventData, AsyncTa
 				count = delete(f, count);
 			}
 
-			return new AsyncTaskResult<Integer>(count);
+			return new AsyncTaskResult<Integer>(count, Integer.class);
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to delete: " + filename, e);
 			return new AsyncTaskResult<Integer>(e);

@@ -58,7 +58,7 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 				return new AsyncTaskResult<NovelCollectionModel[]>(e);
 			}
 		}
-		return new AsyncTaskResult<NovelCollectionModel[]>(result.toArray(new NovelCollectionModel[result.size()]));
+		return new AsyncTaskResult<NovelCollectionModel[]>(result.toArray(new NovelCollectionModel[result.size()]), NovelCollectionModel[].class);
 	}
 
 	@Override

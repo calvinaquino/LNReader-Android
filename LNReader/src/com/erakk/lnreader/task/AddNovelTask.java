@@ -38,7 +38,7 @@ public class AddNovelTask extends AsyncTask<PageModel, ICallbackEventData, Async
 
 			NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetailsFromInternet(page, this);
 			Log.d("AddNovelTask", "Downloaded: " + novelCol.getPage());
-			return new AsyncTaskResult<NovelCollectionModel>(novelCol);
+			return new AsyncTaskResult<NovelCollectionModel>(novelCol, novelCol.getClass());
 		} catch (Exception e) {
 			Log.e("AddNovelTask", e.getClass().toString() + ": " + e.getMessage(), e);
 			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.add_novel_task_error, page.getPage(), e.getMessage()), source));

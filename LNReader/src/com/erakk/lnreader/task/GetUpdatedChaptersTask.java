@@ -43,7 +43,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 		service.setRunning(true);
 		try {
 			ArrayList<PageModel> result = getUpdatedChapters(this);
-			return new AsyncTaskResult<ArrayList<PageModel>>(result);
+			return new AsyncTaskResult<ArrayList<PageModel>>(result, result.getClass());
 		} catch (Exception ex) {
 			Log.e(TAG, "Error when updating", ex);
 			return new AsyncTaskResult<ArrayList<PageModel>>(ex);

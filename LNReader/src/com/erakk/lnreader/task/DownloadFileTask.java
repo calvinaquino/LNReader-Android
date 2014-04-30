@@ -40,7 +40,7 @@ public class DownloadFileTask extends AsyncTask<Void, Integer, AsyncTaskResult<I
 	@Override
 	protected AsyncTaskResult<ImageModel> doInBackground(Void... urls) {
 		try {
-			return new AsyncTaskResult<ImageModel>(downloadImage());
+			return new AsyncTaskResult<ImageModel>(downloadImage(), ImageModel.class);
 		} catch (Exception e) {
 			return new AsyncTaskResult<ImageModel>(e);
 		}

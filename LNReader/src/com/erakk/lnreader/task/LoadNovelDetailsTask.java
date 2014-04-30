@@ -47,12 +47,12 @@ public class LoadNovelDetailsTask extends AsyncTask<Void, ICallbackEventData, As
 			if (refresh) {
 				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_detail_task_refreshing), source));
 				NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetailsFromInternet(pageModel, this);
-				return new AsyncTaskResult<NovelCollectionModel>(novelCol);
+				return new AsyncTaskResult<NovelCollectionModel>(novelCol, novelCol.getClass());
 			}
 			else {
 				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_detail_task_loading), source));
 				NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetails(pageModel, this);
-				return new AsyncTaskResult<NovelCollectionModel>(novelCol);
+				return new AsyncTaskResult<NovelCollectionModel>(novelCol, novelCol.getClass());
 			}
 		} catch (Exception e) {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);

@@ -2,10 +2,10 @@
 package com.erakk.lnreader.task;
 
 import java.net.URL;
-import org.jsoup.Jsoup;
-import org.jsoup.Connection.Response;
-import org.jsoup.nodes.Document;
 
+import org.jsoup.Connection.Response;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -16,12 +16,12 @@ public class DownloadPageTask extends AsyncTask<URL, Void, AsyncTaskResult<Docum
 		try {
 			Log.d("DownloadPageTask", "Downloading: " + arg0[0].toString());
 			Response response = Jsoup.connect(arg0[0].toString())
-									 .timeout(7000)
-									 .execute();
+					.timeout(7000)
+					.execute();
 			Log.d("DownloadPageTask", "Complete: " + arg0[0].toString());
-			return new AsyncTaskResult<Document>(response.parse());
+			return new AsyncTaskResult<Document>(response.parse(), Document.class);
 		} catch (Exception e) {
 			return new AsyncTaskResult<Document>(e);
-		}		
+		}
 	}
 }
