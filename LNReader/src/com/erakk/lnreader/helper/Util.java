@@ -56,6 +56,10 @@ public class Util {
 	 * @return
 	 */
 	public static String formatDateForDisplay(Context context, Date date) {
+		// validate input
+		if(date == null)
+			return "No Date available";
+
 		// Setup
 		Date now = new Date();
 		long dif = now.getTime() - date.getTime();
@@ -87,8 +91,6 @@ public class Util {
 
 		dif /= 12; // convert from months to years
 		return context.getResources().getQuantityString(R.plurals.timespan_years, (int) dif, (int) dif);
-
-		// + date.toLocaleString();
 	}
 
 	/**
