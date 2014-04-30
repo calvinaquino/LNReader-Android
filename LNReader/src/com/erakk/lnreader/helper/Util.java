@@ -302,20 +302,27 @@ public class Util {
 
 	@SuppressLint("NewApi")
 	public static long getFreeSpace(File path) {
+		long availableSpace = -1L;
+
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-			return path.getFreeSpace();
-		} else {
-			long availableSpace = -1L;
+			availableSpace = path.getFreeSpace();
+		}
+
+		if(availableSpace <= 0) {
 			try {
 				StatFs stat = new StatFs(path.getPath());
 				stat.restat(path.getPath());
-				availableSpace = (long) stat.getAvailableBlocks() * (long) stat.getBlockSize();
+
+				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
+					availableSpace =  stat.getAvailableBytes();
+				else
+					availableSpace = (long) stat.getAvailableBlocks() * (long) stat.getBlockSize();
 			} catch (Exception e) {
 				Log.e(TAG, "Failed to get free space.", e);
 			}
-
-			return availableSpace;
 		}
+		return availableSpace;
+
 	}
 
 	public static String convertStreamToString(InputStream is) throws Exception {
