@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -40,7 +39,7 @@ public class MainActivity extends SherlockActivity implements IExtendedCallbackN
 	private boolean isInverted;
 	private final Context ctx = this;
 
-	private Dialog dialog;
+	private AlertDialog dialog;
 	private CheckDBReadyTask task = null;
 
 	@Override
@@ -74,8 +73,8 @@ public class MainActivity extends SherlockActivity implements IExtendedCallbackN
 		}
 		Log.d(TAG, "Main created.");
 
-		//check db access
-		if(true && Environment.getExternalStorageState() != Environment.MEDIA_MOUNTED) {
+		// check db access
+		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 			checkDBAccess();
 		}
 	}
@@ -261,8 +260,7 @@ public class MainActivity extends SherlockActivity implements IExtendedCallbackN
 		edit.commit();
 	}
 
-
-	@SuppressLint({"NewApi" })
+	@SuppressLint({ "NewApi" })
 	private void checkDBAccess() {
 		task = new CheckDBReadyTask(this);
 		String key = TAG + ":CheckDBAccess";
@@ -279,15 +277,20 @@ public class MainActivity extends SherlockActivity implements IExtendedCallbackN
 				task.owner = this;
 			}
 		}
-		dialog = new Dialog(this);
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		alertDialogBuilder.setMessage("Checking...");
+		alertDialogBuilder.setCancelable(false);
+
+		dialog = alertDialogBuilder.create();
 		dialog.setTitle("Checking DB access");
+
 		dialog.setCanceledOnTouchOutside(false);
 		dialog.show();
 	}
 
 	@Override
 	public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<Boolean> result) {
-		if(dialog != null) {
+		if (dialog != null) {
 			dialog.dismiss();
 			Toast.makeText(this, message.getMessage(), Toast.LENGTH_SHORT).show();
 		}
@@ -295,8 +298,8 @@ public class MainActivity extends SherlockActivity implements IExtendedCallbackN
 
 	@Override
 	public void onProgressCallback(ICallbackEventData message) {
-		if(dialog != null) {
-			dialog.setTitle(message.getMessage());
+		if (dialog != null) {
+			dialog.setMessage(message.getMessage());
 		}
 	}
 

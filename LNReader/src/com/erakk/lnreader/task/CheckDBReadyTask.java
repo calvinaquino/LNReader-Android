@@ -23,23 +23,22 @@ public class CheckDBReadyTask extends AsyncTask<Void, ICallbackEventData, AsyncT
 		try {
 			boolean flag = true;
 			while (flag) {
-				String suffix = "";
+				Log.d(TAG, "DB State: " + Environment.getExternalStorageState() + dot);
 				if (dot == 0) {
-					suffix = ".";
+					publishProgress(new CallbackEventData(message + ".", TAG));
 					dot = 1;
 				} else if (dot == 1) {
-					suffix = "..";
+					publishProgress(new CallbackEventData(message + "..", TAG));
 					dot = 2;
-				} else if (dot == 1) {
-					suffix = "...";
+				} else if (dot == 2) {
+					publishProgress(new CallbackEventData(message + "...", TAG));
 					dot = 0;
 				}
 
-				publishProgress(new CallbackEventData(message + suffix, TAG));
 				Thread.sleep(500);
 
-				flag = (Environment.getExternalStorageState() != Environment.MEDIA_MOUNTED);
-				if(this.isCancelled()) {
+				flag = (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED));
+				if (this.isCancelled()) {
 					return new AsyncTaskResult<Boolean>(flag, Boolean.class);
 				}
 			}
@@ -49,6 +48,12 @@ public class CheckDBReadyTask extends AsyncTask<Void, ICallbackEventData, AsyncT
 			Log.e(TAG, ex.getMessage(), ex);
 			return new AsyncTaskResult<Boolean>(false, Boolean.class);
 		}
+	}
+
+	@Override
+	protected void onProgressUpdate(ICallbackEventData... values) {
+		// executed on UI thread.
+		owner.onProgressCallback(values[0]);
 	}
 
 	@Override
