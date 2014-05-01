@@ -277,6 +277,7 @@
     <string name="zip_files_task_error">Failed to zip files: %1$s.</string>
     <string name="zip_files_task_complete">Completed zipping: %1$s to: %2$s.</string>
     <string name="zip_files_task_progress_count">[%1$s of %2$s] Zipping %3$s.</string>
+    <string name="zip_files_no_freespace">Unable to get free space information or no more space available.</string>
     <string name="unzip_files_task_progress">UnZipping files&#8230;</string>
     <string name="unzip_files_task_error">Failed to unzip files: %1$s.</string>
     <string name="unzip_files_task_complete">Completed unzipping: %1$s to: %2$s.</string>

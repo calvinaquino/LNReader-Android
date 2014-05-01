@@ -57,13 +57,14 @@ public class Util {
 	 */
 	public static String formatDateForDisplay(Context context, Date date) {
 		// validate input
-		if(date == null)
+		if (date == null)
 			return "No Date available";
 
 		// Setup
 		Date now = new Date();
 		long dif = now.getTime() - date.getTime();
-		if (dif < 0) return "Unknown";
+		if (dif < 0)
+			return "Unknown";
 
 		dif /= 1000; // convert from milliseconds to seconds
 		if (dif < 60)
@@ -108,13 +109,16 @@ public class Util {
 			if (!dst.exists()) {
 				Log.w(TAG, "Destination File doesn't exists, try to create dummy file");
 				boolean result = dst.createNewFile();
-				if (!result) Log.e(TAG, "Failed ot create file");
+				if (!result)
+					Log.e(TAG, "Failed ot create file");
 			}
 			outChannel = new FileOutputStream(dst).getChannel();
 			inChannel.transferTo(0, inChannel.size(), outChannel);
 		} finally {
-			if (inChannel != null) inChannel.close();
-			if (outChannel != null) outChannel.close();
+			if (inChannel != null)
+				inChannel.close();
+			if (outChannel != null)
+				outChannel.close();
 		}
 	}
 
@@ -128,7 +132,9 @@ public class Util {
 	 */
 	public static boolean isInstanceOf(Collection<?> arrayList, Class<?> clazz) {
 		for (Object o : arrayList) {
-			if (o != null && o.getClass() == clazz) { return true; }
+			if (o != null && o.getClass() == clazz) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -161,11 +167,12 @@ public class Util {
 	}
 
 	public static boolean isStringNullOrEmpty(String input) {
-		if (input == null || input.length() == 0) return true;
+		if (input == null || input.length() == 0)
+			return true;
 		return false;
 	}
 
-	/**
+/**
 	 * Remove | \ ? * < " : > + [ ] / ' from filename
 	 * @param filename
 	 * @return
@@ -209,7 +216,8 @@ public class Util {
 			String message = LNReaderApplication.getInstance().getApplicationContext().getResources()
 					.getString(R.string.zip_files_task_progress_count, fileCount, total, absPath);
 			Log.d(TAG, message);
-			if (callback != null) callback.onProgressCallback(new CallbackEventData(message, "Util.zipFiles()"));
+			if (callback != null)
+				callback.onProgressCallback(new CallbackEventData(message, "Util.zipFiles()"));
 			FileInputStream fi = new FileInputStream(file);
 			origin = new BufferedInputStream(fi, Constants.BUFFER);
 			ZipEntry entry = new ZipEntry(absPath.replace(replacedRootPath, ""));
@@ -294,7 +302,8 @@ public class Util {
 	 */
 	public static String humanReadableByteCount(long bytes, boolean si) {
 		int unit = si ? 1000 : 1024;
-		if (bytes < unit) return bytes + " B";
+		if (bytes < unit)
+			return bytes + " B";
 		int exp = (int) (Math.log(bytes) / Math.log(unit));
 		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
 		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
@@ -306,17 +315,25 @@ public class Util {
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
 			availableSpace = path.getFreeSpace();
+			Log.d(TAG, "Free Space method 1: " + availableSpace);
 		}
 
-		if(availableSpace <= 0) {
+		if (availableSpace <= 0) {
 			try {
 				StatFs stat = new StatFs(path.getPath());
 				stat.restat(path.getPath());
 
-				if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
-					availableSpace =  stat.getAvailableBytes();
-				else
-					availableSpace = (long) stat.getAvailableBlocks() * (long) stat.getBlockSize();
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+					availableSpace = stat.getAvailableBytes();
+					Log.d(TAG, "Free Space method 2: " + availableSpace);
+				}
+				else {
+					long availableBlock = stat.getAvailableBlocks();
+					long blockSize = stat.getBlockSize();
+					availableSpace = availableBlock * blockSize;
+					Log.d(TAG, "Free Space method 3: " + availableBlock + " * " + blockSize + " = " + availableSpace);
+				}
+
 			} catch (Exception e) {
 				Log.e(TAG, "Failed to get free space.", e);
 			}
@@ -344,7 +361,6 @@ public class Util {
 		fin.close();
 		return ret;
 	}
-
 
 	/***
 	 * http://stackoverflow.com/a/7410956
@@ -379,7 +395,7 @@ public class Util {
 		final SSLContext sslContext;
 		try {
 			sslContext = SSLContext.getInstance("TLS");
-			//sslContext = SSLContext.getInstance("SSL");
+			// sslContext = SSLContext.getInstance("SSL");
 			sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
 			// Create an ssl socket factory with our all-trusting manager
 			sslSocketFactory = sslContext.getSocketFactory();

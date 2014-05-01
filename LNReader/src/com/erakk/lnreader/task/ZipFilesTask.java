@@ -63,12 +63,18 @@ public class ZipFilesTask extends AsyncTask<Void, ICallbackEventData, Void> impl
 		// get thumb images
 		publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.zip_files_task_get_files, rootPath), source));
 
+		// check free space
+		long freeSpaceInBytes = Util.getFreeSpace(new File(zipName).getParentFile());
+		if (freeSpaceInBytes == 0) {
+			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.zip_files_no_freespace), source));
+			return null;
+		}
+
 		// Java ref cheating using array
+		// check total filesize to be zipped.
 		Long totalSize[] = { 0L };
 		List<File> filenames = Util.getListFiles(new File(rootPath), totalSize, this);
 
-		// check the total file size
-		long freeSpaceInBytes = Util.getFreeSpace(new File(zipName));
 		Log.i(TAG, "Total File Size = " + totalSize[0] + ". Free Space: " + freeSpaceInBytes);
 		if (freeSpaceInBytes < totalSize[0]) {
 			String errorMessage = String.format("Not enough free space in %s (%s > %s)", rootPath, Util.humanReadableByteCount(freeSpaceInBytes, true), Util.humanReadableByteCount(totalSize[0], true));

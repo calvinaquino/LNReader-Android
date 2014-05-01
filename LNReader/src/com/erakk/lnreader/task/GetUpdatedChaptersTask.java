@@ -231,7 +231,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 
 		PageModel newP = NovelsDao.getInstance().getPageModelFromInternet(p, callback);
 
-		if (newP.getLastUpdate().getTime() > p.getLastUpdate().getTime()) {
+		if (newP != null && newP.getLastUpdate().getTime() > p.getLastUpdate().getTime()) {
 			Log.d(TAG, "TOS Updated.");
 			return newP;
 		}
