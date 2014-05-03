@@ -82,10 +82,9 @@ public class DownloadFileTask extends AsyncTask<Void, Integer, AsyncTaskResult<I
 
 		HttpURLConnection connection = null;
 		if (imageUrl.getProtocol().toLowerCase().equals("https")) {
-			if (UIHelper.getIgnoreCert(LNReaderApplication.getInstance().getApplicationContext())) {
-				// Ignore cert errors!
-				HttpsURLConnection.setDefaultSSLSocketFactory(Util.initUnSecureSSL());
-				Log.w(TAG, "Using insecure https: Ignore cert error");
+			if (UIHelper.getUseAppKeystore(LNReaderApplication.getInstance().getApplicationContext())) {
+				HttpsURLConnection.setDefaultSSLSocketFactory(Util.initMySecureSSL());
+				Log.w(TAG, "Using my https cert key store");
 
 			}
 			HttpsURLConnection https = (HttpsURLConnection) url.openConnection();

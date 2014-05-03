@@ -196,6 +196,11 @@ public class NovelsDao {
 						Response response = connect(url, retry);
 						list = BakaTsukiParser.ParseNovelList(response.body());
 
+						Date date = new Date();
+						for (PageModel pageModel : list) {
+							pageModel.setLastCheck(date);
+						}
+
 						Log.d(TAG, "Found from internet: " + list.size() + " Novels");
 
 						// saved to db and get saved value
@@ -214,7 +219,7 @@ public class NovelsDao {
 							String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
 							notifier.onProgressCallback(new CallbackEventData(message, TAG));
 						}
-						if (retry > getRetry())
+						if (retry >= getRetry())
 							throw eof;
 					} catch (IOException eof) {
 						++retry;
@@ -223,7 +228,7 @@ public class NovelsDao {
 							notifier.onProgressCallback(new CallbackEventData(message, TAG));
 						}
 						Log.d(TAG, message, eof);
-						if (retry > getRetry())
+						if (retry >= getRetry())
 							throw eof;
 					}
 				}
@@ -235,10 +240,10 @@ public class NovelsDao {
 		return list;
 	}
 
-	private boolean getIgnoreSecure() {
-		boolean result = UIHelper.getIgnoreCert(LNReaderApplication.getInstance().getApplicationContext());
+	private boolean getUseAppKeystore() {
+		boolean result = UIHelper.getUseAppKeystore(LNReaderApplication.getInstance().getApplicationContext());
 		if (result) {
-			Log.w(TAG, "Using non-secure connection!");
+			Log.i(TAG, "Using app keystore");
 		}
 		return result;
 	}
@@ -312,6 +317,7 @@ public class NovelsDao {
 		// get teaser list
 		ArrayList<PageModel> list = null;
 		String url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?title=Category:Teasers";
+		Log.d(TAG, "Teaser Url: " + url);
 		int retry = 0;
 		while (retry < getRetry()) {
 			try {
@@ -320,6 +326,12 @@ public class NovelsDao {
 
 				list = BakaTsukiParser.ParseTeaserList(doc);
 				Log.d(TAG, "Found from internet: " + list.size() + " Teaser");
+
+				list = getUpdateInfo(list, notifier);
+				Date date = new Date();
+				for (PageModel pageModel : list) {
+					pageModel.setLastCheck(date);
+				}
 
 				if (notifier != null) {
 					String message = context.getResources().getString(R.string.load_novel_list_finished, list.size());
@@ -332,7 +344,7 @@ public class NovelsDao {
 					String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
-				if (retry > getRetry())
+				if (retry >= getRetry())
 					throw eof;
 			} catch (IOException eof) {
 				++retry;
@@ -341,7 +353,7 @@ public class NovelsDao {
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				Log.d(TAG, message, eof);
-				if (retry > getRetry())
+				if (retry >= getRetry())
 					throw eof;
 			}
 		}
@@ -393,9 +405,11 @@ public class NovelsDao {
 			notifier.onProgressCallback(new CallbackEventData(message, TAG));
 		}
 
+		final String ORIGINAL_CAT = "Category:Original_novel";
+
 		// parse Category:Teasers information
 		PageModel teaserPage = new PageModel();
-		teaserPage.setPage("Category:Original");
+		teaserPage.setPage(ORIGINAL_CAT);
 		teaserPage.setLanguage(Constants.LANG_ENGLISH);
 		teaserPage.setTitle(context.getResources().getString(R.string.title_novels_page_original));
 		teaserPage = getPageModel(teaserPage, notifier);
@@ -405,12 +419,12 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			teaserPage = PageModelHelper.insertOrUpdatePageModel(db, teaserPage, true);
-			Log.d(TAG, "Updated Category:Original");
+			Log.d(TAG, "Updated " + ORIGINAL_CAT);
 		}
 
 		// get teaser list
 		ArrayList<PageModel> list = null;
-		String url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?title=Category:Original";
+		String url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?title=" + ORIGINAL_CAT;
 		int retry = 0;
 		while (retry < getRetry()) {
 			try {
@@ -419,6 +433,12 @@ public class NovelsDao {
 
 				list = BakaTsukiParser.ParseOriginalList(doc);
 				Log.d(TAG, "Found from internet: " + list.size() + " Teaser");
+
+				list = getUpdateInfo(list, notifier);
+				Date date = new Date();
+				for (PageModel pageModel : list) {
+					pageModel.setLastCheck(date);
+				}
 
 				if (notifier != null) {
 					String message = context.getResources().getString(R.string.load_novel_list_finished, list.size());
@@ -431,7 +451,7 @@ public class NovelsDao {
 					String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
-				if (retry > getRetry())
+				if (retry >= getRetry())
 					throw eof;
 			} catch (IOException eof) {
 				++retry;
@@ -440,7 +460,7 @@ public class NovelsDao {
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				Log.d(TAG, message, eof);
-				if (retry > getRetry())
+				if (retry >= getRetry())
 					throw eof;
 			}
 		}
@@ -544,7 +564,7 @@ public class NovelsDao {
 					String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
-				if (retry > getRetry())
+				if (retry >= getRetry())
 					throw eof;
 			} catch (IOException eof) {
 				++retry;
@@ -553,7 +573,7 @@ public class NovelsDao {
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				Log.d(TAG, message, eof);
-				if (retry > getRetry())
+				if (retry >= getRetry())
 					throw eof;
 			}
 		}
@@ -592,14 +612,14 @@ public class NovelsDao {
 							} catch (EOFException eof) {
 								++retry;
 								synchronized (sync_lock_log) {
-									if (retry > getRetry())
+									if (retry >= getRetry())
 										Log.d(TAG, "Timeout when accessing " + getLinks.get(access_index));
 								}
 							} catch (IOException eof) {
 								++retry;
 
 								synchronized (sync_lock_log) {
-									if (retry > getRetry())
+									if (retry >= getRetry())
 										Log.d(TAG, "Timeout when accessing " + getLinks.get(access_index));
 								}
 							}
@@ -645,6 +665,7 @@ public class NovelsDao {
 		});
 
 		// set orderings and last update
+		list = getUpdateInfo(list, notifier);
 		Date dt = new Date();
 		for (int i = 0; i < list.size(); i++) {
 			PageModel p = list.get(i);
@@ -738,7 +759,7 @@ public class NovelsDao {
 					String message = context.getResources().getString(R.string.load_novel_list_fetch, page.getTitle());
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
-				String encodedTitle = Util.UrlEncode(page.getPage());
+				String encodedTitle = Util.UrlEncode(page.getPage().trim());
 				String fullUrl = "http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=" + encodedTitle;
 				Response response = connect(fullUrl, retry);
 				PageModel pageModel = null;
@@ -764,7 +785,7 @@ public class NovelsDao {
 					String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
-				if (retry > getRetry())
+				if (retry >= getRetry())
 					throw eof;
 			} catch (IOException eof) {
 				++retry;
@@ -773,7 +794,7 @@ public class NovelsDao {
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				Log.d(TAG, message, eof);
-				if (retry > getRetry())
+				if (retry >= getRetry())
 					throw eof;
 			}
 		}
@@ -843,7 +864,7 @@ public class NovelsDao {
 					String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
-				if (retry > getRetry())
+				if (retry >= getRetry())
 					throw eof;
 			} catch (IOException eof) {
 				++retry;
@@ -852,7 +873,7 @@ public class NovelsDao {
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				Log.d(TAG, message, eof);
-				if (retry > getRetry())
+				if (retry >= getRetry())
 					throw eof;
 			}
 
@@ -987,7 +1008,7 @@ public class NovelsDao {
 					continue;
 				}
 				if (titles.length() + pageModels.get(i).getPage().length() < 2000) {
-					titles += "|" + Util.UrlEncode(pageModels.get(i).getPage());
+					titles += "|" + Util.UrlEncode(pageModels.get(i).getPage().trim());
 					checkedPageModel.add(pageModels.get(i));
 					++i;
 					++apiPageCount;
@@ -999,8 +1020,8 @@ public class NovelsDao {
 			// request the page
 			while (retry < getRetry()) {
 				try {
-					// Log.d(TAG, "Trying to get: " + baseUrl + titles);
 					String url = baseUrl + titles;
+					// Log.d(TAG, "Trying to get: " + baseUrl + titles);
 					Response response = connect(url, retry);
 					Document doc = response.parse();
 					ArrayList<PageModel> updatedPageModels = CommonParser.parsePageAPI(checkedPageModel, doc, url);
@@ -1018,7 +1039,7 @@ public class NovelsDao {
 						String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
 						notifier.onProgressCallback(new CallbackEventData(message, TAG));
 					}
-					if (retry > getRetry())
+					if (retry >= getRetry())
 						throw eof;
 				} catch (IOException eof) {
 					++retry;
@@ -1027,7 +1048,7 @@ public class NovelsDao {
 						notifier.onProgressCallback(new CallbackEventData(message, TAG));
 					}
 					Log.d(TAG, message, eof);
-					if (retry > getRetry())
+					if (retry >= getRetry())
 						throw eof;
 				}
 			}
@@ -1219,7 +1240,7 @@ public class NovelsDao {
 					String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
-				if (retry > getRetry())
+				if (retry >= getRetry())
 					throw eof;
 			} catch (IOException eof) {
 				++retry;
@@ -1228,7 +1249,7 @@ public class NovelsDao {
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				Log.d(TAG, message, eof);
-				if (retry > getRetry())
+				if (retry >= getRetry())
 					throw eof;
 			}
 		}
@@ -1415,7 +1436,7 @@ public class NovelsDao {
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				++retry;
-				if (retry > getRetry())
+				if (retry >= getRetry())
 					throw eof;
 			}
 		}
@@ -1642,6 +1663,6 @@ public class NovelsDao {
 	}
 
 	private Response connect(String url, int retry) throws IOException {
-		return Jsoup.connect(url).setSecure(!getIgnoreSecure()).timeout(getTimeout(retry)).execute();
+		return Jsoup.connect(url).setSecure(!getUseAppKeystore()).timeout(getTimeout(retry)).execute();
 	}
 }

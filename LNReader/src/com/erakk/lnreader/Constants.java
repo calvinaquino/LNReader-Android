@@ -105,7 +105,7 @@ public class Constants {
 	public static final String PREF_AUTO_BACKUP_ENABLED = "auto_backup_enabled";
 	public static final String PREF_BACKUP_LOCATION = "backup_location";
 	public static final String PREF_UPDATE_INCLUDE_REDLINK = "update_include_redlink";
-	public static final String PREF_IGNORE_CERT = "https_ignore_cert";
+	public static final String PREF_USE_APP_KEYSTORE = "https_use_my_cert";
 	public static final String PREF_SAVE_EXTERNAL_URL = "save_external_url";
 	public static final String PREF_CLEAR_EXTERNAL_TEMP = "clear_external_temp";
 	public static final String PREF_UPDATE_INCLUDE_EXTERNAL = "update_include_external";
@@ -147,7 +147,7 @@ public class Constants {
 	/* You just need to add a new alternative language here and in xml -> parse_lang_info.xml */
 	public static final String[] languageList = { Constants.LANG_ENGLISH, Constants.LANG_FRENCH, Constants.LANG_BAHASA_INDONESIA, Constants.LANG_POLISH };
 	public static final int BUFFER = 1024;
-	
+
 	/* Pattern for accepting sub-category */
 	public static final String[] categoryPattern = { "Teaser", "novel", "Novel", "project", "Project" };
 }

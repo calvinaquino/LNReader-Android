@@ -462,8 +462,8 @@ public class UIHelper {
 		return loc;
 	}
 
-	public static boolean getIgnoreCert(Context ctx) {
-		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_IGNORE_CERT, true);
+	public static boolean getUseAppKeystore(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_USE_APP_KEYSTORE, true);
 	}
 
 	public static boolean downloadListSetup(Context ctx, String name, String id, String toastText, int type, boolean hasError) {

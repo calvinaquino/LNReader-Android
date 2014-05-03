@@ -14,8 +14,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -30,8 +32,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -372,37 +373,46 @@ public class Util {
 		}
 	};
 
-	public static SSLSocketFactory initUnSecureSSL() throws IOException {
+	/***
+	 * Create a keystore for StartCom Class 1 Intermediate Server CA
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public static SSLSocketFactory initMySecureSSL() throws IOException {
 		SSLSocketFactory sslSocketFactory = null;
-		// Create a trust manager that does not validate certificate chains
-		final TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
 
-			@Override
-			public void checkClientTrusted(final X509Certificate[] chain, final String authType) {
-			}
-
-			@Override
-			public void checkServerTrusted(final X509Certificate[] chain, final String authType) {
-			}
-
-			@Override
-			public X509Certificate[] getAcceptedIssuers() {
-				return null;
-			}
-		} };
-
-		// Install the all-trusting trust manager
-		final SSLContext sslContext;
+		// Get an instance of the Bouncy Castle KeyStore format
+		KeyStore trusted;
 		try {
-			sslContext = SSLContext.getInstance("TLS");
-			// sslContext = SSLContext.getInstance("SSL");
-			sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-			// Create an ssl socket factory with our all-trusting manager
-			sslSocketFactory = sslContext.getSocketFactory();
-		} catch (NoSuchAlgorithmException e) {
-			throw new IOException("Can't create unsecure trust manager");
+			trusted = KeyStore.getInstance("BKS");
+		} catch (KeyStoreException e1) {
+			throw new IOException("Can't get instance of my keystore: " + e1.getMessage());
+		}
+		// Get the raw resource, which contains the keystore with
+		// your trusted certificates (root and any intermediate certs)
+		InputStream in = LNReaderApplication.getInstance().getResources().openRawResource(R.raw.keystore);
+		try {
+			// Initialize the keystore with the provided trusted certificates
+			// Also provide the password of the keystore
+			trusted.load(in, "com.erakk.lnreader".toCharArray());
+
+			String algorithm = TrustManagerFactory.getDefaultAlgorithm();
+			TrustManagerFactory tmf = TrustManagerFactory.getInstance(algorithm);
+			tmf.init(trusted);
+			SSLContext context = SSLContext.getInstance("TLS");
+			context.init(null, tmf.getTrustManagers(), null);
+			sslSocketFactory = context.getSocketFactory();
 		} catch (KeyManagementException e) {
-			throw new IOException("Can't create unsecure trust manager");
+			throw new IOException("Can't create my trust manager: " + e.getMessage());
+		} catch (NoSuchAlgorithmException e) {
+			throw new IOException("Can't create my trust manager: " + e.getMessage());
+		} catch (CertificateException e) {
+			throw new IOException("Can't create my trust manager: " + e.getMessage());
+		} catch (KeyStoreException e) {
+			throw new IOException("Can't create my trust manager: " + e.getMessage());
+		} finally {
+			in.close();
 		}
 		return sslSocketFactory;
 	}
