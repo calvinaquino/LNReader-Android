@@ -89,8 +89,7 @@ public class PageModelHelper {
 	}
 
 	public static PageModel getMainPage(SQLiteDatabase db) {
-		// Log.d(TAG, "Select Main_Page");
-		PageModel page = getPageModel(db, Constants.ROOT_NOVEL);
+		PageModel page = getPageModel(db, Constants.ROOT_NOVEL_ENGLISH);
 		return page;
 	}
 

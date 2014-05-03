@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -225,7 +224,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 			temp.setTitle(title);
 			temp.setType(PageModel.TYPE_NOVEL);
 			if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
-				temp.setParent("Main_Page");
+				temp.setParent(Constants.ROOT_NOVEL_ENGLISH);
 			}
 			else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
 				temp.setParent(Constants.ROOT_ORIGINAL);
@@ -303,7 +302,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 		try {
 			// Check size
 			int resourceId = R.layout.novel_list_item;
-			if (UIHelper.IsSmallScreen(this)) {
+			if (UIHelper.isSmallScreen(this)) {
 				resourceId = R.layout.novel_list_item_small;
 			}
 			if (adapter != null) {
@@ -311,8 +310,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 			} else {
 				adapter = new PageModelAdapter(this, resourceId, listItems);
 			}
-			boolean alphOrder = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ALPH_ORDER, false);
-			executeTask(isRefresh, onlyWatched, alphOrder);
+			executeTask(isRefresh, onlyWatched, UIHelper.isAlphabeticalOrder(this));
 			setListAdapter(adapter);
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
@@ -324,7 +322,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 	private void executeTask(boolean isRefresh, boolean onlyWatched, boolean alphOrder) {
 		String key = null;
 		if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
-			key = TAG + ":" + Constants.ROOT_NOVEL;
+			key = TAG + ":" + Constants.ROOT_NOVEL_ENGLISH;
 		}
 		else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
 			key = TAG + ":" + Constants.ROOT_ORIGINAL;

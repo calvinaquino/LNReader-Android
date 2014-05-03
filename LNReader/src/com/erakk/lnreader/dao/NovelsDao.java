@@ -147,7 +147,7 @@ public class NovelsDao {
 			}
 		}
 		if (page == null) {
-			Log.d(TAG, "No Main_Page data!");
+			Log.d(TAG, "No " + Constants.ROOT_NOVEL_ENGLISH + " data!");
 			list = getNovelsFromInternet(notifier);
 		}
 
@@ -160,77 +160,8 @@ public class NovelsDao {
 			String message = context.getResources().getString(R.string.load_novel_list_download);
 			notifier.onProgressCallback(new CallbackEventData(message, TAG));
 		}
-		// get last updated main page revision from internet
 
-		PageModel mainPage = new PageModel();
-		mainPage.setPage("Main_Page");
-		mainPage.setLanguage(Constants.LANG_ENGLISH);
-		mainPage.setTitle(context.getResources().getString(R.string.title_novels_page_main));
-		mainPage = getPageModel(mainPage, notifier);
-		mainPage.setType(PageModel.TYPE_OTHER);
-		mainPage.setParent("");
-		mainPage.setLastCheck(new Date());
-
-		ArrayList<PageModel> list = null;
-		synchronized (dbh) {
-			SQLiteDatabase db = dbh.getWritableDatabase();
-			try {
-				// db.beginTransaction();
-				mainPage = PageModelHelper.insertOrUpdatePageModel(db, mainPage, false);
-				Log.d(TAG, "Updated Main_Page");
-
-				// now get the novel list
-				list = new ArrayList<PageModel>();
-
-				String url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?action=raw&title=MediaWiki:Sidebar";
-				int retry = 0;
-				while (retry < getRetry()) {
-					try {
-						Response response = connect(url, retry);
-						list = BakaTsukiParser.ParseNovelList(response.body());
-
-						Date date = new Date();
-						for (PageModel pageModel : list) {
-							pageModel.setLastCheck(date);
-						}
-
-						Log.d(TAG, "Found from internet: " + list.size() + " Novels");
-
-						// saved to db and get saved value
-						list = PageModelHelper.insertAllNovel(db, list);
-
-						// db.setTransactionSuccessful();
-
-						if (notifier != null) {
-							String message = context.getResources().getString(R.string.load_novel_list_finished, list.size());
-							notifier.onProgressCallback(new CallbackEventData(message, TAG));
-						}
-						break;
-					} catch (EOFException eof) {
-						++retry;
-						if (notifier != null) {
-							String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
-							notifier.onProgressCallback(new CallbackEventData(message, TAG));
-						}
-						if (retry >= getRetry())
-							throw eof;
-					} catch (IOException eof) {
-						++retry;
-						String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
-						if (notifier != null) {
-							notifier.onProgressCallback(new CallbackEventData(message, TAG));
-						}
-						Log.d(TAG, message, eof);
-						if (retry >= getRetry())
-							throw eof;
-					}
-				}
-			} finally {
-				// db.endTransaction();
-				db.close();
-			}
-		}
-		return list;
+		return getNovelsHelperFromInternet(notifier, Constants.ROOT_NOVEL_ENGLISH, null);
 	}
 
 	public ArrayList<PageModel> getWatchedNovel() {
@@ -554,12 +485,14 @@ public class NovelsDao {
 	 * @throws IOException
 	 */
 	private ArrayList<PageModel> getNovelsHelperFromInternet(ICallbackNotifier notifier, final String parent, String status) throws Exception, EOFException, IOException {
+		Date date = new Date();
 		PageModel parentPage = new PageModel();
 		parentPage.setPage(parent);
 		parentPage.setLanguage(Constants.LANG_ENGLISH);
-		parentPage.setTitle(context.getResources().getString(R.string.title_novels_page_teaser));
+		parentPage.setTitle(parent);
 		parentPage = getPageModel(parentPage, notifier);
 		parentPage.setType(PageModel.TYPE_OTHER);
+		parentPage.setLastCheck(date);
 
 		// update page model
 		synchronized (dbh) {
@@ -568,7 +501,7 @@ public class NovelsDao {
 			Log.d(TAG, "Updated " + parent);
 		}
 
-		// get teaser list
+		// get list
 		String url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?title=" + parent;
 		Log.d(TAG, "Url: " + url);
 
@@ -583,7 +516,6 @@ public class NovelsDao {
 				Log.d(TAG, "Found from internet: " + list.size() + " for " + parent);
 
 				list = getUpdateInfo(list, notifier);
-				Date date = new Date();
 				for (PageModel pageModel : list) {
 					pageModel.setLastCheck(date);
 				}
@@ -620,6 +552,11 @@ public class NovelsDao {
 				pageModel = PageModelHelper.insertOrUpdatePageModel(db, pageModel, true);
 				Log.d(TAG, "Updated: " + pageModel.getPage());
 			}
+		}
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			// reload data from db
+			list = dbh.getAllNovelsByCategory(db, isAlphabeticalOrder(), isQuickLoad(), new String[] { parent });
 		}
 
 		return list;
@@ -869,10 +806,6 @@ public class NovelsDao {
 	}
 
 	public PageModel updateNovelDetailsPageModel(PageModel page, ICallbackNotifier notifier, NovelCollectionModel novel) throws Exception {
-		// comment out because have teaser now...
-		// page.setParent("Main_Page"); // insurance
-
-		// get the last update time from internet
 		if (notifier != null) {
 			String message = context.getResources().getString(R.string.load_novel_details_update, page.getPage());
 			notifier.onProgressCallback(new CallbackEventData(message, TAG));
@@ -1544,8 +1477,11 @@ public class NovelsDao {
 	}
 
 	private boolean isQuickLoad() {
-		boolean result = UIHelper.getQuickLoad(LNReaderApplication.getInstance().getApplicationContext());
-		return result;
+		return UIHelper.getQuickLoad(LNReaderApplication.getInstance().getApplicationContext());
+	}
+
+	private boolean isAlphabeticalOrder() {
+		return UIHelper.isAlphabeticalOrder(LNReaderApplication.getInstance().getApplicationContext());
 	}
 
 	public String checkDB() {

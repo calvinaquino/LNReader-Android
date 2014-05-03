@@ -36,7 +36,7 @@ public class DisplayBookmarkActivity extends SherlockListActivity {
 
 	private void getBookmarks() {
 		int resourceId = R.layout.bookmark_list_item;
-		if (UIHelper.IsSmallScreen(this)) {
+		if (UIHelper.isSmallScreen(this)) {
 			resourceId = R.layout.bookmark_list_item;
 		}
 		bookmarks = NovelsDao.getInstance(this).getAllBookmarks(UIHelper.getAllBookmarkOrder(this));

@@ -6,7 +6,6 @@ package com.erakk.lnreader.parser;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 
 import org.jsoup.Jsoup;
@@ -19,7 +18,6 @@ import android.util.Log;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.BakaReaderException;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
@@ -35,28 +33,6 @@ import com.erakk.lnreader.model.PageModel;
 public class BakaTsukiParser {
 
 	private static final String TAG = BakaTsukiParser.class.toString();
-
-	/**
-	 * parsed page from Main_Page
-	 * 
-	 * @param doc
-	 * @return list of novels in PageModel
-	 * @throws BakaReaderException
-	 */
-	public static ArrayList<PageModel> ParseNovelList(String content) throws BakaReaderException {
-		ArrayList<PageModel> result = parseSidebar(content, "Light Novels");
-
-		if (result != null && result.size() > 0) {
-			// get updated novel list info
-			try {
-				result = NovelsDao.getInstance().getUpdateInfo(result, null);
-			} catch (Exception e) {
-				Log.e(TAG, "Failed to get updated novel info", e);
-			}
-		}
-
-		return result;
-	}
 
 	/***
 	 * Parse "#mw-pages" English Novels.
@@ -153,65 +129,6 @@ public class BakaTsukiParser {
 		content.setLastYScroll(0);
 		content.setLastZoom(Constants.DISPLAY_SCALE);
 		return content;
-	}
-
-	/**
-	 * Parse contents from https://baka-tsuki.org/project/index.php?action=raw&title=MediaWiki:Sidebar
-	 * 
-	 * @param contents
-	 * @return
-	 * @throws BakaReaderException
-	 */
-	private static ArrayList<PageModel> parseSidebar(String contents, String key) throws BakaReaderException {
-		if (Util.isStringNullOrEmpty(contents))
-			throw new BakaReaderException("Empty content!", BakaReaderException.EMPTY_CONTENT);
-
-		ArrayList<PageModel> result = new ArrayList<PageModel>();
-
-		String[] lines = contents.split("\n");
-		boolean start = false;
-		int order = 0;
-		for (int i = 0; i < lines.length; i++) {
-			// sub nav = ** Antimagic_Academy_35th_Test_Platoon|Antimagic Academy 35th Test Platoon
-			if (lines[i].startsWith("**") && start) {
-				String[] subNav = lines[i].replace("**", "").trim().split("\\|");
-				PageModel page = new PageModel(subNav[0]);
-				page.setLanguage(Constants.LANG_ENGLISH);
-				page.setType(PageModel.TYPE_NOVEL);
-				page.setTitle(subNav[1]);
-
-				page.setLastUpdate(new Date(0)); // set to min value if never open
-				try {
-					// get the saved data if available
-					PageModel temp = NovelsDao.getInstance().getPageModel(page, null, false);
-					if (temp != null) {
-						page.setLastUpdate(temp.getLastUpdate());
-						page.setWatched(temp.isWatched());
-						page.setFinishedRead(temp.isFinishedRead());
-						page.setDownloaded(temp.isDownloaded());
-					}
-				} catch (Exception e) {
-					Log.e(TAG, "Error when getting pageModel: " + page.getPage(), e);
-				}
-				page.setLastCheck(new Date());
-				page.setParent("Main_Page");
-				page.setOrder(order);
-				result.add(page);
-				++order;
-			}
-			// nav
-			else if (lines[i].startsWith("*")) {
-				String nav = lines[i].replace("*", "").trim();
-				if (nav.equalsIgnoreCase(key)) {
-					start = true;
-				}
-				else {
-					start = false;
-				}
-			}
-		}
-
-		return result;
 	}
 
 	private static PageModel parseNovelStatus(Document doc, PageModel page) {

@@ -10,7 +10,6 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -194,9 +193,9 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 			temp.setPage(novel);
 			temp.setTitle(title);
 			temp.setType(PageModel.TYPE_NOVEL);
-			temp.setParent("Main_Page");
+			temp.setParent(Constants.ROOT_NOVEL_ENGLISH);
 			if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
-				temp.setParent("Main_Page");
+				temp.setParent(Constants.ROOT_NOVEL_ENGLISH);
 			}
 			else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
 				temp.setParent(Constants.ROOT_TEASER);
@@ -280,7 +279,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 		try {
 			// Check size
 			int resourceId = R.layout.novel_list_item;
-			if (UIHelper.IsSmallScreen(getSherlockActivity())) {
+			if (UIHelper.isSmallScreen(getSherlockActivity())) {
 				resourceId = R.layout.novel_list_item_small;
 			}
 			if (adapter != null) {
@@ -288,7 +287,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 			} else {
 				adapter = new PageModelAdapter(getSherlockActivity(), resourceId, listItems);
 			}
-			boolean alphOrder = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity()).getBoolean(Constants.PREF_ALPH_ORDER, false);
+			boolean alphOrder = UIHelper.isAlphabeticalOrder(getSherlockActivity());
 			executeTask(isRefresh, onlyWatched, alphOrder);
 			setListAdapter(adapter);
 		} catch (Exception e) {
@@ -302,7 +301,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 		task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder, mode);
 		String key = null;
 		if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
-			key = TAG + ":" + Constants.ROOT_NOVEL;
+			key = TAG + ":" + Constants.ROOT_NOVEL_ENGLISH;
 		}
 		else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
 			key = TAG + ":" + Constants.ROOT_TEASER;

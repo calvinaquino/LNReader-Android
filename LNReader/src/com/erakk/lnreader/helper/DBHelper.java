@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.helper.db.BookModelHelper;
 import com.erakk.lnreader.helper.db.BookmarkModelHelper;
@@ -73,7 +75,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_UPDATE_TYPE = "update_type";
 
 	public static final String DATABASE_NAME = "pages.db";
-	public static final int DATABASE_VERSION = 26;
+	public static final int DATABASE_VERSION = 27;
 
 	// Use /files/database to standarize with newer android.
 	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files/databases";
@@ -118,6 +120,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		try {
+			Context ctx = LNReaderApplication.getInstance().getApplicationContext();
+			String filename = UIHelper.getBackupRoot(ctx) + "/backup_" + oldVersion + "_to_" + newVersion + ".db";
+			Toast.makeText(ctx, ctx.getResources().getString(R.string.db_upgrade_backup_notification, filename), Toast.LENGTH_SHORT).show();
+			copyDB(ctx, true, filename);
+		} catch (Exception ex) {
+			Log.e(TAG, "Failed to backup db", ex);
+		}
 		Log.w(TAG, "Upgrading db from version " + oldVersion + " to " + newVersion);
 		if (oldVersion < 18) {
 			Log.w(TAG, "DB version is less than 18, recreate DB");
@@ -162,6 +172,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		if (oldVersion == 25) {
 			db.execSQL("ALTER TABLE " + TABLE_PAGE + " ADD COLUMN " + COLUMN_LANGUAGE + " text not null default '" + Constants.LANG_ENGLISH + "'");
 			oldVersion = 26;
+		}
+		if (oldVersion == 26) {
+			db.execSQL("UPDATE " + TABLE_PAGE + " SET " + COLUMN_PARENT + " = 'Category:Original_novel' WHERE " + COLUMN_PARENT + " = 'Category:Original'");
+			db.execSQL("UPDATE " + TABLE_PAGE + " SET " + COLUMN_PARENT + " = 'Category:Light_novel_(English)' WHERE " + COLUMN_PARENT + " = 'Main_Page'");
 		}
 	}
 
@@ -283,10 +297,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		return result;
 	}
 
-	public ArrayList<PageModel> getAllNovels(SQLiteDatabase db, boolean alphOrder, boolean quick) {
+	public ArrayList<PageModel> getAllNovelsByCategory(SQLiteDatabase db, boolean alphOrder, boolean quick, String[] categories) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
-		Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder, quick)
-				, new String[] { Constants.ROOT_NOVEL });
+		Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder, quick), categories);
 		try {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
@@ -299,42 +312,18 @@ public class DBHelper extends SQLiteOpenHelper {
 				cursor.close();
 		}
 		return pages;
+	}
+
+	public ArrayList<PageModel> getAllNovels(SQLiteDatabase db, boolean alphOrder, boolean quick) {
+		return getAllNovelsByCategory(db, alphOrder, quick, new String[] { Constants.ROOT_NOVEL_ENGLISH });
 	}
 
 	public ArrayList<PageModel> getAllTeaser(SQLiteDatabase db, boolean alphOrder, boolean quick) {
-		ArrayList<PageModel> pages = new ArrayList<PageModel>();
-		Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder, quick)
-				, new String[] { Constants.ROOT_TEASER });
-		try {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				PageModel page = PageModelHelper.cursorToPageModel(cursor);
-				pages.add(page);
-				cursor.moveToNext();
-			}
-		} finally {
-			if (cursor != null)
-				cursor.close();
-		}
-		return pages;
+		return getAllNovelsByCategory(db, alphOrder, quick, new String[] { Constants.ROOT_TEASER });
 	}
 
 	public ArrayList<PageModel> getAllOriginal(SQLiteDatabase db, boolean alphOrder, boolean quick) {
-		ArrayList<PageModel> pages = new ArrayList<PageModel>();
-		Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder, quick)
-				, new String[] { Constants.ROOT_ORIGINAL });
-		try {
-			cursor.moveToFirst();
-			while (!cursor.isAfterLast()) {
-				PageModel page = PageModelHelper.cursorToPageModel(cursor);
-				pages.add(page);
-				cursor.moveToNext();
-			}
-		} finally {
-			if (cursor != null)
-				cursor.close();
-		}
-		return pages;
+		return getAllNovelsByCategory(db, alphOrder, quick, new String[] { Constants.ROOT_ORIGINAL });
 	}
 
 	public ArrayList<PageModel> getAllAlternative(SQLiteDatabase db, boolean alphOrder, boolean quick, String language) {
@@ -389,7 +378,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
 
 		ArrayList<String> parents = new ArrayList<String>();
-		parents.add("'" + Constants.ROOT_NOVEL + "'");
+		parents.add("'" + Constants.ROOT_NOVEL_ENGLISH + "'");
 		parents.add("'" + Constants.ROOT_TEASER + "'");
 		parents.add("'" + Constants.ROOT_ORIGINAL + "'");
 		for (AlternativeLanguageInfo info : AlternativeLanguageInfo.getAlternativeLanguageInfo().values()) {

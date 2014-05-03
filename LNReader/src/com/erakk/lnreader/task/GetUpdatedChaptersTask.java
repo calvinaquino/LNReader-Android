@@ -195,7 +195,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 		ArrayList<PageModel> newList = null;
 
 		PageModel mainPage = new PageModel();
-		mainPage.setPage("Main_Page");
+		mainPage.setPage(Constants.ROOT_NOVEL_ENGLISH);
 
 		mainPage = NovelsDao.getInstance().getPageModel(mainPage, callback);
 

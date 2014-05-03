@@ -5,6 +5,7 @@
 - Fix unhandled exception on AsyncTaskResult, Util.formatDateForDisplay().
 - Replace Ignore Cert with Use App Keystore so it will validate the cert.
 - Fix Original Novel parser.
+- Update Main Parser to use Category:Light_novel_(English).
 
 1.1.16
 - Implement quick load on Watched Novels.

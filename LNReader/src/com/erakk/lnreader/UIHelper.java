@@ -133,7 +133,7 @@ public class UIHelper {
 	 * @return true if less than 600dp
 	 */
 	@SuppressWarnings("deprecation")
-	public static boolean IsSmallScreen(Activity activity) {
+	public static boolean isSmallScreen(Activity activity) {
 		DisplayMetrics metrics = new DisplayMetrics();
 		activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 		Display display = activity.getWindowManager().getDefaultDisplay();
@@ -496,5 +496,9 @@ public class UIHelper {
 
 	public static boolean getQuickLoad(Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_QUICK_LOAD, false);
+	}
+
+	public static boolean isAlphabeticalOrder(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_ALPH_ORDER, false);
 	}
 }

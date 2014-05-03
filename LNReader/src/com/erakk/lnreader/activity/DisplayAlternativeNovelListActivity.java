@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -279,7 +278,7 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 		try {
 			// Check size
 			int resourceId = R.layout.novel_list_item;
-			if (UIHelper.IsSmallScreen(this)) {
+			if (UIHelper.isSmallScreen(this)) {
 				resourceId = R.layout.novel_list_item_small;
 			}
 			if (adapter != null) {
@@ -287,8 +286,7 @@ public class DisplayAlternativeNovelListActivity extends SherlockListActivity im
 			} else {
 				adapter = new PageModelAdapter(this, resourceId, listItems);
 			}
-			boolean alphOrder = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ALPH_ORDER, false);
-			executeTask(isRefresh, alphOrder);
+			executeTask(isRefresh, UIHelper.isAlphabeticalOrder(this));
 			setListAdapter(adapter);
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);

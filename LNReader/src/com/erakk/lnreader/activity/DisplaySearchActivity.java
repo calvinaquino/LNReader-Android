@@ -112,7 +112,7 @@ public class DisplaySearchActivity extends SherlockActivity {
 
 		ListView searchResult = (ListView) findViewById(R.id.searchResult);
 		int resourceId = R.layout.novel_list_item;
-		if (UIHelper.IsSmallScreen(this)) {
+		if (UIHelper.isSmallScreen(this)) {
 			resourceId = R.layout.novel_list_item_small;
 		}
 		adapter = new SearchPageModelAdapter(this, resourceId, new ArrayList<PageModel>());

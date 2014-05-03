@@ -630,7 +630,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		if (content != null) {
 			try {
 				int resourceId = R.layout.bookmark_list_item;
-				if (UIHelper.IsSmallScreen(this)) {
+				if (UIHelper.isSmallScreen(this)) {
 					resourceId = R.layout.bookmark_list_item_small;
 				}
 				bookmarkAdapter = new BookmarkModelAdapter(this, resourceId, content.getBookmarks(), content.getPageModel());
