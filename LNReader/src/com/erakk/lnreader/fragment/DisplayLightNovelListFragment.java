@@ -90,13 +90,13 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 		mode = getArguments().getString(Constants.EXTRA_NOVEL_LIST_MODE);
 		onlyWatched = getArguments().getBoolean(Constants.EXTRA_ONLY_WATCHED, false);
 
-		if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+		if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
 			getSherlockActivity().setTitle("Light Novels");
 		}
-		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
+		else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
 			getSherlockActivity().setTitle("Light Novels: Teasers");
 		}
-		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+		else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
 			getSherlockActivity().setTitle("Light Novels: Original");
 		}
 
@@ -149,16 +149,16 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 
 	@Override
 	public void downloadAllNovelInfo() {
-		if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+		if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
 			if (onlyWatched)
 				touchedForDownload = "Watched Light Novels information";
 			else
 				touchedForDownload = "All Main Light Novels information";
 		}
-		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
+		else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
 			touchedForDownload = "All Teaser Light Novels information";
 		}
-		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+		else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
 			touchedForDownload = "All Original Light Novels information";
 		}
 		executeDownloadTask(listItems);
@@ -195,15 +195,15 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 			temp.setTitle(title);
 			temp.setType(PageModel.TYPE_NOVEL);
 			temp.setParent("Main_Page");
-			if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+			if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
 				temp.setParent("Main_Page");
 			}
-			else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
-				temp.setParent("Category:Teasers");
+			else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
+				temp.setParent(Constants.ROOT_TEASER);
 				temp.setStatus(Constants.STATUS_TEASER);
 			}
-			else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
-				temp.setParent("Category:Original");
+			else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+				temp.setParent(Constants.ROOT_ORIGINAL);
 				temp.setStatus(Constants.STATUS_ORIGINAL);
 			}
 			executeAddTask(temp);
@@ -274,7 +274,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 
 	private void updateContent(boolean isRefresh, boolean onlyWatched) {
 		// use the cached items.
-		if(!isRefresh && listItems != null && listItems.size() > 0)
+		if (!isRefresh && listItems != null && listItems.size() > 0)
 			return;
 
 		try {
@@ -301,14 +301,14 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 	private void executeTask(boolean isRefresh, boolean onlyWatched, boolean alphOrder) {
 		task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder, mode);
 		String key = null;
-		if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
-			key = TAG + ":Main+Page";
+		if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+			key = TAG + ":" + Constants.ROOT_NOVEL;
 		}
-		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
-			key = TAG + ":Category:Teasers";
+		else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
+			key = TAG + ":" + Constants.ROOT_TEASER;
 		}
-		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
-			key = TAG + ":Category:Original";
+		else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+			key = TAG + ":" + Constants.ROOT_ORIGINAL;
 		}
 		boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
 		if (isAdded) {
@@ -377,13 +377,13 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 			return;
 		String key = DisplayLightNovelDetailsActivity.TAG + ":" + novels.get(0).getPage();
 		if (novels.size() > 1) {
-			if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+			if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
 				key = DisplayLightNovelDetailsActivity.TAG + ":All_Novels";
 			}
-			else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
+			else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
 				key = DisplayLightNovelDetailsActivity.TAG + ":All_Teasers";
 			}
-			else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+			else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
 				key = DisplayLightNovelDetailsActivity.TAG + ":All_Original";
 			}
 		}

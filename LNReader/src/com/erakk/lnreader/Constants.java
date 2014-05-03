@@ -132,6 +132,8 @@ public class Constants {
 	public static final int COLOR_REDLINK = Color.parseColor("#ff69b4");;
 
 	public static final String ROOT_NOVEL = "Main_Page";
+	public static final String ROOT_ORIGINAL = "Category:Original_novel";
+	public static final String ROOT_TEASER = "Category:Teasers";
 
 	/* Section of Task Key */
 	public static final String KEY_LOAD_CHAPTER = ":LoadChapter:";

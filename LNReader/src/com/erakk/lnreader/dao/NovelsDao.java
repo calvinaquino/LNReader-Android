@@ -85,8 +85,6 @@ public class NovelsDao {
 					instance = new NovelsDao(LNReaderApplication.getInstance().getApplicationContext());
 				} catch (Exception ex) {
 					Log.e(TAG, "Failed to get context for NovelsDao", ex);
-					// throw new BakaReaderException("NovelsDao is not Initialized!", BakaReaderException.NULL_NOVELDAO,
-					// ex);
 					throw new NullPointerException("NovelsDao is not Initialized!");
 				}
 			}
@@ -154,11 +152,6 @@ public class NovelsDao {
 		}
 
 		return list;
-	}
-
-	private boolean isQuickLoad() {
-		boolean result = UIHelper.getQuickLoad(LNReaderApplication.getInstance().getApplicationContext());
-		return result;
 	}
 
 	public ArrayList<PageModel> getNovelsFromInternet(ICallbackNotifier notifier) throws Exception {
@@ -240,14 +233,6 @@ public class NovelsDao {
 		return list;
 	}
 
-	private boolean getUseAppKeystore() {
-		boolean result = UIHelper.getUseAppKeystore(LNReaderApplication.getInstance().getApplicationContext());
-		if (result) {
-			Log.i(TAG, "Using app keystore");
-		}
-		return result;
-	}
-
 	public ArrayList<PageModel> getWatchedNovel() {
 		ArrayList<PageModel> watchedNovel = null;
 		synchronized (dbh) {
@@ -299,75 +284,7 @@ public class NovelsDao {
 			notifier.onProgressCallback(new CallbackEventData(message, TAG));
 		}
 
-		// parse Category:Teasers information
-		PageModel teaserPage = new PageModel();
-		teaserPage.setPage("Category:Teasers");
-		teaserPage.setLanguage(Constants.LANG_ENGLISH);
-		teaserPage.setTitle(context.getResources().getString(R.string.title_novels_page_teaser));
-		teaserPage = getPageModel(teaserPage, notifier);
-		teaserPage.setType(PageModel.TYPE_OTHER);
-
-		// update page model
-		synchronized (dbh) {
-			SQLiteDatabase db = dbh.getWritableDatabase();
-			teaserPage = PageModelHelper.insertOrUpdatePageModel(db, teaserPage, true);
-			Log.d(TAG, "Updated Category:Teasers");
-		}
-
-		// get teaser list
-		ArrayList<PageModel> list = null;
-		String url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?title=Category:Teasers";
-		Log.d(TAG, "Teaser Url: " + url);
-		int retry = 0;
-		while (retry < getRetry()) {
-			try {
-				Response response = connect(url, retry);
-				Document doc = response.parse();
-
-				list = BakaTsukiParser.ParseTeaserList(doc);
-				Log.d(TAG, "Found from internet: " + list.size() + " Teaser");
-
-				list = getUpdateInfo(list, notifier);
-				Date date = new Date();
-				for (PageModel pageModel : list) {
-					pageModel.setLastCheck(date);
-				}
-
-				if (notifier != null) {
-					String message = context.getResources().getString(R.string.load_novel_list_finished, list.size());
-					notifier.onProgressCallback(new CallbackEventData(message, TAG));
-				}
-				break;
-			} catch (EOFException eof) {
-				++retry;
-				if (notifier != null) {
-					String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
-					notifier.onProgressCallback(new CallbackEventData(message, TAG));
-				}
-				if (retry >= getRetry())
-					throw eof;
-			} catch (IOException eof) {
-				++retry;
-				String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
-				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData(message, TAG));
-				}
-				Log.d(TAG, message, eof);
-				if (retry >= getRetry())
-					throw eof;
-			}
-		}
-
-		// save teaser list
-		synchronized (dbh) {
-			SQLiteDatabase db = dbh.getWritableDatabase();
-			for (PageModel pageModel : list) {
-				pageModel = PageModelHelper.insertOrUpdatePageModel(db, pageModel, true);
-				Log.d(TAG, "Updated teaser: " + pageModel.getPage());
-			}
-		}
-
-		return list;
+		return getNovelsHelperFromInternet(notifier, Constants.ROOT_TEASER, Constants.STATUS_TEASER);
 	}
 
 	public ArrayList<PageModel> getOriginal(ICallbackNotifier notifier, boolean alphOrder) throws Exception {
@@ -405,76 +322,8 @@ public class NovelsDao {
 			notifier.onProgressCallback(new CallbackEventData(message, TAG));
 		}
 
-		final String ORIGINAL_CAT = "Category:Original_novel";
+		return getNovelsHelperFromInternet(notifier, Constants.ROOT_ORIGINAL, Constants.STATUS_ORIGINAL);
 
-		// parse Category:Teasers information
-		PageModel teaserPage = new PageModel();
-		teaserPage.setPage(ORIGINAL_CAT);
-		teaserPage.setLanguage(Constants.LANG_ENGLISH);
-		teaserPage.setTitle(context.getResources().getString(R.string.title_novels_page_original));
-		teaserPage = getPageModel(teaserPage, notifier);
-		teaserPage.setType(PageModel.TYPE_OTHER);
-
-		// update page model
-		synchronized (dbh) {
-			SQLiteDatabase db = dbh.getWritableDatabase();
-			teaserPage = PageModelHelper.insertOrUpdatePageModel(db, teaserPage, true);
-			Log.d(TAG, "Updated " + ORIGINAL_CAT);
-		}
-
-		// get teaser list
-		ArrayList<PageModel> list = null;
-		String url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?title=" + ORIGINAL_CAT;
-		int retry = 0;
-		while (retry < getRetry()) {
-			try {
-				Response response = connect(url, retry);
-				Document doc = response.parse();
-
-				list = BakaTsukiParser.ParseOriginalList(doc);
-				Log.d(TAG, "Found from internet: " + list.size() + " Teaser");
-
-				list = getUpdateInfo(list, notifier);
-				Date date = new Date();
-				for (PageModel pageModel : list) {
-					pageModel.setLastCheck(date);
-				}
-
-				if (notifier != null) {
-					String message = context.getResources().getString(R.string.load_novel_list_finished, list.size());
-					notifier.onProgressCallback(new CallbackEventData(message, TAG));
-				}
-				break;
-			} catch (EOFException eof) {
-				++retry;
-				if (notifier != null) {
-					String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
-					notifier.onProgressCallback(new CallbackEventData(message, TAG));
-				}
-				if (retry >= getRetry())
-					throw eof;
-			} catch (IOException eof) {
-				++retry;
-				String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
-				if (notifier != null) {
-					notifier.onProgressCallback(new CallbackEventData(message, TAG));
-				}
-				Log.d(TAG, message, eof);
-				if (retry >= getRetry())
-					throw eof;
-			}
-		}
-
-		// save original list
-		synchronized (dbh) {
-			SQLiteDatabase db = dbh.getWritableDatabase();
-			for (PageModel pageModel : list) {
-				pageModel = PageModelHelper.insertOrUpdatePageModel(db, pageModel, true);
-				Log.d(TAG, "Updated original: " + pageModel.getPage());
-			}
-		}
-
-		return list;
 	}
 
 	public ArrayList<PageModel> getAlternative(ICallbackNotifier notifier, boolean alphOrder, String language) throws Exception {
@@ -682,6 +531,94 @@ public class NovelsDao {
 			for (PageModel pageModel : list) {
 				pageModel = PageModelHelper.insertOrUpdatePageModel(db, pageModel, true);
 				Log.d(TAG, "Updated " + language + " novel: " + pageModel.getPage());
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Get novel list from Internet based on given parent page,
+	 * e.g.:
+	 * - "Category:Teaser"
+	 * - "Category:Original_novel"
+	 * - "Category:Light_novel_(English)"
+	 * Please define the parent page in Constants.
+	 * 
+	 * @param notifier
+	 * @param parent
+	 * @param url
+	 * @return
+	 * @throws Exception
+	 * @throws EOFException
+	 * @throws IOException
+	 */
+	private ArrayList<PageModel> getNovelsHelperFromInternet(ICallbackNotifier notifier, final String parent, String status) throws Exception, EOFException, IOException {
+		PageModel parentPage = new PageModel();
+		parentPage.setPage(parent);
+		parentPage.setLanguage(Constants.LANG_ENGLISH);
+		parentPage.setTitle(context.getResources().getString(R.string.title_novels_page_teaser));
+		parentPage = getPageModel(parentPage, notifier);
+		parentPage.setType(PageModel.TYPE_OTHER);
+
+		// update page model
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			parentPage = PageModelHelper.insertOrUpdatePageModel(db, parentPage, true);
+			Log.d(TAG, "Updated " + parent);
+		}
+
+		// get teaser list
+		String url = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/index.php?title=" + parent;
+		Log.d(TAG, "Url: " + url);
+
+		ArrayList<PageModel> list = null;
+		int retry = 0;
+		while (retry < getRetry()) {
+			try {
+				Response response = connect(url, retry);
+				Document doc = response.parse();
+
+				list = BakaTsukiParser.parseGenericNovelList(doc, parent, status);
+				Log.d(TAG, "Found from internet: " + list.size() + " for " + parent);
+
+				list = getUpdateInfo(list, notifier);
+				Date date = new Date();
+				for (PageModel pageModel : list) {
+					pageModel.setLastCheck(date);
+				}
+
+				if (notifier != null) {
+					String message = context.getResources().getString(R.string.load_novel_list_finished, list.size());
+					notifier.onProgressCallback(new CallbackEventData(message, TAG));
+				}
+				break;
+			} catch (EOFException eof) {
+				++retry;
+				if (notifier != null) {
+					String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
+					notifier.onProgressCallback(new CallbackEventData(message, TAG));
+				}
+				if (retry >= getRetry())
+					throw eof;
+			} catch (IOException eof) {
+				++retry;
+				String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), eof.getMessage());
+				if (notifier != null) {
+					notifier.onProgressCallback(new CallbackEventData(message, TAG));
+				}
+				Log.d(TAG, message, eof);
+				if (retry >= getRetry())
+					throw eof;
+			}
+		}
+
+		// save list
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			for (PageModel pageModel : list) {
+				pageModel = PageModelHelper.insertOrUpdatePageModel(db, pageModel, true);
+				Log.d(TAG, "Updated: " + pageModel.getPage());
 			}
 		}
 
@@ -1597,6 +1534,19 @@ public class NovelsDao {
 	// db.execSQL(dbh.DATABASE_CREATE_NOVEL_BOOKMARK);
 	// }
 	// }
+
+	private boolean getUseAppKeystore() {
+		boolean result = UIHelper.getUseAppKeystore(LNReaderApplication.getInstance().getApplicationContext());
+		if (result) {
+			Log.i(TAG, "Using app keystore");
+		}
+		return result;
+	}
+
+	private boolean isQuickLoad() {
+		boolean result = UIHelper.getQuickLoad(LNReaderApplication.getInstance().getApplicationContext());
+		return result;
+	}
 
 	public String checkDB() {
 		synchronized (dbh) {

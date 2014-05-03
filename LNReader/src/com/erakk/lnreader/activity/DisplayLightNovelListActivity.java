@@ -77,10 +77,10 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 		registerForContextMenu(getListView());
 
 		mode = getIntent().getStringExtra(Constants.EXTRA_NOVEL_LIST_MODE);
-		if(Util.isStringNullOrEmpty(mode))
+		if (Util.isStringNullOrEmpty(mode))
 			mode = Constants.EXTRA_NOVEL_LIST_MODE_MAIN;
 
-		if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+		if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
 			onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
 
 			if (onlyWatched) {
@@ -89,10 +89,10 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 				setTitle(getResources().getString(R.string.light_novels));
 			}
 		}
-		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+		else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
 			setTitle("Light Novels: Original");
 		}
-		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
+		else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
 			setTitle("Light Novels: Teasers");
 		}
 
@@ -181,15 +181,15 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 
 	@Override
 	public void downloadAllNovelInfo() {
-		if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+		if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
 			if (onlyWatched)
 				touchedForDownload = "Watched Light Novels information";
 			else
 				touchedForDownload = "All Main Light Novels information";
-		} else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+		} else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
 			touchedForDownload = "All Original Light Novels information";
 		}
-		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
+		else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
 			touchedForDownload = "All Teaser Light Novels information";
 		}
 		executeDownloadTask(listItems);
@@ -224,15 +224,15 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 			temp.setPage(novel);
 			temp.setTitle(title);
 			temp.setType(PageModel.TYPE_NOVEL);
-			if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+			if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
 				temp.setParent("Main_Page");
 			}
-			else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
-				temp.setParent("Category:Original");
+			else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+				temp.setParent(Constants.ROOT_ORIGINAL);
 				temp.setStatus(Constants.STATUS_ORIGINAL);
 			}
-			else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
-				temp.setParent("Category:Teasers");
+			else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
+				temp.setParent(Constants.ROOT_TEASER);
 				temp.setStatus(Constants.STATUS_TEASER);
 			}
 			executeAddTask(temp);
@@ -323,14 +323,14 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 	@SuppressLint("NewApi")
 	private void executeTask(boolean isRefresh, boolean onlyWatched, boolean alphOrder) {
 		String key = null;
-		if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
-			key = TAG + ":Main+Page";
+		if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+			key = TAG + ":" + Constants.ROOT_NOVEL;
 		}
-		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
-			key = TAG + ":Category:Original";
+		else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+			key = TAG + ":" + Constants.ROOT_ORIGINAL;
 		}
-		else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
-			key = TAG + ":Category:Teasers";
+		else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
+			key = TAG + ":" + Constants.ROOT_TEASER;
 		}
 
 		task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder, mode);
@@ -382,13 +382,13 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 		}
 		String key = DisplayLightNovelDetailsActivity.TAG + ":" + novels.get(0).getPage();
 		if (novels.size() > 1) {
-			if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+			if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
 				key = DisplayLightNovelDetailsActivity.TAG + ":All_Novels";
 			}
-			else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+			else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
 				key = DisplayLightNovelDetailsActivity.TAG + ":All_Original";
 			}
-			else if(mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
+			else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
 				key = DisplayLightNovelDetailsActivity.TAG + ":All_Teasers";
 			}
 		}

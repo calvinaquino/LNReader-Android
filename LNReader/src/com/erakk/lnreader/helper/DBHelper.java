@@ -304,7 +304,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public ArrayList<PageModel> getAllTeaser(SQLiteDatabase db, boolean alphOrder, boolean quick) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
 		Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder, quick)
-				, new String[] { "Category:Teasers" });
+				, new String[] { Constants.ROOT_TEASER });
 		try {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
@@ -322,7 +322,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public ArrayList<PageModel> getAllOriginal(SQLiteDatabase db, boolean alphOrder, boolean quick) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
 		Cursor cursor = rawQuery(db, getNovelListQuery(alphOrder, quick)
-				, new String[] { "Category:Original" });
+				, new String[] { Constants.ROOT_ORIGINAL });
 		try {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
@@ -360,7 +360,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	private String getNovelListQuery(boolean alphOrder, boolean isQuickLoad) {
 		String sql = "";
-		if(isQuickLoad) {
+		if (isQuickLoad) {
 			sql = "select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ? ";
 		}
 		else {
@@ -390,14 +390,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		ArrayList<String> parents = new ArrayList<String>();
 		parents.add("'" + Constants.ROOT_NOVEL + "'");
-		parents.add("'Category:Teasers'");
-		parents.add("'Category:Original'");
+		parents.add("'" + Constants.ROOT_TEASER + "'");
+		parents.add("'" + Constants.ROOT_ORIGINAL + "'");
 		for (AlternativeLanguageInfo info : AlternativeLanguageInfo.getAlternativeLanguageInfo().values()) {
 			parents.add("'" + info.getCategoryInfo() + "'");
 		}
 
 		String sql = "";
-		if(isQuickLoad) {
+		if (isQuickLoad) {
 			sql = "select * from " + TABLE_PAGE +
 					" where " + COLUMN_PARENT + " in (" + Util.join(parents, ", ") + ") " +
 					"   and  " + TABLE_PAGE + "." + COLUMN_IS_WATCHED + " = ? ";

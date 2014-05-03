@@ -35,9 +35,10 @@ import com.erakk.lnreader.model.PageModel;
 public class BakaTsukiParserAlternative {
 
 	private static final String TAG = BakaTsukiParserAlternative.class.toString();
-	
+
 	/**
 	 * Crawl all sub-categories
+	 * 
 	 * @param doc
 	 * @return
 	 */
@@ -45,29 +46,30 @@ public class BakaTsukiParserAlternative {
 		ArrayList<String> result = new ArrayList<String>();
 		if (doc == null)
 			throw new NullPointerException("Document cannot be null.");
-		
+
 		Element stage = doc.select("#mw-subcategories").first();
-		
+
 		if (stage != null) {
 			Elements list = stage.select("li");
-			
+
 			for (Element element : list) {
 				Element link = element.select("a").first();
 				String subcategory_link = CommonParser.normalizeInternalUrl(link.attr("href"));
 				// Check pattern
 				boolean isPatternFound = false;
-				
+
 				for (String pattern : Constants.categoryPattern) {
 					if (subcategory_link.indexOf(pattern) != -1) {
 						isPatternFound = true;
 						break;
 					}
 				}
-				
-				if (isPatternFound) result.add(subcategory_link);
+
+				if (isPatternFound)
+					result.add(subcategory_link);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -86,11 +88,11 @@ public class BakaTsukiParserAlternative {
 			throw new NullPointerException("Document cannot be null.");
 
 		Element stage = doc.select("#mw-pages").first();
-		
+
 		// int order = 0;
 		if (stage != null) {
 			Elements list = stage.select("li");
-			
+
 			for (Element element : list) {
 				Element link = element.select("a").first();
 				PageModel page = new PageModel();
@@ -167,7 +169,7 @@ public class BakaTsukiParserAlternative {
 			isPending = false;
 
 		// Teaser => parent = Category:Teasers
-		if (page.getParent().equalsIgnoreCase("Category:Teasers")) {
+		if (page.getParent().equalsIgnoreCase(Constants.ROOT_TEASER)) {
 			isTeaser = true;
 			Log.i(TAG, "Novel is Teaser Project: " + page.getPage());
 		} else

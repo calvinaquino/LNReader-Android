@@ -95,12 +95,12 @@ public class PageModelHelper {
 	}
 
 	public static PageModel getTeaserPage(SQLiteDatabase db) {
-		PageModel page = getPageModel(db, "Category:Teasers");
+		PageModel page = getPageModel(db, Constants.ROOT_TEASER);
 		return page;
 	}
 
 	public static PageModel getOriginalPage(SQLiteDatabase db) {
-		PageModel page = getPageModel(db, "Category:Original");
+		PageModel page = getPageModel(db, Constants.ROOT_ORIGINAL);
 		return page;
 	}
 

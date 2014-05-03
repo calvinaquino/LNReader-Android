@@ -58,13 +58,15 @@ public class BakaTsukiParser {
 		return result;
 	}
 
-	/**
-	 * Parse teaser list from http://www.baka-tsuki.org/project/index.php?title=Category:Teasers
+	/***
+	 * Parse "#mw-pages" English Novels.
 	 * 
 	 * @param doc
+	 * @param parent
+	 * @param status
 	 * @return
 	 */
-	public static ArrayList<PageModel> ParseTeaserList(Document doc) {
+	public static ArrayList<PageModel> parseGenericNovelList(Document doc, String parent, String status) {
 		ArrayList<PageModel> result = new ArrayList<PageModel>();
 
 		if (doc == null)
@@ -77,54 +79,20 @@ public class BakaTsukiParser {
 			for (Element element : list) {
 				Element link = element.select("a").first();
 				PageModel page = new PageModel();
-				page.setParent("Category:Teasers");
+				page.setParent(parent);
 				String tempPage = CommonParser.normalizeInternalUrl(link.attr("href"));
 				page.setPage(tempPage);
 				page.setLanguage(Constants.LANG_ENGLISH);
 				page.setType(PageModel.TYPE_NOVEL);
 				page.setTitle(link.text());
-				page.setStatus(Constants.STATUS_TEASER);
+				page.setStatus(status);
 				page.setOrder(order);
 
 				result.add(page);
 				++order;
 			}
 		}
-		return result;
-	}
 
-	/**
-	 * Parse originals list from http://www.baka-tsuki.org/project/index.php?title=Category:Original
-	 * 
-	 * @param doc
-	 * @return
-	 */
-	public static ArrayList<PageModel> ParseOriginalList(Document doc) {
-		ArrayList<PageModel> result = new ArrayList<PageModel>();
-
-		if (doc == null)
-			throw new NullPointerException("Document cannot be null.");
-
-		Element stage = doc.select("#mw-pages").first();
-		int order = 0;
-		if (stage != null) {
-			Elements list = stage.select("li");
-			for (Element element : list) {
-				Element link = element.select("a").first();
-				PageModel page = new PageModel();
-				page.setParent("Category:Original");
-				String tempPage = CommonParser.normalizeInternalUrl(link.attr("href"));
-				page.setPage(tempPage);
-				page.setLanguage(Constants.LANG_ENGLISH);
-				page.setType(PageModel.TYPE_NOVEL);
-				page.setTitle(link.text());
-				page.setStatus(Constants.STATUS_ORIGINAL);
-				page.setOrder(order);
-
-				result.add(page);
-				++order;
-			}
-		}
 		return result;
 	}
 
@@ -152,6 +120,98 @@ public class BakaTsukiParser {
 		parseNovelStatus(doc, page);
 
 		return novel;
+	}
+
+	public static NovelContentModel ParseNovelContent(Document doc, PageModel page) throws Exception {
+		NovelContentModel content = new NovelContentModel();
+		page.setDownloaded(true);
+		content.setPage(page.getPage());
+		content.setPageModel(page);
+
+		Element textElement = doc.select("text").first();
+		String text = "";
+		if (textElement != null) {
+
+			text = textElement.text();
+		} else {
+			textElement = doc.select(".noarticletext").first();
+			if (textElement == null) {
+				Log.d(TAG, "Content: \r\n" + doc.html());
+				throw new BakaReaderException("Empty Content", BakaReaderException.EMPTY_CONTENT);
+			}
+			text = textElement.html();
+			page.setMissing(true);
+		}
+
+		// get valid image list
+		Document imgDoc = Jsoup.parse(text);
+		ArrayList<ImageModel> images = CommonParser.getAllImagesFromContent(imgDoc, UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()));
+		content.setImages(images);
+		content.setContent(CommonParser.replaceImagePath(text));
+
+		content.setLastXScroll(0);
+		content.setLastYScroll(0);
+		content.setLastZoom(Constants.DISPLAY_SCALE);
+		return content;
+	}
+
+	/**
+	 * Parse contents from https://baka-tsuki.org/project/index.php?action=raw&title=MediaWiki:Sidebar
+	 * 
+	 * @param contents
+	 * @return
+	 * @throws BakaReaderException
+	 */
+	private static ArrayList<PageModel> parseSidebar(String contents, String key) throws BakaReaderException {
+		if (Util.isStringNullOrEmpty(contents))
+			throw new BakaReaderException("Empty content!", BakaReaderException.EMPTY_CONTENT);
+
+		ArrayList<PageModel> result = new ArrayList<PageModel>();
+
+		String[] lines = contents.split("\n");
+		boolean start = false;
+		int order = 0;
+		for (int i = 0; i < lines.length; i++) {
+			// sub nav = ** Antimagic_Academy_35th_Test_Platoon|Antimagic Academy 35th Test Platoon
+			if (lines[i].startsWith("**") && start) {
+				String[] subNav = lines[i].replace("**", "").trim().split("\\|");
+				PageModel page = new PageModel(subNav[0]);
+				page.setLanguage(Constants.LANG_ENGLISH);
+				page.setType(PageModel.TYPE_NOVEL);
+				page.setTitle(subNav[1]);
+
+				page.setLastUpdate(new Date(0)); // set to min value if never open
+				try {
+					// get the saved data if available
+					PageModel temp = NovelsDao.getInstance().getPageModel(page, null, false);
+					if (temp != null) {
+						page.setLastUpdate(temp.getLastUpdate());
+						page.setWatched(temp.isWatched());
+						page.setFinishedRead(temp.isFinishedRead());
+						page.setDownloaded(temp.isDownloaded());
+					}
+				} catch (Exception e) {
+					Log.e(TAG, "Error when getting pageModel: " + page.getPage(), e);
+				}
+				page.setLastCheck(new Date());
+				page.setParent("Main_Page");
+				page.setOrder(order);
+				result.add(page);
+				++order;
+			}
+			// nav
+			else if (lines[i].startsWith("*")) {
+				String nav = lines[i].replace("*", "").trim();
+				if (nav.equalsIgnoreCase(key)) {
+					start = true;
+				}
+				else {
+					start = false;
+				}
+			}
+		}
+
+		return result;
 	}
 
 	private static PageModel parseNovelStatus(Document doc, PageModel page) {
@@ -185,7 +245,7 @@ public class BakaTsukiParser {
 			isPending = false;
 
 		// Teaser => parent = Category:Teasers
-		if (page.getParent().equalsIgnoreCase("Category:Teasers")) {
+		if (page.getParent().equalsIgnoreCase(Constants.ROOT_TEASER)) {
 			isTeaser = true;
 			Log.i(TAG, "Novel is Teaser Project: " + page.getPage());
 		} else
@@ -519,97 +579,5 @@ public class BakaTsukiParser {
 		novel.setSynopsis(synopsis);
 		// Log.d(TAG, "Completed parsing synopsis.");
 		return synopsis;
-	}
-
-	public static NovelContentModel ParseNovelContent(Document doc, PageModel page) throws Exception {
-		NovelContentModel content = new NovelContentModel();
-		page.setDownloaded(true);
-		content.setPage(page.getPage());
-		content.setPageModel(page);
-
-		Element textElement = doc.select("text").first();
-		String text = "";
-		if (textElement != null) {
-
-			text = textElement.text();
-		} else {
-			textElement = doc.select(".noarticletext").first();
-			if (textElement == null) {
-				Log.d(TAG, "Content: \r\n" + doc.html());
-				throw new BakaReaderException("Empty Content", BakaReaderException.EMPTY_CONTENT);
-			}
-			text = textElement.html();
-			page.setMissing(true);
-		}
-
-		// get valid image list
-		Document imgDoc = Jsoup.parse(text);
-		ArrayList<ImageModel> images = CommonParser.getAllImagesFromContent(imgDoc, UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()));
-		content.setImages(images);
-		content.setContent(CommonParser.replaceImagePath(text));
-
-		content.setLastXScroll(0);
-		content.setLastYScroll(0);
-		content.setLastZoom(Constants.DISPLAY_SCALE);
-		return content;
-	}
-
-	/**
-	 * Parse contents from https://baka-tsuki.org/project/index.php?action=raw&title=MediaWiki:Sidebar
-	 * 
-	 * @param contents
-	 * @return
-	 * @throws BakaReaderException
-	 */
-	public static ArrayList<PageModel> parseSidebar(String contents, String key) throws BakaReaderException {
-		if (Util.isStringNullOrEmpty(contents))
-			throw new BakaReaderException("Empty content!", BakaReaderException.EMPTY_CONTENT);
-
-		ArrayList<PageModel> result = new ArrayList<PageModel>();
-
-		String[] lines = contents.split("\n");
-		boolean start = false;
-		int order = 0;
-		for (int i = 0; i < lines.length; i++) {
-			// sub nav = ** Antimagic_Academy_35th_Test_Platoon|Antimagic Academy 35th Test Platoon
-			if (lines[i].startsWith("**") && start) {
-				String[] subNav = lines[i].replace("**", "").trim().split("\\|");
-				PageModel page = new PageModel(subNav[0]);
-				page.setLanguage(Constants.LANG_ENGLISH);
-				page.setType(PageModel.TYPE_NOVEL);
-				page.setTitle(subNav[1]);
-
-				page.setLastUpdate(new Date(0)); // set to min value if never open
-				try {
-					// get the saved data if available
-					PageModel temp = NovelsDao.getInstance().getPageModel(page, null, false);
-					if (temp != null) {
-						page.setLastUpdate(temp.getLastUpdate());
-						page.setWatched(temp.isWatched());
-						page.setFinishedRead(temp.isFinishedRead());
-						page.setDownloaded(temp.isDownloaded());
-					}
-				} catch (Exception e) {
-					Log.e(TAG, "Error when getting pageModel: " + page.getPage(), e);
-				}
-				page.setLastCheck(new Date());
-				page.setParent("Main_Page");
-				page.setOrder(order);
-				result.add(page);
-				++order;
-			}
-			// nav
-			else if (lines[i].startsWith("*")) {
-				String nav = lines[i].replace("*", "").trim();
-				if (nav.equalsIgnoreCase(key)) {
-					start = true;
-				}
-				else {
-					start = false;
-				}
-			}
-		}
-
-		return result;
 	}
 }
