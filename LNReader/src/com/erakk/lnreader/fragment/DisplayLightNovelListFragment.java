@@ -238,7 +238,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 					novel.setWatched(true);
 					Toast.makeText(getSherlockActivity(), "Added to watch list: " + novel.getTitle(), Toast.LENGTH_SHORT).show();
 				}
-				NovelsDao.getInstance(getSherlockActivity()).updatePageModel(novel);
+				NovelsDao.getInstance().updatePageModel(novel);
 				adapter.notifyDataSetChanged();
 			}
 			return true;
@@ -258,7 +258,7 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 			if (info.position > -1) {
 				toggleProgressBar(true);
 				PageModel novel = listItems.get(info.position);
-				int result = NovelsDao.getInstance(getSherlockActivity()).deleteNovel(novel);
+				int result = NovelsDao.getInstance().deleteNovel(novel);
 				if (result > 0) {
 					listItems.remove(novel);
 					adapter.notifyDataSetChanged();

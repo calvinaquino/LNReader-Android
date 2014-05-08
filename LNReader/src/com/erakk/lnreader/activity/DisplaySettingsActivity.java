@@ -747,7 +747,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 	}
 
 	private void checkDB() {
-		String result = NovelsDao.getInstance(this).checkDB();
+		String result = NovelsDao.getInstance().checkDB();
 		Toast.makeText(this, result, Toast.LENGTH_SHORT).show();
 	}
 
@@ -1134,7 +1134,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			public void onClick(DialogInterface dialog, int which) {
 				if (which == DialogInterface.BUTTON_POSITIVE) {
 					Toast.makeText(getApplicationContext(), getResources().getString(R.string.clear_database), Toast.LENGTH_SHORT).show();
-					NovelsDao.getInstance(getApplicationContext()).deleteDB();
+					NovelsDao.getInstance().deleteDB();
 					Toast.makeText(getApplicationContext(), getResources().getString(R.string.database_cleared), Toast.LENGTH_SHORT).show();
 				}
 			}

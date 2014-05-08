@@ -56,7 +56,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 	public static final String TAG = DisplayLightNovelDetailsActivity.class.toString();
 	private PageModel page;
 	private NovelCollectionModel novelCol;
-	private final NovelsDao dao = NovelsDao.getInstance(this);
+	private final NovelsDao dao = NovelsDao.getInstance();
 
 	private BookModelAdapter bookModelAdapter;
 	private ExpandableListView expandList;
@@ -80,7 +80,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		page = new PageModel();
 		page.setPage(intent.getStringExtra(Constants.EXTRA_PAGE));
 		try {
-			page = NovelsDao.getInstance(this).getPageModel(page, null);
+			page = dao.getPageModel(page, null);
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting Page Model for " + page.getPage(), e);
 		}
@@ -204,7 +204,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 					if (pageModel.isMissing() || pageModel.isExternal())
 						continue;
 					else if (!pageModel.isDownloaded() // add to list if not downloaded or the update available.
-							|| (pageModel.isDownloaded() && NovelsDao.getInstance(this).isContentUpdated(pageModel))) {
+							|| (pageModel.isDownloaded() && dao.isContentUpdated(pageModel))) {
 						notDownloadedChapters.add(pageModel);
 					}
 				}
@@ -262,7 +262,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 				PageModel temp = i.next();
 				if (temp.isDownloaded()) {
 					// add to list if the update available.
-					if (NovelsDao.getInstance(this).isContentUpdated(temp)) {
+					if (dao.isContentUpdated(temp)) {
 						downloadingChapters.add(temp);
 					}
 				} else {
@@ -587,7 +587,6 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		}
 		// update the db!
 		page.setWatched(isChecked);
-		NovelsDao dao = NovelsDao.getInstance(this);
 		dao.updatePageModel(page);
 	}
 

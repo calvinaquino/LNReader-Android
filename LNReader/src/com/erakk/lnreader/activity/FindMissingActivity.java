@@ -76,7 +76,7 @@ public class FindMissingActivity extends SherlockListActivity implements IExtend
 
 	private void setItems(String extra) {
 		int resourceId = R.layout.find_missing_list_item;
-		models = NovelsDao.getInstance(this).getMissingItems(extra);
+		models = NovelsDao.getInstance().getMissingItems(extra);
 		adapter = new FindMissingAdapter(this, resourceId, models, extra, dowloadSelected, elseSelected);
 		setListAdapter(adapter);
 	}

@@ -264,7 +264,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 					novel.setWatched(true);
 					Toast.makeText(this, getResources().getString(R.string.added_to_watchlist) + ": " + novel.getTitle(), Toast.LENGTH_SHORT).show();
 				}
-				NovelsDao.getInstance(this).updatePageModel(novel);
+				NovelsDao.getInstance().updatePageModel(novel);
 				adapter.notifyDataSetChanged();
 			}
 			return true;
@@ -285,7 +285,7 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 				toggleProgressBar(true);
 				PageModel novel = listItems.get(info.position);
 				Log.d(TAG, "Deleting novel: " + novel.getTitle());
-				int result = NovelsDao.getInstance(this).deleteNovel(novel);
+				int result = NovelsDao.getInstance().deleteNovel(novel);
 				if (result > 0) {
 					listItems.remove(novel);
 					adapter.notifyDataSetChanged();

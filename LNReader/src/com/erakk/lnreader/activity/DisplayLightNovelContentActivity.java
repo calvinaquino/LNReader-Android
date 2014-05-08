@@ -218,7 +218,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		if (!restored) {
 			PageModel pageModel = new PageModel(getIntent().getStringExtra(Constants.EXTRA_PAGE));
 			try {
-				pageModel = NovelsDao.getInstance(this).getPageModel(pageModel, null);
+				pageModel = NovelsDao.getInstance().getPageModel(pageModel, null);
 				executeTask(pageModel, false);
 			} catch (Exception e) {
 				Log.e(TAG, "Failed to get the PageModel for content: " + getIntent().getStringExtra(Constants.EXTRA_PAGE), e);
@@ -316,7 +316,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			// replace the current pageModel with the saved instance if have
 			// different page
 			PageModel pageModel = new PageModel(restoredPage);
-			pageModel = NovelsDao.getInstance(this).getPageModel(pageModel, null);
+			pageModel = NovelsDao.getInstance().getPageModel(pageModel, null);
 			executeTask(pageModel, false);
 		} catch (Exception e) {
 			Log.e(TAG, "Error when restoring instance", e);
@@ -377,7 +377,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			} else {
 				String pageStr = getIntent().getStringExtra(Constants.EXTRA_PAGE);
 				try {
-					page = NovelsDao.getInstance(this).getExistingPageModel(new PageModel(pageStr), null);
+					page = NovelsDao.getInstance().getExistingPageModel(new PageModel(pageStr), null);
 					if (page == null) {
 						// no page model, just url
 						page = new PageModel(pageStr);
@@ -680,7 +680,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			// content.setLastYScroll(wv.getScrollY());
 			content.setLastZoom(wv.getScale());
 			try {
-				content = NovelsDao.getInstance(this).updateNovelContent(content);
+				content = NovelsDao.getInstance().updateNovelContent(content);
 			} catch (Exception ex) {
 				Log.e(TAG, "Error when saving state: " + ex.getMessage(), ex);
 			}
@@ -692,7 +692,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 						PageModel page = content.getPageModel();
 						if (!page.getPage().endsWith("&action=edit&redlink=1")) {
 							page.setFinishedRead(true);
-							page = NovelsDao.getInstance(this).updatePageModel(page);
+							page = NovelsDao.getInstance().updatePageModel(page);
 						}
 					} catch (Exception ex) {
 						Log.e(TAG, "Error updating PageModel for Content: " + content.getPage(), ex);
@@ -911,7 +911,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		try {
 			if (pageModel.getParent() != null) {
 				Log.d(TAG, "Parent Page: " + pageModel.getParent());
-				novelDetails = NovelsDao.getInstance(this).getNovelDetails(pageModel.getParentPageModel(), null);
+				novelDetails = NovelsDao.getInstance().getNovelDetails(pageModel.getParentPageModel(), null);
 				String volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
 				title = pageModel.getTitle() + " (" + volume + ")";
 			}

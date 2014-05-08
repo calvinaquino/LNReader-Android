@@ -62,47 +62,23 @@ import com.erakk.lnreader.task.DownloadFileTask;
  */
 public class NovelsDao {
 	private static final String TAG = NovelsDao.class.toString();
-	private static DBHelper dbh;
-	private static Context context;
+	private static final DBHelper dbh;
+	private static final Context context;
+	private static final NovelsDao instance;
 
-	private static NovelsDao instance;
-	private static Object lock = new Object();
-
-
-	public static NovelsDao getInstance(Context applicationContext) {
-		synchronized (lock) {
-			if (instance == null) {
-				instance = new NovelsDao(applicationContext);
-				context = applicationContext;
-			}
-		}
-		return instance;
+	static{
+		context = LNReaderApplication.getInstance().getApplicationContext();
+		dbh = new DBHelper(context);
+		instance = new NovelsDao();
 	}
 
 	public static NovelsDao getInstance() {
-		synchronized (lock) {
-			if (instance == null) {
-				try {
-					instance = new NovelsDao(LNReaderApplication.getInstance().getApplicationContext());
-				} catch (Exception ex) {
-					Log.e(TAG, "Failed to get context for NovelsDao", ex);
-					throw new NullPointerException("NovelsDao is not Initialized!");
-				}
-			}
-		}
 		return instance;
 	}
 
-	private NovelsDao(Context context) {
-		if (dbh == null) {
-			dbh = new DBHelper(context);
-		}
-	}
+	private NovelsDao(){}
 
 	public DBHelper getDBHelper() {
-		if (dbh == null) {
-			dbh = new DBHelper(context);
-		}
 		return dbh;
 	}
 
@@ -1098,7 +1074,6 @@ public class NovelsDao {
 				Document imageDoc = Jsoup.parse(content.getContent());
 				ArrayList<String> images = CommonParser.parseImagesFromContentPage(imageDoc);
 				for (String imageUrl : images) {
-					// ImageModel bigImage = getImageModelFromInternet(image, notifier);
 					ImageModel bigImage = new ImageModel();
 					bigImage.setBigImage(true);
 					bigImage.setName(imageUrl);

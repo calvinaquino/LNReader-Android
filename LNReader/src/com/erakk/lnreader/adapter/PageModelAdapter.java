@@ -154,8 +154,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 					}
 					// update the db!
 					page.setWatched(isChecked);
-					NovelsDao dao = NovelsDao.getInstance(context); // use the cached instance
-					dao.updatePageModel(page);
+					NovelsDao.getInstance().updatePageModel(page);
 				}
 			});
 		}
@@ -173,7 +172,7 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			if (!UIHelper.getQuickLoad(context)) {
 				for (int i = 0; i < data.size(); ++i) {
 					try {
-						PageModel temp = NovelsDao.getInstance(context).getPageModel(data.get(i), null);
+						PageModel temp = NovelsDao.getInstance().getPageModel(data.get(i), null);
 						temp.setUpdateCount(data.get(i).getUpdateCount());
 						data.set(i, temp);
 					} catch (Exception e) {

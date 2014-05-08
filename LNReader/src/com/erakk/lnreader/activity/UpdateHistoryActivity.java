@@ -163,7 +163,7 @@ public class UpdateHistoryActivity extends SherlockActivity implements IExtended
 			startActivity(settingsIntent);
 			return true;
 		case R.id.menu_clear_all:
-			NovelsDao.getInstance(this).deleteAllUpdateHistory();
+			NovelsDao.getInstance().deleteAllUpdateHistory();
 			updateContent();
 			return true;
 		case R.id.menu_clear_selected:
@@ -223,7 +223,7 @@ public class UpdateHistoryActivity extends SherlockActivity implements IExtended
 
 	public void updateContent() {
 		try {
-			updateList = NovelsDao.getInstance(this).getAllUpdateHistory();
+			updateList = NovelsDao.getInstance().getAllUpdateHistory();
 			int resourceId = R.layout.update_list_item;
 			adapter = new UpdateInfoModelAdapter(this, resourceId, updateList);
 			updateListView.setAdapter(adapter);

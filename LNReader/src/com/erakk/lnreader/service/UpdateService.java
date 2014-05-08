@@ -141,7 +141,7 @@ public class UpdateService extends Service {
 				updateInfo.setUpdatePageModel(pageModel);
 
 				// insert to db
-				NovelsDao.getInstance(this).insertUpdateHistory(updateInfo);
+				NovelsDao.getInstance().insertUpdateHistory(updateInfo);
 				updatesInfo.add(updateInfo);
 			}
 

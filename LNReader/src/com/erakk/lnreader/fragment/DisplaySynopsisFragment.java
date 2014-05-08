@@ -41,11 +41,9 @@ import com.erakk.lnreader.task.LoadNovelDetailsTask;
 
 public class DisplaySynopsisFragment extends SherlockFragment implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
 	public static final String TAG = DisplaySynopsisFragment.class.toString();
-	NovelsDao dao = NovelsDao.getInstance(getSherlockActivity());
-	NovelCollectionModel novelCol;
-	TextView textViewTitle;
-	TextView textViewSynopsis;
-	View currentLayout;
+	private final NovelsDao dao = NovelsDao.getInstance();
+	private NovelCollectionModel novelCol;
+	private View currentLayout;
 
 	private LoadNovelDetailsTask task = null;
 	private PageModel page;
@@ -64,7 +62,7 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IExtend
 		page.setPage(getArguments().getString(Constants.EXTRA_PAGE));
 
 		try {
-			page = NovelsDao.getInstance(getSherlockActivity()).getPageModel(page, null);
+			page = dao.getPageModel(page, null);
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting Page Model for " + page.getPage(), e);
 		}
@@ -199,7 +197,6 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IExtend
 							}
 							// update the db!
 							page.setWatched(isChecked);
-							NovelsDao dao = NovelsDao.getInstance(getSherlockActivity());
 							dao.updatePageModel(page);
 						}
 					});

@@ -97,8 +97,7 @@ public class SearchPageModelAdapter extends PageModelAdapter {
 						}
 						// update the db!
 						page.setWatched(isChecked);
-						NovelsDao dao = NovelsDao.getInstance(context); // use the cached instance
-						dao.updatePageModel(page);
+						NovelsDao.getInstance().updatePageModel(page);
 					}
 				});
 			} else {

@@ -22,7 +22,6 @@ import android.widget.Toast;
 
 import com.erakk.lnreader.activity.DownloadListActivity;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
-import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.DownloadModel;
 import com.erakk.lnreader.service.AutoBackupService;
 import com.erakk.lnreader.service.UpdateService;
@@ -33,7 +32,6 @@ import com.erakk.lnreader.task.AsyncTaskResult;
  */
 public class LNReaderApplication extends Application {
 	private static final String TAG = LNReaderApplication.class.toString();
-	private static NovelsDao novelsDao = null;
 	private static DownloadListActivity downloadListActivity = null;
 	private static UpdateService updateService = null;
 	private static AutoBackupService autoBackupService = null;
@@ -62,8 +60,6 @@ public class LNReaderApplication extends Application {
 	}
 
 	protected void initSingletons() {
-		if (novelsDao == null)
-			novelsDao = NovelsDao.getInstance(this);
 		if (downloadListActivity == null)
 			downloadListActivity = DownloadListActivity.getInstance();
 		if (runningTasks == null)

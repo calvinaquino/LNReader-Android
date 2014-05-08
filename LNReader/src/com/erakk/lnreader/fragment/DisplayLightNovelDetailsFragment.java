@@ -58,7 +58,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 	public static final String TAG = DisplayLightNovelDetailsFragment.class.toString();
 	private PageModel page;
 	private NovelCollectionModel novelCol;
-	private final NovelsDao dao = NovelsDao.getInstance(getSherlockActivity());
+	private final NovelsDao dao = NovelsDao.getInstance();
 
 	private BookModelAdapter bookModelAdapter;
 	private ExpandableListView expandList;
@@ -90,7 +90,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 		page.setPage(pageTitle);
 
 		try {
-			page = NovelsDao.getInstance(getSherlockActivity()).getPageModel(page, null);
+			page = dao.getPageModel(page, null);
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting Page Model for " + page.getPage(), e);
 		}
@@ -176,12 +176,8 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			for (PageModel pageModel : availableChapters) {
 				if (pageModel.isMissing() || pageModel.isExternal())
 					continue;
-				else if (!pageModel.isDownloaded() // add to list if not
-						// downloaded
-						|| (pageModel.isDownloaded() && NovelsDao.getInstance(getSherlockActivity()).isContentUpdated(pageModel))) // or
-					// the
-					// update
-					// available.
+				else if (!pageModel.isDownloaded()
+						|| (pageModel.isDownloaded() && dao.isContentUpdated(pageModel)))
 				{
 					notDownloadedChapters.add(pageModel);
 				}
@@ -234,8 +230,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			for (Iterator<PageModel> i = book.getChapterCollection().iterator(); i.hasNext();) {
 				PageModel temp = i.next();
 				if (temp.isDownloaded()) {
-					// add to list if the update available.
-					if (NovelsDao.getInstance(getSherlockActivity()).isContentUpdated(temp)) {
+					if (dao.isContentUpdated(temp)) {
 						downloadingChapters.add(temp);
 					}
 				} else {
@@ -524,7 +519,6 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 								}
 								// update the db!
 								page.setWatched(isChecked);
-								NovelsDao dao = NovelsDao.getInstance(getSherlockActivity());
 								dao.updatePageModel(page);
 							}
 						});

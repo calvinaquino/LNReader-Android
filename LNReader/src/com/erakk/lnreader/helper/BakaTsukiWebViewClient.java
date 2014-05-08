@@ -49,7 +49,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 				String titles[] = url.split("title=", 2);
 				if (titles.length == 2 && !(titles[1].length() == 0)) {
 					// check if have inside db
-					NovelsDao dao = NovelsDao.getInstance(caller);
+					NovelsDao dao = NovelsDao.getInstance();
 					try {
 						// split anchor text
 						String[] titles2 = titles[1].split("#", 2);
