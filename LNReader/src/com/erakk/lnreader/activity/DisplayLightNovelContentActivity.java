@@ -95,6 +95,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	private TtsBinder ttsBinder = null;
 
 	private boolean isNeedSave = true;
+	private Menu _menu;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -224,18 +225,36 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			}
 		}
 		setWebViewSettings();
-		// if (content != null) {
-		// NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
-		// int pos = content.getLastYScroll();
-		// if (pos > 0)
-		// pos = pos - 1;
-		// wv.loadUrl("javascript:goToParagraph(" + pos + ")");
-		// }
 
 		if (ttsBinder != null) {
 			ttsBinder.initConfig();
 		}
 		Log.d(TAG, "onResume Completed");
+	}
+
+	private void setPrevNextButtonState(PageModel pageModel) {
+		if(_menu != null) {
+			boolean isNextEnabled = false;
+			boolean isPrevEnabled = false;
+
+			try{
+				PageModel prevPage = novelDetails.getPrev(pageModel.getPage(), UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
+				if(prevPage != null)
+					isPrevEnabled = true;
+			}catch(Exception ex) {
+				Log.e(TAG, "Failed to get prev chapter: " + pageModel.getPage(), ex);
+			}
+			try{
+				PageModel nextPage = novelDetails.getNext(pageModel.getPage(), UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
+				if(nextPage != null)
+					isNextEnabled = true;
+			}catch(Exception ex) {
+				Log.e(TAG, "Failed to get next chapter: " + pageModel.getPage(), ex);
+			}
+
+			_menu.findItem(R.id.menu_chapter_next).setEnabled(isNextEnabled);
+			_menu.findItem(R.id.menu_chapter_previous).setEnabled(isPrevEnabled);
+		}
 	}
 
 	@Override
@@ -332,6 +351,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 
 		setupTTSMenu(menu);
+		_menu = menu;
 		return true;
 	}
 
@@ -722,6 +742,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				toggleProgressBar(true);
 			}
 		}
+		setPrevNextButtonState(pageModel);
 	}
 
 	public void loadExternalUrl(PageModel pageModel, boolean refresh) {
