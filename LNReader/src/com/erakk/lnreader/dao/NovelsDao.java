@@ -68,6 +68,7 @@ public class NovelsDao {
 	private static NovelsDao instance;
 	private static Object lock = new Object();
 
+
 	public static NovelsDao getInstance(Context applicationContext) {
 		synchronized (lock) {
 			if (instance == null) {
@@ -125,33 +126,7 @@ public class NovelsDao {
 	}
 
 	public ArrayList<PageModel> getNovels(ICallbackNotifier notifier, boolean alphOrder) throws Exception {
-		ArrayList<PageModel> list = null;
-		PageModel page = null;
-		SQLiteDatabase db = null;
-
-		// check if main page exist
-		synchronized (dbh) {
-			try {
-				long start = java.lang.System.currentTimeMillis();
-				db = dbh.getReadableDatabase();
-				page = PageModelHelper.getMainPage(db);
-
-				if (page != null) {
-					list = dbh.getAllNovels(db, alphOrder, isQuickLoad());
-					Log.d(TAG, "Found Main Novels: " + list.size());
-				}
-				Log.i(TAG, String.format("DB Loading Time - Main Novel: %s", java.lang.System.currentTimeMillis() - start));
-			} finally {
-				if (db != null)
-					db.close();
-			}
-		}
-		if (page == null) {
-			Log.d(TAG, "No " + Constants.ROOT_NOVEL_ENGLISH + " data!");
-			list = getNovelsFromInternet(notifier);
-		}
-
-		return list;
+		return getNovelHelper(notifier, Constants.ROOT_NOVEL_ENGLISH, null, alphOrder);
 	}
 
 	public ArrayList<PageModel> getNovelsFromInternet(ICallbackNotifier notifier) throws Exception {
@@ -182,30 +157,7 @@ public class NovelsDao {
 	}
 
 	public ArrayList<PageModel> getTeaser(ICallbackNotifier notifier, boolean alphOrder) throws Exception {
-		SQLiteDatabase db = null;
-		PageModel page = null;
-		ArrayList<PageModel> list = null;
-		synchronized (dbh) {
-			try {
-				long start = java.lang.System.currentTimeMillis();
-				db = dbh.getReadableDatabase();
-				page = PageModelHelper.getTeaserPage(db);
-				if (page != null) {
-					list = dbh.getAllTeaser(db, alphOrder, isQuickLoad());
-					Log.d(TAG, "Found Teaser: " + list.size());
-				}
-				Log.i(TAG, String.format("DB Loading Time - Teaser Novel: %s", java.lang.System.currentTimeMillis() - start));
-			} finally {
-				if (db != null)
-					db.close();
-			}
-		}
-
-		if (page == null) {
-			return getTeaserFromInternet(notifier);
-		}
-
-		return list;
+		return getNovelHelper(notifier, Constants.ROOT_TEASER, Constants.STATUS_TEASER, alphOrder);
 	}
 
 	public ArrayList<PageModel> getTeaserFromInternet(ICallbackNotifier notifier) throws Exception {
@@ -219,31 +171,7 @@ public class NovelsDao {
 	}
 
 	public ArrayList<PageModel> getOriginal(ICallbackNotifier notifier, boolean alphOrder) throws Exception {
-		SQLiteDatabase db = null;
-		PageModel page = null;
-		ArrayList<PageModel> list = null;
-
-		synchronized (dbh) {
-			try {
-				long start = java.lang.System.currentTimeMillis();
-				db = dbh.getReadableDatabase();
-				page = PageModelHelper.getOriginalPage(db);
-				if (page != null) {
-					list = dbh.getAllOriginal(db, alphOrder, isQuickLoad());
-					Log.d(TAG, "Found: " + list.size());
-				}
-				Log.i(TAG, String.format("DB Loading Time - Original: %s", java.lang.System.currentTimeMillis() - start));
-			} finally {
-				if (db != null)
-					db.close();
-			}
-		}
-
-		if (page == null) {
-			return getOriginalFromInternet(notifier);
-		}
-
-		return list;
+		return getNovelHelper(notifier, Constants.ROOT_ORIGINAL, Constants.STATUS_ORIGINAL, alphOrder);
 	}
 
 	public ArrayList<PageModel> getOriginalFromInternet(ICallbackNotifier notifier) throws Exception {
@@ -254,7 +182,6 @@ public class NovelsDao {
 		}
 
 		return getNovelsHelperFromInternet(notifier, Constants.ROOT_ORIGINAL, Constants.STATUS_ORIGINAL);
-
 	}
 
 	public ArrayList<PageModel> getAlternative(ICallbackNotifier notifier, boolean alphOrder, String language) throws Exception {
@@ -469,6 +396,40 @@ public class NovelsDao {
 	}
 
 	/**
+	 * Get Novel list from db. If not exists, get it from internet
+	 * @param notifier
+	 * @param parent
+	 * @param alphOrder
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 */
+	private ArrayList<PageModel> getNovelHelper(ICallbackNotifier notifier, final String parent, final String status, boolean alphOrder) throws Exception {
+		SQLiteDatabase db = null;
+		ArrayList<PageModel> list = null;
+
+		synchronized (dbh) {
+			try {
+				long start = java.lang.System.currentTimeMillis();
+				db = dbh.getReadableDatabase();
+				list = dbh.getAllNovelsByCategory(db, alphOrder, isQuickLoad(), new String[] { parent });
+				Log.d(TAG, "Found: " + list.size());
+
+				Log.i(TAG, String.format("DB Loading Time - %s: %s", parent, java.lang.System.currentTimeMillis() - start));
+			} finally {
+				if (db != null)
+					db.close();
+			}
+		}
+
+		if (parent == null) {
+			return getNovelsHelperFromInternet(notifier, parent, status);
+		}
+
+		return list;
+	}
+
+	/**
 	 * Get novel list from Internet based on given parent page,
 	 * e.g.:
 	 * - "Category:Teaser"
@@ -484,7 +445,7 @@ public class NovelsDao {
 	 * @throws EOFException
 	 * @throws IOException
 	 */
-	private ArrayList<PageModel> getNovelsHelperFromInternet(ICallbackNotifier notifier, final String parent, String status) throws Exception, EOFException, IOException {
+	private ArrayList<PageModel> getNovelsHelperFromInternet(ICallbackNotifier notifier, final String parent, final String status) throws Exception, EOFException, IOException {
 		Date date = new Date();
 		PageModel parentPage = new PageModel();
 		parentPage.setPage(parent);
@@ -1013,10 +974,6 @@ public class NovelsDao {
 			SQLiteDatabase db = dbh.getReadableDatabase();
 			try {
 				return PageModelHelper.deletePageModel(db, page);
-				// PageModel tempPage = PageModelHelper.getPageModel(db, page.getId());
-				// if (tempPage != null) {
-				// return PageModelHelper.deletePageModel(db, tempPage);
-				// }
 			} finally {
 				db.close();
 			}
@@ -1249,8 +1206,8 @@ public class NovelsDao {
 					Log.i(TAG, "Image found in DB, but doesn't exist in URL decoded path: " + java.net.URLDecoder.decode(imageTemp.getPath(), java.nio.charset.Charset.defaultCharset().displayName()));
 					downloadBigImage = true;
 				} // else Log.i(TAG, "Image found in DB with URL decoded path: " +
-					// java.net.URLDecoder.decode(imageTemp.getPath(),
-					// java.nio.charset.Charset.defaultCharset().displayName()));
+				// java.net.URLDecoder.decode(imageTemp.getPath(),
+				// java.nio.charset.Charset.defaultCharset().displayName()));
 
 			} catch (Exception e) {
 				Log.i(TAG, "Image found in DB, but path string seems to be broken: " + imageTemp.getPath()

@@ -88,21 +88,6 @@ public class PageModelHelper {
 		return result;
 	}
 
-	public static PageModel getMainPage(SQLiteDatabase db) {
-		PageModel page = getPageModel(db, Constants.ROOT_NOVEL_ENGLISH);
-		return page;
-	}
-
-	public static PageModel getTeaserPage(SQLiteDatabase db) {
-		PageModel page = getPageModel(db, Constants.ROOT_TEASER);
-		return page;
-	}
-
-	public static PageModel getOriginalPage(SQLiteDatabase db) {
-		PageModel page = getPageModel(db, Constants.ROOT_ORIGINAL);
-		return page;
-	}
-
 	public static PageModel getAlternativePage(SQLiteDatabase db, String language) {
 		/* Return PageModel depends on language */
 		PageModel page = null;
@@ -111,7 +96,6 @@ public class PageModelHelper {
 	}
 
 	public static PageModel getPageModel(SQLiteDatabase db, String page) {
-		// Log.d(TAG, "Select Page: " + page);
 		PageModel pageModel = null;
 		Cursor cursor = null;
 		try {

@@ -314,18 +314,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		return pages;
 	}
 
-	public ArrayList<PageModel> getAllNovels(SQLiteDatabase db, boolean alphOrder, boolean quick) {
-		return getAllNovelsByCategory(db, alphOrder, quick, new String[] { Constants.ROOT_NOVEL_ENGLISH });
-	}
-
-	public ArrayList<PageModel> getAllTeaser(SQLiteDatabase db, boolean alphOrder, boolean quick) {
-		return getAllNovelsByCategory(db, alphOrder, quick, new String[] { Constants.ROOT_TEASER });
-	}
-
-	public ArrayList<PageModel> getAllOriginal(SQLiteDatabase db, boolean alphOrder, boolean quick) {
-		return getAllNovelsByCategory(db, alphOrder, quick, new String[] { Constants.ROOT_ORIGINAL });
-	}
-
 	public ArrayList<PageModel> getAllAlternative(SQLiteDatabase db, boolean alphOrder, boolean quick, String language) {
 		ArrayList<PageModel> pages = new ArrayList<PageModel>();
 		if (language != null) {
