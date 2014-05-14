@@ -147,7 +147,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		setupTtsService();
 		loadingText = (TextView) findViewById(R.id.emptyList);
 		loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
-
 	}
 
 	@SuppressLint("NewApi")
@@ -232,23 +231,40 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		Log.d(TAG, "onResume Completed");
 	}
 
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+		_menu = menu;
+
+		try {
+			if (content != null)
+				setPrevNextButtonState(content.getPageModel());
+		} catch (Exception e) {
+			Log.w(TAG, "Cannot get current pagemodel");
+		}
+
+		return true;
+	}
+
 	private void setPrevNextButtonState(PageModel pageModel) {
-		if(_menu != null) {
+		if (_menu != null) {
 			boolean isNextEnabled = false;
 			boolean isPrevEnabled = false;
 
-			try{
-				PageModel prevPage = novelDetails.getPrev(pageModel.getPage(), UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
-				if(prevPage != null)
+			try {
+				PageModel prevPage = novelDetails.getPrev(pageModel.getPage(), UIHelper.getShowMissing(this),
+						UIHelper.getShowRedlink(this));
+				if (prevPage != null)
 					isPrevEnabled = true;
-			}catch(Exception ex) {
+			} catch (Exception ex) {
 				Log.e(TAG, "Failed to get prev chapter: " + pageModel.getPage(), ex);
 			}
-			try{
-				PageModel nextPage = novelDetails.getNext(pageModel.getPage(), UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
-				if(nextPage != null)
+			try {
+				PageModel nextPage = novelDetails.getNext(pageModel.getPage(), UIHelper.getShowMissing(this),
+						UIHelper.getShowRedlink(this));
+				if (nextPage != null)
 					isNextEnabled = true;
-			}catch(Exception ex) {
+			} catch (Exception ex) {
 				Log.e(TAG, "Failed to get next chapter: " + pageModel.getPage(), ex);
 			}
 
@@ -409,20 +425,20 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			if (content != null) {
 				try {
 					currentPage = content.getPageModel().getPage();
+					if (novelDetails == null)
+						novelDetails = NovelsDao.getInstance().getNovelDetails(content.getPageModel(), null);
+					PageModel prev = novelDetails.getPrev(currentPage, UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
+					if (prev != null) {
+						jumpTo(prev);
+					} else {
+						Toast.makeText(this, getResources().getString(R.string.first_available_chapter), Toast.LENGTH_SHORT).show();
+					}
 				} catch (Exception e) {
 					Log.e(TAG, "Cannot get previous chapter.", e);
 				}
 			} else {
 				currentPage = getIntent().getStringExtra(Constants.EXTRA_PAGE);
 			}
-
-			PageModel prev = novelDetails.getPrev(currentPage, UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
-			if (prev != null) {
-				jumpTo(prev);
-			} else {
-				Toast.makeText(this, getResources().getString(R.string.first_available_chapter), Toast.LENGTH_SHORT).show();
-			}
-
 			return true;
 		case R.id.menu_chapter_next:
 
@@ -433,18 +449,20 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			if (content != null) {
 				try {
 					currentPage2 = content.getPageModel().getPage();
+					if (novelDetails == null)
+						novelDetails = NovelsDao.getInstance().getNovelDetails(content.getPageModel(), null);
+
+					PageModel next = novelDetails.getNext(currentPage2, UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
+					if (next != null) {
+						jumpTo(next);
+					} else {
+						Toast.makeText(this, getResources().getString(R.string.last_available_chapter), Toast.LENGTH_SHORT).show();
+					}
 				} catch (Exception e) {
 					Log.e(TAG, "Cannot get next chapter.", e);
 				}
 			} else {
 				currentPage2 = getIntent().getStringExtra(Constants.EXTRA_PAGE);
-			}
-
-			PageModel next = novelDetails.getNext(currentPage2, UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
-			if (next != null) {
-				jumpTo(next);
-			} else {
-				Toast.makeText(this, getResources().getString(R.string.last_available_chapter), Toast.LENGTH_SHORT).show();
 			}
 			return true;
 		case R.id.menu_chapter_toc:
@@ -828,14 +846,13 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		isNeedSave = false;
 	}
 
-
 	private String getSavedWacName(String url) {
 		String path = UIHelper.getImageRoot(this) + "/wac";
 		String filename = path + "/" + Util.calculateCRC32(url);
-		String extensions[] = {".wac", ".mht"};
-		for(String ext : extensions) {
+		String extensions[] = { ".wac", ".mht" };
+		for (String ext : extensions) {
 			File temp = new File(filename + ext);
-			if(temp.exists()) {
+			if (temp.exists()) {
 				Log.i(TAG, String.format("Web Archive found for %s: %s", url, temp.getAbsolutePath()));
 				return temp.getAbsolutePath();
 			}
@@ -843,7 +860,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		Log.w(TAG, String.format("Web Archive not found for %s", url));
 		return null;
 	}
-
 
 	private String getWacNameForSaving(String url, boolean refresh) {
 		String path = UIHelper.getImageRoot(this) + "/wac";

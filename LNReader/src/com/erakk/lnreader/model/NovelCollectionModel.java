@@ -189,7 +189,7 @@ public class NovelCollectionModel {
 		PageModel prev = null;
 		if (index != -1) {
 			index--;
-			while (index > 0) {
+			while (index >= 0) {
 				PageModel temp = getFlattedChapterList().get(index);
 				if (!includeRedlink && temp.isRedlink()) {
 					index--;
