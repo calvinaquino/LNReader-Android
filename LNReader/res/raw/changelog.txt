@@ -7,6 +7,7 @@
 - Fix Original Novel parser.
 - Update Main Parser to use Category:Light_novel_(English).
 - Update Prev/Next button handler.
+- Update TOC handler to follow show missing/redlink/external settings.
 
 1.1.16
 - Implement quick load on Watched Novels.

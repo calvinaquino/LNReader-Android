@@ -32,12 +32,15 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 	private final Context context;
 	private int layoutResourceId;
 	public List<PageModel> data;
+	private PageModel[] originalData = new PageModel[0];
 
 	public PageModelAdapter(Context context, int resourceId, List<PageModel> objects) {
 		super(context, resourceId, objects);
 		this.layoutResourceId = resourceId;
 		this.context = context;
 		this.data = objects;
+		this.originalData = objects.toArray(originalData);
+		filterData();
 		Log.d(TAG, "created with " + objects.size() + " items");
 	}
 
@@ -161,6 +164,24 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 
 		row.setTag(holder);
 		return row;
+	}
+
+	public void filterData() {
+		this.clear();
+		data.clear();
+		for (PageModel item : originalData) {
+			if (!item.isHighlighted()) {
+				if (!UIHelper.getShowRedlink(getContext()) && item.isRedlink())
+					continue;
+				if (!UIHelper.getShowMissing(getContext()) && item.isMissing())
+					continue;
+				if (!UIHelper.getShowExternal(getContext()) && item.isExternal())
+					continue;
+			}
+			data.add(item);
+		}
+		super.notifyDataSetChanged();
+		Log.d(TAG, "Filtered result : " + data.size());
 	}
 
 	// somehow if enabled, will trigger the db 2x (first load and after load)

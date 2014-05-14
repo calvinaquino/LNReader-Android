@@ -35,7 +35,7 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
 	private final Date now;
 	long repeatTime = 0;
 	public List<UpdateInfoModel> data;
-	public UpdateInfoModel[] originalData = new UpdateInfoModel[0];
+	private UpdateInfoModel[] originalData = new UpdateInfoModel[0];
 	boolean showUpdate = true;
 	boolean showNew = true;
 	boolean showDeleted = true;

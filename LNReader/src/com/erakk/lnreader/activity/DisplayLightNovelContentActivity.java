@@ -916,6 +916,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			buildTOCMenu(pageModel);
 			buildBookmarkMenu();
 
+			invalidateOptionsMenu();
+
 			Log.d(TAG, "Loaded: " + content.getPage());
 		} catch (Exception e) {
 			Log.e(TAG, "Cannot load content.", e);
