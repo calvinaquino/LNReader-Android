@@ -182,11 +182,17 @@ public class DBHelper extends SQLiteOpenHelper {
 	public void deletePagesDB(SQLiteDatabase db) {
 		// use drop because it is faster and can avoid free row fragmentation
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_PAGE);
+		Log.d(TAG, TABLE_PAGE + " deleted");
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_IMAGE);
+		Log.d(TAG, TABLE_IMAGE + " deleted");
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_DETAILS);
+		Log.d(TAG, TABLE_NOVEL_DETAILS + " deleted");
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_BOOK);
+		Log.d(TAG, TABLE_NOVEL_BOOK + " deleted");
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOVEL_CONTENT);
+		Log.d(TAG, TABLE_NOVEL_CONTENT + " deleted");
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_UPDATE_HISTORY);
+		Log.d(TAG, TABLE_UPDATE_HISTORY + " deleted");
 		onCreate(db);
 		Log.w(TAG, "Database Deleted.");
 	}

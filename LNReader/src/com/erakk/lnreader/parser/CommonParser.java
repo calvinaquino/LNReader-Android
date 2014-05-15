@@ -263,6 +263,7 @@ public class CommonParser {
 					temp.setLastUpdate(lastUpdate);
 					temp.setMissing(false);
 					temp.setWikiId(wikiId);
+					temp.setTitle(to);
 					Log.i(TAG, String.format("parsePageAPI [%s]%s Last Update: %s ", temp.getPage(), temp.getWikiId(), temp.getLastUpdate()));
 				} else {
 					Log.w(TAG, "parsePageAPI " + temp.getPage() + " No Last Update Information!");
