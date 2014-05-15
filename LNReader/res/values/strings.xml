@@ -460,4 +460,5 @@
     <string name="https_use_my_cert_title">Load App Keystore</string>
     <string name="https_use_my_cert_summary">Load certificate for BakaTsuki from application keystore.</string>
     <string name="db_upgrade_backup_notification">DB Upgrading, backing up to %1$s.</string>
+    <string name="generic_error_exception">Error: %1$s.</string>
 </resources>

@@ -452,63 +452,67 @@ public class DisplayLightNovelListActivity extends SherlockListActivity implemen
 	@Override
 	public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
 		Exception e = result.getError();
-		if (e == null) {
-			// from LoadNovelsTask
-			if (t == PageModel[].class) {
-				PageModel[] list = (PageModel[]) result.getResult();
-				toggleProgressBar(false);
-				if (list != null && list.length > 0) {
-					adapter.clear();
-					adapter.addAll(list);
+		// from LoadNovelsTask
+		if (t == PageModel[].class) {
+			TextView tv = (TextView) findViewById(R.id.emptyList);
+			PageModel[] list = (PageModel[]) result.getResult();
+			toggleProgressBar(false);
 
-					// Show message if watch list is empty
-					if (onlyWatched) {
-						if (list.length == 0) {
-							Log.d(TAG, "WatchList result set message empty");
-							TextView tv = (TextView) findViewById(R.id.emptyList);
-							tv.setVisibility(TextView.VISIBLE);
-							tv.setText("Watch List is empty.");
-						}
+			if(e != null) {
+				tv.setVisibility(TextView.VISIBLE);
+				tv.setText( getResources().getString(R.string.generic_error_exception, e.getMessage()));
+				Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
+			}
+			else if (list != null && list.length > 0) {
+				adapter.clear();
+				adapter.addAll(list);
+
+				// Show message if watch list is empty
+				if (onlyWatched) {
+					if (list.length == 0) {
+						Log.d(TAG, "WatchList result set message empty");
+						tv.setVisibility(TextView.VISIBLE);
+						tv.setText("Watch List is empty.");
 					}
 				}
-				else {
-					TextView tv = (TextView) findViewById(R.id.emptyList);
-					tv.setVisibility(TextView.VISIBLE);
-					tv.setText("List is empty.");
-					Log.w(TAG, "Empty ArrayList!");
-				}
 			}
-			// from DownloadNovelDetailsTask
-			else if (t == NovelCollectionModel[].class) {
-				setMessageDialog(new CallbackEventData("Download complete.", "DownloadNovelDetailsTask"));
-				NovelCollectionModel[] list = (NovelCollectionModel[]) result.getResult();
-				if (list.length > 0) {
-					for (NovelCollectionModel novelCol : list) {
-						try {
-							PageModel page = novelCol.getPageModel();
-							boolean found = false;
-							for (PageModel temp : adapter.data) {
-								if (temp.getPage().equalsIgnoreCase(page.getPage())) {
-									found = true;
-									break;
-								}
+			else {
+				tv.setVisibility(TextView.VISIBLE);
+				tv.setText("List is empty.");
+				Log.w(TAG, "Empty ArrayList!");
+			}
+		}
+		// from DownloadNovelDetailsTask
+		else if (t == NovelCollectionModel[].class) {
+			setMessageDialog(new CallbackEventData("Download complete.", "DownloadNovelDetailsTask"));
+			NovelCollectionModel[] list = (NovelCollectionModel[]) result.getResult();
+			if(e != null) {
+				Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
+				Toast.makeText(this, e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
+			}
+			else if (list.length > 0) {
+				for (NovelCollectionModel novelCol : list) {
+					try {
+						PageModel page = novelCol.getPageModel();
+						boolean found = false;
+						for (PageModel temp : adapter.data) {
+							if (temp.getPage().equalsIgnoreCase(page.getPage())) {
+								found = true;
+								break;
 							}
-							if (!found) {
-								adapter.data.add(page);
-							}
-						} catch (Exception e1) {
-							Log.e(TAG, e1.getClass().toString() + ": " + e1.getMessage(), e1);
 						}
+						if (!found) {
+							adapter.data.add(page);
+						}
+					} catch (Exception e1) {
+						Log.e(TAG, e1.getClass().toString() + ": " + e1.getMessage(), e1);
 					}
 				}
-				adapter.notifyDataSetChanged();
-				toggleProgressBar(false);
-			} else {
-				Log.e(TAG, "Unknown ResultType: " + t.getName());
 			}
+			adapter.notifyDataSetChanged();
+			toggleProgressBar(false);
 		} else {
-			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
-			Toast.makeText(this, e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
+			Log.e(TAG, "Unknown ResultType: " + t.getName());
 		}
 	}
 
