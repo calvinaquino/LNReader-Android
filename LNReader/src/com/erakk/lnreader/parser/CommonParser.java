@@ -108,10 +108,10 @@ public class CommonParser {
 		int chapterOrder = 0;
 		for (PageModel chapter : chapters) {
 
-			if( chapter.getPage().contains("User:") // user page
+			if (chapter.getPage().contains("User:") // user page
 					|| chapter.getPage().contains("Special:BookSources")// ISBN handler
-					// || chapter.getPage().contains("redlink=1") // missing page
-					)
+			// || chapter.getPage().contains("redlink=1") // missing page
+			)
 			{
 				Log.d(TAG, "Skipping: " + chapter.getPage());
 				continue;
@@ -134,7 +134,7 @@ public class CommonParser {
 	public static ArrayList<BookModel> validateNovelBooks(ArrayList<BookModel> books) {
 		ArrayList<BookModel> validatedBooks = new ArrayList<BookModel>();
 		int bookOrder = 0;
-		for (BookModel book: books) {
+		for (BookModel book : books) {
 			BookModel validatedBook = new BookModel();
 
 			ArrayList<PageModel> validatedChapters = validateNovelChapters(book);
@@ -252,10 +252,10 @@ public class CommonParser {
 				String tempDate = pElement.attr("touched");
 
 				int wikiId = -1;
-				try{
+				try {
 					wikiId = Integer.parseInt(pElement.attr("pageid"));
-				}catch(NumberFormatException nex) {
-					Log.e(TAG, String.format("Invalid pageid: '%s' for %s", pElement.attr("pageid") , temp.getPage()));
+				} catch (NumberFormatException nex) {
+					Log.e(TAG, String.format("Invalid pageid: '%s' for %s", pElement.attr("pageid"), temp.getPage()));
 				}
 
 				if (!Util.isStringNullOrEmpty(tempDate)) {
@@ -263,7 +263,8 @@ public class CommonParser {
 					temp.setLastUpdate(lastUpdate);
 					temp.setMissing(false);
 					temp.setWikiId(wikiId);
-					temp.setTitle(to);
+					if (Util.isStringNullOrEmpty(temp.getTitle()))
+						temp.setTitle(to);
 					Log.i(TAG, String.format("parsePageAPI [%s]%s Last Update: %s ", temp.getPage(), temp.getWikiId(), temp.getLastUpdate()));
 				} else {
 					Log.w(TAG, "parsePageAPI " + temp.getPage() + " No Last Update Information!");
