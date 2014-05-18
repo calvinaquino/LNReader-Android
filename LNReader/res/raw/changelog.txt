@@ -1,4 +1,4 @@
-1.1.17-beta2
+1.1.17
 - Update Free Space checker logic.
 - Add context menu on Update History.
 - Add DB (SDCard) Access Check logic on Main Activity.
