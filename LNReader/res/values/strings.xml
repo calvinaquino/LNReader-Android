@@ -461,4 +461,8 @@
     <string name="https_use_my_cert_summary">Load certificate for BakaTsuki from application keystore.</string>
     <string name="db_upgrade_backup_notification">DB Upgrading, backing up to %1$s.</string>
     <string name="generic_error_exception">Error: %1$s.</string>
+    <string name="pref_css_heading_fontface_title">Heading Font</string>
+    <string name="pref_css_heading_fontface_summary">Default font for heading: </string>
+    <string name="pref_css_content_fontface_title">Content Font</string>
+    <string name="pref_css_content_fontface_summary">Default font for content: </string>
 </resources>

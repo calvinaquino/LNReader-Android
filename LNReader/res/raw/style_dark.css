@@ -58,13 +58,6 @@ body {
 *	STANDARD NOVEL TEXT SETTINGS
 *	
 ********************************************/
-.mw-headline{	/* Headings*/
-	font-family: Georgia,serif;
-}
-
-p {	/* Standard Text */
-	font-family: Tahoma, Verdana;
-}
 
 li {	/* List Items */
     margin-bottom: .1em;

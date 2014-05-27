@@ -110,6 +110,9 @@ public class Constants {
 	public static final String PREF_CLEAR_EXTERNAL_TEMP = "clear_external_temp";
 	public static final String PREF_UPDATE_INCLUDE_EXTERNAL = "update_include_external";
 	public static final String PREF_QUICK_LOAD = "quick_load";
+	public static final String PREF_HEADING_FONT = "css_heading_fontface";
+	public static final String PREF_CONTENT_FONT = "css_content_fontface";
+
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 
@@ -143,7 +146,7 @@ public class Constants {
 	/* Section of Language for novel parser */
 	public static final String LANG_ENGLISH = "English";
 	public static final String LANG_BAHASA_INDONESIA = "Bahasa Indonesia";
-	public static final String LANG_FRENCH = "Français";
+	public static final String LANG_FRENCH = "FranÃ§ais";
 	public static final String LANG_POLISH = "Polish";
 
 	/* You just need to add a new alternative language here and in xml -> parse_lang_info.xml */

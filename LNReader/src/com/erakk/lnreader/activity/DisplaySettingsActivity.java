@@ -993,42 +993,43 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 
 	@SuppressWarnings("deprecation")
 	@SuppressLint("SdCardPath")
+	/**
+	 * CSS Layout Behaviours
+	 * 1. When user's css sheet is used, disable the force justify, linespace and margin preferences
+	 * 2. When about to use user's css sheet, display a warning/message (NOT IMPLEMENTED)
+	 * 3. When linespace/margin is changed, update the summary text to reflect current value
+	 */
 	private void setCssPreferences() {
-		/************************************************************
-		 * CSS Layout Behaviours 1. When user's css sheet is used, disable the
-		 * force justify, linespace and margin preferences 2. When about to use
-		 * user's css sheet, display a warning/message (NOT IMPLEMENTED) 3. When
-		 * linespace/margin is changed, update the summary text to reflect
-		 * current value
-		 ***************************************************************/
-
 		final Preference user_cssPref = findPreference(Constants.PREF_USE_CUSTOM_CSS);
 		final Preference lineSpacePref = findPreference(Constants.PREF_LINESPACING);
 		final Preference justifyPref = findPreference(Constants.PREF_FORCE_JUSTIFIED);
 		final Preference customCssPathPref = findPreference(Constants.PREF_CUSTOM_CSS_PATH);
 		final Preference marginPref = findPreference(Constants.PREF_MARGINS);
+		final Preference headingFontPref = findPreference(Constants.PREF_HEADING_FONT);
+		final Preference contentFontPref = findPreference(Constants.PREF_CONTENT_FONT);
 
 		// Retrieve inital values stored
 		Boolean currUserCSS = getPreferenceScreen().getSharedPreferences().getBoolean(Constants.PREF_USE_CUSTOM_CSS, false);
 		String currLineSpacing = getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_LINESPACING, "150");
 		String currMargin = getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_MARGINS, "5");
+		String currHeadingFont = getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_HEADING_FONT, "serif");
+		String currContentFont = getPreferenceScreen().getSharedPreferences().getString(Constants.PREF_CONTENT_FONT, "sans-serif");
 
 		// Behaviour 1 (Activity first loaded)
-		if (currUserCSS) {
-			marginPref.setEnabled(false);
-			lineSpacePref.setEnabled(false);
-			justifyPref.setEnabled(false);
-			customCssPathPref.setEnabled(true);
-		} else {
-			marginPref.setEnabled(true);
-			lineSpacePref.setEnabled(true);
-			justifyPref.setEnabled(true);
-			customCssPathPref.setEnabled(false);
-		}
+		marginPref.setEnabled(!currUserCSS);
+		lineSpacePref.setEnabled(!currUserCSS);
+		justifyPref.setEnabled(!currUserCSS);
+		customCssPathPref.setEnabled(currUserCSS);
+		headingFontPref.setEnabled(!currUserCSS);
+		contentFontPref.setEnabled(!currUserCSS);
+
 
 		// Behaviour 3 (Activity first loaded)
 		lineSpacePref.setSummary(getResources().getString(R.string.line_spacing_summary2) + " \n" + getResources().getString(R.string.current_value) + ": " + currLineSpacing + "%");
 		marginPref.setSummary(getResources().getString(R.string.margin_summary2) + " \n" + getResources().getString(R.string.current_value) + ": " + currMargin + "%");
+		headingFontPref.setSummary(getResources().getString(R.string.pref_css_heading_fontface_summary) + currHeadingFont);
+		contentFontPref.setSummary(getResources().getString(R.string.pref_css_content_fontface_summary) + currContentFont);
+
 
 		// Behaviour 1 (Updated Preference)
 		user_cssPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -1037,18 +1038,12 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				Boolean set = (Boolean) newValue;
 
-				if (set) {
-					marginPref.setEnabled(false);
-					lineSpacePref.setEnabled(false);
-					justifyPref.setEnabled(false);
-					customCssPathPref.setEnabled(true);
-
-				} else {
-					marginPref.setEnabled(true);
-					lineSpacePref.setEnabled(true);
-					justifyPref.setEnabled(true);
-					customCssPathPref.setEnabled(false);
-				}
+				marginPref.setEnabled(!set);
+				lineSpacePref.setEnabled(!set);
+				justifyPref.setEnabled(!set);
+				customCssPathPref.setEnabled(set);
+				headingFontPref.setEnabled(!set);
+				contentFontPref.setEnabled(!set);
 				return true;
 			}
 		});
@@ -1080,6 +1075,26 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 			public boolean onPreferenceChange(Preference preference, Object newValue) {
 				String set = (String) newValue;
 				preference.setSummary(getResources().getString(R.string.margin_summary2) + " \n" + getResources().getString(R.string.current_value) + ": " + set + "%");
+				return true;
+			}
+		});
+
+		headingFontPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				String set = (String) newValue;
+				preference.setSummary(getResources().getString(R.string.pref_css_heading_fontface_summary) + set);
+				return true;
+			}
+		});
+
+		contentFontPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+
+			@Override
+			public boolean onPreferenceChange(Preference preference, Object newValue) {
+				String set = (String) newValue;
+				preference.setSummary(getResources().getString(R.string.pref_css_content_fontface_summary) + set);
 				return true;
 			}
 		});

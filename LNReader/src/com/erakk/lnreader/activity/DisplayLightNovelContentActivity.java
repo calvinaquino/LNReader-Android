@@ -1130,6 +1130,16 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		return Float.parseFloat(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_MARGINS, "5"));
 	}
 
+	private String getHeadingFontPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_HEADING_FONT, "serif");
+	}
+
+	private String getContentFontPreferences() {
+		return PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_CONTENT_FONT, "sans-serif");
+	}
+
+
+
 	private boolean getTtsStopOnPause() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_TTS_TTS_STOP_ON_LOST_FOCUS, true);
 	}
@@ -1180,25 +1190,28 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				}
 			}
 		}
+		else {
+			// Default CSS start here
+			int styleId = -1;
+			if (UIHelper.getColorPreferences(this)) {
+				styleId = R.raw.style_dark;
+				// Log.d("CSS", "CSS = dark");
+			} else {
+				styleId = R.raw.style;
+				// Log.d("CSS", "CSS = normal");
+			}
+			LNReaderApplication app = (LNReaderApplication) getApplication();
+			css.append(app.ReadCss(styleId));
 
-		// Default CSS start here
-		int styleId = -1;
-		if (UIHelper.getColorPreferences(this)) {
-			styleId = R.raw.style_dark;
-			// Log.d("CSS", "CSS = dark");
-		} else {
-			styleId = R.raw.style;
-			// Log.d("CSS", "CSS = normal");
+			if (getUseJustifiedPreferences()) {
+				css.append("\nbody { text-align: justify !important; }\n");
+			}
+			css.append("\np { line-height:" + getLineSpacingPreferences() + "% !important; \n");
+			css.append("      font-family:" + getContentFontPreferences() + "; }\n");
+			css.append("\nbody { margin: " + getMarginPreferences() + "% !important; }\n");
+
+			css.append("\n.mw-headline{ font-family: " + getHeadingFontPreferences() + "; }\n");
 		}
-		LNReaderApplication app = (LNReaderApplication) getApplication();
-		css.append(app.ReadCss(styleId));
-
-		if (getUseJustifiedPreferences()) {
-			css.append("\nbody { text-align: justify !important; }\n");
-		}
-		css.append("\np { line-height:" + getLineSpacingPreferences() + "% !important; }\n");
-		css.append("\nbody {margin: " + getMarginPreferences() + "% !important;}\n");
-
 		return css.toString();
 	}
 
