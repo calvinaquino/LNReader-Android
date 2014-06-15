@@ -88,7 +88,7 @@
     <string name="novel_database_to">Novel Database saved to: %1$s</string>
     <string name="copyright">Baka-Tsuki:Copyrights</string>
     <string name="not_copyright">Cannot get copyright page.</string>
-    <string name="run_update_text">Tap to force Run Update</string>
+    <string name="run_update_text">Update Now!</string>
     <string name="use_sound_summary">Ring if there is new chapters update.</string>
     <string name="use_sound_title">Use Ringer</string>
     <string name="use_vibration_summary">Vibrate if there is new chapters update.</string>
@@ -122,7 +122,7 @@
     <string name="enable_zoom_title">Enable Zoom</string>
     <string name="show_zoom_control_summary">Show zoom button in the novel contents, doesn\'t affect the zooming function.</string>
     <string name="show_zoom_control_title">Show Zoom Control</string>
-    <string name="show_webview_summary">Enable dynamic buttons while scrolling the chapter.</string>
+    <string name="show_webview_summary">Enable dynamic buttons for quick scroll to top/bottom while scrolling the chapter.</string>
     <string name="show_webview_title">Dynamic Buttons</string>
     <string name="keep_awake_summary">Keeps the screen on when on chapter screen.</string>
     <string name="keep_awake_title">Keep Awake</string>
