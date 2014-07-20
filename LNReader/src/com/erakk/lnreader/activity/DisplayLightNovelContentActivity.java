@@ -766,7 +766,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	public void loadExternalUrl(PageModel pageModel, boolean refresh) {
 		try {
 			// check if .wac available
-			String wacName = getSavedWacName(pageModel.getPage());
+			String url = pageModel.getPage();
+			String wacName = getSavedWacName(url);
 			if (!Util.isStringNullOrEmpty(wacName) && !refresh) {
 				isNeedSave = false;
 				executeLoadWacTask(wacName);
@@ -782,12 +783,12 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				isNeedSave = true;
 				final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 				setWebViewSettings();
-				wv.loadUrl(pageModel.getPage());
+				wv.loadUrl(url);
 			}
 			setChapterTitle(pageModel);
 			buildTOCMenu(pageModel);
 			content = null;
-			getIntent().putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
+			// getIntent().putExtra(Constants.EXTRA_PAGE, url);
 		} catch (Exception ex) {
 			Log.e(TAG, "Cannot load external content: " + pageModel.getPage(), ex);
 		}
@@ -811,6 +812,13 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		if (!getAllowSaveExternal())
 			return;
 
+		final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
+		String url = wv.getUrl();
+		if (Util.isStringNullOrEmpty(url)) {
+			Log.w(TAG, "Empty Url!");
+			return;
+		}
+
 		if (page == null) {
 			page = getIntent().getStringExtra(Constants.EXTRA_PAGE);
 		}
@@ -826,16 +834,13 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 		try {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-				final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
-				if (!page.equalsIgnoreCase(wv.getUrl())) {
-					Log.w(TAG, "Different url: " + page + " != " + wv.getUrl());
-				}
-				String wacName = getWacNameForSaving(wv.getUrl(), false);
+				String wacName = getWacNameForSaving(page, false);
+				final String p2 = page;
 				wv.saveWebArchive(wacName, false, new ValueCallback<String>() {
 
 					@Override
 					public void onReceiveValue(String value) {
-						Log.i(TAG, "Saved to: " + value);
+						Log.i(TAG, "url: " + p2 + " ==> Saved to: " + value);
 						Toast.makeText(LNReaderApplication.getInstance().getApplicationContext(), "Page saved to: " + value, Toast.LENGTH_SHORT).show();
 					}
 				});
@@ -843,7 +848,12 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to save external page: " + page, e);
 		}
-		isNeedSave = false;
+		if (!page.equalsIgnoreCase(url)) {
+			Log.w(TAG, "Different url: " + page + " != " + url);
+		}
+		else {
+			isNeedSave = false;
+		}
 	}
 
 	private String getSavedWacName(String url) {
@@ -1137,8 +1147,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	private String getContentFontPreferences() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_CONTENT_FONT, "sans-serif");
 	}
-
-
 
 	private boolean getTtsStopOnPause() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_TTS_TTS_STOP_ON_LOST_FOCUS, true);

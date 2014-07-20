@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
@@ -224,7 +226,7 @@ public class LNReaderApplication extends Application {
 	/*
 	 * UpdateService method
 	 */
-	private final ServiceConnection mConnection = new ServiceConnection() {
+	private ServiceConnection mConnection = new ServiceConnection() {
 
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder binder) {
@@ -269,19 +271,21 @@ public class LNReaderApplication extends Application {
 		 * probable crash: updateService is not checked if it exists after onLowMemory.
 		 * Technically fixed. needs checking.
 		 */
-		if (mConnection != null) {
+		if (mConnection != null && isMyServiceRunning(UpdateService.class)) {
 			Log.w(TAG, "Low Memory, Trying to unbind updateService...");
 			try {
 				unbindService(mConnection);
+				mConnection = null;
 				Log.i(TAG, "Unbind updateService done.");
 			} catch (Exception ex) {
 				Log.e(TAG, "Failed to unbind.", ex);
 			}
 		}
-		if (mConnection2 != null) {
+		if (mConnection2 != null && isMyServiceRunning(AutoBackupService.class)) {
 			Log.w(TAG, "Low Memory, Trying to unbind autoBackupService...");
 			try {
 				unbindService(mConnection2);
+				mConnection2 = null;
 				Log.i(TAG, "Unbind autoBackupService done.");
 			} catch (Exception ex) {
 				Log.e(TAG, "Failed to unbind.", ex);
@@ -320,7 +324,7 @@ public class LNReaderApplication extends Application {
 	/*
 	 * AutoBackup Service method
 	 */
-	private final ServiceConnection mConnection2 = new ServiceConnection() {
+	private ServiceConnection mConnection2 = new ServiceConnection() {
 
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder binder) {
@@ -351,5 +355,21 @@ public class LNReaderApplication extends Application {
 			doBindAutoBackupService();
 		autoBackupService.setOnCallbackNotifier(notifier);
 		autoBackupService.onStartCommand(null, BIND_AUTO_CREATE, (int) (new Date().getTime() / 1000));
+	}
+
+	/***
+	 * http://stackoverflow.com/a/5921190
+	 * 
+	 * @param serviceClass
+	 * @return
+	 */
+	private boolean isMyServiceRunning(Class<?> serviceClass) {
+		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+			if (serviceClass.getName().equals(service.service.getClassName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
