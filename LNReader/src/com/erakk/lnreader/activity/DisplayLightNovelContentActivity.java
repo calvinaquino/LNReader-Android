@@ -421,23 +421,18 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			/*
 			 * Implement code to move to previous chapter
 			 */
-			String currentPage = null;
-			if (content != null) {
-				try {
-					currentPage = content.getPageModel().getPage();
-					if (novelDetails == null)
-						novelDetails = NovelsDao.getInstance().getNovelDetails(content.getPageModel(), null);
-					PageModel prev = novelDetails.getPrev(currentPage, UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
-					if (prev != null) {
-						jumpTo(prev);
-					} else {
-						Toast.makeText(this, getResources().getString(R.string.first_available_chapter), Toast.LENGTH_SHORT).show();
-					}
-				} catch (Exception e) {
-					Log.e(TAG, "Cannot get previous chapter.", e);
+			String currentPage = getIntent().getStringExtra(Constants.EXTRA_PAGE);
+			try {
+				if (novelDetails == null)
+					novelDetails = NovelsDao.getInstance().getNovelDetails(content.getPageModel(), null);
+				PageModel prev = novelDetails.getPrev(currentPage, UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
+				if (prev != null) {
+					jumpTo(prev);
+				} else {
+					Toast.makeText(this, getResources().getString(R.string.first_available_chapter), Toast.LENGTH_SHORT).show();
 				}
-			} else {
-				currentPage = getIntent().getStringExtra(Constants.EXTRA_PAGE);
+			} catch (Exception e) {
+				Log.e(TAG, "Cannot get previous chapter.", e);
 			}
 			return true;
 		case R.id.menu_chapter_next:
@@ -445,24 +440,19 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			/*
 			 * Implement code to move to next chapter
 			 */
-			String currentPage2 = null;
-			if (content != null) {
-				try {
-					currentPage2 = content.getPageModel().getPage();
-					if (novelDetails == null)
-						novelDetails = NovelsDao.getInstance().getNovelDetails(content.getPageModel(), null);
+			String currentPage2 = getIntent().getStringExtra(Constants.EXTRA_PAGE);
+			try {
+				if (novelDetails == null)
+					novelDetails = NovelsDao.getInstance().getNovelDetails(content.getPageModel(), null);
 
-					PageModel next = novelDetails.getNext(currentPage2, UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
-					if (next != null) {
-						jumpTo(next);
-					} else {
-						Toast.makeText(this, getResources().getString(R.string.last_available_chapter), Toast.LENGTH_SHORT).show();
-					}
-				} catch (Exception e) {
-					Log.e(TAG, "Cannot get next chapter.", e);
+				PageModel next = novelDetails.getNext(currentPage2, UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
+				if (next != null) {
+					jumpTo(next);
+				} else {
+					Toast.makeText(this, getResources().getString(R.string.last_available_chapter), Toast.LENGTH_SHORT).show();
 				}
-			} else {
-				currentPage2 = getIntent().getStringExtra(Constants.EXTRA_PAGE);
+			} catch (Exception e) {
+				Log.e(TAG, "Cannot get next chapter.", e);
 			}
 			return true;
 		case R.id.menu_chapter_toc:
@@ -590,6 +580,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		setLastReadState();
 		if (ttsBinder != null)
 			ttsBinder.stop();
+		this.getIntent().putExtra(Constants.EXTRA_PAGE, page.getPage());
 		if (page.isExternal() && !getHandleExternalLinkPreferences()) {
 			try {
 				Uri url = Uri.parse(page.getPage());
@@ -788,7 +779,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			setChapterTitle(pageModel);
 			buildTOCMenu(pageModel);
 			content = null;
-			// getIntent().putExtra(Constants.EXTRA_PAGE, url);
 		} catch (Exception ex) {
 			Log.e(TAG, "Cannot load external content: " + pageModel.getPage(), ex);
 		}
