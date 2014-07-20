@@ -1,6 +1,7 @@
 1.1.18
 - Fix issue #148: relink image on thumb images.
 - Fix Issue #147: saving external pages.
+- Fix Prev/Next button on external pages.
 
 1.1.17b
 - Update Free Space checker logic.

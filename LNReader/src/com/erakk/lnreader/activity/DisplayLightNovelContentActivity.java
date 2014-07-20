@@ -166,7 +166,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			webView.removeAllViews();
 			webView.destroy();
 		}
-		unbindService(mConnection);
+		if (mConnection != null) {
+			unbindService(mConnection);
+			mConnection = null;
+		}
 
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		super.onDestroy();
@@ -682,9 +685,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	@SuppressWarnings("deprecation")
 	public void setLastReadState() {
+		// save last position and zoom
+		NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 		if (content != null) {
-			// save last position and zoom
-			NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 			// content.setLastXScroll(wv.getScrollX());
 			// content.setLastYScroll(wv.getScrollY());
 			content.setLastZoom(wv.getScale());
@@ -708,19 +711,18 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 					}
 				}
 			}
-
-			// save for jump to last read.
-			SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-			SharedPreferences.Editor editor = sharedPrefs.edit();
-			if (content != null) {
-				editor.putString(Constants.PREF_LAST_READ, content.getPage());
-			} else {
-				editor.putString(Constants.PREF_LAST_READ, getIntent().getStringExtra(Constants.EXTRA_PAGE));
-			}
-			editor.commit();
-
 			Log.d(TAG, "Update Content:X=" + content.getLastXScroll() + ":Y=" + content.getLastYScroll() + ":Z=" + content.getLastZoom());
 		}
+
+		// save for jump to last read.
+		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences.Editor editor = sharedPrefs.edit();
+		if (content != null) {
+			editor.putString(Constants.PREF_LAST_READ, content.getPage());
+		} else {
+			editor.putString(Constants.PREF_LAST_READ, getIntent().getStringExtra(Constants.EXTRA_PAGE));
+		}
+		editor.commit();
 	}
 
 	@SuppressLint("NewApi")
@@ -1215,7 +1217,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	/* TTS Section */
 	private final DisplayLightNovelContentActivity callingCtx = this;
-	private final ServiceConnection mConnection = new ServiceConnection() {
+	private ServiceConnection mConnection = new ServiceConnection() {
 
 		private TtsService ttsService = null;
 
