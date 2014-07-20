@@ -74,6 +74,13 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 
 		int count = 1;
 		for (ImageModel image : images) {
+
+			if (this.isCancelled()) {
+				String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_cancelled);
+				publishProgress(new CallbackEventData(message, source));
+				return;
+			}
+
 			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_progress2, image.getName(), count, images.size());
 			publishProgress(new CallbackEventData(message, source));
 			String oldPath = image.getPath();
@@ -105,6 +112,12 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 		updated = 0;
 		int count = 1;
 		for (PageModel page : pages) {
+			if (this.isCancelled()) {
+				String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_cancelled);
+				publishProgress(new CallbackEventData(message, source));
+				return;
+			}
+
 			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_progress, page.getPage(), count, pages.size());
 			publishProgress(new CallbackEventData(message, source));
 
@@ -130,6 +143,10 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 							if (!new File(mntImgUrl).exists()) {
 								Log.d(TAG, "Old image doesn't exists/moved: " + mntImgUrl);
 								String newUrl = imgUrl.replaceAll("file:///[\\w/\\./!$%^&*()_+|~\\={}\\[\\]:\";'<>?,-]+/project/images/thumb/", "file:///" + rootPath + "/project/images/thumb/");
+								while (newUrl.startsWith("file:////")) {
+									newUrl = newUrl.replace("file:////", "file:///");
+								}
+
 								String mntNewUrl = newUrl.replace("file:///", "");
 								Log.d(TAG, "Trying to replace with " + mntNewUrl);
 

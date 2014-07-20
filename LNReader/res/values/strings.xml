@@ -357,7 +357,7 @@
     <string name="backup_zip_question2">Backup Thumb Images</string>
     <string name="restore_zip_question">Do you really want to restore thumb images? (Larger thumb cache = More resource intensive)</string>
     <string name="restore_zip_question2">Restore Thumb Images</string>
-    <string name="relink_question">Do you want to relink images? (May take some time)</string>
+    <string name="relink_question">Do you want to relink images? This may take some time, ensure correct image path is set.</string>
     <string name="relink_question2">Relink Images</string>
     <string name="pref_show_redlink_title">Show Redlink page</string>
     <string name="pref_show_redlink_summary">Show redlink=1 chapter (no content).</string>
@@ -465,4 +465,5 @@
     <string name="pref_css_heading_fontface_summary">Default font for heading: </string>
     <string name="pref_css_content_fontface_title">Content Font</string>
     <string name="pref_css_content_fontface_summary">Default font for content: </string>
+    <string name="relink_task_cancelled">Relink Task cancelled.</string>
 </resources>
