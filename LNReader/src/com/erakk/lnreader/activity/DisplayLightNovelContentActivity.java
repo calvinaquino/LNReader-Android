@@ -240,8 +240,14 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		_menu = menu;
 
 		try {
-			if (content != null)
+			if (content != null) {
 				setPrevNextButtonState(content.getPageModel());
+				_menu.findItem(R.id.menu_save_external).setVisible(false);
+			}
+			else {
+				_menu.findItem(R.id.menu_save_external).setVisible(true);
+			}
+
 		} catch (Exception e) {
 			Log.w(TAG, "Cannot get current pagemodel");
 		}
@@ -482,6 +488,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			return true;
 		case R.id.menu_pause_tts:
 			ttsBinder.pause();
+			return true;
+		case R.id.menu_save_external:
+			// save based on current intent page name.
+			String url = getIntent().getStringExtra(Constants.EXTRA_PAGE);
+			saveWebArchive(url);
 			return true;
 		case android.R.id.home:
 			finish();
@@ -826,8 +837,21 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 		try {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-				String wacName = getWacNameForSaving(page, false);
-				final String p2 = page;
+				// simple checking for redirection on some websites
+				// - cetranslation.blogspot.com
+				String baseUrl = wv.getUrl();
+				if(baseUrl.contains(".blogspot.")) {
+					Log.d(TAG, "Checking blogspot redirection rule");
+					String[] temp = baseUrl.split("/", 4);
+					String[] temp2 = page.split("/", 4);
+					if(temp[3].startsWith(temp2[3])) {
+						Log.d(TAG, String.format("Page redirected %s => %s", page, baseUrl));
+						baseUrl = page;
+					}
+				}
+
+				String wacName = getWacNameForSaving(baseUrl, false);
+				final String p2 = baseUrl;
 				wv.saveWebArchive(wacName, false, new ValueCallback<String>() {
 
 					@Override
@@ -840,12 +864,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to save external page: " + page, e);
 		}
-		if (!page.equalsIgnoreCase(url)) {
-			Log.w(TAG, "Different url: " + page + " != " + url);
-		}
-		else {
-			isNeedSave = false;
-		}
+		isNeedSave = false;
 	}
 
 	private String getSavedWacName(String url) {
@@ -883,6 +902,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_SAVE_EXTERNAL_URL, true);
 	}
 
+	@SuppressLint("NewApi")
 	public void setContent(NovelContentModel loadedContent) {
 		this.content = loadedContent;
 		try {

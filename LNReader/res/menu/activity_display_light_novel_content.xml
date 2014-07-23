@@ -52,6 +52,7 @@
         android:id="@+id/menu_settings"
         android:orderInCategory="100"
         android:title="@string/menu_settings"/>
+    <item android:id="@+id/menu_save_external" android:title="@string/menu_save_external" android:visible="false"></item>
     
 
 </menu>
