@@ -60,21 +60,21 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 	}
 
 	private boolean loadFromWac(String wacName) {
-		Log.d(TAG, "Loading from WAC: " + wacName);
+		Log.i(TAG, "Loading from WAC: " + wacName);
 		publishProgress(new CallbackEventData("Loading from WAC: " + wacName, source));
 		try {
-			if(wacName.endsWith(".mht")) {
+			if (wacName.endsWith(".mht")) {
 				Log.i(TAG, "MHT Loader");
 				String tempPath = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + "/wac/temp";
 				File f = new File(tempPath);
-				if(!f.exists())
+				if (!f.exists())
 					f.mkdirs();
 				File w = new File(wacName);
 				extractedMhtName = MHTUtil.exportHtml(wacName, tempPath, w.getName());
 				Log.d(TAG, "Exported to: " + extractedMhtName);
 				return true;
 			}
-			else if(wacName.endsWith(".wac")) {
+			else if (wacName.endsWith(".wac")) {
 				Log.i(TAG, "WAC Loader");
 				FileInputStream is;
 				is = new FileInputStream(wacName);
@@ -91,8 +91,8 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 	protected void onPostExecute(AsyncTaskResult<Boolean> result) {
 		String message = null;
 		if (result.getResult()) {
-			if(wacName.endsWith(".mht")) {
-				wv.loadUrl("file://"+Uri.encode(extractedMhtName, "/\\"));
+			if (wacName.endsWith(".mht")) {
+				wv.loadUrl("file://" + Uri.encode(extractedMhtName, "/\\"));
 			}
 			else {
 				wr.loadToWebView(wv);

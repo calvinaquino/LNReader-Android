@@ -123,7 +123,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 		final DisplayLightNovelContentActivity caller = activityRef.get();
 		if (caller != null && !hasError)
 		{
-			caller.saveWebArchive(null);
+			caller.saveWebArchive(null, false);
 		}
 	}
 

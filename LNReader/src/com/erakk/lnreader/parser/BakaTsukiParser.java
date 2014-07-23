@@ -423,6 +423,7 @@ public class BakaTsukiParser {
 		// parse the cover image
 		String imageUrl = "";
 		Elements images = doc.select(".thumbimage");
+
 		if (images.size() > 0) {
 			imageUrl = images.first().attr("src");
 			if (!imageUrl.startsWith("http")) {
@@ -430,7 +431,7 @@ public class BakaTsukiParser {
 			}
 			Log.d(TAG, "Cover: " + imageUrl);
 		}
-		novel.setCover(imageUrl);
+
 		if (imageUrl != null && imageUrl.length() > 0) {
 			try {
 				URL url = new URL(imageUrl);
@@ -438,6 +439,9 @@ public class BakaTsukiParser {
 			} catch (MalformedURLException e) {
 				Log.e(TAG, "Invalid URL: " + imageUrl, e);
 			}
+		}
+		else {
+			novel.setCoverUrl(null);
 		}
 		// Log.d(TAG, "Complete parsing cover image");
 		return imageUrl;

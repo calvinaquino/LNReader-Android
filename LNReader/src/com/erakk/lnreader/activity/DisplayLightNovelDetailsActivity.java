@@ -215,7 +215,6 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		case R.id.menu_downloads_list:
 			Intent downloadsItent = new Intent(this, DownloadListActivity.class);
 			startActivity(downloadsItent);
-			;
 			return true;
 		case android.R.id.home:
 			super.onBackPressed();
@@ -435,7 +434,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		loadingText.setBackgroundColor(Color.BLACK);
 
 		LNReaderApplication.getInstance().updateDownload(message.getSource(), message.getPercentage(), message.getMessage());
-		if(message.getPercentage()> 0) {
+		if (message.getPercentage() > 0) {
 			if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
 				loadingBar.setIndeterminate(false);
 				loadingBar.setMax(100);
@@ -530,6 +529,9 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 						ImageView ImageViewCover = (ImageView) synopsis.findViewById(R.id.cover);
 						if (novelCol.getCoverBitmap() == null) {
 							// IN app test, is returning empty bitmap
+							View div = synopsis.findViewById(R.id.divider_bottom);
+							div.setVisibility(View.GONE);
+							ImageViewCover.setVisibility(View.GONE);
 							Toast.makeText(this, getResources().getString(R.string.toast_err_bitmap_empty), Toast.LENGTH_LONG).show();
 						} else {
 							ImageViewCover.setOnClickListener(new OnClickListener() {

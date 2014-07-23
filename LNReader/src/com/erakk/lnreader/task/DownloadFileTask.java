@@ -52,6 +52,9 @@ public class DownloadFileTask extends AsyncTask<Void, Integer, AsyncTaskResult<I
 
 	@SuppressLint("DefaultLocale")
 	public ImageModel downloadImage(URL imageUrl) throws Exception {
+		if (imageUrl.getProtocol().equalsIgnoreCase("file"))
+			return null;
+
 		Log.d(TAG, "Start Downloading: " + imageUrl.toString());
 		InputStream input = null;
 		OutputStream output = null;

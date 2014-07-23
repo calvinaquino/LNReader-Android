@@ -492,7 +492,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		case R.id.menu_save_external:
 			// save based on current intent page name.
 			String url = getIntent().getStringExtra(Constants.EXTRA_PAGE);
-			saveWebArchive(url);
+			saveWebArchive(url, true);
 			return true;
 		case android.R.id.home:
 			finish();
@@ -773,7 +773,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			String url = pageModel.getPage();
 			String wacName = getSavedWacName(url);
 			if (!Util.isStringNullOrEmpty(wacName) && !refresh) {
-				isNeedSave = false;
+				// synchronized (this) {
+				// isNeedSave = false;
+				// }
 				executeLoadWacTask(wacName);
 			}
 			else {
@@ -784,7 +786,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				{
 					Log.w(TAG, "WAC not available: " + wacName);
 				}
-				isNeedSave = true;
+				synchronized (this) {
+					isNeedSave = true;
+				}
 				final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 				setWebViewSettings();
 				wv.loadUrl(url);
@@ -808,22 +812,22 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	}
 
 	@SuppressLint("NewApi")
-	public void saveWebArchive(String page) {
-		if (!isNeedSave)
-			return;
+	public void saveWebArchive(String page, boolean force) {
+		if (page == null) {
+			page = getIntent().getStringExtra(Constants.EXTRA_PAGE);
+		}
 
-		if (!getAllowSaveExternal())
-			return;
-
+		synchronized (this) {
+			if (!force && (!isNeedSave || !getAllowSaveExternal())) {
+				Log.d(TAG, "Skip auto save for: " + page + " " + !force + " " + !isNeedSave + " " + !getAllowSaveExternal());
+				return;
+			}
+		}
 		final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 		String url = wv.getUrl();
 		if (Util.isStringNullOrEmpty(url)) {
 			Log.w(TAG, "Empty Url!");
 			return;
-		}
-
-		if (page == null) {
-			page = getIntent().getStringExtra(Constants.EXTRA_PAGE);
 		}
 
 		try {
@@ -840,11 +844,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				// simple checking for redirection on some websites
 				// - cetranslation.blogspot.com
 				String baseUrl = wv.getUrl();
-				if(baseUrl.contains(".blogspot.")) {
+				if (baseUrl.contains(".blogspot.")) {
 					Log.d(TAG, "Checking blogspot redirection rule");
 					String[] temp = baseUrl.split("/", 4);
 					String[] temp2 = page.split("/", 4);
-					if(temp[3].startsWith(temp2[3])) {
+					if (temp[3].startsWith(temp2[3])) {
 						Log.d(TAG, String.format("Page redirected %s => %s", page, baseUrl));
 						baseUrl = page;
 					}
@@ -856,7 +860,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 					@Override
 					public void onReceiveValue(String value) {
-						Log.i(TAG, "url: " + p2 + " ==> Saved to: " + value);
+						Log.i(TAG, "Saving url: " + p2 + " ==> Saved to: " + value);
 						Toast.makeText(LNReaderApplication.getInstance().getApplicationContext(), "Page saved to: " + value, Toast.LENGTH_SHORT).show();
 					}
 				});
@@ -864,7 +868,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to save external page: " + page, e);
 		}
-		isNeedSave = false;
+		// synchronized (this) {
+		// isNeedSave = false;
+		// }
 	}
 
 	private String getSavedWacName(String url) {
