@@ -236,7 +236,7 @@ public class CommonParser {
 					Element rElement = rElements.first();
 					to = rElement.attr("to");
 					temp.setRedirectedTo(to);
-					Log.i(TAG, "parsePageAPI redirected: " + to);
+					Log.w(TAG, "parsePageAPI redirected: " + to);
 					if (Util.isStringNullOrEmpty(to)) {
 						Log.e(TAG, "Empty redirected source detected for url: " + url);
 						continue;
@@ -270,7 +270,7 @@ public class CommonParser {
 					temp.setWikiId(wikiId);
 					if (Util.isStringNullOrEmpty(temp.getTitle()))
 						temp.setTitle(to);
-					Log.i(TAG, String.format("parsePageAPI [%s]%s Last Update: %s ", temp.getPage(), temp.getWikiId(), temp.getLastUpdate()));
+					Log.d(TAG, String.format("parsePageAPI [%s]%s Last Update: %s ", temp.getPage(), temp.getWikiId(), temp.getLastUpdate()));
 				} else {
 					Log.w(TAG, "parsePageAPI " + temp.getPage() + " No Last Update Information!");
 				}

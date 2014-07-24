@@ -418,7 +418,7 @@ public class BakaTsukiParser {
 		return books;
 	}
 
-	private static String parseNovelCover(Document doc, NovelCollectionModel novel) {
+	private static void parseNovelCover(Document doc, NovelCollectionModel novel) {
 		// Log.d(TAG, "Start parsing cover image");
 		// parse the cover image
 		String imageUrl = "";
@@ -431,20 +431,20 @@ public class BakaTsukiParser {
 			}
 			Log.d(TAG, "Cover: " + imageUrl);
 		}
-
 		if (imageUrl != null && imageUrl.length() > 0) {
 			try {
 				URL url = new URL(imageUrl);
 				novel.setCoverUrl(url);
+				novel.setCover(url.toString());
 			} catch (MalformedURLException e) {
 				Log.e(TAG, "Invalid URL: " + imageUrl, e);
 			}
 		}
 		else {
 			novel.setCoverUrl(null);
+			novel.setCover("");
 		}
 		// Log.d(TAG, "Complete parsing cover image");
-		return imageUrl;
 	}
 
 	private static String parseNovelSynopsis(Document doc, NovelCollectionModel novel) {

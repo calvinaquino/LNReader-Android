@@ -273,7 +273,7 @@ public class PageModelHelper {
 			}
 
 			int result = helper.update(db, DBHelper.TABLE_PAGE, cv, DBHelper.COLUMN_ID + " = ?", new String[] { "" + temp.getId() });
-			Log.i(TAG, "Page Model: " + page.getPage() + " Updated, Affected Row: " + result);
+			Log.d(TAG, "Page Model: " + page.getPage() + " Updated, Affected Row: " + result);
 		}
 
 		// get the updated data.
