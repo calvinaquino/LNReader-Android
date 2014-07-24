@@ -1,8 +1,10 @@
-1.1.18b
+1.1.18c
 - Fix issue #148: relink image on thumb images.
 - Fix Issue #147: saving external pages.
 - Fix Prev/Next button on external pages.
 - Update external page handler to handle redirect on blogspot.
+- Fix issue #149: novel cannot be loaded (sqlite exception).
+- Fix bookmark scrolling issue, might related to issue #146.
 
 1.1.17b
 - Update Free Space checker logic.

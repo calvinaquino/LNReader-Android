@@ -39,9 +39,9 @@ function goToParagraph(index, useSmoothScroll) {
 	var targetPost = findPos(pCollections[index]);
 	var currPos = window.pageYOffset || document.documentElement.scrollTop;
 	
-	if (currPos >= targetPost - 10) {
-		return;
-	}
+	//if (currPos >= targetPost - 10 && ) {
+	//	return;
+	//}
     if (index != undefined && index > 0) {
         if (useSmoothScroll) {
             animate(document.body, "scrollTop", "", currPos, targetPost, 500, true);
