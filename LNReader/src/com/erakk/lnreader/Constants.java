@@ -155,4 +155,15 @@ public class Constants {
 
 	/* Pattern for accepting sub-category */
 	public static final String[] categoryPattern = { "Teaser", "novel", "Novel", "project", "Project" };
+
+	/**
+	 * URL used for wiki API to get the contents
+	 */
+	public static final String API_URL_CONTENT = "%s/project/api.php?action=parse&format=xml&prop=text|images&redirects=yes&page=%s";
+	public static final String API_REDLINK = "&action=edit&redlink=1";
+	/**
+	 * URL used for wiki API to get the page info
+	 */
+	public static final String API_URL_INFO = "%s/project/api.php?action=query&prop=info|revisions&format=xml&redirects=yes&titles=%s";
+
 }

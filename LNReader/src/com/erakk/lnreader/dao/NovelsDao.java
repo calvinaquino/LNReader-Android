@@ -571,7 +571,7 @@ public class NovelsDao {
 					notifier.onProgressCallback(new CallbackEventData(message, TAG));
 				}
 				String encodedTitle = Util.UrlEncode(page.getPage().trim());
-				String fullUrl = "http://www.baka-tsuki.org/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=" + encodedTitle;
+				String fullUrl = String.format(Constants.API_URL_INFO, UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()), encodedTitle);
 				Response response = connect(fullUrl, retry);
 				PageModel pageModel = null;
 				String lang = page.getLanguage();
@@ -792,7 +792,6 @@ public class NovelsDao {
 		ArrayList<PageModel> noInfoPageModel = new ArrayList<PageModel>();
 		ArrayList<PageModel> externalPageModel = new ArrayList<PageModel>();
 
-		String baseUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/api.php?action=query&prop=info&format=xml&redirects=yes&titles=";
 		int i = 0;
 		int pageCounter = 0;
 		int retry = 0;
@@ -827,7 +826,7 @@ public class NovelsDao {
 			// request the page
 			while (retry < getRetry()) {
 				try {
-					String url = baseUrl + titles;
+					String url = String.format(Constants.API_URL_INFO, UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()), titles);
 					// Log.d(TAG, "Trying to get: " + baseUrl + titles);
 					Response response = connect(url, retry);
 					Document doc = response.parse();
@@ -1017,15 +1016,15 @@ public class NovelsDao {
 		Document doc = null;
 		while (retry < getRetry()) {
 			try {
-				String encodedUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + "/project/api.php?action=parse&format=xml&prop=text|images&redirects=yes&page=" + Util.UrlEncode(page.getPage());
-				if (!page.getPage().endsWith("&action=edit&redlink=1")) {
+				String encodedUrl = String.format(Constants.API_URL_CONTENT, UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()), Util.UrlEncode(page.getPage()));
+				if (!page.getPage().endsWith(Constants.API_REDLINK)) {
 					Response response = connect(encodedUrl, retry);
 					doc = response.parse();
 					page.setMissing(false);
 				}
 				else {
 					Log.w(TAG, "redlink page: " + page.getPage());
-					String titleClean = page.getPage().replace("&action=edit&redlink=1", "");
+					String titleClean = page.getPage().replace(Constants.API_REDLINK, "");
 					doc = Jsoup.parse("<div class=\"noarticletext\">" +
 							"<p>There is currently no text in this page." +
 							"You can <a href=\"/project/index.php?title=Special:Search/" + titleClean + "\" title=\"Special:Search/" + titleClean + "\">search for this page title</a> in other pages," +

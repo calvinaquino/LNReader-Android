@@ -120,7 +120,10 @@ public class NovelCollectionModelHelper {
 		ContentValues cv = new ContentValues();
 		cv.put(DBHelper.COLUMN_PAGE, novelDetails.getPage());
 		cv.put(DBHelper.COLUMN_SYNOPSIS, novelDetails.getSynopsis());
-		cv.put(DBHelper.COLUMN_IMAGE_NAME, novelDetails.getCover());
+		if(novelDetails.getCover() == null)
+			cv.put(DBHelper.COLUMN_IMAGE_NAME, "");
+		else
+			cv.put(DBHelper.COLUMN_IMAGE_NAME, novelDetails.getCover());
 		cv.put(DBHelper.COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 
 		// check if exist

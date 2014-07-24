@@ -110,8 +110,8 @@ public class CommonParser {
 
 			if (chapter.getPage().contains("User:") // user page
 					|| chapter.getPage().contains("Special:BookSources")// ISBN handler
-			// || chapter.getPage().contains("redlink=1") // missing page
-			)
+					// || chapter.getPage().contains("redlink=1") // missing page
+					)
 			{
 				Log.d(TAG, "Skipping: " + chapter.getPage());
 				continue;
@@ -248,8 +248,13 @@ public class CommonParser {
 			if (pElement == null) {
 				Log.w(TAG, "parsePageAPI " + temp.getPage() + ": No Info, please check the url: " + url);
 			} else if (!pElement.hasAttr("missing")) {
-				// parse date
+				// parse date, default use touched attr, if rev not available
 				String tempDate = pElement.attr("touched");
+				Element rev = pElement.select("rev").first();
+				if(rev != null) {
+					tempDate = rev.attr("timestamp");
+					Log.d(TAG, "Using timestamp from revision");
+				}
 
 				int wikiId = -1;
 				try {
