@@ -914,8 +914,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		try {
 			PageModel pageModel = content.getPageModel();
 
-			if (content.getLastUpdate().getTime() != pageModel.getLastUpdate().getTime())
-				Toast.makeText(this, getResources().getString(R.string.content_may_updated) + ": " + content.getLastUpdate().toString() + " != " + pageModel.getLastUpdate().toString(), Toast.LENGTH_LONG).show();
+			if (content.getLastUpdate().getTime() < pageModel.getLastUpdate().getTime())
+				Toast.makeText(this, getResources().getString(R.string.content_may_updated) + ": " + content.getLastUpdate().toString() + " before " + pageModel.getLastUpdate().toString(), Toast.LENGTH_LONG).show();
 
 			// load the contents here
 			final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);

@@ -180,7 +180,7 @@
     <string name="first_available_chapter">Eerst beschikbare hoofdstuk.</string>
     <string name="last_available_chapter">Laatst beschikbare hoofdstuk.</string>
     <string name="background_task_load">Achtergrondtaak nog bezig...</string>
-    <string name="content_may_updated">Inhoud kan ge&#252;pdatet zijn</string>
+    <string name="content_may_updated">Inhoud kan ge&#252;pdatet zijn: %1$s &lt; %2$s.</string>
     <string name="css_layout_not_exist">CSS-lay-out bestaat niet op aangegeven locatie. Standaard wordt gebruikt.</string>
     <string name="clear_this_volume">Dit boekdeel verwijderen</string>
     <string name="mark_volume_read">Boekdeel als gelezen markeren</string>

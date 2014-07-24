@@ -183,7 +183,7 @@
     <string name="first_available_chapter">First available chapter.</string>
     <string name="last_available_chapter">Last available chapter.</string>
     <string name="background_task_load">Background task still loading&#8230;</string>
-    <string name="content_may_updated">Content might be updated</string>
+    <string name="content_may_updated">Content might be updated: %1$s before %2$s.</string>
     <string name="css_layout_not_exist">CSS Layout does not exists at the assigned path. Using default.</string>
     <string name="clear_this_volume">Clear this Volume</string>
     <string name="mark_volume_read">Mark Volume as Read</string>

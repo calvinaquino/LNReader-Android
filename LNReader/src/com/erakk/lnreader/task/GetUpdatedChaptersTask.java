@@ -146,12 +146,13 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 		PageModel updatedNovel = dao.getPageModelFromInternet(novel.getPageModel(), callback);
 
 		// different timestamp
-		if (service.isForced() || !novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
+		//if (service.isForced() || !novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
+		if (service.isForced() || novel.getLastUpdate().before(updatedNovel.getLastUpdate())) {
 			if (service.isForced()) {
 				Log.i(TAG, "Force Mode: " + novel.getPage());
 			} else {
 				Log.d(TAG, "Different Timestamp for: " + novel.getPage());
-				Log.d(TAG, "old: " + novel.getLastUpdate().toString() + " != " + updatedNovel.getLastUpdate().toString());
+				Log.d(TAG, "old: " + novel.getLastUpdate().toString() + " before " + updatedNovel.getLastUpdate().toString());
 			}
 			ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, callback).getFlattedChapterList();
 

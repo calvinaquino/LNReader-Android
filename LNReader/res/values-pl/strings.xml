@@ -180,7 +180,7 @@
     <string name="first_available_chapter">Pierwszy dostępny rozdział.</string>
     <string name="last_available_chapter">Ostatni dostępny rozdział.</string>
     <string name="background_task_load">Ładowanie w tle aktywne...</string>
-    <string name="content_may_updated">Treść może być nieaktualna</string>
+    <string name="content_may_updated">Treść może być nieaktualna: %1$s &lt; %2$s.</string>
     <string name="css_layout_not_exist">Własny CSS nie został znaleziony. Przywrócono domyślny.</string>
     <string name="clear_this_volume">Usuń rozdział</string>
     <string name="mark_volume_read">Oznacz jako Przeczytany</string>

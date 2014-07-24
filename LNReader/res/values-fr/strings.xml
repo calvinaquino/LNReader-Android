@@ -185,7 +185,7 @@
     <string name="first_available_chapter">Premier chapitre disponible.</string>
     <string name="last_available_chapter">Dernier chapitre disponible.</string>
     <string name="background_task_load">Tâche de fond encore en cours de chargement...</string>
-    <string name="content_may_updated">Le contenu peut &#234;tre mis &#224; jour</string>
+    <string name="content_may_updated">Le contenu peut &#234;tre mis &#224; jour: %1$s &lt; %2$s.</string>
     <string name="css_layout_not_exist">Le layout CSS n\'existe pas au chemin indiqu&#233;. Utilisation de celui par d&#233;faut.</string>
     <string name="clear_this_volume">Supprimer ce tome</string>
     <string name="mark_volume_read">Marqu&#233; le tome comme lu</string>

@@ -230,7 +230,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	public boolean isContentUpdated(SQLiteDatabase db, PageModel page) {
 		// Log.d(TAG, "isContentUpdated is called by: " + page.getPage());
-		String sql = "select case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
+		String sql = "select case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " > " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
 				"       then 1 else 0 end " + " from " + TABLE_PAGE +
 				" join " + TABLE_NOVEL_CONTENT + " using (" + COLUMN_PAGE + ") " +
 				" where " + COLUMN_PAGE + " = ? " +
@@ -350,7 +350,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			sql = "select * from " + TABLE_PAGE +
 					" left join ( select " + COLUMN_PAGE + ", sum(UPDATESCOUNT) " +
 					"             from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE +
-					"                         , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
+					"                         , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " > " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
 					"                           then 1 else 0 end as UPDATESCOUNT " +
 					"                    from " + TABLE_NOVEL_DETAILS +
 					"                    join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE +
@@ -391,7 +391,7 @@ public class DBHelper extends SQLiteOpenHelper {
 					" left join ( select " + COLUMN_PAGE +
 					"                  , sum(UPDATESCOUNT) " +
 					"             from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE +
-					"                         , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " != " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
+					"                         , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " > " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
 					"                           then 1 else 0 end as UPDATESCOUNT " +
 					"                    from " + TABLE_NOVEL_DETAILS +
 					"                    join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE +
