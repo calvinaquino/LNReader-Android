@@ -687,6 +687,19 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 						wv.loadUrl("javascript:goToParagraph(" + bookmark.getpIndex() + ")");
 					}
 				});
+				builder.setPositiveButton(R.string.menu_show_clear_all, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						int total = 0;
+						for(BookmarkModel bookmark : content.getBookmarks()) {
+							total += NovelsDao.getInstance().deleteBookmark(bookmark);
+							NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
+							wv.loadUrl("javascript:toogleHighlightById(" + bookmark.getpIndex() + ")");
+						}
+						Toast.makeText(getBaseContext(), getString(R.string.toast_show_deleted_count, total), Toast.LENGTH_SHORT).show();
+					}
+				});
 				bookmarkMenu = builder.create();
 			} catch (Exception e) {
 				Log.e(TAG, "Error getting pageModel: " + e.getMessage(), e);

@@ -5,9 +5,18 @@ function toogleHighlight(element, ev) {
     if (!isBookmarkEnabled) {
         return;
     }
-    var mode = "", target = event.srcElement || event.target;
+    var target = event.srcElement || event.target;
+	toogleHighlightByElement(target);
+}
 
-    if ("p" === target.nodeName.toLowerCase()) {
+function toogleHighlightById(pid) {
+	var p = document.getElementById(""+pid);
+	if(p != null) toogleHighlightByElement(p)
+}
+
+function toogleHighlightByElement(target) {
+	var mode = "";
+  	if ("p" === target.nodeName.toLowerCase()) {
         if (target.className.indexOf("highlighted") === -1) {
             target.className = target.className + " highlighted";
             mode = "highlighted";
@@ -15,13 +24,14 @@ function toogleHighlight(element, ev) {
             target.className = target.className.replace(" highlighted", "");
             mode = "clear";
         }
-    }
+    }    
 
     if (target.id !== undefined && target.id !== "") {
         var excerpt = target.innerText || target.textContent || target.innerHTML;
         console.log("HIGHLIGHT_EVENT:" + target.id + ":" + mode + ":" + excerpt);
     }
 }
+
 
 /* Highlight given bookmarks */
 function highlightBookmark() {
