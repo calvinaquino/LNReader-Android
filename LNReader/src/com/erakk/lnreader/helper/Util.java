@@ -173,13 +173,13 @@ public class Util {
 		return false;
 	}
 
-/**
-	 * Remove | \ ? * < " : > + [ ] / ' from filename
+	/**
+	 * Remove | \ ? * < " : > + [ ] / from filename
 	 * @param filename
 	 * @return
 	 */
 	public static String sanitizeFilename(String filename) {
-		return filename.replaceAll("[\\|\\\\?*<\\\":>+\\[\\]']", "_");
+		return filename.replaceAll("[\\|\\\\?*<\\\":>+\\[\\]]", "_");
 	}
 
 	public static int tryParseInt(String input, int def) {
