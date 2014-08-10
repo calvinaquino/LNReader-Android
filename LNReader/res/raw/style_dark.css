@@ -153,6 +153,12 @@ div.gallerytext > p {
 	font-family: Tahoma, Verdana;
 }
 
+/* Generic image handler for non thumbnailed image */
+a:not(.internal) > img {	
+	width: 100%	!important;
+	height: auto !important;
+}
+
 /* Handles pictures in the Illustration page for the following:
 *	Boku wa Tomodachi ga Sukunai, Volume 1, Colour Illustration 2	
 *
