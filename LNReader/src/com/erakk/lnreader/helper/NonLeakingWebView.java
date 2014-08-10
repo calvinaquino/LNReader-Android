@@ -66,6 +66,17 @@ public class NonLeakingWebView extends WebView {
 		}
 		// Create our ScaleGestureDetector
 		mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+		String userAgent = this.getSettings().getUserAgentString();
+		if (!userAgent.contains("Mobile")) {
+			if (userAgent.contains("Safari")) {
+				userAgent = userAgent.replace("Safari", "Mobile Safari");
+			}
+			else {
+				userAgent = userAgent + " Mobile Safari/537.16";
+			}
+			Log.d(TAG, "Set to mobile webview: " + userAgent);
+			this.getSettings().setUserAgentString(userAgent);
+		}
 	}
 
 	@Override
