@@ -143,8 +143,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				goTop.setVisibility(ImageButton.GONE);
 			}
 		};
-
-		setupTtsService();
 		loadingText = (TextView) findViewById(R.id.emptyList);
 		loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
 	}
@@ -227,11 +225,19 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			}
 		}
 		setWebViewSettings();
-
-		if (ttsBinder != null) {
-			ttsBinder.initConfig();
-		}
+		setupTtsService();
 		Log.d(TAG, "onResume Completed");
+	}
+
+	private TtsBinder getTtsBinder() {
+		while (ttsBinder == null) {
+			setupTtsService();
+
+			if (ttsBinder != null) {
+				ttsBinder.initConfig();
+			}
+		}
+		return ttsBinder;
 	}
 
 	@Override
@@ -287,8 +293,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		super.onPause();
 
 		setLastReadState();
-		if (ttsBinder != null && getTtsStopOnPause()) {
-			ttsBinder.stop();
+		if (getTtsStopOnPause()) {
+			getTtsBinder().stop();
 		}
 		Log.d(TAG, "onPause Completed");
 	}
@@ -484,10 +490,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			startActivity(downloadsItent);
 			return true;
 		case R.id.menu_speak:
-			ttsBinder.start(webView, content.getLastYScroll());
+			getTtsBinder().start(webView, content.getLastYScroll());
 			return true;
 		case R.id.menu_pause_tts:
-			ttsBinder.pause();
+			getTtsBinder().pause();
 			return true;
 		case R.id.menu_save_external:
 			// save based on current intent page name.
@@ -593,7 +599,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	public void jumpTo(PageModel page) {
 		setLastReadState();
 		if (ttsBinder != null)
-			ttsBinder.stop();
+			getTtsBinder().stop();
 		this.getIntent().putExtra(Constants.EXTRA_PAGE, page.getPage());
 		if (page.isExternal() && !getHandleExternalLinkPreferences()) {
 			try {
@@ -692,7 +698,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						int total = 0;
-						for(BookmarkModel bookmark : content.getBookmarks()) {
+						for (BookmarkModel bookmark : content.getBookmarks()) {
 							total += NovelsDao.getInstance().deleteBookmark(bookmark);
 							NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 							wv.loadUrl("javascript:toogleHighlightById(" + bookmark.getpIndex() + ")");
@@ -1295,7 +1301,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	public void speak(String html) {
 		if (ttsBinder != null) {
-			ttsBinder.speak(html, content.getLastYScroll());
+			getTtsBinder().speak(html, content.getLastYScroll());
 		}
 	}
 
@@ -1304,8 +1310,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		MenuItem menuPause = menu.findItem(R.id.menu_pause_tts);
 
 		if (ttsBinder != null) {
-			menuSpeak.setEnabled(ttsBinder.IsTtsInitSuccess());
-			menuPause.setEnabled(!ttsBinder.isPaused());
+			menuSpeak.setEnabled(getTtsBinder().IsTtsInitSuccess());
+			menuPause.setEnabled(!getTtsBinder().isPaused());
 		} else {
 			menuSpeak.setEnabled(false);
 			menuPause.setEnabled(false);
