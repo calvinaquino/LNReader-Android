@@ -693,6 +693,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 						wv.loadUrl("javascript:goToParagraph(" + bookmark.getpIndex() + ")");
 					}
 				});
+				builder.setNegativeButton(R.string.cancel, null);
 				builder.setPositiveButton(R.string.menu_show_clear_all, new OnClickListener() {
 
 					@Override
