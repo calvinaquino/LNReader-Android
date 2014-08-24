@@ -791,7 +791,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		try {
 			// check if .wac available
 			String url = pageModel.getPage();
-			String wacName = getSavedWacName(url);
+			String wacName = Util.getSavedWacName(url);
 			if (!Util.isStringNullOrEmpty(wacName) && !refresh) {
 				// synchronized (this) {
 				// isNeedSave = false;
@@ -891,21 +891,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		// synchronized (this) {
 		// isNeedSave = false;
 		// }
-	}
-
-	private String getSavedWacName(String url) {
-		String path = UIHelper.getImageRoot(this) + "/wac";
-		String filename = path + "/" + Util.calculateCRC32(url);
-		String extensions[] = { ".wac", ".mht" };
-		for (String ext : extensions) {
-			File temp = new File(filename + ext);
-			if (temp.exists()) {
-				Log.i(TAG, String.format("Web Archive found for %s: %s", url, temp.getAbsolutePath()));
-				return temp.getAbsolutePath();
-			}
-		}
-		Log.w(TAG, String.format("Web Archive not found for %s", url));
-		return null;
 	}
 
 	private String getWacNameForSaving(String url, boolean refresh) {

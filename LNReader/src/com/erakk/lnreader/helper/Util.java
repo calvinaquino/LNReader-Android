@@ -43,6 +43,7 @@ import android.util.Log;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 
@@ -415,5 +416,20 @@ public class Util {
 			in.close();
 		}
 		return sslSocketFactory;
+	}
+
+	public static String getSavedWacName(String url) {
+		String path = UIHelper.getImageRoot(LNReaderApplication.getInstance()) + "/wac";
+		String filename = path + "/" + Util.calculateCRC32(url);
+		String extensions[] = { ".wac", ".mht" };
+		for (String ext : extensions) {
+			File temp = new File(filename + ext);
+			if (temp.exists()) {
+				Log.i(TAG, String.format("Web Archive found for %s: %s", url, temp.getAbsolutePath()));
+				return temp.getAbsolutePath();
+			}
+		}
+		Log.w(TAG, String.format("Web Archive not found for %s", url));
+		return null;
 	}
 }

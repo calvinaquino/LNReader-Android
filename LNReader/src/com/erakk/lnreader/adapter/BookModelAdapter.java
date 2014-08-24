@@ -112,6 +112,10 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		if (child.isExternal()) {
 			container.addView(ivExternal);
 			UIHelper.setColorFilter(ivExternal);
+			String wacName = Util.getSavedWacName(child.getPage());
+			if (!Util.isStringNullOrEmpty(wacName)) {
+				child.setDownloaded(true);
+			}
 		}
 
 		// Log.d("getChildView", "Downloaded " + child.getTitle() + " id " + child.getId() + " : " +
