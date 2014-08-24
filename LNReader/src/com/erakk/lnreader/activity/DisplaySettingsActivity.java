@@ -1023,13 +1023,11 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		headingFontPref.setEnabled(!currUserCSS);
 		contentFontPref.setEnabled(!currUserCSS);
 
-
 		// Behaviour 3 (Activity first loaded)
 		lineSpacePref.setSummary(getResources().getString(R.string.line_spacing_summary2) + " \n" + getResources().getString(R.string.current_value) + ": " + currLineSpacing + "%");
 		marginPref.setSummary(getResources().getString(R.string.margin_summary2) + " \n" + getResources().getString(R.string.current_value) + ": " + currMargin + "%");
 		headingFontPref.setSummary(getResources().getString(R.string.pref_css_heading_fontface_summary) + currHeadingFont);
 		contentFontPref.setSummary(getResources().getString(R.string.pref_css_content_fontface_summary) + currContentFont);
-
 
 		// Behaviour 1 (Updated Preference)
 		user_cssPref.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {

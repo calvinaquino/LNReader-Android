@@ -1,8 +1,10 @@
-1.1.19-beta
+1.1.19-beta2
 - Implement feature #153: clear all bookmark on chapter.
-- Fix issue #154: remove ' from forbiden char for filename.
+- Fix issue #154: remove '+[] from forbiden char for filename.
 - Update css to force fit-to-width for non-thumbnailed image.
 - Set useragent for WebView to mobile version.
+- Implement feature #152: Add download icon for external page.
+- Fix issue #152: Update delete chapter logic for external page.
 
 1.1.18c
 - Fix issue #148: relink image on thumb images.

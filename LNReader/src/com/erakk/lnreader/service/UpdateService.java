@@ -292,6 +292,12 @@ public class UpdateService extends Service {
 		}
 	}
 
+	public void cancelUpdate() {
+		if (task != null) {
+			task.cancel(true);
+		}
+	}
+
 	public void setRunning(boolean isRunning) {
 		UpdateService.isRunning = isRunning;
 	}

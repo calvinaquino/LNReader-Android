@@ -261,6 +261,11 @@ public class LNReaderApplication extends Application {
 		updateService.onStartCommand(null, BIND_AUTO_CREATE, (int) (new Date().getTime() / 1000));
 	}
 
+	public void cancelUpdateService() {
+		if (updateService != null)
+			updateService.cancelUpdate();
+	}
+
 	@Override
 	public void onLowMemory() {
 

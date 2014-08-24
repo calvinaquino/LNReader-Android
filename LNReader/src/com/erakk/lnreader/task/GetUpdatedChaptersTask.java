@@ -103,6 +103,9 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 			double total = watchedNovels.size() + 1;
 			double current = 0;
 			for (PageModel watchedNovel : watchedNovels) {
+				if (isCancelled())
+					break;
+
 				ArrayList<PageModel> updatedChapters = processWatchedNovel(watchedNovel, callback);
 				updatesTotal.addAll(updatedChapters);
 
@@ -125,6 +128,9 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 	}
 
 	private void downloadUpdatedChapter(PageModel chapter, ICallbackNotifier callback) throws Exception {
+		if (isCancelled())
+			return;
+
 		String message = "Downloading updated content for: " + chapter.getPage();
 		Log.i(TAG, message);
 		NovelsDao dao = NovelsDao.getInstance();
@@ -136,6 +142,14 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 		}
 	}
 
+	/***
+	 * Get updated chapter for given watched novel.
+	 * 
+	 * @param novel
+	 * @param callback
+	 * @return
+	 * @throws Exception
+	 */
 	private ArrayList<PageModel> processWatchedNovel(PageModel novel, ICallbackNotifier callback) throws Exception {
 		ArrayList<PageModel> updatedWatchedNovel = new ArrayList<PageModel>();
 		NovelsDao dao = NovelsDao.getInstance();
@@ -146,7 +160,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 		PageModel updatedNovel = dao.getPageModelFromInternet(novel.getPageModel(), callback);
 
 		// different timestamp
-		//if (service.isForced() || !novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
+		// if (service.isForced() || !novel.getLastUpdate().equals(updatedNovel.getLastUpdate())) {
 		if (service.isForced() || novel.getLastUpdate().before(updatedNovel.getLastUpdate())) {
 			if (service.isForced()) {
 				Log.i(TAG, "Force Mode: " + novel.getPage());
@@ -154,6 +168,10 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 				Log.d(TAG, "Different Timestamp for: " + novel.getPage());
 				Log.d(TAG, "old: " + novel.getLastUpdate().toString() + " before " + updatedNovel.getLastUpdate().toString());
 			}
+
+			if (isCancelled())
+				return updatedWatchedNovel;
+
 			ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, callback).getFlattedChapterList();
 
 			if (callback != null)
@@ -165,6 +183,9 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 				Log.d(TAG, "Starting size: " + updates.size());
 				// compare the chapters!
 				for (int i = 0; i < novelDetailsChapters.size(); ++i) {
+					if (isCancelled())
+						return updatedWatchedNovel;
+
 					PageModel oldChapter = novelDetailsChapters.get(i);
 					for (int j = 0; j < updates.size(); j++) {
 						PageModel newChapter = updates.get(j);
@@ -173,7 +194,6 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 						// check if the same page
 						if (newChapter.getPage().compareTo(oldChapter.getPage()) == 0) {
 							// check if last update date is newer
-							// TODO: Nandaka: got some bug on the parse api, so check if not equal.
 							if (newChapter.getLastUpdate().getTime() > oldChapter.getLastUpdate().getTime()) {
 								newChapter.setUpdated(true);
 								Log.i(TAG, "Found updated chapter: " + newChapter.getTitle());
@@ -192,12 +212,21 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 		return updatedWatchedNovel;
 	}
 
+	/***
+	 * Check Term of Service from //www.baka-tsuki.org/project/index.php?title=Category:Light_novel_(English)
+	 * 
+	 * @param callback
+	 * @return
+	 * @throws Exception
+	 */
 	private ArrayList<PageModel> getUpdatedNovelList(ICallbackNotifier callback) throws Exception {
+		if (isCancelled())
+			return null;
+
 		ArrayList<PageModel> newList = null;
 
 		PageModel mainPage = new PageModel();
 		mainPage.setPage(Constants.ROOT_NOVEL_ENGLISH);
-
 		mainPage = NovelsDao.getInstance().getPageModel(mainPage, callback);
 
 		// check if more than 7 day
@@ -220,7 +249,17 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 		return newList;
 	}
 
-	public PageModel getUpdatedTOS(ICallbackNotifier callback) throws Exception {
+	/***
+	 * Check Term of Service from //www.baka-tsuki.org/project/index.php?title=Baka-Tsuki:Copyrights
+	 * 
+	 * @param callback
+	 * @return
+	 * @throws Exception
+	 */
+	private PageModel getUpdatedTOS(ICallbackNotifier callback) throws Exception {
+		if (isCancelled())
+			return null;
+
 		// checking copyrights
 		PageModel p = new PageModel();
 		p.setPage("Baka-Tsuki:Copyrights");
