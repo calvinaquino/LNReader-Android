@@ -348,7 +348,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		case R.id.delete_volume:
 
 			/*
-			 * Implement code to delete this volume cache
+			 * Implement code to delete this volume
 			 */
 			BookModel bookDel = novelCol.getBookCollections().get(groupPosition);
 			Toast.makeText(this, getResources().getString(R.string.delete_this_volume, bookDel.getTitle()), Toast.LENGTH_SHORT).show();
@@ -359,7 +359,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		case R.id.delete_chapter:
 
 			/*
-			 * Implement code to delete this chapter cache
+			 * Implement code to delete this chapter
 			 */
 			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
 			Toast.makeText(this, getResources().getString(R.string.delete_this_chapter, chapter.getTitle()), Toast.LENGTH_SHORT).show();

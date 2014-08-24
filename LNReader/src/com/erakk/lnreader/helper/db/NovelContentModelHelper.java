@@ -4,6 +4,7 @@
  */
 package com.erakk.lnreader.helper.db;
 
+import java.io.File;
 import java.util.Date;
 
 import android.content.ContentValues;
@@ -138,9 +139,24 @@ public class NovelContentModelHelper {
 
 	public static int deleteNovelContent(SQLiteDatabase db, PageModel ref) {
 		if (ref != null && !Util.isStringNullOrEmpty(ref.getPage())) {
-			int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT, DBHelper.COLUMN_PAGE + " = ?", new String[] { "" + ref.getPage() });
-			Log.w(TAG, "NovelContent Deleted: " + result);
-			return result;
+
+			if (ref.isExternal()) {
+				String wacName = Util.getSavedWacName(ref.getPage());
+				if (wacName != null) {
+					File f = new File(wacName);
+					boolean isDeleted = f.delete();
+					if (isDeleted) {
+						ref.setDownloaded(false);
+						Log.w(TAG, "External NovelContent Deleted: " + wacName);
+						return 1;
+					}
+				}
+			}
+			else {
+				int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT, DBHelper.COLUMN_PAGE + " = ?", new String[] { "" + ref.getPage() });
+				Log.w(TAG, "NovelContent Deleted: " + result);
+				return result;
+			}
 		}
 		return 0;
 	}
