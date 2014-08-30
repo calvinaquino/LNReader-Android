@@ -66,7 +66,7 @@ public class NovelsDao {
 	private static final Context context;
 	private static final NovelsDao instance;
 
-	static{
+	static {
 		context = LNReaderApplication.getInstance().getApplicationContext();
 		dbh = new DBHelper(context);
 		instance = new NovelsDao();
@@ -76,7 +76,8 @@ public class NovelsDao {
 		return instance;
 	}
 
-	private NovelsDao(){}
+	private NovelsDao() {
+	}
 
 	public DBHelper getDBHelper() {
 		return dbh;
@@ -373,6 +374,7 @@ public class NovelsDao {
 
 	/**
 	 * Get Novel list from db. If not exists, get it from internet
+	 * 
 	 * @param notifier
 	 * @param parent
 	 * @param alphOrder
@@ -1082,7 +1084,6 @@ public class NovelsDao {
 			}
 
 			// get last updated info
-
 			PageModel contentPageModelTemp = getPageModelFromInternet(content.getPageModel(), notifier);
 			if (contentPageModelTemp != null) {
 				// overwrite the old title
@@ -1101,7 +1102,7 @@ public class NovelsDao {
 				try {
 					// TODO: somehow using transaction cause problem...
 					db.beginTransaction();
-					content = NovelContentModelHelper.insertNovelContent(db, content);
+					content = NovelContentModelHelper.insertNovelContent(db, content, page);
 					db.setTransactionSuccessful();
 				} finally {
 					db.endTransaction();
@@ -1116,7 +1117,7 @@ public class NovelsDao {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			try {
-				content = NovelContentModelHelper.insertNovelContent(db, content);
+				content = NovelContentModelHelper.insertNovelContent(db, content, content.getPageModel());
 			} finally {
 				db.close();
 			}
@@ -1180,8 +1181,8 @@ public class NovelsDao {
 					Log.i(TAG, "Image found in DB, but doesn't exist in URL decoded path: " + java.net.URLDecoder.decode(imageTemp.getPath(), java.nio.charset.Charset.defaultCharset().displayName()));
 					downloadBigImage = true;
 				} // else Log.i(TAG, "Image found in DB with URL decoded path: " +
-				// java.net.URLDecoder.decode(imageTemp.getPath(),
-				// java.nio.charset.Charset.defaultCharset().displayName()));
+					// java.net.URLDecoder.decode(imageTemp.getPath(),
+					// java.nio.charset.Charset.defaultCharset().displayName()));
 
 			} catch (Exception e) {
 				Log.i(TAG, "Image found in DB, but path string seems to be broken: " + imageTemp.getPath()

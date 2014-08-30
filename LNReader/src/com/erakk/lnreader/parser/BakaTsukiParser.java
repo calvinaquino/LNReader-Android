@@ -116,6 +116,7 @@ public class BakaTsukiParser {
 				else
 					text = textElement.html();
 				page.setMissing(true);
+				Log.e(TAG, "Chapter is missing/deleted: " + page.getPage());
 			}
 			else {
 				Log.d(TAG, "Content: \r\n" + doc.html());

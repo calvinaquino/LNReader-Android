@@ -76,15 +76,15 @@ public class NovelContentModelHelper {
 	 * Insert Stuff
 	 */
 
-	public static NovelContentModel insertNovelContent(SQLiteDatabase db, NovelContentModel content) throws Exception {
+	public static NovelContentModel insertNovelContent(SQLiteDatabase db, NovelContentModel content, PageModel page) throws Exception {
 		ContentValues cv = new ContentValues();
-		cv.put(DBHelper.COLUMN_CONTENT, content.getContent());
 		cv.put(DBHelper.COLUMN_PAGE, content.getPage());
 		cv.put(DBHelper.COLUMN_ZOOM, "" + content.getLastZoom());
 		cv.put(DBHelper.COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 
 		NovelContentModel temp = getNovelContent(db, content.getPage());
 		if (temp == null) {
+			cv.put(DBHelper.COLUMN_CONTENT, content.getContent());
 			cv.put(DBHelper.COLUMN_LAST_X, "" + content.getLastXScroll());
 			cv.put(DBHelper.COLUMN_LAST_Y, "" + content.getLastYScroll());
 
@@ -104,6 +104,10 @@ public class NovelContentModelHelper {
 				cv.put(DBHelper.COLUMN_LAST_Y, "" + content.getLastYScroll());
 			}
 
+			// skip updating existing content if the page/chapter already deleted.
+			if (!page.isMissing())
+				cv.put(DBHelper.COLUMN_CONTENT, content.getContent());
+
 			// Log.d(TAG, "Updating Novel Content: " + content.getPage() + " id: " + temp.getId());
 			if (content.getLastUpdate() == null)
 				cv.put(DBHelper.COLUMN_LAST_UPDATE, "" + (int) (temp.getLastUpdate().getTime() / 1000));
@@ -114,10 +118,12 @@ public class NovelContentModelHelper {
 		}
 
 		// update the pageModel
-		PageModel pageModel = content.getPageModel();
-		if (pageModel != null) {
-			pageModel.setDownloaded(true);
-			pageModel = PageModelHelper.insertOrUpdatePageModel(db, pageModel, false);
+		if (page == null) {
+			page = content.getPageModel();
+		}
+		if (page != null) {
+			page.setDownloaded(true);
+			page = PageModelHelper.insertOrUpdatePageModel(db, page, false);
 		}
 
 		content = getNovelContent(db, content.getPage());
