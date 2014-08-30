@@ -5,15 +5,15 @@
     <string name="light_novels">Powieści</string>
     <string name="watch_list">Obserwowane</string>
     <string name="originals">Powieści własne</string>
-    <string name="alternative_language">W Innych językach</string>
+    <string name="alternative_language">Inne języki</string>
     <string name="choose">Wybierz</string>
     <string name="all">Wszystkie</string>
     <string name="settings">Ustawienia</string>
     <string name="title_activity_display_light_novels">Powieści</string>
     <string name="title_activity_display_settings">Ustawienia</string>
     <string name="title_activity_light_novel_chapters">Rozdziały powieści</string>
-    <string name="title_activity_display_alternative_novels">Powieści w innych językach</string>
-    <string name="title_activity_display_alternative_novel_pager">Powieści w innych językach</string>
+    <string name="title_activity_display_alternative_novels">Powieści Inne języki</string>
+    <string name="title_activity_display_alternative_novel_pager">Powieści Inne języki</string>
     <string name="novel_title">Tytuł</string>
     <string name="novel_cover">Okładka</string>
     <string name="novel_synopsys"></string>
@@ -31,7 +31,7 @@
     <string name="search">Szukaj</string>
     <string name="novel_only">Tylko powieści</string>
     <string name="task_loading">Wczytywanie &#8230;</string>
-    <string name="jump_last_read">Ostatnio czytane</string>
+    <string name="jump_last_read">Wznów czytanie</string>
     <string name="title_activity_display_bookmark">Zakładki</string>
     <string name="main_activity_menu">Menu Główne</string>
     <string name="title_activity_download_list">Pobierane</string>
@@ -61,7 +61,7 @@
 \n
 \nFinally, Have Fun! :D
 \nthelastguardian \- May 26, 2008</string>
-    <string name="content_refresh">Odświerz treść</string>
+    <string name="content_refresh">Odśwież treść</string>
     <string name="content_previous">Poprzedni</string>
     <string name="content_next">Następny</string>
     <string name="content_toc">Idź do</string>
@@ -69,9 +69,9 @@
     <string name="content_bookmark">Zakładka w rozdziale</string>
     <string name="bookmarks">Zakładki</string>
     <string name="download_list">Pobierane</string>
-    <string name="details_refresh">Odświerz</string>
+    <string name="details_refresh">Odśwież</string>
     <string name="details_download_all">Pobierz wszystkie rozdziały</string>
-    <string name="novel_list_refresh">Odświerz</string>
+    <string name="novel_list_refresh">Odśwież</string>
     <string name="novel_list_manual_add">Dodaj powieść ręcznie</string>
     <string name="novel_list_download_all">Pobierz opisy powieści</string>
     <string name="update_interval_summary">Wybierz częstość aktualizacji: %1$s</string>
@@ -194,7 +194,7 @@
     <string name="added_to_watchlist">Dodano do obserwowanych</string>
     <string name="removed_from_watchlist">Usunięto z obserwowanych</string>
     <string name="error_update">Błąd podczas aktualizacji</string>
-    <string name="no_last_novel">Brak ostatnio czytanej powieści.</string>
+    <string name="no_last_novel">Brak Wznów czytaniej powieści.</string>
     <string name="terms_of_use">Terms of Use</string>
     <string name="agree">Zgadzam się</string>
     <string name="disagree">Opuść Apkę</string>
@@ -203,14 +203,14 @@
     <string name="last_update">Ostatnia aktualizacja: </string>
     <string name="last_check">Ostatnio sprawdzano: </string>
     <string name="updates">Aktualizacje</string>
-    <string name="alternative_language_summary">Powwieści dostępne w innych językach niż angielski.</string>
+    <string name="alternative_language_summary">Powwieści dostępne Inne języki niż angielski.</string>
     <string name="alternative_language_title">Pokazuj powieści w językach:</string>
     <string name="no_selected_language">Nie wybrano języka!</string>
     <string name="category_search_language">Szukaj w językach</string>
     <string name="enabled">Włączono</string>
     <string name="disabled">Wyłączono</string>
     <string name="title_activity_display_credit">Credits</string>
-    <string name="refresh_image">Odświerz obrazek</string>
+    <string name="refresh_image">Odśwież obrazek</string>
     <string name="update_preferences">Aktualizacje i powiadomienia</string>
     <string name="orientation_preferences">Wybór orientacji</string>
     <string name="orientation_summary">Wybrana orientacja: %1$s</string>
@@ -228,7 +228,7 @@
     <string name="use_https_title">Używaj HTTPS</string>
     <string name="use_https_summary">Używaj HTTPS przy łączeniu z BAKA-Tsuki.</string>
     <string name="error_parsing_url">Błąd przy przetwarzaniu URL: %1$s</string>
-    <string name="refreshing_detail">Odświerzanie informacji...</string>
+    <string name="refreshing_detail">Odświeżanie informacji...</string>
     <string name="toast_clear_volume">Wyczyszczono tom: %1$s</string>
     <string name="toast_mark_volume">Oznaczono tom jako przeczytany</string>
     <string name="toast_clear_chapter">Wyczyszczono rozdział: %1$s</string>
@@ -277,21 +277,21 @@
     <string name="unzip_files_task_error">Błąd przy dekompresji plików: %1$s.</string>
     <string name="unzip_files_task_complete">Zakończono dekompresowanie: %1$s do: %2$s.</string>
     <string name="unzip_files_task_progress_count">Wypakowuję #%1$s: %2$s.</string>
-    <string name="load_teaser_task_refreshing">Odświerzanie listę zajawek.</string>
+    <string name="load_teaser_task_refreshing">Odświeżanie listę zajawek.</string>
     <string name="load_teaser_task_loading">Wczytywanie listy zajawek.</string>
     <string name="load_teaser_task_complete">Lista zajawek wczytana.</string>
     <string name="load_teaser_task_error">Błąd przy pobieraniu listy zajawek: %1$s.</string>
-    <string name="load_original_task_refreshing">Odświerzanie powieści autorskich.</string>
+    <string name="load_original_task_refreshing">Odświeżanie powieści autorskich.</string>
     <string name="load_original_task_loading">Wczytywanie powieści autorskich.</string>
     <string name="load_original_task_complete">Lista powieści autorskich wczytana.</string>
     <string name="load_original_task_error">Błąd przy pobieraniu listy powieści autorskich: %1$s.</string>
-    <string name="load_novels_task_refreshing">Odświerzam listę powieści.</string>
+    <string name="load_novels_task_refreshing">Odświeżam listę powieści.</string>
     <string name="load_novels_task_loading">Wczytuję listę powieści.</string>
     <string name="load_novels_task_watched">Wczytuję Obserwowane.</string>
     <string name="load_novels_task_complete">Lista powieści wczytana.</string>
     <string name="load_novels_task_watched_complete">Lista obserwowanych wczytana.</string>
     <string name="load_novels_task_error">Błąd przy pobieraniu listy powieści: %1$s.</string>
-    <string name="load_novel_detail_task_refreshing">Odświerzanie listy rozdziałów...</string>
+    <string name="load_novel_detail_task_refreshing">Odświeżanie listy rozdziałów...</string>
     <string name="load_novel_detail_task_loading">Pobieranie listy rozdziałów...</string>
     <string name="load_novel_detail_task_complete">Lista rozdziałów wczytana.</string>
     <string name="load_novel_detail_task_error">Błąd przy pobieraniu listy rozdziałów: %1$s.</string>
@@ -299,11 +299,11 @@
     <string name="load_novel_content_task_loading">Wczytywanie zawartości...</string>
     <string name="load_novel_content_task_complete">Zawartość wczytana.</string>
     <string name="load_novel_content_task_error">Błąd przy pobieraniu zawartości: %1$s.</string>    
-    <string name="load_image_task_refreshing">Odświerzanie obrazka...</string>
+    <string name="load_image_task_refreshing">Odświeżanie obrazka...</string>
     <string name="load_image_task_loading">Wczytywanie obrazka...</string>
     <string name="load_image_task_complete">Obrazek wczytany.</string>
     <string name="load_image_task_error">Błąd przy pobieraniu obrazka: %1$s.</string>
-    <string name="load_novel_alt_task_refreshing">Odświerzanie %1$s Spisu...</string>
+    <string name="load_novel_alt_task_refreshing">Odświeżanie %1$s Spisu...</string>
     <string name="load_novel_alt_task_loading">Wczytywanie %1$s Spisu...</string>
     <string name="load_novel_alt_task_error">Błąd przy pobieraniu %1$s Listy: %2$s.</string>
     <string name="load_novel_alt_task_complete">Wczytywanie %1$s Listy zakończone.</string>
