@@ -35,7 +35,7 @@ public class Constants {
 	public static final String EXTRA_NOVEL_LIST_MODE_TEASER = "Teaser";
 
 	public static final String NOVEL_BOOK_DIVIDER = "%NOVEL_BOOK_DIVIDER%";
-	public static final int CHECK_INTERVAL = 7;
+	public static final long CHECK_INTERVAL = 7 * 24 * 3600 * 1000;
 
 	// Shared Preferences keys
 	public static final String PREF_FIRST_RUN = "first_run";
@@ -112,7 +112,6 @@ public class Constants {
 	public static final String PREF_QUICK_LOAD = "quick_load";
 	public static final String PREF_HEADING_FONT = "css_heading_fontface";
 	public static final String PREF_CONTENT_FONT = "css_content_fontface";
-
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 

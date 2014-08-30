@@ -8,6 +8,12 @@ public class BakaReaderException extends Exception {
 	public static final int EMPTY_CONTENT = -4000;
 	public static final int LANG_NOT_SUPPORTED = -5000;
 
+	public static final int UPDATE_FAILED_TOS = -6001;
+	public static final int UPDATE_FAILED_NOVEL_ENGLISH = -6002;
+	public static final int UPDATE_FAILED_WATCHED_NOVEL = -6003;
+	public static final int UPDATE_FAILED_NOVEL = -6004;
+	public static final int UPDATE_FAILED_CHAPTER = -6005;
+
 	private final int errorCode;
 
 	public BakaReaderException(String message, int errorCode) {
