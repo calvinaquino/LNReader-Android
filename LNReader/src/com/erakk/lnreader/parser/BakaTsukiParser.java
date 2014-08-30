@@ -107,16 +107,20 @@ public class BakaTsukiParser {
 		Element textElement = doc.select("text").first();
 		String text = "";
 		if (textElement != null) {
-
 			text = textElement.text();
 		} else {
-			textElement = doc.select(".noarticletext").first();
-			if (textElement == null) {
+			textElement = doc.select(".noarticletext, error[code=missingtitle]").first();
+			if (textElement != null) {
+				if (!Util.isStringNullOrEmpty(textElement.attr("info")))
+					text = textElement.attr("info");
+				else
+					text = textElement.html();
+				page.setMissing(true);
+			}
+			else {
 				Log.d(TAG, "Content: \r\n" + doc.html());
 				throw new BakaReaderException("Empty Content", BakaReaderException.EMPTY_CONTENT);
 			}
-			text = textElement.html();
-			page.setMissing(true);
 		}
 
 		// get valid image list

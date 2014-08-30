@@ -847,6 +847,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		deleteTask.owner = this;
 	}
 
+	@SuppressWarnings("unchecked")
 	@SuppressLint("NewApi")
 	private <T extends AsyncTask<Void, ICallbackEventData, ?>> T setupTaskList(T task, String key) {
 
