@@ -402,6 +402,12 @@ public class UIHelper {
 	}
 
 	/* PREFERENCES HELPER */
+	/**
+	 * Get invert color preferences
+	 * 
+	 * @param ctx
+	 * @return true if dark theme.
+	 */
 	public static boolean getColorPreferences(Context ctx) {
 		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}

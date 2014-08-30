@@ -15,7 +15,6 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -1017,7 +1016,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		wv.getSettings().setLoadWithOverviewMode(true);
 		// wv.getSettings().setUseWideViewPort(true);
 		wv.getSettings().setLoadsImagesAutomatically(getShowImagesPreferences());
-		wv.setBackgroundColor(0);
+		if (UIHelper.getColorPreferences(this))
+			wv.setBackgroundColor(0);
 		wv.getSettings().setJavaScriptEnabled(true);
 
 		if (isPageLoaded)
@@ -1057,22 +1057,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	public void onProgressCallback(ICallbackEventData message) {
 		toggleProgressBar(true);
 		loadingText.setText(message.getMessage());
-		loadingText.setBackgroundColor(Color.BLACK);
-
-		// synchronized (this) {
-		// if (message.getPercentage() > -1) {
-		// // android progress bar bug
-		// // see: http://stackoverflow.com/a/4352073
-		// loadingBar.setIndeterminate(false);
-		// loadingBar.setMax(100);
-		// loadingBar.setProgress(message.getPercentage());
-		// loadingBar.setProgress(0);
-		// loadingBar.setProgress(message.getPercentage());
-		// loadingBar.setMax(100);
-		// } else {
-		// loadingBar.setIndeterminate(true);
-		// }
-		// }
 	}
 
 	public void toggleProgressBar(boolean show) {

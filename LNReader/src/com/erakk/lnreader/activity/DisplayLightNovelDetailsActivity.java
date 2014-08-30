@@ -6,7 +6,6 @@ import java.util.Iterator;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -431,7 +430,6 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 	public void onProgressCallback(ICallbackEventData message) {
 		toggleProgressBar(true);
 		loadingText.setText(message.getMessage());
-		loadingText.setBackgroundColor(Color.BLACK);
 
 		LNReaderApplication.getInstance().updateDownload(message.getSource(), message.getPercentage(), message.getMessage());
 		if (message.getPercentage() > 0) {

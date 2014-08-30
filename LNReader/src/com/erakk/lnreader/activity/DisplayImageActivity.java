@@ -58,7 +58,8 @@ public class DisplayImageActivity extends SherlockActivity implements IExtendedC
 		imgWebView.getSettings().setAllowFileAccess(true);
 		imgWebView.getSettings().setLoadWithOverviewMode(true);
 		imgWebView.getSettings().setUseWideViewPort(true);
-		imgWebView.setBackgroundColor(0);
+		if (UIHelper.getColorPreferences(this))
+			imgWebView.setBackgroundColor(0);
 
 		imgWebView.getSettings().setBuiltInZoomControls(UIHelper.getZoomPreferences(this));
 		imgWebView.setDisplayZoomControl(UIHelper.getZoomControlPreferences(this));

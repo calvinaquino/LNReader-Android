@@ -22,7 +22,6 @@
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/searchBox"
-        android:background="#000"
         android:fastScrollEnabled="true" />
 
     <RelativeLayout

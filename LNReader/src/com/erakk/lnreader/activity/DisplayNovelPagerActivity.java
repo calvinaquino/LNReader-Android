@@ -3,7 +3,6 @@ package com.erakk.lnreader.activity;
 import android.app.Activity;
 import android.app.LocalActivityManager;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -73,12 +72,12 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
 		tabHost.addTab(firstSpec); // Adding First tab
 		tabHost.addTab(secondSpec); // Adding Second tab
 		tabHost.addTab(thirdSpec); // Adding third tab
-		//setTabColor();
+		// setTabColor();
 
 		tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
 			@Override
 			public void onTabChanged(String tabId) {
-				//setTabColor();
+				// setTabColor();
 				currentActivity = lam.getActivity(tabId);
 			}
 		});
@@ -111,15 +110,16 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
 		}
 	}
 
-	public static void setTabColor() {
-		for (int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) {
-			// tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.parseColor("#2D5A9C")); //unselected
-			tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.parseColor("#000000")); // unselected
-		}
-		// tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.parseColor("#234B7E"));
-		// // selected
-		tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.parseColor("#708090")); // selected
-	}
+	// public static void setTabColor() {
+	// for (int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) {
+	// // tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.parseColor("#2D5A9C")); //unselected
+	// tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.parseColor("#000000")); // unselected
+	// }
+	// // tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.parseColor("#234B7E"));
+	// // // selected
+	// tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.parseColor("#708090")); //
+	// selected
+	// }
 
 	public static TabHost getMainTabHost() {
 		return tabHost;
