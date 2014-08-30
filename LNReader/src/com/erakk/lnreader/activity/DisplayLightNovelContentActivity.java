@@ -6,6 +6,9 @@ import java.io.FileReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -61,6 +64,7 @@ import com.erakk.lnreader.model.BookmarkModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
+import com.erakk.lnreader.parser.CommonParser;
 import com.erakk.lnreader.service.TtsService;
 import com.erakk.lnreader.service.TtsService.TtsBinder;
 import com.erakk.lnreader.task.AsyncTaskResult;
@@ -95,6 +99,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	private boolean isNeedSave = true;
 	private Menu _menu;
+	public ArrayList<String> images;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -1031,6 +1036,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			if (result.getResultType() == NovelContentModel.class) {
 				NovelContentModel loadedContent = (NovelContentModel) result.getResult();
 				setContent(loadedContent);
+				Document imageDoc = Jsoup.parse(loadedContent.getContent());
+				images = CommonParser.parseImagesFromContentPage(imageDoc);
 			}
 			else if (result.getResultType() == Boolean.class) {
 				// Load WAC

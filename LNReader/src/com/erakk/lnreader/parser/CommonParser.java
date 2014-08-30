@@ -110,8 +110,8 @@ public class CommonParser {
 
 			if (chapter.getPage().contains("User:") // user page
 					|| chapter.getPage().contains("Special:BookSources")// ISBN handler
-					// || chapter.getPage().contains("redlink=1") // missing page
-					)
+			// || chapter.getPage().contains("redlink=1") // missing page
+			)
 			{
 				Log.d(TAG, "Skipping: " + chapter.getPage());
 				continue;
@@ -251,7 +251,7 @@ public class CommonParser {
 				// parse date, default use touched attr, if rev not available
 				String tempDate = pElement.attr("touched");
 				Element rev = pElement.select("rev").first();
-				if(rev != null) {
+				if (rev != null) {
 					tempDate = rev.attr("timestamp");
 					Log.d(TAG, "Using timestamp from revision");
 				}
@@ -345,7 +345,8 @@ public class CommonParser {
 			if (href.contains("/project/index.php?title=File:")) {
 				if (!href.startsWith("http"))
 					href = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()) + href;
-				result.add(href);
+				if (!result.contains(href))
+					result.add(href);
 			}
 		}
 

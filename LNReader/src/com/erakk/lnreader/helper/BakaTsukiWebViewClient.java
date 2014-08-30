@@ -41,6 +41,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 		if (url.contains("title=File:")) {
 			Intent intent = new Intent(caller, DisplayImageActivity.class);
 			intent.putExtra(Constants.EXTRA_IMAGE_URL, url);
+			intent.putExtra("image_list", caller.images);
 			caller.startActivity(intent);
 		} else {
 			// get the title from url

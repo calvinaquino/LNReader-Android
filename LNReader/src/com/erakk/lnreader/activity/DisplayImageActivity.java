@@ -1,5 +1,7 @@
 package com.erakk.lnreader.activity;
 
+import java.util.ArrayList;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -36,6 +38,10 @@ public class DisplayImageActivity extends SherlockActivity implements IExtendedC
 	private TextView loadingText;
 	private ProgressBar loadingBar;
 
+	private ArrayList<String> images;
+	private int currentImageIndex = 0;
+	private Menu _menu;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,6 +55,9 @@ public class DisplayImageActivity extends SherlockActivity implements IExtendedC
 
 		Intent intent = getIntent();
 		url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
+
+		images = intent.getStringArrayListExtra("image_list");
+		currentImageIndex = images.indexOf(url);
 
 		executeTask(url, false);
 	}
@@ -101,12 +110,33 @@ public class DisplayImageActivity extends SherlockActivity implements IExtendedC
 			}
 			toggleProgressBar(true);
 		}
+		setPrevNextButtonState();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.activity_display_image, menu);
+		_menu = menu;
+		setPrevNextButtonState();
 		return true;
+	}
+
+	private void setPrevNextButtonState() {
+		if (_menu != null) {
+			boolean isNextEnabled = false;
+			boolean isPrevEnabled = false;
+
+			if (images != null && images.size() > 0) {
+				Log.d(TAG, "Image Count: " + images.size());
+				if (currentImageIndex > 0)
+					isPrevEnabled = true;
+				if (images.size() != 1 && currentImageIndex < images.size() - 1)
+					isNextEnabled = true;
+			}
+
+			_menu.findItem(R.id.menu_chapter_next).setEnabled(isNextEnabled);
+			_menu.findItem(R.id.menu_chapter_previous).setEnabled(isPrevEnabled);
+		}
 	}
 
 	@Override
@@ -125,6 +155,14 @@ public class DisplayImageActivity extends SherlockActivity implements IExtendedC
 		case R.id.menu_downloads_list:
 			Intent downloadsItent = new Intent(this, DownloadListActivity.class);
 			startActivity(downloadsItent);
+			return true;
+		case R.id.menu_chapter_previous:
+			currentImageIndex--;
+			executeTask(images.get(currentImageIndex), false);
+			return true;
+		case R.id.menu_chapter_next:
+			currentImageIndex++;
+			executeTask(images.get(currentImageIndex), false);
 			return true;
 		case android.R.id.home:
 			super.onBackPressed();
