@@ -55,7 +55,7 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
 		tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
 			@Override
 			public void onTabChanged(String tabId) {
-				setTabColor();
+				// setTabColor();
 				currentActivity = lam.getActivity(tabId);
 			}
 		});
@@ -90,7 +90,7 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
 		}
 
 		// Tab color
-		setTabColor();
+		// setTabColor();
 	}
 
 	@Override
