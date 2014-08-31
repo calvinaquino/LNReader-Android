@@ -105,12 +105,12 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 		if (holder.txtPageTitle != null) {
 			if (showPage) {
 				holder.txtPageTitle.setVisibility(View.VISIBLE);
-				if(Util.isStringNullOrEmpty(bookmark.getBookmarkTitle())) {
+				if (Util.isStringNullOrEmpty(bookmark.getBookmarkTitle())) {
 					try {
 						PageModel parentPage = pageModel.getParentPageModel();
 						bookmark.setBookmarkTitle(parentPage.getTitle());
 					} catch (Exception ex) {
-						Log.e(TAG, "Failed to get pageModel: " + pageModel.getParent(), ex);
+						Log.e(TAG, "Failed to get pageModel: " + bookmark.getPage(), ex);
 						bookmark.setBookmarkTitle(bookmark.getPage());
 					}
 				}
@@ -126,11 +126,11 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 			if (showPage) {
 				String subTitle = bookmark.getPage();
 				holder.txtPageSubTitle.setVisibility(View.VISIBLE);
-				if(Util.isStringNullOrEmpty(bookmark.getSubTitle())) {
+				if (Util.isStringNullOrEmpty(bookmark.getSubTitle()) && pageModel != null) {
 					subTitle = pageModel.getTitle();
 					try {
-						String bookTitle = pageModel.getParent().substring(pageModel.getParent().indexOf(Constants.NOVEL_BOOK_DIVIDER)+Constants.NOVEL_BOOK_DIVIDER.length());
-						if(!Util.isStringNullOrEmpty(bookTitle)) {
+						String bookTitle = pageModel.getParent().substring(pageModel.getParent().indexOf(Constants.NOVEL_BOOK_DIVIDER) + Constants.NOVEL_BOOK_DIVIDER.length());
+						if (!Util.isStringNullOrEmpty(bookTitle)) {
 							subTitle = String.format("(%s) %s", bookTitle, subTitle);
 						}
 						else {
@@ -141,6 +141,8 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 						Log.e(TAG, "Failed to get bookModel: " + ex.getMessage(), ex);
 					}
 					bookmark.setSubTitle(subTitle);
+				} else {
+					bookmark.setSubTitle(bookmark.getPage());
 				}
 				holder.txtPageSubTitle.setText(bookmark.getSubTitle());
 			} else {
