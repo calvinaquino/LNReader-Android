@@ -1,4 +1,4 @@
-1.1.19-beta3
+1.1.19
 - Implement feature #153: clear all bookmark on chapter.
 - Fix issue #154: remove '+[] from forbiden char for filename.
 - Update css to force fit-to-width for non-thumbnailed image.
