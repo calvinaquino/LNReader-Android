@@ -147,13 +147,32 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 									newUrl = newUrl.replace("file:////", "file:///");
 								}
 
-								String mntNewUrl = newUrl.replace("file:///", "");
-								Log.d(TAG, "Trying to replace with " + mntNewUrl);
+								ArrayList<String> newUrls = new ArrayList<String>();
+								newUrls.add(newUrl);
 
-								if (new File(mntNewUrl).exists()) {
-									Log.d(TAG, "Replace image: " + imgUrl + " ==> " + newUrl);
-									image.attr("src", newUrl);
-									++updated;
+								// check with encoded / decoded filename
+								String oriFilename = mntImgUrl.substring(newUrl.lastIndexOf("/") + 1);
+								if (oriFilename.contains("%")) {
+									String decodedFilename = java.net.URLDecoder.decode(oriFilename, "UTF-8");
+									decodedFilename = newUrl.replace(oriFilename, decodedFilename);
+									newUrls.add(decodedFilename);
+								}
+								else {
+									String encodedFilename = java.net.URLEncoder.encode(oriFilename, "UTF-8");
+									encodedFilename = newUrl.replace(oriFilename, encodedFilename);
+									newUrls.add(encodedFilename);
+								}
+
+								for (String url : newUrls) {
+									String mntNewUrl = url.replace("file:///", "");
+									Log.d(TAG, "Trying to replace with " + mntNewUrl);
+
+									if (new File(mntNewUrl).exists()) {
+										Log.d(TAG, "Replace image: " + imgUrl + " ==> " + url);
+										image.attr("src", url);
+										++updated;
+										break;
+									}
 								}
 							}
 						}
