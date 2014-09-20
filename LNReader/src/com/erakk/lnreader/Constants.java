@@ -112,6 +112,12 @@ public class Constants {
 	public static final String PREF_QUICK_LOAD = "quick_load";
 	public static final String PREF_HEADING_FONT = "css_heading_fontface";
 	public static final String PREF_CONTENT_FONT = "css_content_fontface";
+	public static final String PREF_CSS_CUSTOM_COLOR = "css_use_custom_colors";
+	public static final String PREF_CSS_BACKGROUND = "css_background";
+	public static final String PREF_CSS_FOREGROUND = "css_foreground";
+	public static final String PREF_CSS_LINK_COLOR = "css_link";
+	public static final String PREF_CSS_TABLE_BORDER = "css_thumb-border";
+	public static final String PREF_CSS_TABLE_BACKGROUND = "css_thumb-back";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 

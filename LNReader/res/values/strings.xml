@@ -467,4 +467,12 @@
     <string name="pref_css_content_fontface_summary">Default font for content: </string>
     <string name="relink_task_cancelled">Relink Task cancelled.</string>
     <string name="menu_save_external">Save External Page</string>
+    <string name="css_custom_color">Custom Color</string>
+    <string name="css_margin">Margin and Layout</string>
+    <string name="css_background">Background</string>
+    <string name="css_foreground">Foreground</string>
+    <string name="css_link">Link Color</string>
+    <string name="thumb_border">Table Border</string>
+    <string name="thumb_background">Table Background</string>
+    <string name="error_invalid_color">Invalid color given: %1$s</string>
 </resources>

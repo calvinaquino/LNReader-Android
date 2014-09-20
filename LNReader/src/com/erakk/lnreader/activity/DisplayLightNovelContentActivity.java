@@ -1174,67 +1174,99 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	 * @return
 	 */
 	private String getCSSSheet() {
+		if (getUseCustomCSS()) {
+			String externalCss = getExternalCss();
+			if (!Util.isStringNullOrEmpty(externalCss))
+				return externalCss;
+		}
+
+		// Default CSS start here
+		String key = "";
+		int styleId = -1;
 		StringBuilder css = new StringBuilder();
 
-		if (getUseCustomCSS()) {
-			String cssPath = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_CUSTOM_CSS_PATH, Environment.getExternalStorageDirectory().getPath() + "/custom.css");
-			if (!Util.isStringNullOrEmpty(cssPath)) {
-				File cssFile = new File(cssPath);
-				if (cssFile.exists()) {
-					// read the file
-					BufferedReader br = null;
-					FileReader fr = null;
+		if (UIHelper.getCssUseCustomColorPreferences(this)) {
+			styleId = R.raw.style_custom_color;
+			key = "style_custom_color" + UIHelper.getBackgroundColor(this) + UIHelper.getForegroundColor(this) + UIHelper.getLinkColor(this) + UIHelper.getThumbBorderColor(this) + UIHelper.getThumbBackgroundColor(this);
+		}
+		else if (UIHelper.getColorPreferences(this)) {
+			styleId = R.raw.style_dark;
+			key = "style_dark";
+		}
+		else {
+			styleId = R.raw.style;
+			key = "style";
+		}
+		if (UIHelper.CssCache.containsKey(key))
+			return UIHelper.CssCache.get(key);
+
+		LNReaderApplication app = (LNReaderApplication) getApplication();
+		css.append(app.ReadCss(styleId));
+
+		if (getUseJustifiedPreferences()) {
+			css.append("\nbody { text-align: justify !important; }\n");
+		}
+		css.append("\np { line-height:" + getLineSpacingPreferences() + "% !important; \n");
+		css.append("      font-family:" + getContentFontPreferences() + "; }\n");
+		css.append("\nbody { margin: " + getMarginPreferences() + "% !important; }\n");
+
+		css.append("\n.mw-headline{ font-family: " + getHeadingFontPreferences() + "; }\n");
+
+		String cssStr = css.toString();
+		if (UIHelper.getCssUseCustomColorPreferences(this)) {
+			cssStr = cssStr.replace("@background@", UIHelper.getBackgroundColor(this));
+			cssStr = cssStr.replace("@foreground@", UIHelper.getForegroundColor(this));
+			cssStr = cssStr.replace("@link@", UIHelper.getLinkColor(this));
+			cssStr = cssStr.replace("@thumb-border@", UIHelper.getThumbBorderColor(this));
+			cssStr = cssStr.replace("@thumb-back@", UIHelper.getThumbBackgroundColor(this));
+		}
+
+		UIHelper.CssCache.put(key, cssStr);
+		return cssStr;
+	}
+
+	/***
+	 * Get external CSS file, not cached.
+	 * 
+	 * @return
+	 */
+	private String getExternalCss() {
+		StringBuilder css = new StringBuilder();
+		String cssPath = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_CUSTOM_CSS_PATH, Environment.getExternalStorageDirectory().getPath() + "/custom.css");
+		if (!Util.isStringNullOrEmpty(cssPath)) {
+			File cssFile = new File(cssPath);
+			if (cssFile.exists()) {
+				// read the file
+				BufferedReader br = null;
+				FileReader fr = null;
+				try {
 					try {
-						try {
-							fr = new FileReader(cssFile);
-							br = new BufferedReader(fr);
-							String line;
+						fr = new FileReader(cssFile);
+						br = new BufferedReader(fr);
+						String line;
 
-							while ((line = br.readLine()) != null) {
-								css.append(line);
-							}
-
-							return css.toString();
-
-						} catch (Exception e) {
-							throw e;
-						} finally {
-							if (fr != null)
-								fr.close();
-							if (br != null)
-								br.close();
+						while ((line = br.readLine()) != null) {
+							css.append(line);
 						}
+
+						return css.toString();
+
 					} catch (Exception e) {
-						Log.e(TAG, "Error when reading Custom CSS: " + cssPath, e);
+						throw e;
+					} finally {
+						if (fr != null)
+							fr.close();
+						if (br != null)
+							br.close();
 					}
-				} else {
-					Toast.makeText(this, getResources().getString(R.string.css_layout_not_exist), Toast.LENGTH_SHORT).show();
+				} catch (Exception e) {
+					Log.e(TAG, "Error when reading Custom CSS: " + cssPath, e);
 				}
 			}
 		}
-		else {
-			// Default CSS start here
-			int styleId = -1;
-			if (UIHelper.getColorPreferences(this)) {
-				styleId = R.raw.style_dark;
-				// Log.d("CSS", "CSS = dark");
-			} else {
-				styleId = R.raw.style;
-				// Log.d("CSS", "CSS = normal");
-			}
-			LNReaderApplication app = (LNReaderApplication) getApplication();
-			css.append(app.ReadCss(styleId));
-
-			if (getUseJustifiedPreferences()) {
-				css.append("\nbody { text-align: justify !important; }\n");
-			}
-			css.append("\np { line-height:" + getLineSpacingPreferences() + "% !important; \n");
-			css.append("      font-family:" + getContentFontPreferences() + "; }\n");
-			css.append("\nbody { margin: " + getMarginPreferences() + "% !important; }\n");
-
-			css.append("\n.mw-headline{ font-family: " + getHeadingFontPreferences() + "; }\n");
-		}
-		return css.toString();
+		// should not hit this code, either external css not exists or failed to read.
+		Toast.makeText(this, getResources().getString(R.string.css_layout_not_exist), Toast.LENGTH_SHORT).show();
+		return null;
 	}
 
 	/* TTS Section */

@@ -1,3 +1,6 @@
+1.1.20-beta
+- Fix issue #162: update relink image task to cater encoded/decoded image filename
+
 1.1.19
 - Implement feature #153: clear all bookmark on chapter.
 - Fix issue #154: remove '+[] from forbiden char for filename.

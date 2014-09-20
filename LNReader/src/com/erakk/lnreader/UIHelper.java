@@ -3,6 +3,7 @@ package com.erakk.lnreader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Locale;
+import java.util.WeakHashMap;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -38,6 +39,8 @@ import com.erakk.lnreader.helper.Util;
 public class UIHelper {
 
 	private static final String TAG = UIHelper.class.toString();
+
+	public static WeakHashMap<String, String> CssCache = new WeakHashMap<String, String>();
 
 	public static void CheckScreenRotation(Activity activity) {
 		switch (getIntFromPreferences(Constants.PREF_ORIENTATION, 0)) {
@@ -412,6 +415,10 @@ public class UIHelper {
 		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_INVERT_COLOR, true);
 	}
 
+	public static boolean getCssUseCustomColorPreferences(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_CSS_CUSTOM_COLOR, false);
+	}
+
 	public static boolean getDownloadTouchPreference(Context ctx) {
 		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_DOWNLOAD_TOUCH, false);
 	}
@@ -509,5 +516,25 @@ public class UIHelper {
 
 	public static boolean isAlphabeticalOrder(Context ctx) {
 		return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_ALPH_ORDER, false);
+	}
+
+	public static String getBackgroundColor(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getString(Constants.PREF_CSS_BACKGROUND, "#000000");
+	}
+
+	public static String getForegroundColor(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getString(Constants.PREF_CSS_FOREGROUND, "#ffffff");
+	}
+
+	public static String getLinkColor(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getString(Constants.PREF_CSS_LINK_COLOR, "#0000ff");
+	}
+
+	public static String getThumbBorderColor(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getString(Constants.PREF_CSS_TABLE_BORDER, "#444444");
+	}
+
+	public static String getThumbBackgroundColor(Context ctx) {
+		return PreferenceManager.getDefaultSharedPreferences(ctx).getString(Constants.PREF_CSS_TABLE_BACKGROUND, "#888888");
 	}
 }

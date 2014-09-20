@@ -14,6 +14,9 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Build;
@@ -1097,7 +1100,63 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				return true;
 			}
 		});
+
+		final Preference css_backColorPref = findPreference(Constants.PREF_CSS_BACKGROUND);
+		final Preference css_foreColorPref = findPreference(Constants.PREF_CSS_FOREGROUND);
+		final Preference css_linkColorPref = findPreference(Constants.PREF_CSS_LINK_COLOR);
+		final Preference css_tableBorderColorPref = findPreference(Constants.PREF_CSS_TABLE_BORDER);
+		final Preference css_tableBackPref = findPreference(Constants.PREF_CSS_TABLE_BACKGROUND);
+
+		css_backColorPref.setSummary(UIHelper.getBackgroundColor(this));
+		Drawable d1 = getResources().getDrawable(R.drawable.ic_square);
+		d1.mutate().setColorFilter(Color.parseColor(UIHelper.getBackgroundColor(this)), Mode.MULTIPLY);
+		css_backColorPref.setIcon(d1);
+		css_backColorPref.setOnPreferenceChangeListener(colorChangeListener);
+
+		css_foreColorPref.setSummary(UIHelper.getForegroundColor(this));
+		Drawable d2 = getResources().getDrawable(R.drawable.ic_square);
+		d2.mutate().setColorFilter(Color.parseColor(UIHelper.getForegroundColor(this)), Mode.MULTIPLY);
+		css_foreColorPref.setIcon(d2);
+		css_foreColorPref.setOnPreferenceChangeListener(colorChangeListener);
+
+		css_linkColorPref.setSummary(UIHelper.getLinkColor(this));
+		Drawable d3 = getResources().getDrawable(R.drawable.ic_square);
+		d3.mutate().setColorFilter(Color.parseColor(UIHelper.getLinkColor(this)), Mode.MULTIPLY);
+		css_linkColorPref.setIcon(d3);
+		css_linkColorPref.setOnPreferenceChangeListener(colorChangeListener);
+
+		css_tableBorderColorPref.setSummary(UIHelper.getThumbBorderColor(this));
+		Drawable d4 = getResources().getDrawable(R.drawable.ic_square);
+		d4.mutate().setColorFilter(Color.parseColor(UIHelper.getThumbBorderColor(this)), Mode.MULTIPLY);
+		css_tableBorderColorPref.setIcon(d4);
+		css_tableBorderColorPref.setOnPreferenceChangeListener(colorChangeListener);
+
+		css_tableBackPref.setSummary(UIHelper.getThumbBackgroundColor(this));
+		Drawable d5 = getResources().getDrawable(R.drawable.ic_square);
+		d5.mutate().setColorFilter(Color.parseColor(UIHelper.getThumbBackgroundColor(this)), Mode.MULTIPLY);
+		css_tableBackPref.setIcon(d5);
+		css_tableBackPref.setOnPreferenceChangeListener(colorChangeListener);
 	}
+
+	private final OnPreferenceChangeListener colorChangeListener = new OnPreferenceChangeListener() {
+
+		@Override
+		public boolean onPreferenceChange(Preference preference, Object newValue) {
+			String set = (String) newValue;
+			try {
+				int c = Color.parseColor(set);
+				preference.setSummary(set);
+				Drawable d = getResources().getDrawable(R.drawable.ic_square);
+				d.mutate().setColorFilter(c, Mode.MULTIPLY);
+				preference.setIcon(d);
+				return true;
+			} catch (Exception ex) {
+				Toast.makeText(getApplicationContext(), getString(R.string.error_invalid_color, set), Toast.LENGTH_SHORT).show();
+				return false;
+			}
+
+		}
+	};
 
 	protected boolean checkImageStoragePath(String newPath) {
 		if (Util.isStringNullOrEmpty(newPath)) {
