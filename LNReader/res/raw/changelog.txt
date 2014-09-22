@@ -3,7 +3,7 @@
 - Add feature to choose custom color from settings.
 - Fix issue #160 & #163: Update Text-To-Speech Service binding.
 - Add option to enable Text-To-Speech Service (default is disabled).
-
+- Fix issue #156: handle deleted chapter in bookmark.
 
 1.1.19
 - Implement feature #153: clear all bookmark on chapter.
