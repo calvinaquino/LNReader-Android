@@ -83,20 +83,20 @@
 						<com.erakk.lnreader.helper.SimpleFontPreference android:defaultValue="sans-serif" android:key="css_content_fontface" android:title="@string/pref_css_content_fontface_title" android:summary="@string/pref_css_content_fontface_summary"/>
 					</PreferenceCategory>
 					<PreferenceCategory android:title="@string/css_custom_color">
-						<CheckBoxPreference android:key="css_use_custom_colors" android:title="Use Custom Color" android:defaultValue="false"/>
-						<EditTextPreference android:defaultValue="#000000" android:key="css_background" android:title="@string/css_background"/>
-						<EditTextPreference android:defaultValue="#ffffff" android:key="css_foreground" android:title="@string/css_foreground"/>
-						<EditTextPreference android:defaultValue="#0000ff" android:key="css_link" android:title="@string/css_link"/>
-						<EditTextPreference android:defaultValue="#444444" android:key="css_thumb-border" android:title="@string/thumb_border"/>
-						<EditTextPreference android:defaultValue="#888888" android:key="css_thumb-back" android:title="@string/thumb_background"/>
+						<CheckBoxPreference android:key="css_use_custom_colors" android:title="@string/css_use_custom_colors" android:defaultValue="false"/>
+						<EditTextPreference android:defaultValue="#000000" android:key="css_background" android:title="@string/css_background" android:dependency="css_use_custom_colors" android:dialogMessage="css_color_input_message"/>
+						<EditTextPreference android:defaultValue="#ffffff" android:key="css_foreground" android:title="@string/css_foreground" android:dependency="css_use_custom_colors"/>
+						<EditTextPreference android:defaultValue="#0000ff" android:key="css_link" android:title="@string/css_link" android:dependency="css_use_custom_colors"/>
+						<EditTextPreference android:defaultValue="#444444" android:key="css_thumb-border" android:title="@string/thumb_border" android:dependency="css_use_custom_colors"/>
+						<EditTextPreference android:defaultValue="#888888" android:key="css_thumb-back" android:title="@string/thumb_background" android:dependency="css_use_custom_colors"/>
 					</PreferenceCategory>
 				</PreferenceScreen>
 				<PreferenceScreen android:title="@string/pref_tts" android:summary="@string/pref_tss_summary">
-					<CheckBoxPreference android:key="tts_is_enabled" android:title="@string/tts_enable_service" android:defaultValue="false"/><Preference android:key="tts_engine" android:summary="@string/pref_tts_engine_summary" android:title="@string/pref_tts_engine_title" />
-					<EditTextPreference android:title="@string/tts_pitch_title" android:key="tts_pitch" android:defaultValue="1.0" android:summary="@string/tts_pitch_summary" />
-					<EditTextPreference android:key="tts_reading_speed" android:title="@string/tts_reading_speed_title" android:defaultValue="1.0" android:summary="@string/tts_reading_speed_summary" />
-					<EditTextPreference android:key="tts_whitespace_delay" android:title="@string/tts_whitespace_delay_title" android:defaultValue="500" android:summary="@string/tts_whitespace_delay_summary" />
-					<CheckBoxPreference android:key="tts_stop_on_lost_focus" android:summary="@string/tts_stop_on_lost_focus_summary" android:title="@string/tts_stop_on_lost_focus_title" android:defaultValue="true" />
+					<CheckBoxPreference android:key="tts_is_enabled" android:title="@string/tts_enable_service" android:defaultValue="false"/><Preference android:key="tts_engine" android:summary="@string/pref_tts_engine_summary" android:title="@string/pref_tts_engine_title" android:dependency="tts_is_enabled"/>
+					<EditTextPreference android:title="@string/tts_pitch_title" android:key="tts_pitch" android:defaultValue="1.0" android:summary="@string/tts_pitch_summary" android:dependency="tts_is_enabled"/>
+					<EditTextPreference android:key="tts_reading_speed" android:title="@string/tts_reading_speed_title" android:defaultValue="1.0" android:summary="@string/tts_reading_speed_summary" android:dependency="tts_is_enabled"/>
+					<EditTextPreference android:key="tts_whitespace_delay" android:title="@string/tts_whitespace_delay_title" android:defaultValue="500" android:summary="@string/tts_whitespace_delay_summary" android:dependency="tts_is_enabled"/>
+					<CheckBoxPreference android:key="tts_stop_on_lost_focus" android:summary="@string/tts_stop_on_lost_focus_summary" android:title="@string/tts_stop_on_lost_focus_title" android:defaultValue="true" android:dependency="tts_is_enabled"/>
 					
 				</PreferenceScreen>
 			</PreferenceCategory>

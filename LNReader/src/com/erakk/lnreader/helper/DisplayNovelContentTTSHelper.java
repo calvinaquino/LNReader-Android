@@ -28,40 +28,40 @@ public class DisplayNovelContentTTSHelper {
 	}
 
 	private TtsBinder getTtsBinder() {
-		if(UIHelper.isTTSEnabled(callingCtx)) {
+		if (UIHelper.isTTSEnabled(callingCtx)) {
 			int retry = 0;
 			while (ttsBinder == null && retry < 3) {
 				Log.i(TAG, "Trying to get TTS Binder: " + retry);
-				if(ttsService == null || ttsBinder == null) {
+				if (ttsService == null || ttsBinder == null) {
 					setupTtsService();
 					ttsBinder.initConfig();
 					break;
 				}
 				++retry;
 			}
-			if(retry >= 3)
+			if (retry >= 3)
 				Toast.makeText(callingCtx, "Failed to get TTS Service", Toast.LENGTH_SHORT).show();
 		}
 		return ttsBinder;
 	}
 
 	public void stop() {
-		if(getTtsBinder() != null)
+		if (getTtsBinder() != null)
 			ttsBinder.stop();
 	}
 
 	public void pause() {
-		if(getTtsBinder() != null)
+		if (getTtsBinder() != null)
 			ttsBinder.pause();
 	}
 
 	public void start(NonLeakingWebView webView, int index) {
-		if(getTtsBinder() != null)
+		if (getTtsBinder() != null)
 			ttsBinder.start(webView, index);
 	}
 
 	public void start(String html, int index) {
-		if(getTtsBinder() != null)
+		if (getTtsBinder() != null)
 			ttsBinder.speak(html, index);
 	}
 
@@ -90,7 +90,7 @@ public class DisplayNovelContentTTSHelper {
 	}
 
 	public void unbindTtsService() {
-		if (mConnection != null) {
+		if (mConnection != null && ttsService != null) {
 			try {
 				callingCtx.unbindService(mConnection);
 				Log.i(TAG, "Unbind service done.");
@@ -114,7 +114,7 @@ public class DisplayNovelContentTTSHelper {
 	}
 
 	public void autoScroll(final NonLeakingWebView webView, final String index) {
-		if(webView != null) {
+		if (webView != null) {
 			callingCtx.runOnUiThread(new Runnable() {
 
 				@Override

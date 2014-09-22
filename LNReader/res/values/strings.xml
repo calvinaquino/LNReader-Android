@@ -476,4 +476,6 @@
     <string name="thumb_background">Table Background</string>
     <string name="error_invalid_color">Invalid color given: %1$s</string>
     <string name="tts_enable_service">Use Text-to-Speech Service</string>
+    <string name="css_use_custom_colors">Use Custom Color</string>
+    <string name="css_color_input_message">Please input HTML color codes (#rrggbb)</string>
 </resources>
