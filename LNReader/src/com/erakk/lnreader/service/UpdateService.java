@@ -128,12 +128,12 @@ public class UpdateService extends Service {
 
 					String novelTitle = "";
 					try {
-						novelTitle = pageModel.getBook().getParent().getPageModel().getTitle() + ": ";
+						novelTitle = pageModel.getBook(true).getParent().getPageModel().getTitle() + ": ";
 					} catch (Exception ex) {
 						Log.e(TAG, "Error when getting Novel title", ex);
 					}
 
-					updateInfo.setUpdateTitle(novelTitle + pageModel.getTitle() + " (" + pageModel.getBook().getTitle() + ")");
+					updateInfo.setUpdateTitle(novelTitle + pageModel.getTitle() + " (" + pageModel.getBook(true).getTitle() + ")");
 				}
 
 				updateInfo.setUpdateDate(pageModel.getLastUpdate());

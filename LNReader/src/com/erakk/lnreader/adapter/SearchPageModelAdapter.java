@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
+import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.PageModel;
 
 public class SearchPageModelAdapter extends PageModelAdapter {
@@ -58,8 +59,9 @@ public class SearchPageModelAdapter extends PageModelAdapter {
 					title = "Chapter: ";
 				}
 				// book name
-				if (page.getBook() != null)
-					title += " " + page.getBook().getTitle();
+				BookModel book = page.getBook(false);
+				if (book != null)
+					title += " " + book.getTitle();
 				// chapter name
 				title += "\n\t" + page.getTitle();
 			}

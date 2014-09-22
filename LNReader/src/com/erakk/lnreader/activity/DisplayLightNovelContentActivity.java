@@ -217,18 +217,25 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		if (!restored) {
 			PageModel pageModel = new PageModel(getIntent().getStringExtra(Constants.EXTRA_PAGE));
 			try {
-				pageModel = NovelsDao.getInstance().getPageModel(pageModel, null);
-				executeTask(pageModel, false);
+				pageModel = NovelsDao.getInstance().getPageModel(pageModel, null, false);
+				if (pageModel == null) {
+					Toast.makeText(this, getResources().getString(R.string.bookmark_content_load_error), Toast.LENGTH_LONG).show();
+					onBackPressed();
+				}
+				else {
+					executeTask(pageModel, false);
+				}
 			} catch (Exception e) {
 				Log.e(TAG, "Failed to get the PageModel for content: " + getIntent().getStringExtra(Constants.EXTRA_PAGE), e);
 			}
 		}
 		setWebViewSettings();
-		if(UIHelper.isTTSEnabled(this))
+		if (UIHelper.isTTSEnabled(this))
 			tts.setupTtsService();
 
 		Log.d(TAG, "onResume Completed");
 	}
+
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
@@ -428,7 +435,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			String currentPage = getIntent().getStringExtra(Constants.EXTRA_PAGE);
 			try {
 				if (novelDetails == null)
-					novelDetails = NovelsDao.getInstance().getNovelDetails(content.getPageModel(), null);
+					novelDetails = NovelsDao.getInstance().getNovelDetails(content.getPageModel(), null, false);
 				PageModel prev = novelDetails.getPrev(currentPage, UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
 				if (prev != null) {
 					jumpTo(prev);
@@ -447,7 +454,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			String currentPage2 = getIntent().getStringExtra(Constants.EXTRA_PAGE);
 			try {
 				if (novelDetails == null)
-					novelDetails = NovelsDao.getInstance().getNovelDetails(content.getPageModel(), null);
+					novelDetails = NovelsDao.getInstance().getNovelDetails(content.getPageModel(), null, false);
 
 				PageModel next = novelDetails.getNext(currentPage2, UIHelper.getShowMissing(this), UIHelper.getShowRedlink(this));
 				if (next != null) {
@@ -607,7 +614,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		Log.d(TAG, "Trying to create TOC");
 		// if(novelDetails != null) {
 		try {
-			BookModel book = referencePageModel.getBook();
+			BookModel book = referencePageModel.getBook(false);
 			if (book != null) {
 				ArrayList<PageModel> chapters = book.getChapterCollection();
 				for (PageModel chapter : chapters) {
@@ -950,7 +957,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		try {
 			if (pageModel.getParent() != null) {
 				Log.d(TAG, "Parent Page: " + pageModel.getParent());
-				novelDetails = NovelsDao.getInstance().getNovelDetails(pageModel.getParentPageModel(), null);
+				novelDetails = NovelsDao.getInstance().getNovelDetails(pageModel.getParentPageModel(), null, false);
 				String volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
 				title = pageModel.getTitle() + " (" + volume + ")";
 			}
@@ -1256,7 +1263,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	@Override
 	public void onComplete(Object i, Class<?> source) {
 		Log.d(TAG, "Data: " + i + " from: " + source.getCanonicalName());
-		if(i != null && source == TtsHelper.class) {
+		if (i != null && source == TtsHelper.class) {
 			tts.autoScroll(webView, i.toString());
 		}
 	}

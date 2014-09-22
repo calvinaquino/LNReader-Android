@@ -179,7 +179,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 				if (isCancelled())
 					return updatedWatchedNovel;
 
-				ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, callback).getFlattedChapterList();
+				ArrayList<PageModel> novelDetailsChapters = dao.getNovelDetails(novel, callback, true).getFlattedChapterList();
 
 				if (callback != null)
 					callback.onProgressCallback(new CallbackEventData("Getting updated chapters: " + novel.getTitle(), source));

@@ -51,7 +51,7 @@ public class LoadNovelDetailsTask extends AsyncTask<Void, ICallbackEventData, As
 			}
 			else {
 				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_detail_task_loading), source));
-				NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetails(pageModel, this);
+				NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetails(pageModel, this, true);
 				return new AsyncTaskResult<NovelCollectionModel>(novelCol, novelCol.getClass());
 			}
 		} catch (Exception e) {

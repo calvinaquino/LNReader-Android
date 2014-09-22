@@ -2,7 +2,6 @@
 package com.erakk.lnreader.model;
 
 import java.util.Date;
-import java.util.Iterator;
 
 import android.util.Log;
 
@@ -146,8 +145,9 @@ public class PageModel {
 		if (this.parentPageModel == null) {
 			NovelsDao dao = NovelsDao.getInstance();
 			PageModel tempPage = new PageModel();
-			if (this.type.contentEquals(TYPE_CONTENT)) {
-				String tempParent = parent.substring(0, parent.indexOf(Constants.NOVEL_BOOK_DIVIDER));
+			int divIndex = parent.indexOf(Constants.NOVEL_BOOK_DIVIDER);
+			if (this.type.contentEquals(TYPE_CONTENT) && divIndex > 0) {
+				String tempParent = parent.substring(0, divIndex);
 				tempPage.setPage(tempParent);
 			}
 			else {
@@ -184,18 +184,19 @@ public class PageModel {
 		this.isDownloaded = isDownloaded;
 	}
 
-	public BookModel getBook() {
+	public BookModel getBook(boolean autoDownload) {
 		if (this.getType() != null && this.getType().equals(TYPE_CONTENT)) {
 			if (this.book == null) {
 				NovelsDao dao = NovelsDao.getInstance();
 				try {
 					String bookTitle = parent.substring(parent.indexOf(Constants.NOVEL_BOOK_DIVIDER) + Constants.NOVEL_BOOK_DIVIDER.length());
-					NovelCollectionModel details = dao.getNovelDetails(getParentPageModel(), null);
-					for (Iterator<BookModel> iBook = details.getBookCollections().iterator(); iBook.hasNext();) {
-						BookModel tempBook = iBook.next();
-						if (tempBook.getTitle().equals(bookTitle)) {
-							this.book = tempBook;
-							break;
+					NovelCollectionModel details = dao.getNovelDetails(getParentPageModel(), null, autoDownload);
+					if (details != null) {
+						for (BookModel tempBook : details.getBookCollections()) {
+							if (tempBook != null && tempBook.getTitle().equals(bookTitle)) {
+								this.book = tempBook;
+								break;
+							}
 						}
 					}
 				} catch (Exception e) {

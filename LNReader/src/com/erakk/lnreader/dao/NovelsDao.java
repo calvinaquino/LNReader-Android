@@ -631,7 +631,7 @@ public class NovelsDao {
 	 * NovelCollectionModel
 	 */
 
-	public NovelCollectionModel getNovelDetails(PageModel page, ICallbackNotifier notifier) throws Exception {
+	public NovelCollectionModel getNovelDetails(PageModel page, ICallbackNotifier notifier, boolean autoDownload) throws Exception {
 		NovelCollectionModel novel = null;
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getReadableDatabase();
@@ -641,7 +641,7 @@ public class NovelsDao {
 				db.close();
 			}
 		}
-		if (novel == null) {
+		if (novel == null && autoDownload) {
 			novel = getNovelDetailsFromInternet(page, notifier);
 		}
 		return novel;

@@ -16,12 +16,10 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
-import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
-import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.BookmarkModel;
 import com.erakk.lnreader.model.PageModel;
 
@@ -72,18 +70,13 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View row = convertView;
+		LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+		row = inflater.inflate(layoutResourceId, parent, false);
+
 		BookmarkModelHolder holder = new BookmarkModelHolder();
 
 		final BookmarkModel bookmark = data.get(position);
-		PageModel pageModel = null;
-		try {
-			pageModel = bookmark.getPageModel();
-		} catch (Exception e) {
-			Log.e(TAG, "Failed to get PageModel for Bookmark.", e);
-		}
-
-		LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-		row = inflater.inflate(layoutResourceId, parent, false);
+		setTitleAndSubtitle(row, holder, bookmark);
 
 		holder.txtPIndex = (TextView) row.findViewById(R.id.p_index);
 		if (holder.txtPIndex != null) {
@@ -98,56 +91,6 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 		holder.txtExcerpt = (TextView) row.findViewById(R.id.excerpt);
 		if (holder.txtExcerpt != null) {
 			holder.txtExcerpt.setText(bookmark.getExcerpt());
-		}
-
-		// Bookmark title
-		holder.txtPageTitle = (TextView) row.findViewById(R.id.pageTitle);
-		if (holder.txtPageTitle != null) {
-			if (showPage) {
-				holder.txtPageTitle.setVisibility(View.VISIBLE);
-				if (Util.isStringNullOrEmpty(bookmark.getBookmarkTitle())) {
-					try {
-						PageModel parentPage = pageModel.getParentPageModel();
-						bookmark.setBookmarkTitle(parentPage.getTitle());
-					} catch (Exception ex) {
-						Log.e(TAG, "Failed to get pageModel: " + bookmark.getPage(), ex);
-						bookmark.setBookmarkTitle(bookmark.getPage());
-					}
-				}
-				holder.txtPageTitle.setText(bookmark.getBookmarkTitle());
-			} else {
-				holder.txtPageTitle.setVisibility(View.GONE);
-			}
-		}
-
-		// Sub Title
-		holder.txtPageSubTitle = (TextView) row.findViewById(R.id.page_subtitle);
-		if (holder.txtPageSubTitle != null) {
-			if (showPage) {
-				String subTitle = bookmark.getPage();
-				holder.txtPageSubTitle.setVisibility(View.VISIBLE);
-				if (Util.isStringNullOrEmpty(bookmark.getSubTitle()) && pageModel != null) {
-					subTitle = pageModel.getTitle();
-					try {
-						String bookTitle = pageModel.getParent().substring(pageModel.getParent().indexOf(Constants.NOVEL_BOOK_DIVIDER) + Constants.NOVEL_BOOK_DIVIDER.length());
-						if (!Util.isStringNullOrEmpty(bookTitle)) {
-							subTitle = String.format("(%s) %s", bookTitle, subTitle);
-						}
-						else {
-							BookModel book = pageModel.getBook();
-							subTitle = String.format("(%s) %s", book.getTitle(), subTitle);
-						}
-					} catch (Exception ex) {
-						Log.e(TAG, "Failed to get bookModel: " + ex.getMessage(), ex);
-					}
-					bookmark.setSubTitle(subTitle);
-				} else {
-					bookmark.setSubTitle(bookmark.getPage());
-				}
-				holder.txtPageSubTitle.setText(bookmark.getSubTitle());
-			} else {
-				holder.txtPageSubTitle.setVisibility(View.GONE);
-			}
 		}
 
 		holder.chkSelection = (CheckBox) row.findViewById(R.id.chk_selection);
@@ -168,6 +111,35 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 
 		row.setTag(holder);
 		return row;
+	}
+
+	/**
+	 * @param row
+	 * @param holder
+	 * @param bookmark
+	 */
+	private void setTitleAndSubtitle(View row, BookmarkModelHolder holder, final BookmarkModel bookmark) {
+		// Bookmark title
+		holder.txtPageTitle = (TextView) row.findViewById(R.id.pageTitle);
+		if (holder.txtPageTitle != null) {
+			if (showPage) {
+				holder.txtPageTitle.setVisibility(View.VISIBLE);
+				holder.txtPageTitle.setText(bookmark.getBookmarkTitle());
+			} else {
+				holder.txtPageTitle.setVisibility(View.GONE);
+			}
+		}
+
+		// Sub Title
+		holder.txtPageSubTitle = (TextView) row.findViewById(R.id.page_subtitle);
+		if (holder.txtPageSubTitle != null) {
+			if (showPage) {
+				holder.txtPageSubTitle.setVisibility(View.VISIBLE);
+				holder.txtPageSubTitle.setText(bookmark.getSubTitle());
+			} else {
+				holder.txtPageSubTitle.setVisibility(View.GONE);
+			}
+		}
 	}
 
 	public void refreshData() {
