@@ -11,12 +11,9 @@ import org.jsoup.nodes.Document;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -24,7 +21,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
@@ -55,6 +51,7 @@ import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.BakaTsukiWebChromeClient;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
+import com.erakk.lnreader.helper.DisplayNovelContentTTSHelper;
 import com.erakk.lnreader.helper.NonLeakingWebView;
 import com.erakk.lnreader.helper.OnCompleteListener;
 import com.erakk.lnreader.helper.TtsHelper;
@@ -65,8 +62,6 @@ import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.parser.CommonParser;
-import com.erakk.lnreader.service.TtsService;
-import com.erakk.lnreader.service.TtsService.TtsBinder;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.LoadNovelContentTask;
 import com.erakk.lnreader.task.LoadWacTask;
@@ -95,11 +90,12 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	private TextView loadingText;
 	private ProgressBar loadingBar;
-	private TtsBinder ttsBinder = null;
 
 	private boolean isNeedSave = true;
 	private Menu _menu;
 	public ArrayList<String> images;
+
+	private DisplayNovelContentTTSHelper tts;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -149,6 +145,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		};
 		loadingText = (TextView) findViewById(R.id.emptyList);
 		loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
+
+		tts = new DisplayNovelContentTTSHelper(this);
 	}
 
 	@SuppressLint("NewApi")
@@ -168,10 +166,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			webView.removeAllViews();
 			webView.destroy();
 		}
-		if (mConnection != null) {
-			unbindService(mConnection);
-			mConnection = null;
-		}
+		tts.unbindTtsService();
 
 		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		super.onDestroy();
@@ -229,21 +224,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			}
 		}
 		setWebViewSettings();
-		setupTtsService();
+		if(UIHelper.isTTSEnabled(this))
+			tts.setupTtsService();
+
 		Log.d(TAG, "onResume Completed");
 	}
-
-	private TtsBinder getTtsBinder() {
-		while (ttsBinder == null) {
-			setupTtsService();
-
-			if (ttsBinder != null) {
-				ttsBinder.initConfig();
-			}
-		}
-		return ttsBinder;
-	}
-
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
@@ -298,7 +283,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 		setLastReadState();
 		if (getTtsStopOnPause()) {
-			getTtsBinder().stop();
+			tts.stop();
 		}
 		Log.d(TAG, "onPause Completed");
 	}
@@ -385,7 +370,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			}
 		}
 
-		setupTTSMenu(menu);
+		tts.setupTTSMenu(menu);
 		_menu = menu;
 		return true;
 	}
@@ -494,10 +479,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			startActivity(downloadsItent);
 			return true;
 		case R.id.menu_speak:
-			getTtsBinder().start(webView, content.getLastYScroll());
+			tts.start(webView, content.getLastYScroll());
 			return true;
 		case R.id.menu_pause_tts:
-			getTtsBinder().pause();
+			tts.pause();
 			return true;
 		case R.id.menu_save_external:
 			// save based on current intent page name.
@@ -602,8 +587,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	public void jumpTo(PageModel page) {
 		setLastReadState();
-		if (ttsBinder != null)
-			getTtsBinder().stop();
+		tts.stop();
 		this.getIntent().putExtra(Constants.EXTRA_PAGE, page.getPage());
 		if (page.isExternal() && !getHandleExternalLinkPreferences()) {
 			try {
@@ -1269,87 +1253,15 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		return null;
 	}
 
-	/* TTS Section */
-	private final DisplayLightNovelContentActivity callingCtx = this;
-	private ServiceConnection mConnection = new ServiceConnection() {
-
-		private TtsService ttsService = null;
-
-		@Override
-		public void onServiceConnected(ComponentName className, IBinder binder) {
-			ttsBinder = (TtsBinder) binder;
-			ttsService = ttsBinder.getService();
-			Log.d(TAG, "TTS onServiceConnected");
-			ttsService.setOnCompleteListener(callingCtx);
-			ttsService.setOnInitListener(callingCtx);
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName className) {
-			ttsService = null;
-			Log.d(TAG, "TTS onServiceDisconnected");
-		}
-	};
-
-	public void setupTtsService() {
-		Log.d(TAG, "Binding TTS Service");
-		Intent serviceIntent = new Intent(this, TtsService.class);
-		this.bindService(serviceIntent, mConnection, Context.BIND_AUTO_CREATE);
-	}
-
-	public void unbindTtsService() {
-		if (mConnection != null) {
-			try {
-				unbindService(mConnection);
-				Log.i(TAG, "Unbind service done.");
-			} catch (Exception ex) {
-				Log.e(TAG, "Failed to unbind.", ex);
-			}
-		}
-	}
-
-	public void speak(String html) {
-		if (ttsBinder != null) {
-			getTtsBinder().speak(html, content.getLastYScroll());
-		}
-	}
-
-	private void setupTTSMenu(Menu menu) {
-		MenuItem menuSpeak = menu.findItem(R.id.menu_speak);
-		MenuItem menuPause = menu.findItem(R.id.menu_pause_tts);
-
-		if (ttsBinder != null) {
-			menuSpeak.setEnabled(getTtsBinder().IsTtsInitSuccess());
-			menuPause.setEnabled(!getTtsBinder().isPaused());
-		} else {
-			menuSpeak.setEnabled(false);
-			menuPause.setEnabled(false);
-		}
-	}
-
 	@Override
 	public void onComplete(Object i, Class<?> source) {
-		if (i != null) {
-			// handle TTS Auto Scroll
-			if (source == TtsHelper.class) {
-				final String index = i.toString();
-				this.runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-
-						if (true && webView != null && index != null) {
-							Log.d(TAG, "Auto Scroll to: " + index);
-							try {
-								webView.loadUrl("javascript:goToParagraph(" + index + ", true)");
-							} catch (Exception ex) {
-								Log.e(TAG, ex.getMessage(), ex);
-							}
-						}
-					}
-				});
-			}
+		Log.d(TAG, "Data: " + i + " from: " + source.getCanonicalName());
+		if(i != null && source == TtsHelper.class) {
+			tts.autoScroll(webView, i.toString());
 		}
 	}
 
+	public void sendHtmlForSpeak(String html) {
+		tts.start(html, content.getLastYScroll());
+	}
 }

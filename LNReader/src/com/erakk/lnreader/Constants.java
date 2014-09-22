@@ -118,6 +118,7 @@ public class Constants {
 	public static final String PREF_CSS_LINK_COLOR = "css_link";
 	public static final String PREF_CSS_TABLE_BORDER = "css_thumb-border";
 	public static final String PREF_CSS_TABLE_BACKGROUND = "css_thumb-back";
+	public static final String PREF_TTS_ENABLED = "tts_is_enabled";
 
 	public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 

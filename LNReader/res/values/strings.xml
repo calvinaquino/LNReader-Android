@@ -475,4 +475,5 @@
     <string name="thumb_border">Table Border</string>
     <string name="thumb_background">Table Background</string>
     <string name="error_invalid_color">Invalid color given: %1$s</string>
+    <string name="tts_enable_service">Use Text-to-Speech Service</string>
 </resources>

@@ -87,7 +87,7 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 				caller.notifyLoadComplete();
 			} else if (consoleMessage.message().startsWith(SPEAK_EVENT)) {
 				String data[] = consoleMessage.message().split(":", 2);
-				caller.speak(data[1]);
+				caller.sendHtmlForSpeak(data[1]);
 			} else {
 				Log.w(TAG, "Console: " + consoleMessage.lineNumber() + ":" + consoleMessage.message());
 			}

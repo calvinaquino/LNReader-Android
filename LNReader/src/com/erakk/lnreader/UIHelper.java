@@ -537,4 +537,7 @@ public class UIHelper {
 	public static String getThumbBackgroundColor(Context ctx) {
 		return PreferenceManager.getDefaultSharedPreferences(ctx).getString(Constants.PREF_CSS_TABLE_BACKGROUND, "#888888");
 	}
+	public static boolean isTTSEnabled(Context context) {
+		return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_TTS_ENABLED, false);
+	}
 }
