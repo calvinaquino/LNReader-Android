@@ -1,4 +1,4 @@
-1.1.20-beta
+1.1.20
 - Fix issue #162: update relink image task to cater encoded/decoded image filename
 - Add feature to choose custom color from settings.
 - Fix issue #160 & #163: Update Text-To-Speech Service binding.
