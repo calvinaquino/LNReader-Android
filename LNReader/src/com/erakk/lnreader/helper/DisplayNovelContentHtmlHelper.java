@@ -61,8 +61,8 @@ public class DisplayNovelContentHtmlHelper {
 
 
 	/**
-	 * getCSSSheet() method will put all the CSS data into the HTML header. At
-	 * the current moment, it reads the external data line by line then applies
+	 * getCSSSheet() method will generate the CSS data into the <style> elements.
+	 * At the current moment, it reads the external data line by line then applies
 	 * it directly to the header.
 	 * 
 	 * @return
@@ -79,6 +79,8 @@ public class DisplayNovelContentHtmlHelper {
 		String key = "";
 		int styleId = -1;
 		StringBuilder css = new StringBuilder();
+
+		css.append("<style type=\"text/css\">");
 
 		if (UIHelper.getCssUseCustomColorPreferences(ctx)) {
 			styleId = R.raw.style_custom_color;
@@ -106,7 +108,11 @@ public class DisplayNovelContentHtmlHelper {
 
 		css.append("\n.mw-headline{ font-family: " + getHeadingFontPreferences(ctx) + "; }\n");
 
+		css.append("</style>");
+
 		String cssStr = css.toString();
+
+		// replace custom color if enabled.
 		if (UIHelper.getCssUseCustomColorPreferences(ctx)) {
 			cssStr = cssStr.replace("@background@", UIHelper.getBackgroundColor(ctx));
 			cssStr = cssStr.replace("@foreground@", UIHelper.getForegroundColor(ctx));

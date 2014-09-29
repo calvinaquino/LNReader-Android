@@ -355,11 +355,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	@Override
 	public void onStop() {
 		super.onStop();
-		// don't cancel, so can get the result after closing the activity
-		// if(task.getStatus() != Status.FINISHED) {
-		// task.cancel(true);
-		// }
-		//
 		Log.d(TAG, "onStop Completed");
 	}
 
@@ -712,8 +707,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		// save last position and zoom
 		NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 		if (content != null) {
-			// content.setLastXScroll(wv.getScrollX());
-			// content.setLastYScroll(wv.getScrollY());
 			content.setLastZoom(wv.getScale());
 			try {
 				content = NovelsDao.getInstance().updateNovelContent(content);
@@ -786,9 +779,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			String url = pageModel.getPage();
 			String wacName = Util.getSavedWacName(url);
 			if (!Util.isStringNullOrEmpty(wacName) && !refresh) {
-				// synchronized (this) {
-				// isNeedSave = false;
-				// }
 				executeLoadWacTask(wacName);
 			}
 			else {
@@ -881,9 +871,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to save external page: " + page, e);
 		}
-		// synchronized (this) {
-		// isNeedSave = false;
-		// }
 	}
 
 	private String getWacNameForSaving(String url, boolean refresh) {
@@ -924,12 +911,16 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			if (pIndex > 0)
 				lastPos = pIndex;
 
-			String html = "<html><head><style type=\"text/css\">" + DisplayNovelContentHtmlHelper.getCSSSheet() + "</style>" +
-					"<meta name='viewport' content='width=device-width, minimum-scale=0.5, maximum-scale=5' id='viewport-meta'/>" +
-					DisplayNovelContentHtmlHelper.prepareJavaScript(lastPos, content.getBookmarks(), getBookmarkPreferences()) +
-					"</head><body onclick='toogleHighlight(this, event);' onload='setup();'>" +
-					content.getContent() + "</body></html>";
-			wv.loadDataWithBaseURL(UIHelper.getBaseUrl(this), html, "text/html", "utf-8", "");
+			StringBuilder html = new StringBuilder();
+			html.append("<html><head>");
+			html.append(DisplayNovelContentHtmlHelper.getCSSSheet());
+			html.append("<meta name='viewport' content='width=device-width, minimum-scale=0.5, maximum-scale=5' id='viewport-meta'/>" );
+			html.append(DisplayNovelContentHtmlHelper.prepareJavaScript(lastPos, content.getBookmarks(), getBookmarkPreferences()));
+			html.append("</head><body onclick='toogleHighlight(this, event);' onload='setup();'>");
+			html.append(content.getContent());
+			html.append("</body></html>");
+
+			wv.loadDataWithBaseURL(UIHelper.getBaseUrl(this), html.toString(), "text/html", "utf-8", "");
 			if (content.getLastZoom() > 0) {
 				wv.setInitialScale((int) (content.getLastZoom() * 100));
 			} else {
@@ -964,8 +955,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 		setTitle(title);
 	}
-
-
 
 	@SuppressLint({ "NewApi", "SetJavaScriptEnabled" })
 	private void setWebViewSettings() {
@@ -1069,7 +1058,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	public void notifyLoadComplete() {
 		isPageLoaded = true;
 		if (webView != null && content != null) {
-			// webView.loadUrl("javascript:goToParagraph(" + content.getLastYScroll() + ")");
+
+			// move to last read paragraph, delay after webview load the pages.
 			webView.postDelayed(new Runnable() {
 				@Override
 				public void run() {
