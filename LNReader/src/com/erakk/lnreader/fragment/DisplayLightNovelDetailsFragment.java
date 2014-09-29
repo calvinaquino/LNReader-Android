@@ -248,6 +248,9 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			BookModel bookClear = novelCol.getBookCollections().get(groupPosition);
 			Toast.makeText(getSherlockActivity(), String.format(getResources().getString(R.string.toast_clear_volume), bookClear.getTitle()), Toast.LENGTH_SHORT).show();
 			dao.deleteBookCache(bookClear);
+            for (PageModel page : bookClear.getChapterCollection()) {
+                page.setDownloaded(false);
+            }
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		case R.id.mark_volume:
@@ -298,6 +301,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
 			Toast.makeText(getSherlockActivity(), String.format(getResources().getString(R.string.toast_clear_chapter), chapter.getTitle()), Toast.LENGTH_SHORT).show();
 			dao.deleteChapterCache(chapter);
+            chapter.setDownloaded(false);
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		case R.id.mark_read:

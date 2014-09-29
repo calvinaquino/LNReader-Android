@@ -143,7 +143,19 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			UIHelper.Recreate(this);
 		}
 		if (bookModelAdapter != null) {
-			bookModelAdapter.notifyDataSetChanged();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    bookModelAdapter.refreshData();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            bookModelAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            }).start();
+
 		}
 	}
 
@@ -278,6 +290,9 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			BookModel bookClear = novelCol.getBookCollections().get(groupPosition);
 			Toast.makeText(this, getResources().getString(R.string.toast_clear_volume, bookClear.getTitle()), Toast.LENGTH_SHORT).show();
 			dao.deleteBookCache(bookClear);
+            for (PageModel page : bookClear.getChapterCollection()) {
+                page.setDownloaded(false);
+            }
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		case R.id.mark_volume:
@@ -330,7 +345,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
 			Toast.makeText(this, getResources().getString(R.string.toast_clear_chapter, chapter.getTitle()), Toast.LENGTH_SHORT).show();
 			dao.deleteChapterCache(chapter);
-
+            chapter.setDownloaded(false);
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		case R.id.mark_read:

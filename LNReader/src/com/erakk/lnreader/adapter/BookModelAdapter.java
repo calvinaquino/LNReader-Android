@@ -52,6 +52,20 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		this.groups = groups;
 	}
 
+
+    public void refreshData() {
+        for (int i = 0; i < groups.size(); ++i) {
+            ArrayList<PageModel> chapters = groups.get(i).getChapterCollection();
+            for (int j = 0; j < chapters.size(); ++j)
+                try {
+                    PageModel temp = NovelsDao.getInstance().getPageModel(chapters.get(j), null);
+                    chapters.set(j, temp);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error when refreshing PageModel: " + chapters.get(j).getPage(), e);
+                }
+        }
+    }
+
 	public void addItem(PageModel item, BookModel group) {
 		if (!groups.contains(group)) {
 			groups.add(group);
@@ -333,19 +347,4 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		return true;
 	}
 
-	@Override
-	public void notifyDataSetChanged() {
-		// refresh the data
-		for (int i = 0; i < groups.size(); ++i) {
-			ArrayList<PageModel> chapters = groups.get(i).getChapterCollection();
-			for (int j = 0; j < chapters.size(); ++j)
-				try {
-					PageModel temp = NovelsDao.getInstance().getPageModel(chapters.get(j), null);
-					chapters.set(j, temp);
-				} catch (Exception e) {
-					Log.e(TAG, "Error when refreshing PageModel: " + chapters.get(j).getPage(), e);
-				}
-		}
-		super.notifyDataSetChanged();
-	}
 }
