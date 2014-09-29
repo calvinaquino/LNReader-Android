@@ -3,6 +3,7 @@
  */
 package com.erakk.lnreader.helper;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -17,9 +18,16 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 import android.widget.ZoomButtonsController;
+
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.model.PageModel;
 
 /**
  * see http://stackoverflow.com/questions/3130654/memory-leak-in-webview and
@@ -218,16 +226,16 @@ public class NonLeakingWebView extends WebView {
 		case MotionEvent.ACTION_POINTER_UP: {
 			final int pointerIndex = (ev.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK)
 					>> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-			final int pointerId = ev.getPointerId(pointerIndex);
-			if (pointerId == mActivePointerId) {
-				// This was our active pointer going up. Choose a new
-				// active pointer and adjust accordingly.
-				final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
-				mLastTouchX = ev.getX(newPointerIndex);
-				mLastTouchY = ev.getY(newPointerIndex);
-				mActivePointerId = ev.getPointerId(newPointerIndex);
-			}
-			break;
+		final int pointerId = ev.getPointerId(pointerIndex);
+		if (pointerId == mActivePointerId) {
+			// This was our active pointer going up. Choose a new
+			// active pointer and adjust accordingly.
+			final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+			mLastTouchX = ev.getX(newPointerIndex);
+			mLastTouchY = ev.getY(newPointerIndex);
+			mActivePointerId = ev.getPointerId(newPointerIndex);
+		}
+		break;
 		}
 		}
 	}
@@ -244,6 +252,75 @@ public class NonLeakingWebView extends WebView {
 		if (currentWebClient != null) {
 			currentWebClient.onScaleChanged(this, oldScale, newScale);
 		}
+	}
+
+	public void saveMyWebArchive(String page) {
+		if (page == null) {
+			Toast.makeText(LNReaderApplication.getInstance(), "Empty page name!", Toast.LENGTH_SHORT).show();
+			Log.w(TAG, "Empty page name!");
+			return;
+		}
+
+		String url = this.getUrl();
+		if (Util.isStringNullOrEmpty(url)) {
+			Log.w(TAG, "Empty Url!");
+			return;
+		}
+
+		try {
+			PageModel pageModel = new PageModel(page);
+			pageModel = NovelsDao.getInstance().getExistingPageModel(pageModel, null);
+			if (pageModel != null && !pageModel.isExternal())
+				return;
+		} catch (Exception e1) {
+			Log.e(TAG, "Failed to load page model: " + page, e1);
+		}
+
+		try {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				// simple checking for redirection on some websites
+				// - cetranslation.blogspot.com
+				String baseUrl = this.getUrl();
+				if (baseUrl.contains(".blogspot.")) {
+					Log.d(TAG, "Checking blogspot redirection rule");
+					String[] temp = baseUrl.split("/", 4);
+					String[] temp2 = page.split("/", 4);
+					if (temp[3].startsWith(temp2[3])) {
+						Log.d(TAG, String.format("Page redirected %s => %s", page, baseUrl));
+						baseUrl = page;
+					}
+				}
+
+				String wacName = getWacNameForSaving(baseUrl, false);
+				final String p2 = baseUrl;
+				this.saveWebArchive(wacName, false, new ValueCallback<String>() {
+
+					@Override
+					public void onReceiveValue(String value) {
+						Log.i(TAG, "Saving url: " + p2 + " ==> Saved to: " + value);
+						Toast.makeText(LNReaderApplication.getInstance().getApplicationContext(), "Page saved to: " + value, Toast.LENGTH_SHORT).show();
+					}
+				});
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "Failed to save external page: " + page, e);
+		}
+	}
+
+	private String getWacNameForSaving(String url, boolean refresh) {
+		String path = UIHelper.getImageRoot(LNReaderApplication.getInstance()) + "/wac";
+		File f = new File(path);
+		if (!f.exists())
+			f.mkdirs();
+		Log.i(TAG, "WAC dirs: " + path);
+
+		String filename = path + "/" + Util.calculateCRC32(url);
+		String extension = ".wac";
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			extension = ".mht";
+		}
+		return filename + extension;
 	}
 
 	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {

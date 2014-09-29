@@ -10,6 +10,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.activity.DisplayImageActivity;
 import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
@@ -22,9 +24,17 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 	private boolean hasError = false;
 	private boolean scaleChangedRunnablePending = false;
 
+	private boolean isExternalNeedSave = true;
+
 	public BakaTsukiWebViewClient(DisplayLightNovelContentActivity caller) {
 		super();
 		this.activityRef = new WeakReference<DisplayLightNovelContentActivity>(caller);
+	}
+
+	public void setExternalNeedSave(boolean value) {
+		synchronized (this) {
+			isExternalNeedSave = value;
+		}
 	}
 
 	@Override
@@ -124,8 +134,20 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 		final DisplayLightNovelContentActivity caller = activityRef.get();
 		if (caller != null && !hasError)
 		{
-			caller.saveWebArchive(null, false);
+			NonLeakingWebView wv = (NonLeakingWebView) caller.findViewById(R.id.webViewContent);
+			String page = caller.getIntent().getStringExtra(Constants.EXTRA_PAGE);
+
+			if (!isExternalNeedSave || !getAllowSaveExternal()) {
+				Log.d(TAG, "Skip auto save for: " + page + " " + !isExternalNeedSave + " " + !getAllowSaveExternal());
+				return;
+			}
+
+			wv.saveMyWebArchive(page);
 		}
+	}
+
+	private boolean getAllowSaveExternal() {
+		return PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance()).getBoolean(Constants.PREF_SAVE_EXTERNAL_URL, true);
 	}
 
 	@Override

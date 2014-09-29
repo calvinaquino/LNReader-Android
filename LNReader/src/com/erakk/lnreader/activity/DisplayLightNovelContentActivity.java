@@ -1,6 +1,5 @@
 package com.erakk.lnreader.activity;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -24,7 +23,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.webkit.ValueCallback;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -89,7 +87,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	private TextView loadingText;
 	private ProgressBar loadingBar;
 
-	private boolean isNeedSave = true;
 	private Menu _menu;
 	public ArrayList<String> images;
 
@@ -487,7 +484,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		case R.id.menu_save_external:
 			// save based on current intent page name.
 			String url = getIntent().getStringExtra(Constants.EXTRA_PAGE);
-			saveWebArchive(url, true);
+			NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
+			if(wv != null && !Util.isStringNullOrEmpty(url))
+				wv.saveMyWebArchive(url);
 			return true;
 		case android.R.id.home:
 			finish();
@@ -779,6 +778,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			String url = pageModel.getPage();
 			String wacName = Util.getSavedWacName(url);
 			if (!Util.isStringNullOrEmpty(wacName) && !refresh) {
+				client.setExternalNeedSave(false);
 				executeLoadWacTask(wacName);
 			}
 			else {
@@ -789,9 +789,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				{
 					Log.w(TAG, "WAC not available: " + wacName);
 				}
-				synchronized (this) {
-					isNeedSave = true;
-				}
+
+				client.setExternalNeedSave(true);
 				final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 				setWebViewSettings();
 				wv.loadUrl(url);
@@ -812,85 +811,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		else
 			task.execute();
-	}
-
-	@SuppressLint("NewApi")
-	public void saveWebArchive(String page, boolean force) {
-		if (page == null) {
-			page = getIntent().getStringExtra(Constants.EXTRA_PAGE);
-		}
-
-		synchronized (this) {
-			if (!force && (!isNeedSave || !getAllowSaveExternal())) {
-				Log.d(TAG, "Skip auto save for: " + page + " " + !force + " " + !isNeedSave + " " + !getAllowSaveExternal());
-				return;
-			}
-		}
-		final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
-		String url = wv.getUrl();
-		if (Util.isStringNullOrEmpty(url)) {
-			Log.w(TAG, "Empty Url!");
-			return;
-		}
-
-		try {
-			PageModel pageModel = new PageModel(page);
-			pageModel = NovelsDao.getInstance().getExistingPageModel(pageModel, null);
-			if (pageModel != null && !pageModel.isExternal())
-				return;
-		} catch (Exception e1) {
-			Log.e(TAG, "Failed to load page model: " + page, e1);
-		}
-
-		try {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-				// simple checking for redirection on some websites
-				// - cetranslation.blogspot.com
-				String baseUrl = wv.getUrl();
-				if (baseUrl.contains(".blogspot.")) {
-					Log.d(TAG, "Checking blogspot redirection rule");
-					String[] temp = baseUrl.split("/", 4);
-					String[] temp2 = page.split("/", 4);
-					if (temp[3].startsWith(temp2[3])) {
-						Log.d(TAG, String.format("Page redirected %s => %s", page, baseUrl));
-						baseUrl = page;
-					}
-				}
-
-				String wacName = getWacNameForSaving(baseUrl, false);
-				final String p2 = baseUrl;
-				wv.saveWebArchive(wacName, false, new ValueCallback<String>() {
-
-					@Override
-					public void onReceiveValue(String value) {
-						Log.i(TAG, "Saving url: " + p2 + " ==> Saved to: " + value);
-						Toast.makeText(LNReaderApplication.getInstance().getApplicationContext(), "Page saved to: " + value, Toast.LENGTH_SHORT).show();
-					}
-				});
-			}
-		} catch (Exception e) {
-			Log.e(TAG, "Failed to save external page: " + page, e);
-		}
-	}
-
-	private String getWacNameForSaving(String url, boolean refresh) {
-		String path = UIHelper.getImageRoot(this) + "/wac";
-		File f = new File(path);
-		if (!f.exists())
-			f.mkdirs();
-		Log.i(TAG, "WAC dirs: " + path);
-
-		String filename = path + "/" + Util.calculateCRC32(url);
-		String extension = ".wac";
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			extension = ".mht";
-		}
-		return filename + extension;
-	}
-
-	private boolean getAllowSaveExternal() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_SAVE_EXTERNAL_URL, true);
 	}
 
 	@SuppressLint("NewApi")
