@@ -1,4 +1,4 @@
-﻿package com.erakk.lnreader.adapter;
+package com.erakk.lnreader.adapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
