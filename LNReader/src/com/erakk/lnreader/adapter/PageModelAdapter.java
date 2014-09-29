@@ -81,10 +81,20 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 
 		final PageModel page = data.get(position);
 
-		LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-		row = inflater.inflate(layoutResourceId, parent, false);
-		holder = new PageModelHolder();
-		holder.txtNovel = (TextView) row.findViewById(R.id.novel_name);
+        if (null == row) {
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+            row = inflater.inflate(layoutResourceId, parent, false);
+            holder = new PageModelHolder();
+            holder.txtNovel = (TextView) row.findViewById(R.id.novel_name);
+            holder.txtLastUpdate = (TextView) row.findViewById(R.id.novel_last_update);
+            holder.txtLastCheck = (TextView) row.findViewById(R.id.novel_last_check);
+            holder.chkIsWatched = (CheckBox) row.findViewById(R.id.novel_is_watched);
+            holder.ivExternal = (ImageView) row.findViewById(R.id.is_external);
+            holder.ivHasUpdates = (ImageView) row.findViewById(R.id.novel_has_updates);
+        } else {
+            holder = (PageModelHolder)row.getTag();
+        }
+
 		if (holder.txtNovel != null) {
 			holder.txtNovel.setText(page.getTitle());
 			if (page.isHighlighted()) {
@@ -108,43 +118,20 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 			if (page.isExternal()) {
 				holder.txtNovel.setTextColor(Constants.COLOR_EXTERNAL);
 			}
-			ImageView ivExternal = (ImageView) row.findViewById(R.id.is_external);
-			if (ivExternal != null) {
-				if (page.isExternal()) {
-					ivExternal.setVisibility(View.VISIBLE);
-					UIHelper.setColorFilter(ivExternal);
-				}
-				else {
-					ivExternal.setVisibility(View.GONE);
-				}
-			}
-
-			ImageView ivHasUpdates = (ImageView) row.findViewById(R.id.novel_has_updates);
-			if (ivHasUpdates != null) {
-				if (page.getUpdateCount() > 0) {
-					ivHasUpdates.setVisibility(View.VISIBLE);
-					UIHelper.setColorFilter(ivHasUpdates);
-				}
-				else {
-					ivHasUpdates.setVisibility(View.GONE);
-				}
-			}
 		}
 
-		holder.txtLastUpdate = (TextView) row.findViewById(R.id.novel_last_update);
 		if (holder.txtLastUpdate != null) {
 			holder.txtLastUpdate.setText(context.getResources().getString(R.string.last_update) + ": " + Util.formatDateForDisplay(context, page.getLastUpdate()));
 		}
 
-		holder.txtLastCheck = (TextView) row.findViewById(R.id.novel_last_check);
 		if (holder.txtLastCheck != null) {
 			holder.txtLastCheck.setText(context.getResources().getString(R.string.last_check) + ": " + Util.formatDateForDisplay(context, page.getLastCheck()));
 		}
 
-		holder.chkIsWatched = (CheckBox) row.findViewById(R.id.novel_is_watched);
 		if (holder.chkIsWatched != null) {
 			// Log.d(TAG, page.getId() + " " + page.getTitle() + " isWatched: " + page.isWatched());
-			holder.chkIsWatched.setChecked(page.isWatched());
+            holder.chkIsWatched.setOnCheckedChangeListener(null);
+            holder.chkIsWatched.setChecked(page.isWatched());
 			holder.chkIsWatched.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 				@Override
@@ -161,6 +148,26 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 				}
 			});
 		}
+
+        if (holder.ivExternal != null) {
+            if (page.isExternal()) {
+                holder.ivExternal.setVisibility(View.VISIBLE);
+                UIHelper.setColorFilter(holder.ivExternal);
+            }
+            else {
+                holder.ivExternal.setVisibility(View.GONE);
+            }
+        }
+
+        if (holder.ivHasUpdates != null) {
+            if (page.getUpdateCount() > 0) {
+                holder.ivHasUpdates.setVisibility(View.VISIBLE);
+                UIHelper.setColorFilter(holder.ivHasUpdates);
+            }
+            else {
+                holder.ivHasUpdates.setVisibility(View.GONE);
+            }
+        }
 
 		row.setTag(holder);
 		return row;
@@ -211,7 +218,9 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
 		TextView txtLastUpdate;
 		TextView txtLastCheck;
 		CheckBox chkIsWatched;
-	}
+        ImageView ivExternal;
+        ImageView ivHasUpdates;
+    }
 
 	public void setResourceId(int id) {
 		this.layoutResourceId = id;
