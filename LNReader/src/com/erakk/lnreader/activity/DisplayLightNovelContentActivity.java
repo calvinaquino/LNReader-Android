@@ -1088,6 +1088,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
 	}
 
+
+	/* TTS */
 	private boolean getTtsStopOnPause() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_TTS_TTS_STOP_ON_LOST_FOCUS, true);
 	}

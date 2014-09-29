@@ -1,8 +1,6 @@
 package com.erakk.lnreader.helper;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 
 import android.content.Context;
@@ -29,10 +27,11 @@ public class DisplayNovelContentHtmlHelper {
 	 * @return
 	 */
 	public static String prepareJavaScript(int lastPos, ArrayList<BookmarkModel> bookmarks, boolean enableBookmark) {
-		String script = "<script type='text/javascript'>";
-		String js = LNReaderApplication.getInstance().ReadCss(R.raw.content_script);
+		StringBuilder scriptBuilder = new StringBuilder();
 
-		String bookmarkEnabledJs = String.format("var isBookmarkEnabled = %s;", enableBookmark);
+		scriptBuilder.append("<script type='text/javascript'>");
+		scriptBuilder.append(String.format("var isBookmarkEnabled = %s;", enableBookmark));
+		scriptBuilder.append("\n");
 
 		String bookmarkJs = "var bookmarkCol = [%s];";
 		if (bookmarks != null && bookmarks.size() > 0) {
@@ -44,19 +43,19 @@ public class DisplayNovelContentHtmlHelper {
 		} else {
 			bookmarkJs = String.format(bookmarkJs, "");
 		}
+		scriptBuilder.append(bookmarkJs);
+		scriptBuilder.append("\n");
 
-		String lastPosJs = "var lastPos = %s;";
-		if (lastPos > 0) {
-			lastPosJs = String.format(lastPosJs, lastPos);
-			Log.d(TAG, "Last Position: " + lastPos);
-		} else {
-			lastPosJs = String.format(lastPosJs, "0");
-		}
+		String lastPosJs = String.format("var lastPos = %s;", lastPos > 0 ? lastPos : 0);
+		scriptBuilder.append(lastPosJs);
+		scriptBuilder.append("\n");
 
-		script += bookmarkEnabledJs + "\n" + bookmarkJs + "\n" + lastPosJs + "\n" + js;
-		script += "</script>";
+		String js = LNReaderApplication.getInstance().ReadCss(R.raw.content_script);
+		scriptBuilder.append(js);
 
-		return script;
+		scriptBuilder.append("</script>");
+
+		return scriptBuilder.toString();
 	}
 
 
@@ -94,9 +93,12 @@ public class DisplayNovelContentHtmlHelper {
 			styleId = R.raw.style;
 			key = "style";
 		}
+
+		// check if exists in css cache
 		if (UIHelper.CssCache.containsKey(key))
 			return UIHelper.CssCache.get(key);
 
+		// build the css
 		css.append(LNReaderApplication.getInstance().ReadCss(styleId));
 
 		if (getUseJustifiedPreferences(ctx)) {
@@ -126,43 +128,19 @@ public class DisplayNovelContentHtmlHelper {
 	}
 
 	/***
-	 * Get external CSS file, not cached.
+	 * link to external CSS file, not cached.
 	 * 
-	 * @return
+	 * @return <link rel="stylesheet" href="file://EXTERNAL-CSS-PATH">
 	 */
 	public static String getExternalCss() {
 		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
-		StringBuilder css = new StringBuilder();
 		String cssPath = PreferenceManager.getDefaultSharedPreferences(ctx).getString(Constants.PREF_CUSTOM_CSS_PATH, Environment.getExternalStorageDirectory().getPath() + "/custom.css");
 		if (!Util.isStringNullOrEmpty(cssPath)) {
 			File cssFile = new File(cssPath);
 			if (cssFile.exists()) {
-				// read the file
-				BufferedReader br = null;
-				FileReader fr = null;
-				try {
-					try {
-						fr = new FileReader(cssFile);
-						br = new BufferedReader(fr);
-						String line;
-
-						while ((line = br.readLine()) != null) {
-							css.append(line);
-						}
-
-						return css.toString();
-
-					} catch (Exception e) {
-						throw e;
-					} finally {
-						if (fr != null)
-							fr.close();
-						if (br != null)
-							br.close();
-					}
-				} catch (Exception e) {
-					Log.e(TAG, "Error when reading Custom CSS: " + cssPath, e);
-				}
+				String external = String.format("<link rel=\"stylesheet\" href=\"file://%s\">", cssPath);
+				Log.d(TAG, "External CSS: " + external);
+				return external;
 			}
 		}
 		// should not hit this code, either external css not exists or failed to read.
