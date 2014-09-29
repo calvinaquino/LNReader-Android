@@ -1,8 +1,6 @@
 package com.erakk.lnreader.activity;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -19,7 +17,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech.OnInitListener;
@@ -51,6 +48,7 @@ import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.BakaTsukiWebChromeClient;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
+import com.erakk.lnreader.helper.DisplayNovelContentHtmlHelper;
 import com.erakk.lnreader.helper.DisplayNovelContentTTSHelper;
 import com.erakk.lnreader.helper.NonLeakingWebView;
 import com.erakk.lnreader.helper.OnCompleteListener;
@@ -926,9 +924,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			if (pIndex > 0)
 				lastPos = pIndex;
 
-			String html = "<html><head><style type=\"text/css\">" + getCSSSheet() + "</style>" +
+			String html = "<html><head><style type=\"text/css\">" + DisplayNovelContentHtmlHelper.getCSSSheet() + "</style>" +
 					"<meta name='viewport' content='width=device-width, minimum-scale=0.5, maximum-scale=5' id='viewport-meta'/>" +
-					prepareJavaScript(lastPos, content.getBookmarks()) +
+					DisplayNovelContentHtmlHelper.prepareJavaScript(lastPos, content.getBookmarks(), getBookmarkPreferences()) +
 					"</head><body onclick='toogleHighlight(this, event);' onload='setup();'>" +
 					content.getContent() + "</body></html>";
 			wv.loadDataWithBaseURL(UIHelper.getBaseUrl(this), html, "text/html", "utf-8", "");
@@ -967,36 +965,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		setTitle(title);
 	}
 
-	private String prepareJavaScript(int lastPos, ArrayList<BookmarkModel> bookmarks) {
-		String script = "<script type='text/javascript'>";
-		String js = LNReaderApplication.getInstance().ReadCss(R.raw.content_script);
 
-		String bookmarkEnabledJs = String.format("var isBookmarkEnabled = %s;", getBookmarkPreferences());
-
-		String bookmarkJs = "var bookmarkCol = [%s];";
-		if (bookmarks != null && bookmarks.size() > 0) {
-			ArrayList<Integer> list = new ArrayList<Integer>();
-			for (BookmarkModel bookmark : bookmarks) {
-				list.add(bookmark.getpIndex());
-			}
-			bookmarkJs = String.format(bookmarkJs, Util.join(list, ","));
-		} else {
-			bookmarkJs = String.format(bookmarkJs, "");
-		}
-
-		String lastPosJs = "var lastPos = %s;";
-		if (lastPos > 0) {
-			lastPosJs = String.format(lastPosJs, lastPos);
-			Log.d(TAG, "Last Position: " + lastPos);
-		} else {
-			lastPosJs = String.format(lastPosJs, "0");
-		}
-
-		script += bookmarkEnabledJs + "\n" + bookmarkJs + "\n" + lastPosJs + "\n" + js;
-		script += "</script>";
-
-		return script;
-	}
 
 	@SuppressLint({ "NewApi", "SetJavaScriptEnabled" })
 	private void setWebViewSettings() {
@@ -1125,139 +1094,12 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_ENABLE_BOOKMARK, true);
 	}
 
-	private boolean getUseCustomCSS() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_CUSTOM_CSS, false);
-	}
-
-	private float getLineSpacingPreferences() {
-		return Float.parseFloat(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LINESPACING, "150"));
-	}
-
 	private boolean getHandleExternalLinkPreferences() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
 	}
 
-	private boolean getUseJustifiedPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_FORCE_JUSTIFIED, false);
-	}
-
-	private float getMarginPreferences() {
-		return Float.parseFloat(PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_MARGINS, "5"));
-	}
-
-	private String getHeadingFontPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_HEADING_FONT, "serif");
-	}
-
-	private String getContentFontPreferences() {
-		return PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_CONTENT_FONT, "sans-serif");
-	}
-
 	private boolean getTtsStopOnPause() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_TTS_TTS_STOP_ON_LOST_FOCUS, true);
-	}
-
-	/**
-	 * getCSSSheet() method will put all the CSS data into the HTML header. At
-	 * the current moment, it reads the external data line by line then applies
-	 * it directly to the header.
-	 * 
-	 * @return
-	 */
-	private String getCSSSheet() {
-		if (getUseCustomCSS()) {
-			String externalCss = getExternalCss();
-			if (!Util.isStringNullOrEmpty(externalCss))
-				return externalCss;
-		}
-
-		// Default CSS start here
-		String key = "";
-		int styleId = -1;
-		StringBuilder css = new StringBuilder();
-
-		if (UIHelper.getCssUseCustomColorPreferences(this)) {
-			styleId = R.raw.style_custom_color;
-			key = "style_custom_color" + UIHelper.getBackgroundColor(this) + UIHelper.getForegroundColor(this) + UIHelper.getLinkColor(this) + UIHelper.getThumbBorderColor(this) + UIHelper.getThumbBackgroundColor(this);
-		}
-		else if (UIHelper.getColorPreferences(this)) {
-			styleId = R.raw.style_dark;
-			key = "style_dark";
-		}
-		else {
-			styleId = R.raw.style;
-			key = "style";
-		}
-		if (UIHelper.CssCache.containsKey(key))
-			return UIHelper.CssCache.get(key);
-
-		LNReaderApplication app = (LNReaderApplication) getApplication();
-		css.append(app.ReadCss(styleId));
-
-		if (getUseJustifiedPreferences()) {
-			css.append("\nbody { text-align: justify !important; }\n");
-		}
-		css.append("\np { line-height:" + getLineSpacingPreferences() + "% !important; \n");
-		css.append("      font-family:" + getContentFontPreferences() + "; }\n");
-		css.append("\nbody { margin: " + getMarginPreferences() + "% !important; }\n");
-
-		css.append("\n.mw-headline{ font-family: " + getHeadingFontPreferences() + "; }\n");
-
-		String cssStr = css.toString();
-		if (UIHelper.getCssUseCustomColorPreferences(this)) {
-			cssStr = cssStr.replace("@background@", UIHelper.getBackgroundColor(this));
-			cssStr = cssStr.replace("@foreground@", UIHelper.getForegroundColor(this));
-			cssStr = cssStr.replace("@link@", UIHelper.getLinkColor(this));
-			cssStr = cssStr.replace("@thumb-border@", UIHelper.getThumbBorderColor(this));
-			cssStr = cssStr.replace("@thumb-back@", UIHelper.getThumbBackgroundColor(this));
-		}
-
-		UIHelper.CssCache.put(key, cssStr);
-		return cssStr;
-	}
-
-	/***
-	 * Get external CSS file, not cached.
-	 * 
-	 * @return
-	 */
-	private String getExternalCss() {
-		StringBuilder css = new StringBuilder();
-		String cssPath = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_CUSTOM_CSS_PATH, Environment.getExternalStorageDirectory().getPath() + "/custom.css");
-		if (!Util.isStringNullOrEmpty(cssPath)) {
-			File cssFile = new File(cssPath);
-			if (cssFile.exists()) {
-				// read the file
-				BufferedReader br = null;
-				FileReader fr = null;
-				try {
-					try {
-						fr = new FileReader(cssFile);
-						br = new BufferedReader(fr);
-						String line;
-
-						while ((line = br.readLine()) != null) {
-							css.append(line);
-						}
-
-						return css.toString();
-
-					} catch (Exception e) {
-						throw e;
-					} finally {
-						if (fr != null)
-							fr.close();
-						if (br != null)
-							br.close();
-					}
-				} catch (Exception e) {
-					Log.e(TAG, "Error when reading Custom CSS: " + cssPath, e);
-				}
-			}
-		}
-		// should not hit this code, either external css not exists or failed to read.
-		Toast.makeText(this, getResources().getString(R.string.css_layout_not_exist), Toast.LENGTH_SHORT).show();
-		return null;
 	}
 
 	@Override
