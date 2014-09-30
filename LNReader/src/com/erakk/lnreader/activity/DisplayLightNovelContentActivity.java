@@ -1,6 +1,5 @@
 package com.erakk.lnreader.activity;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import org.jsoup.Jsoup;
@@ -16,7 +15,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
@@ -24,8 +22,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -48,6 +44,7 @@ import com.erakk.lnreader.helper.BakaTsukiWebChromeClient;
 import com.erakk.lnreader.helper.BakaTsukiWebViewClient;
 import com.erakk.lnreader.helper.DisplayNovelContentHtmlHelper;
 import com.erakk.lnreader.helper.DisplayNovelContentTTSHelper;
+import com.erakk.lnreader.helper.DisplayNovelContentUIHelper;
 import com.erakk.lnreader.helper.NonLeakingWebView;
 import com.erakk.lnreader.helper.OnCompleteListener;
 import com.erakk.lnreader.helper.TtsHelper;
@@ -72,17 +69,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	private BookmarkModelAdapter bookmarkAdapter = null;
 
 	private NonLeakingWebView webView;
-	private ImageButton goTop;
-	private ImageButton goBottom;
 	private BakaTsukiWebViewClient client;
 	private boolean restored;
 	private AlertDialog bookmarkMenu = null;
 	private boolean isFullscreen;
 	private boolean isPageLoaded = false;
-
-	private Runnable hideBottom;
-	private Runnable hideTop;
-	private final Handler mHandler = new Handler();
 
 	private TextView loadingText;
 	private ProgressBar loadingBar;
@@ -91,6 +82,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	public ArrayList<String> images;
 
 	private DisplayNovelContentTTSHelper tts;
+	private DisplayNovelContentUIHelper uih;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -100,20 +92,12 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		UIHelper.SetTheme(this, R.layout.activity_display_light_novel_content);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
-		// compatibility search box
-		final EditText searchText = (EditText) findViewById(R.id.searchText);
-		searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				search(searchText.getText().toString());
-				return false;
-			}
-		});
+		uih = new DisplayNovelContentUIHelper(this);
 
 		webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
-		goTop = (ImageButton) findViewById(R.id.webview_go_top);
-		goBottom = (ImageButton) findViewById(R.id.webview_go_bottom);
+
+		uih.prepareCompatSearchBox(webView);
+		uih.prepareTopDownButton();
 
 		// custom link handler
 		client = new BakaTsukiWebViewClient(this);
@@ -121,27 +105,13 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		webView.setWebChromeClient(new BakaTsukiWebChromeClient(this));
 
 		restored = false;
-		Log.d(TAG, "OnCreate Completed.");
 
-		// Hide button after a certain time being shown
-		hideBottom = new Runnable() {
-
-			@Override
-			public void run() {
-				goBottom.setVisibility(ImageButton.GONE);
-			}
-		};
-		hideTop = new Runnable() {
-
-			@Override
-			public void run() {
-				goTop.setVisibility(ImageButton.GONE);
-			}
-		};
 		loadingText = (TextView) findViewById(R.id.emptyList);
 		loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
 
 		tts = new DisplayNovelContentTTSHelper(this);
+
+		Log.d(TAG, "OnCreate Completed.");
 	}
 
 	@SuppressLint("NewApi")
@@ -290,32 +260,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		Log.d(TAG, "onPause Completed");
 	}
 
-	public void toggleTopButton(boolean enable) {
-		if (enable) {
-			goTop.setVisibility(ImageButton.VISIBLE);
-			mHandler.removeCallbacks(hideTop);
-			mHandler.postDelayed(hideTop, 1000);
-		} else
-			goTop.setVisibility(ImageButton.GONE);
-	}
-
-	public void toggleBottomButton(boolean enable) {
-		if (enable) {
-			goBottom.setVisibility(ImageButton.VISIBLE);
-			mHandler.removeCallbacks(hideBottom);
-			mHandler.postDelayed(hideBottom, 1000);
-		} else
-			goBottom.setVisibility(ImageButton.GONE);
-	}
-
-	public void goTop(View view) {
-		webView.pageUp(true);
-	}
-
-	public void goBottom(View view) {
-		webView.pageDown(true);
-	}
-
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
@@ -335,8 +279,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		super.onRestoreInstanceState(savedInstanceState);
 		String restoredPage = savedInstanceState.getString(Constants.EXTRA_PAGE);
 		try {
-			// replace the current pageModel with the saved instance if have
-			// different page
+			// replace the current pageModel with the saved instance
+			// if have different page
 			PageModel pageModel = new PageModel(restoredPage);
 			pageModel = NovelsDao.getInstance().getPageModel(pageModel, null);
 			executeTask(pageModel, false);
@@ -542,48 +486,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		return super.onKeyUp(keyCode, event);
 	}
 
-	@SuppressWarnings("deprecation")
-	@SuppressLint("NewApi")
-	private void showSearchBox() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			webView.showFindDialog("", true);
-		else {
-			RelativeLayout searchBox = (RelativeLayout) findViewById(R.id.searchBox);
-			searchBox.setVisibility(View.VISIBLE);
-		}
-	}
-
-	// Compatibility search method for older android version
-	@SuppressWarnings("deprecation")
-	private void search(String string) {
-		if (string != null && string.length() > 0)
-			webView.findAll(string);
-
-		try {
-			Method m = NonLeakingWebView.class.getMethod("setFindIsUp", Boolean.TYPE);
-			m.invoke(webView, true);
-		} catch (NoSuchMethodException me) {
-		} catch (Exception e) {
-			Log.e(TAG, "Error when searching", e);
-		}
-	}
-
-	public void searchNext(View view) {
-		webView.findNext(true);
-	}
-
-	public void searchPrev(View view) {
-		webView.findNext(false);
-	}
-
-	public void closeSearchBox(View view) {
-		RelativeLayout searchBox = (RelativeLayout) findViewById(R.id.searchBox);
-		searchBox.setVisibility(View.GONE);
-		webView.clearMatches();
-	}
-
-	// end of Compatibility search method for older android version
-
+	/**
+	 * Move between chapters
+	 * 
+	 * @param page
+	 */
 	public void jumpTo(PageModel page) {
 		setLastReadState();
 		tts.stop();
@@ -602,6 +509,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			executeTask(page, false);
 	}
 
+	/**
+	 * Build Table-of-Contents
+	 * 
+	 * @param referencePageModel
+	 */
 	private void buildTOCMenu(PageModel referencePageModel) {
 		Log.d(TAG, "Trying to create TOC");
 		// if(novelDetails != null) {
@@ -646,6 +558,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		// }
 	}
 
+	/**
+	 * Back to Novel Details
+	 */
 	public void backToIndex() {
 		String page = getIntent().getStringExtra(Constants.EXTRA_PAGE);
 		PageModel pageModel = new PageModel(page);
@@ -662,6 +577,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 	}
 
+	/**
+	 * Build Bookmarks-on-Chapter menu
+	 */
 	public void buildBookmarkMenu() {
 		if (content != null) {
 			try {
@@ -701,46 +619,65 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 	}
 
+	/**
+	 * Update last read chapter and the position.
+	 * Run async
+	 */
 	@SuppressWarnings("deprecation")
 	public void setLastReadState() {
-		// save last position and zoom
 		NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
-		if (content != null) {
-			content.setLastZoom(wv.getScale());
-			try {
-				content = NovelsDao.getInstance().updateNovelContent(content);
-			} catch (Exception ex) {
-				Log.e(TAG, "Error when saving state: " + ex.getMessage(), ex);
-			}
+		final float currentScale = wv.getScale();
+		final int lastY = wv.getScrollY() + wv.getBottom();
+		final int contentHeight = wv.getContentHeight();
+		new Thread(new Runnable() {
 
-			// check if complete read.
-			if (wv.getContentHeight() <= wv.getScrollY() + wv.getBottom()) {
+			@Override
+			public void run() {
+				// save last position and zoom
 				if (content != null) {
+					content.setLastZoom(currentScale);
 					try {
-						PageModel page = content.getPageModel();
-						if (!page.getPage().endsWith("&action=edit&redlink=1")) {
-							page.setFinishedRead(true);
-							page = NovelsDao.getInstance().updatePageModel(page);
-						}
+						content = NovelsDao.getInstance().updateNovelContent(content);
 					} catch (Exception ex) {
-						Log.e(TAG, "Error updating PageModel for Content: " + content.getPage(), ex);
+						Log.e(TAG, "Error when saving state: " + ex.getMessage(), ex);
 					}
-				}
-			}
-			Log.d(TAG, "Update Content:X=" + content.getLastXScroll() + ":Y=" + content.getLastYScroll() + ":Z=" + content.getLastZoom());
-		}
 
-		// save for jump to last read.
-		SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		SharedPreferences.Editor editor = sharedPrefs.edit();
-		if (content != null) {
-			editor.putString(Constants.PREF_LAST_READ, content.getPage());
-		} else {
-			editor.putString(Constants.PREF_LAST_READ, getIntent().getStringExtra(Constants.EXTRA_PAGE));
-		}
-		editor.commit();
+					// check if complete read.
+					if (contentHeight <= lastY ) {
+						if (content != null) {
+							try {
+								PageModel page = content.getPageModel();
+								if (!page.getPage().endsWith("&action=edit&redlink=1")) {
+									page.setFinishedRead(true);
+									page = NovelsDao.getInstance().updatePageModel(page);
+								}
+							} catch (Exception ex) {
+								Log.e(TAG, "Error updating PageModel for Content: " + content.getPage(), ex);
+							}
+						}
+					}
+					Log.d(TAG, "Update Content:X=" + content.getLastXScroll() + ":Y=" + content.getLastYScroll() + ":Z=" + content.getLastZoom());
+				}
+
+				// save for jump to last read.
+				SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance());
+				SharedPreferences.Editor editor = sharedPrefs.edit();
+				if (content != null) {
+					editor.putString(Constants.PREF_LAST_READ, content.getPage());
+				} else {
+					editor.putString(Constants.PREF_LAST_READ, getIntent().getStringExtra(Constants.EXTRA_PAGE));
+				}
+				editor.commit();
+				Log.i(TAG, "Last Read State Update complete: " + content.getPage());
+			}
+		}).start();
 	}
 
+	/**
+	 * Load chapter from DB
+	 * @param pageModel
+	 * @param refresh
+	 */
 	@SuppressLint("NewApi")
 	private void executeTask(PageModel pageModel, boolean refresh) {
 		NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
@@ -772,6 +709,13 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		setPrevNextButtonState(pageModel);
 	}
 
+	/**
+	 * Load chapter for external url (not hosted in Baka-Tsuki).
+	 * Used local cache if available (wac/mht).
+	 * 
+	 * @param pageModel
+	 * @param refresh
+	 */
 	public void loadExternalUrl(PageModel pageModel, boolean refresh) {
 		try {
 			// check if .wac available
@@ -803,6 +747,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 	}
 
+	/**
+	 * Load saved external chapter from wac/mht
+	 * @param wacName
+	 */
 	@SuppressLint({ "InlinedApi", "NewApi" })
 	private void executeLoadWacTask(String wacName) {
 		NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
@@ -813,6 +761,12 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			task.execute();
 	}
 
+	/**
+	 * Setup the chapter from DB
+	 * Including JS for Bookmark highlighting, last read position, and CSS
+	 * 
+	 * @param loadedContent
+	 */
 	@SuppressLint("NewApi")
 	public void setContent(NovelContentModel loadedContent) {
 		this.content = loadedContent;
@@ -861,6 +815,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		}
 	}
 
+	/**
+	 * Set activity title to current chapter title.
+	 * @param pageModel
+	 */
 	private void setChapterTitle(PageModel pageModel) {
 		String title = pageModel.getPage();
 		try {
@@ -876,6 +834,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		setTitle(title);
 	}
 
+	/**
+	 * Setup webview
+	 */
 	@SuppressLint({ "NewApi", "SetJavaScriptEnabled" })
 	private void setWebViewSettings() {
 		NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
@@ -898,6 +859,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			wv.loadUrl("javascript:toogleEnableBookmark(" + getBookmarkPreferences() + ")");
 	}
 
+	/**
+	 * AsyncTask complete handler for:
+	 * - Novel Content saved in DB
+	 * - External Chapter
+	 */
 	@Override
 	public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<?> result) {
 		Exception e = result.getError();
@@ -929,40 +895,29 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	}
 
-	@Override
-	public void onProgressCallback(ICallbackEventData message) {
-		toggleProgressBar(true);
-		loadingText.setText(message.getMessage());
-	}
-
-	public void toggleProgressBar(boolean show) {
-		if (webView == null || loadingBar == null || loadingText == null)
-			return;
-		synchronized (this) {
-			if (show) {
-				loadingText.setVisibility(TextView.VISIBLE);
-				loadingBar.setVisibility(ProgressBar.VISIBLE);
-				webView.setVisibility(ListView.GONE);
-			} else {
-				loadingText.setVisibility(TextView.GONE);
-				loadingBar.setVisibility(ProgressBar.GONE);
-				webView.setVisibility(ListView.VISIBLE);
-			}
-		}
-	}
-
+	/**
+	 * Update Bookmark-on-Chapter data upon receiving event from webview client
+	 */
 	public void refreshBookmarkData() {
 		if (bookmarkAdapter != null)
 			bookmarkAdapter.refreshData();
 	}
 
+	/**
+	 * Used by ChromeClient to receive js update event for y-scrolling
+	 * @param pIndex
+	 */
 	public void updateLastLine(int pIndex) {
 		if (content != null)
 			content.setLastYScroll(pIndex);
 	}
 
+	/**
+	 * Used for floating button on fullscreen mode to open the menu.
+	 * @param view
+	 */
 	@SuppressLint("NewApi")
-	public void OpenMenu(View view) {
+	private void openMenu(View view) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			invalidateOptionsMenu();
 		}
@@ -975,6 +930,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 		return false;
 	}
 
+	/**
+	 * Used to move to the last read position upon receiving load complete event from webview client
+	 */
 	public void notifyLoadComplete() {
 		isPageLoaded = true;
 		if (webView != null && content != null) {
@@ -1006,6 +964,69 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	private boolean getHandleExternalLinkPreferences() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
+	}
+
+	/* Progress bar related */
+	@Override
+	public void onProgressCallback(ICallbackEventData message) {
+		toggleProgressBar(true);
+		loadingText.setText(message.getMessage());
+	}
+
+	public void toggleProgressBar(boolean show) {
+		if (webView == null || loadingBar == null || loadingText == null)
+			return;
+		synchronized (this) {
+			if (show) {
+				loadingText.setVisibility(TextView.VISIBLE);
+				loadingBar.setVisibility(ProgressBar.VISIBLE);
+				webView.setVisibility(ListView.GONE);
+			} else {
+				loadingText.setVisibility(TextView.GONE);
+				loadingBar.setVisibility(ProgressBar.GONE);
+				webView.setVisibility(ListView.VISIBLE);
+			}
+		}
+	}
+
+	/* Search box */
+	@SuppressWarnings("deprecation")
+	private void showSearchBox() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			webView.showFindDialog("", true);
+		else {
+			RelativeLayout searchBox = (RelativeLayout) findViewById(R.id.searchBox);
+			searchBox.setVisibility(View.VISIBLE);
+		}
+	}
+
+	public void searchNext(View view) {
+		webView.findNext(true);
+	}
+
+	public void searchPrev(View view) {
+		webView.findNext(false);
+	}
+
+	public void closeSearchBox(View view) {
+		uih.closeSearchBox(webView);
+	}
+
+	/* Top-Down button */
+	public void toggleTopButton(boolean enable) {
+		uih.toggleTopButton(enable);
+	}
+
+	public void toggleBottomButton(boolean enable) {
+		uih.toggleBottomButton(enable);
+	}
+
+	public void goTop(View view) {
+		webView.pageUp(true);
+	}
+
+	public void goBottom(View view) {
+		webView.pageDown(true);
 	}
 
 

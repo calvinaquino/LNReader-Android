@@ -82,7 +82,7 @@
         android:background="@android:drawable/ic_menu_more"
         android:minHeight="18dp"
         android:minWidth="24dp"
-        android:onClick="OpenMenu"
+        android:onClick="openMenu"
         android:visibility="gone" />
 
     <ProgressBar
