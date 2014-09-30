@@ -92,6 +92,7 @@ public class NonLeakingWebView extends WebView {
 	public void destroy() {
 		super.destroy();
 		try {
+			setDisplayZoomControl(false);
 			if (sConfigCallback != null)
 				sConfigCallback.set(null, null);
 		} catch (Exception e) {
