@@ -25,6 +25,24 @@ import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.PageModel;
 
 public class BookModelAdapter extends BaseExpandableListAdapter {
+
+    static class BookModelChildViewHolder {
+        TextView txtNovel;
+        ViewGroup vgChapter;
+        ImageView ivFinishedReading;
+        ImageView ivExternal;
+        ImageView ivIsDownloaded;
+        ImageView ivHasUpdates;
+        TextView tvLastUpdate;
+        TextView tvLastCheck;
+    }
+
+    static class BookModelGroupViewHolder {
+        TextView txtNovel;
+        ViewGroup container;
+        ImageView ivHasUpdates;
+    }
+
 	private static final String TAG = BookModelAdapter.class.toString();
 	private final Context context;
 	private final ArrayList<BookModel> groups;
@@ -33,6 +51,20 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		this.context = context;
 		this.groups = groups;
 	}
+
+
+    public void refreshData() {
+        for (int i = 0; i < groups.size(); ++i) {
+            ArrayList<PageModel> chapters = groups.get(i).getChapterCollection();
+            for (int j = 0; j < chapters.size(); ++j)
+                try {
+                    PageModel temp = NovelsDao.getInstance().getPageModel(chapters.get(j), null);
+                    chapters.set(j, temp);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error when refreshing PageModel: " + chapters.get(j).getPage(), e);
+                }
+        }
+    }
 
 	public void addItem(PageModel item, BookModel group) {
 		if (!groups.contains(group)) {
@@ -45,16 +77,67 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View view, ViewGroup parent) {
+	public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 		PageModel child = getChild(groupPosition, childPosition);
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		int resourceId = R.layout.expandchapter_list_item;
-		// if(UIHelper.IsSmallScreen(((Activity)context))) {
-		// resourceId = R.layout.expandchapter_list_item_small;
-		// }
-		view = inflater.inflate(resourceId, null);
+        View view = convertView;
+        BookModelChildViewHolder holder;
+        if (view == null) {
+            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            int resourceId = R.layout.expandchapter_list_item;
+            // if(UIHelper.IsSmallScreen(((Activity)context))) {
+            // resourceId = R.layout.expandchapter_list_item_small;
+            // }
+            view = inflater.inflate(resourceId, null);
+            holder = new BookModelChildViewHolder();
+            holder.txtNovel = (TextView) view.findViewById(R.id.novel_chapter);
+            holder.vgChapter = (ViewGroup) view.findViewById(R.id.novel_chapter_container);
 
-		TextView tv = (TextView) view.findViewById(R.id.novel_chapter);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+            // Converts 8dp into px
+            int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics());
+
+            holder.ivFinishedReading = new ImageView(context);
+            holder.ivFinishedReading.setImageResource(R.drawable.ic_finished_reading);
+            holder.ivFinishedReading.setScaleType(ImageView.ScaleType.CENTER);
+            holder.ivFinishedReading.setPadding(padding, padding, padding, padding);
+            holder.ivFinishedReading.setLayoutParams(params);
+
+            holder.ivExternal = new ImageView(context);
+            holder.ivExternal.setImageResource(R.drawable.ic_is_external);
+            holder.ivExternal.setScaleType(ImageView.ScaleType.CENTER);
+            holder.ivExternal.setPadding(padding, padding, padding, padding);
+            holder.ivExternal.setLayoutParams(params);
+
+            holder.ivIsDownloaded = new ImageView(context);
+            holder.ivIsDownloaded.setImageResource(R.drawable.ic_downloaded);
+            holder.ivIsDownloaded.setScaleType(ImageView.ScaleType.CENTER);
+            holder.ivIsDownloaded.setPadding(padding, padding, padding, padding);
+            holder.ivIsDownloaded.setLayoutParams(params);
+
+            holder.ivHasUpdates = new ImageView(context);
+            holder.ivHasUpdates.setImageResource(R.drawable.ic_update_avaliable);
+            holder.ivHasUpdates.setScaleType(ImageView.ScaleType.CENTER);
+            holder.ivHasUpdates.setPadding(padding, padding, padding, padding);
+            holder.ivHasUpdates.setLayoutParams(params);
+
+            holder.tvLastUpdate = (TextView) view.findViewById(R.id.novel_last_update);
+            holder.tvLastCheck = (TextView) view.findViewById(R.id.novel_last_check);
+
+            view.setTag(holder);
+        }
+        else {
+            holder = (BookModelChildViewHolder)view.getTag();
+            ViewGroup ivparent = (ViewGroup)holder.ivIsDownloaded.getParent();
+            if (ivparent != null) ivparent.removeView(holder.ivIsDownloaded);
+            ivparent = (ViewGroup)holder.ivFinishedReading.getParent();
+            if (ivparent != null) ivparent.removeView(holder.ivFinishedReading);
+            ivparent = (ViewGroup)holder.ivExternal.getParent();
+            if (ivparent != null) ivparent.removeView(holder.ivExternal);
+            ivparent = (ViewGroup)holder.ivHasUpdates.getParent();
+            if (ivparent != null) ivparent.removeView(holder.ivHasUpdates);
+        }
+
+		TextView tv = holder.txtNovel;
 		tv.setText(child.getTitle());
 		tv.setTag(child.getPage());
 
@@ -66,40 +149,12 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		 * Addition command: container.addView([insert ImageView]);
 		 */
 
-		ViewGroup container = (ViewGroup) view.findViewById(R.id.novel_chapter_container);
+		ViewGroup container = holder.vgChapter;
 
-		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-		// Converts 8dp into px
-		int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics());
-
-		ImageView ivFinishedReading = new ImageView(context);
-		ivFinishedReading.setImageResource(R.drawable.ic_finished_reading);
-		ivFinishedReading.setScaleType(ImageView.ScaleType.CENTER);
-		ivFinishedReading.setPadding(padding, padding, padding, padding);
-		ivFinishedReading.setLayoutParams(params);
-
-		ImageView ivExternal = new ImageView(context);
-		ivExternal.setImageResource(R.drawable.ic_is_external);
-		ivExternal.setScaleType(ImageView.ScaleType.CENTER);
-		ivExternal.setPadding(padding, padding, padding, padding);
-		ivExternal.setLayoutParams(params);
-
-		ImageView ivIsDownloaded = new ImageView(context);
-		ivIsDownloaded.setImageResource(R.drawable.ic_downloaded);
-		ivIsDownloaded.setScaleType(ImageView.ScaleType.CENTER);
-		ivIsDownloaded.setPadding(padding, padding, padding, padding);
-		ivIsDownloaded.setLayoutParams(params);
-
-		ImageView ivHasUpdates = new ImageView(context);
-		ivHasUpdates.setImageResource(R.drawable.ic_update_avaliable);
-		ivHasUpdates.setScaleType(ImageView.ScaleType.CENTER);
-		ivHasUpdates.setPadding(padding, padding, padding, padding);
-		ivHasUpdates.setLayoutParams(params);
-
-		if (ivFinishedReading != null) {
+		if (holder.ivFinishedReading != null) {
 			if (child.isFinishedRead()) {
-				container.addView(ivFinishedReading);
-				UIHelper.setColorFilter(ivFinishedReading);
+				container.addView(holder.ivFinishedReading);
+				UIHelper.setColorFilter(holder.ivFinishedReading);
 			}
 		}
 
@@ -110,8 +165,8 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			tv.setTextColor(Constants.COLOR_REDLINK);
 		}
 		if (child.isExternal()) {
-			container.addView(ivExternal);
-			UIHelper.setColorFilter(ivExternal);
+			container.addView(holder.ivExternal);
+			UIHelper.setColorFilter(holder.ivExternal);
 			String wacName = Util.getSavedWacName(child.getPage());
 			if (!Util.isStringNullOrEmpty(wacName)) {
 				child.setDownloaded(true);
@@ -120,23 +175,23 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 
 		// Log.d("getChildView", "Downloaded " + child.getTitle() + " id " + child.getId() + " : " +
 		// child.isDownloaded() );
-		if (ivIsDownloaded != null && ivHasUpdates != null) {
+		if (holder.ivIsDownloaded != null && holder.ivHasUpdates != null) {
 			if (child.isDownloaded()) {
 				if (NovelsDao.getInstance().isContentUpdated(child)) {
-					container.addView(ivHasUpdates);
+					container.addView(holder.ivHasUpdates);
 				}
-				container.addView(ivIsDownloaded);
+				container.addView(holder.ivIsDownloaded);
 			}
-			UIHelper.setColorFilter(ivIsDownloaded);
-			UIHelper.setColorFilter(ivHasUpdates);
+			UIHelper.setColorFilter(holder.ivIsDownloaded);
+			UIHelper.setColorFilter(holder.ivHasUpdates);
 		}
 
-		TextView tvLastUpdate = (TextView) view.findViewById(R.id.novel_last_update);
+		TextView tvLastUpdate = holder.tvLastUpdate;
 		if (tvLastUpdate != null) {
 			tvLastUpdate.setText(context.getResources().getString(R.string.last_update) + ": " + Util.formatDateForDisplay(context, child.getLastUpdate()));
 		}
 
-		TextView tvLastCheck = (TextView) view.findViewById(R.id.novel_last_check);
+		TextView tvLastCheck = holder.tvLastCheck;
 		if (tvLastCheck != null) {
 			tvLastCheck.setText(context.getResources().getString(R.string.last_check) + ": " + Util.formatDateForDisplay(context, child.getLastCheck()));
 		}
@@ -214,8 +269,27 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public View getGroupView(int groupPosition, boolean isLastChild, View view, ViewGroup parent) {
-		LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		view = inf.inflate(R.layout.expandvolume_list_item, null);
+        BookModelGroupViewHolder holder;
+        if (view == null) {
+            LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = inf.inflate(R.layout.expandvolume_list_item, null);
+            holder = new BookModelGroupViewHolder();
+            holder.txtNovel = (TextView) view.findViewById(R.id.novel_volume);
+            holder.container = (ViewGroup) view.findViewById(R.id.novel_volume_container);
+            holder.ivHasUpdates = new ImageView(context);
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+            // Converts 8dp into px
+            int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics());
+
+            holder.ivHasUpdates.setImageResource(R.drawable.ic_update_avaliable);
+            holder.ivHasUpdates.setScaleType(ImageView.ScaleType.CENTER);
+            holder.ivHasUpdates.setPadding(padding, padding, padding, padding);
+            holder.ivHasUpdates.setLayoutParams(params);
+            view.setTag(holder);
+        } else {
+            holder = (BookModelGroupViewHolder)view.getTag();
+        }
 
 		BookModel group = getGroup(groupPosition);
 		ArrayList<PageModel> chapterList = group.getChapterCollection();
@@ -224,20 +298,11 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			return new FrameLayout(context);
 		}
 
-		TextView tv = (TextView) view.findViewById(R.id.novel_volume);
+		TextView tv = holder.txtNovel;
 		tv.setText(group.getTitle());
 
-		ViewGroup container = (ViewGroup) view.findViewById(R.id.novel_volume_container);
-
-		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-		// Converts 8dp into px
-		int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, context.getResources().getDisplayMetrics());
-
-		ImageView ivHasUpdates = new ImageView(context);
-		ivHasUpdates.setImageResource(R.drawable.ic_update_avaliable);
-		ivHasUpdates.setScaleType(ImageView.ScaleType.CENTER);
-		ivHasUpdates.setPadding(padding, padding, padding, padding);
-		ivHasUpdates.setLayoutParams(params);
+		ViewGroup container = holder.container;
+		ImageView ivHasUpdates = holder.ivHasUpdates;
 
 		// check if any chapter has updates
 		for (PageModel pageModel : chapterList) {
@@ -282,19 +347,4 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		return true;
 	}
 
-	@Override
-	public void notifyDataSetChanged() {
-		// refresh the data
-		for (int i = 0; i < groups.size(); ++i) {
-			ArrayList<PageModel> chapters = groups.get(i).getChapterCollection();
-			for (int j = 0; j < chapters.size(); ++j)
-				try {
-					PageModel temp = NovelsDao.getInstance().getPageModel(chapters.get(j), null);
-					chapters.set(j, temp);
-				} catch (Exception e) {
-					Log.e(TAG, "Error when refreshing PageModel: " + chapters.get(j).getPage(), e);
-				}
-		}
-		super.notifyDataSetChanged();
-	}
 }
