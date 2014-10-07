@@ -1,6 +1,7 @@
-1.1.21-beta1
+1.1.21-beta2
 - Update jsoup to 1.8.1.
-
+- Add option to refresh all downloaded chapter on novel details.
+- Performance updates and bug fixes.
 
 1.1.20
 - Fix issue #162: update relink image task to cater encoded/decoded image filename

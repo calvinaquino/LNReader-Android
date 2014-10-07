@@ -274,7 +274,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 	}
 
 	/***
-	 * Check Term of Service from //www.baka-tsuki.org/project/index.php?title=Category:Light_novel_(English)
+	 * Check new/updated Novels from //www.baka-tsuki.org/project/index.php?title=Category:Light_novel_(English)
 	 * 
 	 * @param callback
 	 * @return
