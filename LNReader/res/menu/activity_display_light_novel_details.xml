@@ -4,7 +4,7 @@
         android:title="@string/menu_settings" />
     <item android:id="@+id/menu_refresh_chapter_list" 
         android:orderInCategory="2"
-        android:title="@string/details_refresh" android:showAsAction="ifRoom"/>
+        android:title="@string/details_refresh" android:showAsAction="ifRoom"/><item android:id="@+id/menu_refresh_all_chapter" android:title="@string/menu_refresh_all_chapter"></item>
     <item android:id="@+id/invert_colors"
         android:orderInCategory="97"
         android:title="@string/invert_colors"/>
@@ -17,4 +17,5 @@
     <item android:id="@+id/menu_details_download_all" 
         android:orderInCategory="1"
         android:title="@string/details_download_all" android:showAsAction="ifRoom"></item>
+    
 </menu>

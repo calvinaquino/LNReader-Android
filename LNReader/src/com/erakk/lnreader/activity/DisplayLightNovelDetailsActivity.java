@@ -143,18 +143,18 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			UIHelper.Recreate(this);
 		}
 		if (bookModelAdapter != null) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    bookModelAdapter.refreshData();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            bookModelAdapter.notifyDataSetChanged();
-                        }
-                    });
-                }
-            }).start();
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					bookModelAdapter.refreshData();
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							bookModelAdapter.notifyDataSetChanged();
+						}
+					});
+				}
+			}).start();
 
 		}
 	}
@@ -195,6 +195,26 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 		case R.id.menu_refresh_chapter_list:
 			executeTask(page, true);
 			Toast.makeText(this, getResources().getString(R.string.refreshing_detail), Toast.LENGTH_SHORT).show();
+			return true;
+		case R.id.menu_refresh_all_chapter:
+			/*
+			 * Re-download all downloaded chapter :P
+			 */
+
+			if (novelCol != null) {
+				ArrayList<PageModel> availableChapters = novelCol.getFlattedChapterList();
+				ArrayList<PageModel> toBeDownloadedChapters = new ArrayList<PageModel>();
+				for (PageModel pageModel : availableChapters) {
+					if (pageModel.isMissing() || pageModel.isExternal())
+						continue;
+					else if (pageModel.isDownloaded() // add to list if already downloaded or the update available.
+							|| (pageModel.isDownloaded() && dao.isContentUpdated(pageModel))) {
+						toBeDownloadedChapters.add(pageModel);
+					}
+				}
+				touchedForDownload = "Volumes";
+				executeDownloadTask(toBeDownloadedChapters, true);
+			}
 			return true;
 		case R.id.invert_colors:
 			UIHelper.ToggleColorPref(this);
@@ -290,9 +310,9 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			BookModel bookClear = novelCol.getBookCollections().get(groupPosition);
 			Toast.makeText(this, getResources().getString(R.string.toast_clear_volume, bookClear.getTitle()), Toast.LENGTH_SHORT).show();
 			dao.deleteBookCache(bookClear);
-            for (PageModel page : bookClear.getChapterCollection()) {
-                page.setDownloaded(false);
-            }
+			for (PageModel page : bookClear.getChapterCollection()) {
+				page.setDownloaded(false);
+			}
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		case R.id.mark_volume:
@@ -345,7 +365,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 			chapter = bookModelAdapter.getChild(groupPosition, childPosition);
 			Toast.makeText(this, getResources().getString(R.string.toast_clear_chapter, chapter.getTitle()), Toast.LENGTH_SHORT).show();
 			dao.deleteChapterCache(chapter);
-            chapter.setDownloaded(false);
+			chapter.setDownloaded(false);
 			bookModelAdapter.notifyDataSetChanged();
 			return true;
 		case R.id.mark_read:

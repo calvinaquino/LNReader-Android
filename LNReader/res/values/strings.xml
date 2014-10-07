@@ -479,4 +479,5 @@
     <string name="css_use_custom_colors">Use Custom Color</string>
     <string name="css_color_input_message">Please input HTML color codes (#rrggbb)</string>
     <string name="bookmark_content_load_error">Chapter already deleted on local db, please refresh the chapter list first.</string>
+    <string name="menu_refresh_all_chapter">Refresh All Chapter</string>
 </resources>

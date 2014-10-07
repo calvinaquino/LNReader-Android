@@ -429,7 +429,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			// save based on current intent page name.
 			String url = getIntent().getStringExtra(Constants.EXTRA_PAGE);
 			NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
-			if(wv != null && !Util.isStringNullOrEmpty(url))
+			if (wv != null && !Util.isStringNullOrEmpty(url))
 				wv.saveMyWebArchive(url);
 			return true;
 		case android.R.id.home:
@@ -643,7 +643,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 					}
 
 					// check if complete read.
-					if (contentHeight <= lastY ) {
+					if (contentHeight <= lastY) {
 						if (content != null) {
 							try {
 								PageModel page = content.getPageModel();
@@ -662,19 +662,22 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				// save for jump to last read.
 				SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance());
 				SharedPreferences.Editor editor = sharedPrefs.edit();
+				String lastPage = "";
 				if (content != null) {
-					editor.putString(Constants.PREF_LAST_READ, content.getPage());
+					lastPage = content.getPage();
 				} else {
-					editor.putString(Constants.PREF_LAST_READ, getIntent().getStringExtra(Constants.EXTRA_PAGE));
+					lastPage = getIntent().getStringExtra(Constants.EXTRA_PAGE);
 				}
+				editor.putString(Constants.PREF_LAST_READ, lastPage);
 				editor.commit();
-				Log.i(TAG, "Last Read State Update complete: " + content.getPage());
+				Log.i(TAG, "Last Read State Update complete: " + lastPage);
 			}
 		}).start();
 	}
 
 	/**
 	 * Load chapter from DB
+	 * 
 	 * @param pageModel
 	 * @param refresh
 	 */
@@ -749,6 +752,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	/**
 	 * Load saved external chapter from wac/mht
+	 * 
 	 * @param wacName
 	 */
 	@SuppressLint({ "InlinedApi", "NewApi" })
@@ -788,7 +792,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			StringBuilder html = new StringBuilder();
 			html.append("<html><head>");
 			html.append(DisplayNovelContentHtmlHelper.getCSSSheet());
-			html.append("<meta name='viewport' content='width=device-width, minimum-scale=0.5, maximum-scale=5' id='viewport-meta'/>" );
+			html.append("<meta name='viewport' content='width=device-width, minimum-scale=0.5, maximum-scale=5' id='viewport-meta'/>");
 			html.append(DisplayNovelContentHtmlHelper.prepareJavaScript(lastPos, content.getBookmarks(), getBookmarkPreferences()));
 			html.append("</head><body onclick='toogleHighlight(this, event);' onload='setup();'>");
 			html.append(content.getContent());
@@ -817,6 +821,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	/**
 	 * Set activity title to current chapter title.
+	 * 
 	 * @param pageModel
 	 */
 	private void setChapterTitle(PageModel pageModel) {
@@ -905,6 +910,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	/**
 	 * Used by ChromeClient to receive js update event for y-scrolling
+	 * 
 	 * @param pIndex
 	 */
 	public void updateLastLine(int pIndex) {
@@ -914,6 +920,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
 	/**
 	 * Used for floating button on fullscreen mode to open the menu.
+	 * 
 	 * @param view
 	 */
 	@SuppressLint("NewApi")
@@ -1028,7 +1035,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	public void goBottom(View view) {
 		webView.pageDown(true);
 	}
-
 
 	/* TTS */
 	private boolean getTtsStopOnPause() {
