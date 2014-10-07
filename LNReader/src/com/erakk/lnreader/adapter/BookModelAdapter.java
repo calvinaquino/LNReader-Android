@@ -310,12 +310,12 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		// check if any chapter has updates
 		for (PageModel pageModel : chapterList) {
 			if (NovelsDao.getInstance().isContentUpdated(pageModel)) {
+				ViewGroup currParent = (ViewGroup) ivHasUpdates.getParent();
+				if (currParent != null)
+					currParent.removeView(ivHasUpdates);
 				container.addView(ivHasUpdates);
 				UIHelper.setColorFilter(ivHasUpdates);
 				break;
-			}
-			else {
-				container.removeView(ivHasUpdates);
 			}
 		}
 
