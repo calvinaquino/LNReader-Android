@@ -90,9 +90,9 @@ public class NonLeakingWebView extends WebView {
 
 	@Override
 	public void destroy() {
+		setDisplayZoomControl(false);
 		super.destroy();
 		try {
-			setDisplayZoomControl(false);
 			if (sConfigCallback != null)
 				sConfigCallback.set(null, null);
 		} catch (Exception e) {
@@ -227,16 +227,16 @@ public class NonLeakingWebView extends WebView {
 		case MotionEvent.ACTION_POINTER_UP: {
 			final int pointerIndex = (ev.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK)
 					>> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-		final int pointerId = ev.getPointerId(pointerIndex);
-		if (pointerId == mActivePointerId) {
-			// This was our active pointer going up. Choose a new
-			// active pointer and adjust accordingly.
-			final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
-			mLastTouchX = ev.getX(newPointerIndex);
-			mLastTouchY = ev.getY(newPointerIndex);
-			mActivePointerId = ev.getPointerId(newPointerIndex);
-		}
-		break;
+			final int pointerId = ev.getPointerId(pointerIndex);
+			if (pointerId == mActivePointerId) {
+				// This was our active pointer going up. Choose a new
+				// active pointer and adjust accordingly.
+				final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
+				mLastTouchX = ev.getX(newPointerIndex);
+				mLastTouchY = ev.getY(newPointerIndex);
+				mActivePointerId = ev.getPointerId(newPointerIndex);
+			}
+			break;
 		}
 		}
 	}
