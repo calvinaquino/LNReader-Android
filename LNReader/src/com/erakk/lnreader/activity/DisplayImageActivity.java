@@ -57,7 +57,16 @@ public class DisplayImageActivity extends SherlockActivity implements IExtendedC
 		url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
 
 		images = intent.getStringArrayListExtra("image_list");
-		currentImageIndex = images.indexOf(url);
+		//currentImageIndex = images.indexOf(url);
+		
+		//This is just a quick fix, this must be revised as seen fit.
+		//Kitkat(4.4.2) and below get this. I don't know about later versions.
+		try{
+			currentImageIndex = images.indexOf(url);
+		} catch(Exception e){
+			//currentImageIndex = ???;
+			Log.w(TAG, "This NullPointerException is thrown when opening any Cover image, image.indexOf(url) returns NULL with url='"+url+"'", e);
+		}
 
 		executeTask(url, false);
 	}
