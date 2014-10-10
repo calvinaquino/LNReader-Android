@@ -169,7 +169,7 @@ public class NonLeakingWebView extends WebView {
 	private float mLastTouchX;
 	private float mLastTouchY;
 	private static final int INVALID_POINTER_ID = -1;
-	// The ‘active pointer’ is the one currently moving our object.
+	// The ï¿½active pointerï¿½ is the one currently moving our object.
 	private int mActivePointerId = INVALID_POINTER_ID;
 	private ScaleGestureDetector mScaleDetector;
 	private float mScaleFactor = 1.f;
@@ -255,6 +255,7 @@ public class NonLeakingWebView extends WebView {
 		}
 	}
 
+	@SuppressLint("NewApi")
 	public void saveMyWebArchive(String page) {
 		if (page == null) {
 			Toast.makeText(LNReaderApplication.getInstance(), "Empty page name!", Toast.LENGTH_SHORT).show();
