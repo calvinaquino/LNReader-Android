@@ -432,4 +432,13 @@ public class Util {
 		Log.w(TAG, String.format("Web Archive not found for %s", url));
 		return null;
 	}
+
+	public static <T> int isInList(T item, List<T> list) {
+		for (T i : list) {
+			if (i.equals(item)) {
+				return list.indexOf(i);
+			}
+		}
+		return -1;
+	}
 }

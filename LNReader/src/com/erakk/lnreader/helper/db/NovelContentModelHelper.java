@@ -76,7 +76,7 @@ public class NovelContentModelHelper {
 	 * Insert Stuff
 	 */
 
-	public static NovelContentModel insertNovelContent(SQLiteDatabase db, NovelContentModel content, PageModel page) throws Exception {
+	public static NovelContentModel insertNovelContent(SQLiteDatabase db, NovelContentModel content, PageModel page, boolean forceUpdateContent) throws Exception {
 		ContentValues cv = new ContentValues();
 		cv.put(DBHelper.COLUMN_PAGE, content.getPage());
 		cv.put(DBHelper.COLUMN_ZOOM, "" + content.getLastZoom());
@@ -105,8 +105,10 @@ public class NovelContentModelHelper {
 			}
 
 			// skip updating existing content if the page/chapter already deleted.
-			if (!page.isMissing())
+			if (!page.isMissing() || forceUpdateContent) {
+				Log.d(TAG, "Updating content for : " + content.getPage());
 				cv.put(DBHelper.COLUMN_CONTENT, content.getContent());
+			}
 
 			// Log.d(TAG, "Updating Novel Content: " + content.getPage() + " id: " + temp.getId());
 			if (content.getLastUpdate() == null)

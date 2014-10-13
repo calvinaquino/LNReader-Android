@@ -637,7 +637,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				if (content != null) {
 					content.setLastZoom(currentScale);
 					try {
-						content = NovelsDao.getInstance().updateNovelContent(content);
+						content = NovelsDao.getInstance().updateNovelContent(content, false);
 					} catch (Exception ex) {
 						Log.e(TAG, "Error when saving state: " + ex.getMessage(), ex);
 					}

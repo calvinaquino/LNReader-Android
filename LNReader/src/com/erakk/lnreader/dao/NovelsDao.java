@@ -1102,7 +1102,7 @@ public class NovelsDao {
 				try {
 					// TODO: somehow using transaction cause problem...
 					db.beginTransaction();
-					content = NovelContentModelHelper.insertNovelContent(db, content, page);
+					content = NovelContentModelHelper.insertNovelContent(db, content, page, false);
 					db.setTransactionSuccessful();
 				} finally {
 					db.endTransaction();
@@ -1113,11 +1113,11 @@ public class NovelsDao {
 		return content;
 	}
 
-	public NovelContentModel updateNovelContent(NovelContentModel content) throws Exception {
+	public NovelContentModel updateNovelContent(NovelContentModel content, boolean forceUpdateContent) throws Exception {
 		synchronized (dbh) {
 			SQLiteDatabase db = dbh.getWritableDatabase();
 			try {
-				content = NovelContentModelHelper.insertNovelContent(db, content, content.getPageModel());
+				content = NovelContentModelHelper.insertNovelContent(db, content, content.getPageModel(), forceUpdateContent);
 			} finally {
 				db.close();
 			}

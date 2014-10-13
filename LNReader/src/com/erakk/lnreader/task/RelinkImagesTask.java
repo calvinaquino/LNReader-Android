@@ -1,7 +1,14 @@
 package com.erakk.lnreader.task;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -65,15 +72,59 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 
 	@Override
 	protected Void doInBackground(Void... params) {
-		processImageInContents();
-		processBigImage();
+
+		BufferedWriter writer = null;
+		try {
+			// create a temporary file
+			String timeLog = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+			File logFile = new File(rootPath + "/RelinkImageTask_" + timeLog + ".log");
+
+			// This will output the full path where the file will be written to...
+			Log.d(TAG, "Writing to: " + logFile.getCanonicalPath());
+
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(logFile), "UTF-8"));
+
+			writer.write("Using new image base path: " + rootPath);
+			writer.newLine();
+			writer.flush();
+
+			processImageInContents(writer);
+			processBigImage(writer);
+
+			writer.write("-=EOL=-");
+		} catch (Exception e) {
+			Log.e(TAG, "Failed to write log file.", e);
+		} finally {
+			try {
+				// Close the writer regardless of what happens...
+				writer.close();
+			} catch (Exception e) {
+			}
+		}
 		return null;
 	}
 
-	private void processBigImage() {
+	private void writeLogFile(BufferedWriter writer, String key, RelinkImageData data) throws IOException {
+		writer.write("Context: " + key);
+		writer.newLine();
+		writer.write("Type: " + data.Type);
+		writer.newLine();
+		writer.write("Original Name: " + data.OriginalName);
+		writer.newLine();
+		writer.write("Tested Duplicates: ");
+		writer.newLine();
+		for (String image : data.AlternateNames) {
+			writer.write("\t" + image);
+			writer.newLine();
+		}
+		writer.flush();
+	}
+
+	private void processBigImage(BufferedWriter writer) throws IOException {
 		ArrayList<ImageModel> images = NovelsDao.getInstance().getAllImages();
 
 		int count = 1;
+		int notReplacedCount = 0, replacedCount = 0, notFoundCount = 0;
 		for (ImageModel image : images) {
 
 			if (this.isCancelled()) {
@@ -89,6 +140,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 			// skip if file exists
 			if (new File(oldPath).exists()) {
 				Log.d(TAG, "Skipping: " + oldPath);
+				++notReplacedCount;
 				continue;
 			}
 
@@ -99,22 +151,36 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 				image.setPath(newPath);
 				NovelsDao.getInstance().insertImage(image);
 				++updated;
+				++replacedCount;
 			}
 			else {
 				Log.w(TAG, "File doesn't exists: " + newPath);
+				writeLogFile(writer, image.getName(), new RelinkImageData(oldPath, newPath, ImageType.Big));
+				++notFoundCount;
 			}
-			++count;
 		}
+
+		writer.write("Big Image Summary: ");
+		writer.newLine();
+		writer.write("Total: " + images.size());
+		writer.newLine();
+		writer.write("Not replaced: " + notReplacedCount);
+		writer.newLine();
+		writer.write("Updated: " + replacedCount);
+		writer.newLine();
+		writer.write("Not Found: " + notFoundCount);
+		writer.newLine();
+		writer.newLine();
+		writer.flush();
+
 	}
 
-	private void processImageInContents() {
-
-		Log.d(TAG, "Using new image base path: " + rootPath);
-
+	private void processImageInContents(BufferedWriter writer) throws IOException {
 		// get all contents
 		ArrayList<PageModel> pages = NovelsDao.getInstance().getAllContentPageModel();
 		updated = 0;
 		int count = 1;
+		int notReplacedCount = 0, replacedCount = 0, notFoundCount = 0, totalImages = 0;
 		for (PageModel page : pages) {
 			if (this.isCancelled()) {
 				String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.relink_task_cancelled);
@@ -128,7 +194,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 			try {
 				// get the contents
 				NovelContentModel content = NovelsDao.getInstance().getNovelContent(page, false, this);
-
+				boolean isModified = false;
 				if (content != null) {
 
 					// replace the rootpath based on /project/
@@ -139,6 +205,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 					Document doc = Jsoup.parse(content.getContent());
 					Elements imageElements = doc.select("img");
 					for (Element image : imageElements) {
+						++totalImages;
 						String imgUrl = image.attr("src");
 						if (imgUrl.startsWith("file:///") && imgUrl.contains("/project/images/thumb/")) {
 							String mntImgUrl = imgUrl.replace("file:///", "");
@@ -151,27 +218,30 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 									newUrl = newUrl.replace("file:////", "file:///");
 								}
 
-								ArrayList<String> newUrls = new ArrayList<String>();
+								List<String> newUrls = new ArrayList<String>();
 								newUrls.add(newUrl);
 
 								// check with encoded / decoded filename
-								String oriFilename = mntImgUrl.substring(newUrl.lastIndexOf("/") + 1);
-								String decodedFilename = java.net.URLDecoder.decode(oriFilename, "UTF-8");
-								decodedFilename = newUrl.replace(oriFilename, decodedFilename);
-								if (newUrls.indexOf(decodedFilename) == -1)
-									newUrls.add(decodedFilename);
+								String oriFilename = newUrl.substring(newUrl.lastIndexOf("/project/images/thumb/") + 22);
+
+								if (oriFilename.contains("%")) {
+									String decodedFilename = java.net.URLDecoder.decode(oriFilename, "UTF-8");
+									decodedFilename = newUrl.replace(oriFilename, decodedFilename);
+									if (Util.isInList(decodedFilename, newUrls) == -1)
+										newUrls.add(decodedFilename);
+
+									String decodedFilenamePlus = decodedFilename.replace("+", "_");
+									if (Util.isInList(decodedFilenamePlus, newUrls) == -1)
+										newUrls.add(decodedFilenamePlus);
+								}
+
 								String encodedFilename = java.net.URLEncoder.encode(oriFilename, "UTF-8");
-								encodedFilename = newUrl.replace(oriFilename, encodedFilename);
-								newUrls.add(encodedFilename);
-								if (newUrls.indexOf(encodedFilename) == -1)
+								encodedFilename = newUrl.replace(oriFilename, encodedFilename).replace("%2F", "/");
+								if (Util.isInList(encodedFilename, newUrls) == -1)
 									newUrls.add(encodedFilename);
 
-								// replace +/%2B to _
-								String decodedFilenamePlus = decodedFilename.replace("+", "_");
-								if (newUrls.indexOf(decodedFilenamePlus) == -1)
-									newUrls.add(decodedFilenamePlus);
 								String encodedFilenamePlus = encodedFilename.replace("%2B", "_");
-								if (newUrls.indexOf(encodedFilenamePlus) == -1)
+								if (Util.isInList(encodedFilenamePlus, newUrls) == -1)
 									newUrls.add(encodedFilenamePlus);
 
 								boolean isFound = false;
@@ -183,21 +253,33 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 										Log.i(TAG, "Replace image: " + imgUrl + " ==> " + url);
 										image.attr("src", url);
 										++updated;
+										++replacedCount;
 										isFound = true;
+										isModified = true;
 										break;
 									}
 								}
-								if (!isFound)
+								if (!isFound) {
 									Log.w(TAG, "Image not found for " + imgUrl);
+									++notFoundCount;
+									writeLogFile(writer, content.getPage(), new RelinkImageData(imgUrl, newUrls, ImageType.Content));
+								}
 								String alt = image.attr("alt");
 								if (Util.isStringNullOrEmpty(alt)) {
 									image.attr("alt", image.attr("src"));
 								}
 							}
+							else {
+								Log.d(TAG, "Old Image Path exists: " + mntImgUrl);
+								++notReplacedCount;
+							}
 						}
 					}
-					content.setContent(doc.html());
-					NovelsDao.getInstance().updateNovelContent(content);
+
+					if (isModified) {
+						content.setContent(doc.html());
+						NovelsDao.getInstance().updateNovelContent(content, true);
+					}
 
 				}
 			} catch (Exception e) {
@@ -207,6 +289,21 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 			}
 			++count;
 		}
+
+		writer.write("Content Image Summary: ");
+		writer.newLine();
+		writer.write("Total Contents: " + pages.size());
+		writer.newLine();
+		writer.write("Total Images in content: " + totalImages);
+		writer.newLine();
+		writer.write("Not replaced: " + notReplacedCount);
+		writer.newLine();
+		writer.write("Updated: " + replacedCount);
+		writer.newLine();
+		writer.write("Not Found: " + notFoundCount);
+		writer.newLine();
+		writer.newLine();
+		writer.flush();
 	}
 
 	@Override
@@ -224,5 +321,29 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 			if (callback != null)
 				callback.onCompleteCallback(new CallbackEventData(message, source), null);
 		}
+	}
+
+	public class RelinkImageData {
+		public String OriginalName = "";
+		public ArrayList<String> AlternateNames = new ArrayList<String>();
+		public ImageType Type = ImageType.Big;
+
+		public RelinkImageData(String original, String altName, ImageType type) {
+			this.OriginalName = original;
+			this.AlternateNames.add(altName);
+			this.Type = type;
+		}
+
+		public RelinkImageData(String original, List<String> altNames, ImageType type) {
+			this.OriginalName = original;
+			for (String a : altNames) {
+				AlternateNames.add(a);
+			}
+			this.Type = type;
+		}
+	}
+
+	public enum ImageType {
+		Big, Content
 	}
 }
