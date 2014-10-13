@@ -18,6 +18,7 @@ import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
@@ -107,6 +108,9 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 	}
 
 	private void processImageInContents() {
+
+		Log.d(TAG, "Using new image base path: " + rootPath);
+
 		// get all contents
 		ArrayList<PageModel> pages = NovelsDao.getInstance().getAllContentPageModel();
 		updated = 0;
@@ -138,7 +142,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 						String imgUrl = image.attr("src");
 						if (imgUrl.startsWith("file:///") && imgUrl.contains("/project/images/thumb/")) {
 							String mntImgUrl = imgUrl.replace("file:///", "");
-							Log.d(TAG, "Found image : " + imgUrl);
+							Log.d(TAG, "Found image in Content : " + imgUrl);
 
 							if (!new File(mntImgUrl).exists()) {
 								Log.d(TAG, "Old image doesn't exists/moved: " + mntImgUrl);
@@ -154,10 +158,21 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 								String oriFilename = mntImgUrl.substring(newUrl.lastIndexOf("/") + 1);
 								String decodedFilename = java.net.URLDecoder.decode(oriFilename, "UTF-8");
 								decodedFilename = newUrl.replace(oriFilename, decodedFilename);
-								newUrls.add(decodedFilename);
+								if (newUrls.indexOf(decodedFilename) == -1)
+									newUrls.add(decodedFilename);
 								String encodedFilename = java.net.URLEncoder.encode(oriFilename, "UTF-8");
 								encodedFilename = newUrl.replace(oriFilename, encodedFilename);
 								newUrls.add(encodedFilename);
+								if (newUrls.indexOf(encodedFilename) == -1)
+									newUrls.add(encodedFilename);
+
+								// replace +/%2B to _
+								String decodedFilenamePlus = decodedFilename.replace("+", "_");
+								if (newUrls.indexOf(decodedFilenamePlus) == -1)
+									newUrls.add(decodedFilenamePlus);
+								String encodedFilenamePlus = encodedFilename.replace("%2B", "_");
+								if (newUrls.indexOf(encodedFilenamePlus) == -1)
+									newUrls.add(encodedFilenamePlus);
 
 								boolean isFound = false;
 								for (String url : newUrls) {
@@ -165,7 +180,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 									Log.d(TAG, "Trying to replace with " + mntNewUrl);
 
 									if (new File(mntNewUrl).exists()) {
-										Log.d(TAG, "Replace image: " + imgUrl + " ==> " + url);
+										Log.i(TAG, "Replace image: " + imgUrl + " ==> " + url);
 										image.attr("src", url);
 										++updated;
 										isFound = true;
@@ -173,7 +188,11 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 									}
 								}
 								if (!isFound)
-									Log.i(TAG, "Image not found for " + imgUrl);
+									Log.w(TAG, "Image not found for " + imgUrl);
+								String alt = image.attr("alt");
+								if (Util.isStringNullOrEmpty(alt)) {
+									image.attr("alt", image.attr("src"));
+								}
 							}
 						}
 					}

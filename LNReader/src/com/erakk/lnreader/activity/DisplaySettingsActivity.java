@@ -710,7 +710,7 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 				// Confirm task execution, useful during unintentional clicks.
 				UIHelper.createYesNoDialog(
 						dsa
-						, getResources().getString(R.string.relink_question)
+						, getResources().getString(R.string.relink_question, UIHelper.getImageRoot(LNReaderApplication.getInstance()))
 						, getResources().getString(R.string.relink_question2)
 						, new OnClickListener() {
 
