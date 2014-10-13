@@ -28,6 +28,9 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ViewGroup;
@@ -1108,34 +1111,38 @@ public class DisplaySettingsActivity extends SherlockPreferenceActivity implemen
 		final Preference css_tableBackPref = findPreference(Constants.PREF_CSS_TABLE_BACKGROUND);
 
 		css_backColorPref.setSummary(UIHelper.getBackgroundColor(this));
-		Drawable d1 = getResources().getDrawable(R.drawable.ic_square);
-		d1.mutate().setColorFilter(Color.parseColor(UIHelper.getBackgroundColor(this)), Mode.MULTIPLY);
-		css_backColorPref.setIcon(d1);
 		css_backColorPref.setOnPreferenceChangeListener(colorChangeListener);
+		setColorIcon(css_backColorPref, UIHelper.getBackgroundColor(this));
 
 		css_foreColorPref.setSummary(UIHelper.getForegroundColor(this));
-		Drawable d2 = getResources().getDrawable(R.drawable.ic_square);
-		d2.mutate().setColorFilter(Color.parseColor(UIHelper.getForegroundColor(this)), Mode.MULTIPLY);
-		css_foreColorPref.setIcon(d2);
 		css_foreColorPref.setOnPreferenceChangeListener(colorChangeListener);
+		setColorIcon(css_foreColorPref, UIHelper.getForegroundColor(this));
 
 		css_linkColorPref.setSummary(UIHelper.getLinkColor(this));
-		Drawable d3 = getResources().getDrawable(R.drawable.ic_square);
-		d3.mutate().setColorFilter(Color.parseColor(UIHelper.getLinkColor(this)), Mode.MULTIPLY);
-		css_linkColorPref.setIcon(d3);
 		css_linkColorPref.setOnPreferenceChangeListener(colorChangeListener);
+		setColorIcon(css_linkColorPref, UIHelper.getLinkColor(this));
 
 		css_tableBorderColorPref.setSummary(UIHelper.getThumbBorderColor(this));
-		Drawable d4 = getResources().getDrawable(R.drawable.ic_square);
-		d4.mutate().setColorFilter(Color.parseColor(UIHelper.getThumbBorderColor(this)), Mode.MULTIPLY);
-		css_tableBorderColorPref.setIcon(d4);
 		css_tableBorderColorPref.setOnPreferenceChangeListener(colorChangeListener);
+		setColorIcon(css_tableBorderColorPref, UIHelper.getThumbBorderColor(this));
 
 		css_tableBackPref.setSummary(UIHelper.getThumbBackgroundColor(this));
-		Drawable d5 = getResources().getDrawable(R.drawable.ic_square);
-		d5.mutate().setColorFilter(Color.parseColor(UIHelper.getThumbBackgroundColor(this)), Mode.MULTIPLY);
-		css_tableBackPref.setIcon(d5);
 		css_tableBackPref.setOnPreferenceChangeListener(colorChangeListener);
+		setColorIcon(css_tableBackPref, UIHelper.getThumbBackgroundColor(this));
+	}
+
+	private void setColorIcon(Preference colorPref, String hexColor) {
+		int c = Color.parseColor(hexColor);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			Drawable d1 = getResources().getDrawable(R.drawable.ic_square);
+			d1.mutate().setColorFilter(c, Mode.MULTIPLY);
+			colorPref.setIcon(d1);
+		}
+		else {
+			Spannable summary = new SpannableString(hexColor);
+			summary.setSpan(new ForegroundColorSpan(c), 0, summary.length(), 0);
+			colorPref.setSummary(summary);
+		}
 	}
 
 	private final OnPreferenceChangeListener colorChangeListener = new OnPreferenceChangeListener() {
