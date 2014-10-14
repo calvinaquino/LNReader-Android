@@ -3,7 +3,7 @@
     package="com.erakk.lnreader"
     android:installLocation="auto"
     android:versionCode="20141013"
-    android:versionName="1.1.21-beta4" >
+    android:versionName="1.1.21-beta3" >
 
     <uses-sdk
         android:minSdkVersion="8"

@@ -1,7 +1,9 @@
-1.1.21-beta2
+1.1.21-beta3
 - Update jsoup to 1.8.1.
 - Add option to refresh all downloaded chapter on novel details.
 - Performance updates and bug fixes.
+- Update Custom Color pref for older android (API < 11).
+- Update relink image, output log to image folder.
 
 1.1.20
 - Fix issue #162: update relink image task to cater encoded/decoded image filename
