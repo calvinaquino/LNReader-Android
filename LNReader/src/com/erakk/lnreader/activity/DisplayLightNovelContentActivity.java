@@ -724,9 +724,15 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			// check if .wac available
 			String url = pageModel.getPage();
 			String wacName = Util.getSavedWacName(url);
+			final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
 			if (!Util.isStringNullOrEmpty(wacName) && !refresh) {
 				client.setExternalNeedSave(false);
-				executeLoadWacTask(wacName);
+				String[] urlParts = url.split("#", 2);
+				if (urlParts.length == 2) {
+					executeLoadWacTask(wacName, urlParts[1]);
+				}
+				else
+					executeLoadWacTask(wacName, "");
 			}
 			else {
 				if (refresh) {
@@ -738,7 +744,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 				}
 
 				client.setExternalNeedSave(true);
-				final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
+
 				setWebViewSettings();
 				wv.loadUrl(url);
 			}
@@ -756,9 +762,9 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 	 * @param wacName
 	 */
 	@SuppressLint({ "InlinedApi", "NewApi" })
-	private void executeLoadWacTask(String wacName) {
+	private void executeLoadWacTask(String wacName, String anchorLink) {
 		NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
-		LoadWacTask task = new LoadWacTask(this, webView, wacName, client);
+		LoadWacTask task = new LoadWacTask(this, webView, wacName, client, anchorLink);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 			task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 		else

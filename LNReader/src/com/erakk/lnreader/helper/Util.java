@@ -418,9 +418,25 @@ public class Util {
 		return sslSocketFactory;
 	}
 
+	public static String getBaseWacName(String url) {
+		// strip anchor link
+		if (url.contains("#")) {
+			url = url.substring(0, url.indexOf('#'));
+			Log.d(TAG, "Stripping anchor tag");
+		}
+		// strip mobile redirect for blogspot
+		if (url.contains(".blogspot.")) {
+			url = url.replace("?m=1", "");
+			Log.d(TAG, "Stripping mobile redirection parameter for blogspot.");
+		}
+		Log.d(TAG, "Using base url: " + url);
+		return Util.calculateCRC32(url);
+	}
+
 	public static String getSavedWacName(String url) {
 		String path = UIHelper.getImageRoot(LNReaderApplication.getInstance()) + "/wac";
-		String filename = path + "/" + Util.calculateCRC32(url);
+
+		String filename = path + "/" + getBaseWacName(url);
 		String extensions[] = { ".wac", ".mht" };
 		for (String ext : extensions) {
 			File temp = new File(filename + ext);

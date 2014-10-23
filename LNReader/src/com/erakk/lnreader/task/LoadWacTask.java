@@ -25,12 +25,14 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 	private final IExtendedCallbackNotifier<AsyncTaskResult<?>> owner;
 	private final WebArchiveReader wr;
 	private final String source;
+	private final String anchorLink;
 	private String extractedMhtName;
 
-	public LoadWacTask(IExtendedCallbackNotifier<AsyncTaskResult<?>> owner, WebView wv, String wacName, final WebViewClient client) {
+	public LoadWacTask(IExtendedCallbackNotifier<AsyncTaskResult<?>> owner, WebView wv, String wacName, final WebViewClient client, String anchorLink) {
 		this.wv = wv;
 		this.wacName = wacName;
 		this.owner = owner;
+		this.anchorLink = anchorLink;
 
 		wr = new WebArchiveReader() {
 
@@ -60,11 +62,12 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 	}
 
 	private boolean loadFromWac(String wacName) {
-		Log.i(TAG, "Loading from WAC: " + wacName);
-		publishProgress(new CallbackEventData("Loading from WAC: " + wacName, source));
+		String msg = "Loading from web archive: " + wacName;
+		Log.i(TAG, msg);
+		publishProgress(new CallbackEventData(msg, source));
 		try {
 			if (wacName.endsWith(".mht")) {
-				Log.i(TAG, "MHT Loader");
+				Log.i(TAG, "Using MHT Loader");
 				String tempPath = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + "/wac/temp";
 				File f = new File(tempPath);
 				if (!f.exists())
@@ -75,7 +78,7 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 				return true;
 			}
 			else if (wacName.endsWith(".wac")) {
-				Log.i(TAG, "WAC Loader");
+				Log.i(TAG, "Using WAC Loader");
 				FileInputStream is;
 				is = new FileInputStream(wacName);
 				return wr.readWebArchive(is);
@@ -92,10 +95,10 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
 		String message = null;
 		if (result.getResult()) {
 			if (wacName.endsWith(".mht")) {
-				wv.loadUrl("file://" + Uri.encode(extractedMhtName, "/\\"));
+				wv.loadUrl("file://" + Uri.encode(extractedMhtName, "/\\") + "#" + anchorLink);
 			}
 			else {
-				wr.loadToWebView(wv);
+				wr.loadToWebView(wv, anchorLink);
 			}
 			message = "Load from: " + wacName;
 		}

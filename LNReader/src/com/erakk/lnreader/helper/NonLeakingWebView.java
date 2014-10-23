@@ -280,21 +280,8 @@ public class NonLeakingWebView extends WebView {
 
 		try {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-				// simple checking for redirection on some websites
-				// - cetranslation.blogspot.com
-				String baseUrl = this.getUrl();
-				if (baseUrl.contains(".blogspot.")) {
-					Log.d(TAG, "Checking blogspot redirection rule");
-					String[] temp = baseUrl.split("/", 4);
-					String[] temp2 = page.split("/", 4);
-					if (temp[3].startsWith(temp2[3])) {
-						Log.d(TAG, String.format("Page redirected %s => %s", page, baseUrl));
-						baseUrl = page;
-					}
-				}
-
-				String wacName = getWacNameForSaving(baseUrl, false);
-				final String p2 = baseUrl;
+				String wacName = getWacNameForSaving(this.getUrl(), false);
+				final String p2 = this.getUrl();
 				this.saveWebArchive(wacName, false, new ValueCallback<String>() {
 
 					@Override
@@ -316,7 +303,7 @@ public class NonLeakingWebView extends WebView {
 			f.mkdirs();
 		Log.i(TAG, "WAC dirs: " + path);
 
-		String filename = path + "/" + Util.calculateCRC32(url);
+		String filename = path + "/" + Util.getBaseWacName(url);
 		String extension = ".wac";
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

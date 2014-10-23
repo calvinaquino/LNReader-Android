@@ -104,17 +104,29 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 			if (!isInternalPages) {
 				boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(caller).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
 				if (useInternalWebView) {
-					PageModel pageModel = new PageModel();
-					pageModel.setPage(url);
-					PageModel temp = pageModel;
-					try {
-						temp = NovelsDao.getInstance().getExistingPageModel(pageModel, null);
-					} catch (Exception e) {
-						Log.e(TAG, "Failed to get pageModel: " + url, e);
+
+					// check if the same page and trying to load anchor link.
+					// need to handle if page use urlparams to do navigations.
+					String currUrl = view.getUrl();// caller.getIntent().getStringExtra(Constants.EXTRA_PAGE);
+					String[] urlParts = url.split("#", 2);
+					String[] urlQuery = urlParts[0].split("\\?", 2);
+					if (!Util.isStringNullOrEmpty(currUrl) && currUrl.startsWith(urlQuery[0])) {
+						if (urlParts.length == 2)
+							view.loadUrl("javascript:window.location.hash=" + urlParts[1] + ";");
 					}
-					if (temp != null)
-						pageModel = temp;
-					caller.loadExternalUrl(pageModel, false);
+					else {
+						PageModel pageModel = new PageModel();
+						pageModel.setPage(url);
+						PageModel temp = pageModel;
+						try {
+							temp = NovelsDao.getInstance().getExistingPageModel(pageModel, null);
+						} catch (Exception e) {
+							Log.e(TAG, "Failed to get pageModel: " + url, e);
+						}
+						if (temp != null)
+							pageModel = temp;
+						caller.loadExternalUrl(pageModel, false);
+					}
 				} else {
 					// set the intent page to the current page
 					caller.getIntent().removeExtra(Constants.EXTRA_PAGE);

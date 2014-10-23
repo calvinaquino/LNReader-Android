@@ -93,7 +93,7 @@ public abstract class WebArchiveReader {
 		return null;
 	}
 
-	public boolean loadToWebView(WebView v) {
+	public boolean loadToWebView(final WebView v, final String anchorLink) {
 		myWebView = v;
 		v.setWebViewClient(new WebClient());
 		WebSettings webSettings = v.getSettings();
@@ -147,6 +147,13 @@ public abstract class WebArchiveReader {
 				 */
 			}
 			String baseUrl = new String(getElBytes(ar, "url"));
+			if (!Util.isStringNullOrEmpty(anchorLink)) {
+				String[] urlParts = baseUrl.split("#", 2);
+				if (urlParts.length == 2) {
+					baseUrl = urlParts[0] + "#" + anchorLink;
+				}
+			}
+			Log.d(TAG, "Base Url: " + baseUrl);
 			v.loadDataWithBaseURL(baseUrl, topHtml, "text/html", "UTF-8", null);
 		} catch (Exception e) {
 			e.printStackTrace();
