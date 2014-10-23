@@ -39,6 +39,7 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
 	boolean showUpdate = true;
 	boolean showNew = true;
 	boolean showDeleted = true;
+	boolean showExternal = true;
 
 	public UpdateInfoModelAdapter(Context context, int resourceId, List<UpdateInfoModel> objects) {
 		super(context, resourceId, objects);
@@ -90,13 +91,18 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
 		filterData();
 	}
 
+	public void filterExternal(boolean value) {
+		this.showExternal = value;
+		filterData();
+	}
+
 	private void filterData() {
 		this.clear();
 		data.clear();
 		for (UpdateInfoModel item : originalData) {
 			switch (item.getUpdateType()) {
 			case New:
-				if (showNew)
+				if (showNew && (!item.isExternal() || showExternal))
 					add(item);
 				break;
 			case NewNovel:
@@ -104,7 +110,7 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
 					add(item);
 				break;
 			case Updated:
-				if (showUpdate)
+				if (showUpdate && (!item.isExternal() || showExternal))
 					add(item);
 				break;
 			case UpdateTos:
@@ -112,7 +118,7 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
 					add(item);
 				break;
 			case Deleted:
-				if (showDeleted)
+				if (showDeleted && (!item.isExternal() || showExternal))
 					add(item);
 				break;
 			default:
@@ -208,6 +214,15 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
 				else {
 					holder.txtUpdateTitle.setTextColor(Constants.COLOR_UNREAD_DARK);
 				}
+			}
+
+			// check external based on title
+			// TODO: need to moved the value to db
+			if (page.getUpdateTitle().endsWith(" - EXTERNAL LINK")) {
+				page.setExternal(true);
+			}
+			else {
+				page.setExternal(false);
 			}
 		}
 

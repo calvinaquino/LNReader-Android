@@ -16,6 +16,8 @@ public class UpdateInfoModel {
 
 	private boolean isSelected;
 
+	private boolean isExternal;
+
 	public int getId() {
 		return id;
 	}
@@ -75,6 +77,14 @@ public class UpdateInfoModel {
 
 	public void setSelected(boolean isSelected) {
 		this.isSelected = isSelected;
+	}
+
+	public boolean isExternal() {
+		return isExternal;
+	}
+
+	public void setExternal(boolean isExternal) {
+		this.isExternal = isExternal;
 	}
 
 }

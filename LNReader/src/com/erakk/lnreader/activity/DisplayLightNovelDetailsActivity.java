@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -110,10 +109,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 	}
 
 	private void loadChapter(PageModel chapter) {
-		boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
-
-		// if (!chapter.isMissing()) {
-		if (chapter.isExternal() && !useInternalWebView) {
+		if (chapter.isExternal() && !UIHelper.isUseInternalWebView(this)) {
 			try {
 				Uri url = Uri.parse(chapter.getPage());
 				Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);

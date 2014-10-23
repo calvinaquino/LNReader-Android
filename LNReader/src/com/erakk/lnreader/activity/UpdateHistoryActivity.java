@@ -3,6 +3,7 @@ package com.erakk.lnreader.activity;
 import java.util.ArrayList;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -77,8 +78,14 @@ public class UpdateHistoryActivity extends SherlockActivity implements IExtended
 		else if (item.getUpdateType() == UpdateType.New ||
 				item.getUpdateType() == UpdateType.Updated ||
 				item.getUpdateType() == UpdateType.UpdateTos) {
-			intent = new Intent(this, DisplayLightNovelContentActivity.class);
-			intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
+
+			if (item.isExternal() && !UIHelper.isUseInternalWebView(this)) {
+				intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getUpdatePage()));
+			}
+			else {
+				intent = new Intent(this, DisplayLightNovelContentActivity.class);
+				intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
+			}
 		}
 
 		if (intent != null)
@@ -189,6 +196,12 @@ public class UpdateHistoryActivity extends SherlockActivity implements IExtended
 			if (adapter != null) {
 				item.setChecked(!item.isChecked());
 				adapter.filterDeleted(item.isChecked());
+			}
+			return true;
+		case R.id.menu_show_external:
+			if (adapter != null) {
+				item.setChecked(!item.isChecked());
+				adapter.filterExternal(item.isChecked());
 			}
 			return true;
 		case R.id.menu_run_update:

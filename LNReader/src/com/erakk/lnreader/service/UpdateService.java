@@ -133,8 +133,10 @@ public class UpdateService extends Service {
 						Log.e(TAG, "Error when getting Novel title", ex);
 					}
 					novelTitle = novelTitle + pageModel.getTitle() + " (" + pageModel.getBook(true).getTitle() + ")";
-					if (pageModel.isExternal())
+					if (pageModel.isExternal()) {
 						novelTitle += " - EXTERNAL LINK";
+						updateInfo.setExternal(true);
+					}
 					updateInfo.setUpdateTitle(novelTitle);
 				}
 
