@@ -84,7 +84,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 
 			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(logFile), "UTF-8"));
 
-			writer.write("Using new image base path: " + rootPath);
+			writer.write("INF1. Using new image base path: " + rootPath);
 			writer.newLine();
 			writer.flush();
 
@@ -121,6 +121,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 	}
 
 	private void processBigImage(BufferedWriter writer) throws IOException {
+		writer.write("BIG1. Start processing big images");
 		ArrayList<ImageModel> images = NovelsDao.getInstance().getAllImages();
 
 		int count = 1;
@@ -160,7 +161,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 			}
 		}
 
-		writer.write("Big Image Summary: ");
+		writer.write("BIG2. Big Image Summary: ");
 		writer.newLine();
 		writer.write("Total: " + images.size());
 		writer.newLine();
@@ -176,6 +177,8 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 	}
 
 	private void processImageInContents(BufferedWriter writer) throws IOException {
+		writer.write("CTX1. Start processing images in contents");
+		writer.newLine();
 		// get all contents
 		ArrayList<PageModel> pages = NovelsDao.getInstance().getAllContentPageModel();
 		updated = 0;
@@ -290,7 +293,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 			++count;
 		}
 
-		writer.write("Content Image Summary: ");
+		writer.write("CTX2. Content Image Summary: ");
 		writer.newLine();
 		writer.write("Total Contents: " + pages.size());
 		writer.newLine();
