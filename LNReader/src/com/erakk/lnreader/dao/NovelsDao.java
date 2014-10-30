@@ -1403,7 +1403,7 @@ public class NovelsDao {
 	private boolean getUseAppKeystore() {
 		boolean result = UIHelper.getUseAppKeystore(LNReaderApplication.getInstance().getApplicationContext());
 		if (result) {
-			Log.i(TAG, "Using app keystore");
+			Log.d(TAG, "Using app keystore");
 		}
 		return result;
 	}

@@ -11,6 +11,8 @@ import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.helper.BakaReaderException;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 
@@ -27,8 +29,6 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 
 	@Override
 	protected void onPreExecute() {
-		// executed on UI thread.
-		// owner.toggleProgressBar(true);
 		boolean exists = false;
 		exists = owner.downloadListSetup(this.taskId, null, 0, false);
 		if (exists)
@@ -45,18 +45,27 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 		Context ctx = owner.getContext();
 		ArrayList<NovelCollectionModel> result = new ArrayList<NovelCollectionModel>();
 		totalParts = params.length;
+
+		ArrayList<Exception> exs = new ArrayList<Exception>();
 		for (PageModel pageModel : params) {
 			currentPart++;
 			try {
+				Log.i("DownloadNovelDetailsTask", "Downloading: " + pageModel.getPage());
 				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_details_task_progress, pageModel.getTitle()), this.taskId));
 				NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetailsFromInternet(pageModel, this);
-				Log.d("DownloadNovelDetailsTask", "Downloaded: " + novelCol.getPage());
 				result.add(novelCol);
 			} catch (Exception e) {
 				Log.e("DownloadNovelDetailsTask", "Failed to download novel details for " + pageModel.getPage() + ": " + e.getMessage(), e);
 				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_details_task_error, pageModel.getPage(), e.getMessage()), this.taskId));
-				return new AsyncTaskResult<NovelCollectionModel[]>(e);
+				exs.add(e);
 			}
+		}
+		if (exs.size() == 1) {
+			return new AsyncTaskResult<NovelCollectionModel[]>(new BakaReaderException(exs.get(0).getMessage(), BakaReaderException.DOWNLOADNOVELDETAIL_ERROR));
+		}
+		else if (exs.size() > 1) {
+			String errors = Util.join(exs, "\n");
+			return new AsyncTaskResult<NovelCollectionModel[]>(new BakaReaderException(errors, BakaReaderException.MULTIPLE_ERRORS));
 		}
 		return new AsyncTaskResult<NovelCollectionModel[]>(result.toArray(new NovelCollectionModel[result.size()]), NovelCollectionModel[].class);
 	}

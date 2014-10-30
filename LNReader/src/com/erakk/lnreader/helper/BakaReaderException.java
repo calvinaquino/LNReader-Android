@@ -14,6 +14,9 @@ public class BakaReaderException extends Exception {
 	public static final int UPDATE_FAILED_NOVEL = -6004;
 	public static final int UPDATE_FAILED_CHAPTER = -6005;
 
+	public static final int DOWNLOADNOVELDETAIL_ERROR = -7001;
+	public static final int MULTIPLE_ERRORS = -9999;
+
 	private final int errorCode;
 
 	public BakaReaderException(String message, int errorCode) {
