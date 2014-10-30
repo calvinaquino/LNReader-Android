@@ -25,6 +25,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 	private boolean scaleChangedRunnablePending = false;
 
 	private boolean isExternalNeedSave = true;
+	public String currentUrl = "";
 
 	public BakaTsukiWebViewClient(DisplayLightNovelContentActivity caller) {
 		super();
@@ -46,6 +47,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 
 		caller.setLastReadState();
 		Log.d(TAG, "Handling: " + url);
+		currentUrl = url;
 
 		// if image file
 		if (url.contains("title=File:")) {
@@ -149,12 +151,15 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 			NonLeakingWebView wv = (NonLeakingWebView) caller.findViewById(R.id.webViewContent);
 			String page = caller.getIntent().getStringExtra(Constants.EXTRA_PAGE);
 
-			if (!isExternalNeedSave || !getAllowSaveExternal()) {
-				Log.d(TAG, "Skip auto save for: " + page + " " + !isExternalNeedSave + " " + !getAllowSaveExternal());
-				return;
+			// assumption all external page is start with http
+			// and ignore for internal pages which loaded with base url to bakatsuki.org
+			if (url.startsWith("http") && !url.startsWith(UIHelper.getBaseUrl(view.getContext()))) {
+				if (!isExternalNeedSave || !getAllowSaveExternal()) {
+					Log.d(TAG, "Skip auto save for: " + page + " " + !isExternalNeedSave + " " + !getAllowSaveExternal());
+					return;
+				}
+				wv.saveMyWebArchive(url);
 			}
-
-			wv.saveMyWebArchive(page);
 		}
 	}
 

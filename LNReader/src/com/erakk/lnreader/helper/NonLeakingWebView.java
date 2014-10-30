@@ -258,30 +258,37 @@ public class NonLeakingWebView extends WebView {
 	@SuppressLint("NewApi")
 	public void saveMyWebArchive(String page) {
 		if (page == null) {
-			Toast.makeText(LNReaderApplication.getInstance(), "Empty page name!", Toast.LENGTH_SHORT).show();
-			Log.w(TAG, "Empty page name!");
+			Log.w(TAG, "Empty page name, trying to resolve from current webview url!");
+
+			String url = this.getUrl();
+			if (Util.isStringNullOrEmpty(url)) {
+				Log.w(TAG, "Empty Url!");
+				return;
+			}
+			page = url;
+		}
+
+		if (!page.startsWith("http")) {
+			Log.w(TAG, "Skipping non-http url: " + page);
 			return;
 		}
 
-		String url = this.getUrl();
-		if (Util.isStringNullOrEmpty(url)) {
-			Log.w(TAG, "Empty Url!");
-			return;
-		}
-
+		Log.d(TAG, "Tring to save: " + page);
 		try {
 			PageModel pageModel = new PageModel(page);
 			pageModel = NovelsDao.getInstance().getExistingPageModel(pageModel, null);
-			if (pageModel != null && !pageModel.isExternal())
+			if (pageModel != null && !pageModel.isExternal()) {
+				Log.w(TAG, "PageModel: " + pageModel.getPage() + " is not external!");
 				return;
+			}
 		} catch (Exception e1) {
 			Log.e(TAG, "Failed to load page model: " + page, e1);
 		}
 
 		try {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-				String wacName = getWacNameForSaving(this.getUrl(), false);
-				final String p2 = this.getUrl();
+				String wacName = getWacNameForSaving(page, false);
+				final String p2 = page;
 				this.saveWebArchive(wacName, false, new ValueCallback<String>() {
 
 					@Override

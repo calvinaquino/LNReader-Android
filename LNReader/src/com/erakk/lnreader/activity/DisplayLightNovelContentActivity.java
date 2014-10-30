@@ -429,6 +429,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			// save based on current intent page name.
 			String url = getIntent().getStringExtra(Constants.EXTRA_PAGE);
 			NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
+			if (!url.startsWith("http")) {
+				url = getTitle().toString();
+				Log.w(TAG, "Current page is not started with http, resolve from current webview url: " + url);
+			}
+
 			if (wv != null && !Util.isStringNullOrEmpty(url))
 				wv.saveMyWebArchive(url);
 			return true;
@@ -805,6 +810,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 			html.append("</body></html>");
 
 			wv.loadDataWithBaseURL(UIHelper.getBaseUrl(this), html.toString(), "text/html", "utf-8", "");
+			client.currentUrl = pageModel.getPage();
 			if (content.getLastZoom() > 0) {
 				wv.setInitialScale((int) (content.getLastZoom() * 100));
 			} else {
