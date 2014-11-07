@@ -111,7 +111,7 @@ public class RelinkImagesTask extends AsyncTask<Void, ICallbackEventData, Void> 
 		writer.newLine();
 		writer.write("Original Name: " + data.OriginalName);
 		writer.newLine();
-		writer.write("Tested Duplicates: ");
+		writer.write("Tested File Paths: ");
 		writer.newLine();
 		for (String image : data.AlternateNames) {
 			writer.write("\t" + image);

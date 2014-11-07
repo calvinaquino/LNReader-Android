@@ -1,3 +1,9 @@
+1.1.23
+- Fix Issue #166: External Url anchor handling.
+- Update relink logger text.
+- Update logic for download all novel info.
+- Update chapter listing to show actual url for external chapter.
+
 1.1.21
 - Update jsoup to 1.8.1.
 - Add option to refresh all downloaded chapter on novel details.

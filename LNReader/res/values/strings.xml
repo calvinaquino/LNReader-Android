@@ -419,7 +419,7 @@
     <string name="load_novel_chapters_fetch">Fetching chapters in %1$s&#8230;</string>
     <string name="load_novel_chapters_saving">Saving chapters&#8230;</string>
     <string name="load_novel_chapters_download_info">Downloading chapter info %1$d of %2$d&#8230;</string>
-    <string name="load_novel_chapters_download_external">Downloading external chapter %1$d of %2$d&#8230;</string>
+    <string name="load_novel_chapters_download_external">Downloading external chapter info %1$d of %2$d&#8230;</string>
     <string name="load_novel_image_download">Downloading image %1$s&#8230;</string>
     <string name="load_novel_image_fetch">Fetching image from %1$s&#8230;</string>
     <string name="added">Added</string>
