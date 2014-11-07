@@ -35,6 +35,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		ImageView ivHasUpdates;
 		TextView tvLastUpdate;
 		TextView tvLastCheck;
+		TextView tvUrl;
 	}
 
 	static class BookModelGroupViewHolder {
@@ -83,9 +84,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		if (view == null) {
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			int resourceId = R.layout.expandchapter_list_item;
-			// if(UIHelper.IsSmallScreen(((Activity)context))) {
-			// resourceId = R.layout.expandchapter_list_item_small;
-			// }
+
 			view = inflater.inflate(resourceId, null);
 			holder = new BookModelChildViewHolder();
 			holder.txtNovel = (TextView) view.findViewById(R.id.novel_chapter);
@@ -121,6 +120,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 
 			holder.tvLastUpdate = (TextView) view.findViewById(R.id.novel_last_update);
 			holder.tvLastCheck = (TextView) view.findViewById(R.id.novel_last_check);
+			holder.tvUrl = (TextView) view.findViewById(R.id.novel_url);
 
 			view.setTag(holder);
 		}
@@ -173,6 +173,17 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			String wacName = Util.getSavedWacName(child.getPage());
 			if (!Util.isStringNullOrEmpty(wacName)) {
 				child.setDownloaded(true);
+			}
+
+			if (holder.tvUrl != null) {
+				holder.tvUrl.setText(child.getPage());
+				holder.tvUrl.setVisibility(View.VISIBLE);
+			}
+		}
+		else {
+			if (holder.tvUrl != null) {
+				holder.tvUrl.setText("");
+				holder.tvUrl.setVisibility(View.GONE);
 			}
 		}
 
