@@ -2,7 +2,6 @@ package com.erakk.lnreader.adapter;
 
 import java.util.List;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.Log;
@@ -18,7 +17,6 @@ import android.widget.Toast;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
-import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.PageModel;
 
 public class SearchPageModelAdapter extends PageModelAdapter {
@@ -36,57 +34,43 @@ public class SearchPageModelAdapter extends PageModelAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View row = convertView;
-		SearchPageModelHolder holder = null;
-
 		final PageModel page = data.get(position);
+		View view = convertView;
+		SearchPageModelHolder holder;
 
-		LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-		row = inflater.inflate(layoutResourceId, parent, false);
+		if (view == null) {
+			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			view = inflater.inflate(layoutResourceId, parent, false);
 
-		holder = new SearchPageModelHolder();
-		holder.txtNovel = (TextView) row.findViewById(R.id.novel_name);
+			holder = new SearchPageModelHolder();
+			holder.txtNovel = (TextView) view.findViewById(R.id.novel_name);
+			holder.txtLastUpdate = (TextView) view.findViewById(R.id.novel_last_update);
+			holder.txtLastCheck = (TextView) view.findViewById(R.id.novel_last_check);
+			holder.chkIsWatched = (CheckBox) view.findViewById(R.id.novel_is_watched);
+
+			view.setTag(holder);
+		}
+		else {
+			holder = (SearchPageModelHolder) view.getTag();
+		}
+
 		if (holder.txtNovel != null) {
-			String title = "";
-			if (page.getType().equalsIgnoreCase(PageModel.TYPE_NOVEL)) {
-				title = page.getTitle();
-			} else {
-				// novel name
-				try {
-					title = page.getParentPageModel().getTitle() + ": ";
-				} catch (Exception e) {
-					Log.e(TAG, "Unable to get novel name: " + page.getParent(), e);
-					title = "Chapter: ";
-				}
-				// book name
-				BookModel book = page.getBook(false);
-				if (book != null)
-					title += " " + book.getTitle();
-				// chapter name
-				title += "\n\t" + page.getTitle();
-			}
+			String title = resolveTitle(page);
 			holder.txtNovel.setText(title);
 			if (page.isHighlighted()) {
 				holder.txtNovel.setTypeface(null, Typeface.BOLD);
 				holder.txtNovel.setTextSize(18);
 			}
 		}
-
-		holder.txtLastUpdate = (TextView) row.findViewById(R.id.novel_last_update);
 		if (holder.txtLastUpdate != null) {
 			holder.txtLastUpdate.setText(context.getResources().getString(R.string.last_update) + ": " + Util.formatDateForDisplay(context, page.getLastUpdate()));
 		}
-
-		holder.txtLastCheck = (TextView) row.findViewById(R.id.novel_last_check);
 		if (holder.txtLastCheck != null) {
 			holder.txtLastCheck.setText(context.getResources().getString(R.string.last_check) + ": " + Util.formatDateForDisplay(context, page.getLastCheck()));
 		}
-
-		holder.chkIsWatched = (CheckBox) row.findViewById(R.id.novel_is_watched);
 		if (holder.chkIsWatched != null) {
 			if (page.getType().equalsIgnoreCase(PageModel.TYPE_NOVEL)) {
 				holder.chkIsWatched.setVisibility(View.VISIBLE);
-				// Log.d(TAG, page.getId() + " " + page.getTitle() + " isWatched: " + page.isWatched());
 				holder.chkIsWatched.setChecked(page.isWatched());
 				holder.chkIsWatched.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
@@ -97,7 +81,7 @@ public class SearchPageModelAdapter extends PageModelAdapter {
 						} else {
 							Toast.makeText(context, "Removed from watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
 						}
-						// update the db!
+
 						page.setWatched(isChecked);
 						NovelsDao.getInstance().updatePageModel(page);
 					}
@@ -106,9 +90,31 @@ public class SearchPageModelAdapter extends PageModelAdapter {
 				holder.chkIsWatched.setVisibility(View.GONE);
 			}
 		}
+		return view;
+	}
 
-		row.setTag(holder);
-		return row;
+	/**
+	 * @param page
+	 * @return
+	 */
+	private String resolveTitle(final PageModel page) {
+		String title;
+		if (page.getType().equalsIgnoreCase(PageModel.TYPE_NOVEL)) {
+			title = page.getTitle();
+		} else {
+			// novel name
+			try {
+				title = page.getParentPageModel().getTitle() + ": ";
+			} catch (Exception e) {
+				Log.e(TAG, "Unable to get novel name: " + page.getParent(), e);
+				title = "Chapter: ";
+			}
+			// book name
+			title += " " + page.getBookTitle();
+			// chapter name
+			title += "\n\t" + page.getTitle();
+		}
+		return title;
 	}
 
 	static class SearchPageModelHolder {

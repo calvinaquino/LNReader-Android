@@ -43,6 +43,7 @@ public class PageModel {
 
 	// not saved to db
 	private boolean isUpdated = false;
+	private String bookTitle = null;
 
 	public PageModel() {
 	}
@@ -184,16 +185,23 @@ public class PageModel {
 		this.isDownloaded = isDownloaded;
 	}
 
+	public String getBookTitle() {
+		if (parent == null)
+			return "";
+
+		bookTitle = parent.substring(parent.indexOf(Constants.NOVEL_BOOK_DIVIDER) + Constants.NOVEL_BOOK_DIVIDER.length());
+		return bookTitle;
+	}
+
 	public BookModel getBook(boolean autoDownload) {
 		if (this.getType() != null && this.getType().equals(TYPE_CONTENT)) {
 			if (this.book == null) {
 				NovelsDao dao = NovelsDao.getInstance();
 				try {
-					String bookTitle = parent.substring(parent.indexOf(Constants.NOVEL_BOOK_DIVIDER) + Constants.NOVEL_BOOK_DIVIDER.length());
 					NovelCollectionModel details = dao.getNovelDetails(getParentPageModel(), null, autoDownload);
 					if (details != null) {
 						for (BookModel tempBook : details.getBookCollections()) {
-							if (tempBook != null && tempBook.getTitle().equals(bookTitle)) {
+							if (tempBook != null && tempBook.getTitle().equals(getBookTitle())) {
 								this.book = tempBook;
 								break;
 							}
