@@ -57,18 +57,9 @@ public class DisplayImageActivity extends SherlockActivity implements IExtendedC
 		url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
 
 		images = intent.getStringArrayListExtra("image_list");
-		//currentImageIndex = images.indexOf(url);
-		
-		//This is just a quick fix, this must be revised as seen fit.
-		//Kitkat(4.4.2) and below get this. I don't know about later versions.
-		try{
+		if (images != null) {
 			currentImageIndex = images.indexOf(url);
-		} catch(Exception e){
-			//currentImageIndex = ???;
-			Log.w(TAG, "This NullPointerException is thrown when opening any Cover image, image.indexOf(url) returns NULL with url='"+url+"'", e);
 		}
-
-		executeTask(url, false);
 	}
 
 	public void setupWebView() {
@@ -87,6 +78,24 @@ public class DisplayImageActivity extends SherlockActivity implements IExtendedC
 	protected void onResume() {
 		super.onResume();
 		setupWebView();
+
+		executeTask(url, false);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		savedInstanceState.putInt("currentImageIndex", currentImageIndex);
+		savedInstanceState.putString(Constants.EXTRA_IMAGE_URL, url);
+		savedInstanceState.putStringArrayList("image_list", images);
+	}
+
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		currentImageIndex = savedInstanceState.getInt("currentImageIndex", 0);
+		url = savedInstanceState.getString(Constants.EXTRA_IMAGE_URL);
+		images = savedInstanceState.getStringArrayList("image_list");
 	}
 
 	@Override
@@ -167,11 +176,13 @@ public class DisplayImageActivity extends SherlockActivity implements IExtendedC
 			return true;
 		case R.id.menu_chapter_previous:
 			currentImageIndex--;
-			executeTask(images.get(currentImageIndex), false);
+			url = images.get(currentImageIndex);
+			executeTask(url, false);
 			return true;
 		case R.id.menu_chapter_next:
 			currentImageIndex++;
-			executeTask(images.get(currentImageIndex), false);
+			url = images.get(currentImageIndex);
+			executeTask(url, false);
 			return true;
 		case android.R.id.home:
 			super.onBackPressed();
