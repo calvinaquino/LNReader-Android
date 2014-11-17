@@ -3,6 +3,7 @@
 - Fix Issue #170: Crash when scrolling chapter list.
 - Fix Issue #171: Keep chapter color when scrolling.
 - Optimize search loading.
+- Update SDK to v21 (Android 5.0)
 
 1.1.23
 - Fix Issue #166: External Url anchor handling.
