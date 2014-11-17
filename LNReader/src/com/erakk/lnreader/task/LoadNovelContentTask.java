@@ -45,11 +45,11 @@ public class LoadNovelContentTask extends AsyncTask<Void, ICallbackEventData, As
 		Context ctx = LNReaderApplication.getInstance().getApplicationContext();
 		try {
 			if (refresh) {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_refreshing), source));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_refreshing, pageModel.getTitle()), source));
 				return new AsyncTaskResult<NovelContentModel>(NovelsDao.getInstance().getNovelContentFromInternet(pageModel, this), NovelContentModel.class);
 			}
 			else {
-				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_loading), source));
+				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_loading, pageModel.getTitle()), source));
 				return new AsyncTaskResult<NovelContentModel>(NovelsDao.getInstance().getNovelContent(pageModel, true, this), NovelContentModel.class);
 			}
 		} catch (Exception e) {

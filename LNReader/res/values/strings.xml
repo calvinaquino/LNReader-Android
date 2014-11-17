@@ -300,8 +300,8 @@
     <string name="load_novel_detail_task_loading">Loading chapter list&#8230;</string>
     <string name="load_novel_detail_task_complete">Chapter List loaded.</string>
     <string name="load_novel_detail_task_error">Error when getting chapter list: %1$s.</string>
-    <string name="load_novel_content_task_refreshing">Refreshing content&#8230;</string>
-    <string name="load_novel_content_task_loading">Loading content&#8230;</string>
+    <string name="load_novel_content_task_refreshing">Refreshing content: %1$s</string>
+    <string name="load_novel_content_task_loading">Loading content: %1$s</string>
     <string name="load_novel_content_task_complete">Content Loaded.</string>
     <string name="load_novel_content_task_error">Error when getting content: %1$s.</string>
     <string name="load_image_task_refreshing">Refreshing image&#8230;</string>

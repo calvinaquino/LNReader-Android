@@ -295,8 +295,8 @@
     <string name="load_novel_detail_task_loading">Pobieranie listy rozdziałów...</string>
     <string name="load_novel_detail_task_complete">Lista rozdziałów wczytana.</string>
     <string name="load_novel_detail_task_error">Błąd przy pobieraniu listy rozdziałów: %1$s.</string>
-    <string name="load_novel_content_task_refreshing">Pobieranie zawartości...</string>
-    <string name="load_novel_content_task_loading">Wczytywanie zawartości...</string>
+    <string name="load_novel_content_task_refreshing">Pobieranie zawartości: %1$s</string>
+    <string name="load_novel_content_task_loading">Wczytywanie zawartości: %1$s</string>
     <string name="load_novel_content_task_complete">Zawartość wczytana.</string>
     <string name="load_novel_content_task_error">Błąd przy pobieraniu zawartości: %1$s.</string>    
     <string name="load_image_task_refreshing">Odświeżanie obrazka...</string>
