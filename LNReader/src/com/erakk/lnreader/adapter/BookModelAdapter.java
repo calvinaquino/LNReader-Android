@@ -36,6 +36,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		TextView tvLastUpdate;
 		TextView tvLastCheck;
 		TextView tvUrl;
+        int defaultColor;
 	}
 
 	static class BookModelGroupViewHolder {
@@ -88,6 +89,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			view = inflater.inflate(resourceId, null);
 			holder = new BookModelChildViewHolder();
 			holder.txtNovel = (TextView) view.findViewById(R.id.novel_chapter);
+            holder.defaultColor = holder.txtNovel.getTextColors().getDefaultColor();
 			holder.vgChapter = (ViewGroup) view.findViewById(R.id.novel_chapter_container);
 
 			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
@@ -138,6 +140,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			ivparent = (ViewGroup) holder.ivHasUpdates.getParent();
 			if (ivparent != null)
 				ivparent.removeView(holder.ivHasUpdates);
+            holder.txtNovel.setTextColor(holder.defaultColor);
 		}
 
 		TextView tv = holder.txtNovel;
