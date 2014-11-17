@@ -1,7 +1,8 @@
 1.1.24-beta1
 - Fix Issue #169: Keep current image after screen rotation.
+- Fix Issue #170: Crash when scrolling chapter list.
 - Fix Issue #171: Keep chapter color when scrolling.
-
+- Optimize search loading.
 
 1.1.23
 - Fix Issue #166: External Url anchor handling.

@@ -26,6 +26,8 @@ import com.erakk.lnreader.model.PageModel;
 
 public class BookModelAdapter extends BaseExpandableListAdapter {
 
+	private static final String HIDDEN_VOLUME = "%hidden_volume%";
+
 	static class BookModelChildViewHolder {
 		TextView txtNovel;
 		ViewGroup vgChapter;
@@ -36,7 +38,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		TextView tvLastUpdate;
 		TextView tvLastCheck;
 		TextView tvUrl;
-        int defaultColor;
+		int defaultColor;
 	}
 
 	static class BookModelGroupViewHolder {
@@ -89,7 +91,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			view = inflater.inflate(resourceId, null);
 			holder = new BookModelChildViewHolder();
 			holder.txtNovel = (TextView) view.findViewById(R.id.novel_chapter);
-            holder.defaultColor = holder.txtNovel.getTextColors().getDefaultColor();
+			holder.defaultColor = holder.txtNovel.getTextColors().getDefaultColor();
 			holder.vgChapter = (ViewGroup) view.findViewById(R.id.novel_chapter_container);
 
 			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
@@ -140,7 +142,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			ivparent = (ViewGroup) holder.ivHasUpdates.getParent();
 			if (ivparent != null)
 				ivparent.removeView(holder.ivHasUpdates);
-            holder.txtNovel.setTextColor(holder.defaultColor);
+			holder.txtNovel.setTextColor(holder.defaultColor);
 		}
 
 		TextView tv = holder.txtNovel;
@@ -287,7 +289,19 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getGroupView(int groupPosition, boolean isLastChild, View view, ViewGroup parent) {
 		BookModelGroupViewHolder holder;
-		if (view == null) {
+
+		// check if book is empty or not
+		BookModel group = getGroup(groupPosition);
+		ArrayList<PageModel> chapterList = group.getChapterCollection();
+		boolean isHideEmptyVolume = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_HIDE_EMPTY_VOLUME, false);
+		if (isHideEmptyVolume && (chapterList == null || chapterList.size() == 0)) {
+			// return empty layout if no chapter.
+			FrameLayout f = new FrameLayout(context);
+			f.setTag(HIDDEN_VOLUME);
+			return f;
+		}
+
+		if (view == null || view.getTag().equals(HIDDEN_VOLUME)) {
 			LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			view = inf.inflate(R.layout.expandvolume_list_item, null);
 			holder = new BookModelGroupViewHolder();
@@ -306,13 +320,6 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 			view.setTag(holder);
 		} else {
 			holder = (BookModelGroupViewHolder) view.getTag();
-		}
-
-		BookModel group = getGroup(groupPosition);
-		ArrayList<PageModel> chapterList = group.getChapterCollection();
-		boolean isHideEmptyVolume = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_HIDE_EMPTY_VOLUME, false);
-		if (isHideEmptyVolume && (chapterList == null || chapterList.size() == 0)) {
-			return new FrameLayout(context);
 		}
 
 		TextView tv = holder.txtNovel;
