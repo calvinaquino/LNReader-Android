@@ -72,7 +72,7 @@
     <string name="content_bookmark">Bookmarks on Chapter</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="download_list">Download List</string>
-    <string name="details_refresh">Refresh</string>
+    <string name="details_refresh">Refresh List</string>
     <string name="details_download_all">Download All Chapters</string>
     <string name="novel_list_refresh">Refresh</string>
     <string name="novel_list_manual_add">Manual Add</string>

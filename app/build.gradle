@@ -14,6 +14,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def manifestParser = new com.android.builder.core.DefaultManifestParser()
+                    output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace(".apk", "-" + manifestParser.getVersionName(android.sourceSets.main.manifest.srcFile) + ".apk"))
+                }
+            }
         }
     }
     android {
@@ -26,6 +32,6 @@ android {
 dependencies {
     compile 'com.android.support:support-v4:21.0.3'
     compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
-    compile 'com.android.support:support-v4:21.0.3'
+    //compile 'com.android.support:support-v4:21.0.3'
     compile files('libs/jsoup.jar')
 }
