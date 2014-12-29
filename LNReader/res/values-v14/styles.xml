@@ -1,9 +1,0 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <style name="AppTheme" parent="@android:style/Theme.Holo.Light.DarkActionBar" >
-    </style>    
-    <style name="AppTheme2" parent="@android:style/Theme.Holo" />
-    <style name="CustomTabWidget" parent="@android:style/Widget.TabWidget">
-        <item name="android:textColor">#dddddd</item>
-        <item name="android:textAllCaps">true</item>
-    </style>
-</resources>

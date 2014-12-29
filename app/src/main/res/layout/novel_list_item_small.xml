@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="6dp" >
+
+    <LinearLayout
+        android:layout_weight="9"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/novel_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="@string/novel_title"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/novel_last_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="@string/novel_last_update"
+            android:textColor="#888888"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/novel_last_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="@string/novel_last_update"
+            android:textColor="#888888"
+            android:textSize="10sp" />
+
+    </LinearLayout>
+    
+    <ImageView
+	    android:id="@+id/novel_has_updates"
+	    android:layout_width="wrap_content"
+	    android:layout_height="match_parent"
+	    android:scaleType="center"
+	    android:src="@drawable/ic_update_avaliable"
+	    android:padding="8dp" 
+	    android:visibility="gone"/>
+    <CheckBox
+        android:layout_gravity="right|center_vertical"
+        android:id="@+id/novel_is_watched"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignBottom="@+id/novel_last_check"
+        android:button="@android:drawable/btn_star"
+        android:checked="false"
+        android:focusable="false"
+        android:gravity="center"
+        android:layout_marginRight="25dp" />
+
+</LinearLayout>

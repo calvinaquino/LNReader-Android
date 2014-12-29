@@ -1,0 +1,228 @@
+/*************************************************************
+*	BAKA-TSUKI READER CSS TEMPLATE
+*
+*	The purpose of this template is to step people through what item each
+*	tag effect and to loosely guide beginners in creating their own CSS
+* 	file to customize their reader.
+*
+*	If you don't have a proper text editor for CSS files, please try the following programs:
+*	- Notepad++ for Windows
+*	- TextWrangler for Mac
+*	- gedit for Linux (Ubuntu)
+*
+*	As a quick introduction, at the start of every open spear bracket indicates the 
+*	particular HTML element that is being edited. The stuff inside each spear bracket
+*	is the properties that are going to be applied to that particular HTML element.
+*
+*	EXAMPLE:
+*	p {
+*		color:blue;
+*	}
+*	
+*	This particular line of code will alter the <p> tag in the reader, the tag that generally houses
+*	all the text of the novels. The property that will be altered will be the text color and it will
+*	change it to be blue.
+*
+*	For more information about what properties can be altered, please www.w3schools.com. They have an
+*	extremely great tutorial and references for writing CSS sheets.
+*	
+*	To check what HTML contains what, read out of the translated novels on the BakaTsuki wiki page on your
+*	computer, highlight the item you want to check out, right-click then select "Inspect Element". This will
+*	indicate to you what HTML tag it is contained in as well as the associated classes/ids. They often show
+*	you the styles that is used in the website's CSS file as well.
+*
+*	Other symbols that will be useful:
+*	ul.gallery			Indicates the <ul> (unordered list) tag that has a class in "gallery"
+*						"." before a word indicates that the following word is a class name
+*
+*	div > p				Indicates a <p> (paragraph text) tag that is directly inside a <div> tag.
+*						A > B indicates that the B tag directly inside an A tag will be altered.
+*
+*	!important			This tag is attached on the end of a property to override a property that is declared
+*						in the HTML tag itself.
+*
+*************************************************************/
+
+/*	Body of the whole page	(Margins and background-color should be changed here*/
+body {
+ background-color: #ffffff;
+ color: #000000;
+ margin-left: 5%;
+ margin-right: 5%;
+ margin-top: 5%;
+ margin-bottom: 5%;
+ word-wrap:break-word !important;
+}
+
+/*******************************************
+*	STANDARD NOVEL TEXT SETTINGS
+*	
+********************************************/
+li {	/* List Items */
+    margin-bottom: .1em;
+}
+
+ul {	/* Unordered List Container (ie Bullet Points) */
+    line-height: 1.5em;
+    list-style-type: square;
+    margin: 0.3em 0 0 1.6em;
+    padding: 0;
+}
+
+.highlighted { /*	Highlighted text	*/
+	background-color : orange !important;
+}
+
+/* Modified for larger touch area for References	*/
+.reference {
+	letter-spacing: 10px;
+}
+.mw-cite-backlink{
+	font-size: xx-large;
+	letter-spacing: 10px;
+}
+
+
+a {	/*	Links	*/
+    background: none repeat scroll 0 0 transparent;
+    color: #3333DD;
+    text-decoration: none;
+}
+/**************************************************
+*	PICTURE SETTINGS
+**************************************************/
+
+/*	For Image Thumbnail in Content	*/
+div.thumb {
+    background-color: transparent;
+    margin-bottom: 0.5em;
+    width: auto;
+}
+div.tright, div.floatright, table.floatright {
+	margin: 0.5em 0 1.3em 1.4em;
+    clear: right;
+    float: right;
+}
+div.thumbinner {
+    background-color: #D6D6D6;
+    font-size: 94%;
+    overflow: hidden;
+    padding: 3px !important;
+    text-align: center;
+}
+html .thumbcaption {
+    border: medium none;
+    font-size: 94%;
+    line-height: 1.4em;
+    padding: 3px !important;
+    text-align: left;
+}
+.thumbcaption {
+    text-align: left;
+}
+
+/* Handles pictures in the Illustration page (Normal style)	*/
+ul.gallery {
+    display: block;
+	text-align: center;
+	
+}
+
+li.gallerybox {
+	margin:2px 2px 2% 2px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+li.gallerybox div.thumb {
+	background-color: #D6D6D6;
+    border: 1px solid #D6D6D6;
+    width: 100%	!important;
+	text-align: center;
+	margin: 0px 0px 0px 0px;
+}
+
+div.gallerytext {
+    overflow: hidden;
+    word-wrap: break-word;
+}
+
+div.gallerytext > p {
+	margin: 0px 0px 0px 0px	!important;
+	font-family: Tahoma, Verdana;
+}
+
+/* Generic image handler for non thumbnailed image */
+a:not(.internal) > img {	
+	width: 100%	!important;
+	height: auto !important;
+}
+
+/* Handles pictures in the Illustration page for the following:
+*	Boku wa Tomodachi ga Sukunai, Volume 1, Colour Illustration 2	
+*
+*	NOTE: There is no real way to differentiate between the navigation bar at the bottom of
+*	the screen and the table that contains the illustrations.
+*/
+
+div.floatnone > a > img {
+	width: 100%	!important;
+	height: auto !important;
+}
+
+div.floatleft > a > img {
+	width: 100%	!important;
+	height: auto !important;
+}
+
+td {
+	vertical-align: top;
+}
+
+table:not([class]) ,table:not([class])> tbody >tr >td {
+	background-color: #C2C2C2 !important;
+	border: solid 1px black;
+	border-spacing: 0px;
+}
+
+/********************************************
+* Wikitable 
+********************************************/
+table.wikitable {
+	margin: 1em 1em 1em 0;
+	background-color: #D6D6D6 !important;
+	border: 1px #555 solid;
+	border-collapse: collapse;
+	color: white;
+}
+
+table.wikitable>tr>th, table.wikitable>tr>td,table.wikitable>*>tr>th,table.wikitable>*>tr>td {
+	border: 1px #555 solid;
+	padding: 0.2em;
+}
+
+table.wikitable>tr>th, table.wikitable>*>tr>th {
+	background-color: #DBDBDB !important;
+	text-align: center;
+}
+
+table.wikitable>caption {
+	font-weight: bold;
+}
+
+/* All table without css class defined */
+table:not([class]) {
+	background-color: #C2C2C2 !important;
+}
+
+/******************************************************************************
+* HIDING UNWANTED ELEMENTS
+*******************************************************************************/
+#siteSub, #catlinks, #jump-to-nav, .printfooter, .editsection, .collapsed, .mw-editsection /*, .thumbcaption, .toc*/ {
+	display:none !important;
+}
+
+/* hide {{Template:PREVIEW}} which have bad class name: {{{id}}} */
+table.\{\{\{id\}\}\} {
+    display:none !important;
+}

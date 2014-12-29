@@ -1,1 +1,0 @@
-copy ..\changelog.txt res\raw\changelog.txt
