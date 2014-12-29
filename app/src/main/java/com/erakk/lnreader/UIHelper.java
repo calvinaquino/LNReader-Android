@@ -150,8 +150,8 @@ public class UIHelper {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static int getScreenHeight(Activity activity) {
-		DisplayMetrics metrics = new DisplayMetrics();
+    public static int getScreenWidth(Activity activity) {
+        DisplayMetrics metrics = new DisplayMetrics();
 		activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
 		Display display = activity.getWindowManager().getDefaultDisplay();
 		return display.getWidth();

@@ -575,12 +575,13 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 								Drawable coverDrawable = new BitmapDrawable(getResources(), novelCol.getCoverBitmap());
 								int coverHeight = novelCol.getCoverBitmap().getHeight();
 								int coverWidth = novelCol.getCoverBitmap().getWidth();
-								int screenWidth = (int) (UIHelper.getScreenHeight(this) * 0.9);
-								int finalHeight = coverHeight * (screenWidth / coverWidth);
-								ImageViewCover.setBackground(coverDrawable);
+                                double screenWidth = UIHelper.getScreenWidth(this) * 0.9;
+                                double ratio = screenWidth / coverWidth;
+                                int finalHeight = (int) (coverHeight * ratio);
+                                ImageViewCover.setBackground(coverDrawable);
 								ImageViewCover.getLayoutParams().height = finalHeight;
-								ImageViewCover.getLayoutParams().width = screenWidth;
-							} else {
+                                ImageViewCover.getLayoutParams().width = (int) screenWidth;
+                            } else {
 								Log.d(TAG, "Non Stretch");
 								ImageViewCover.setImageBitmap(novelCol.getCoverBitmap());
 								ImageViewCover.getLayoutParams().height = novelCol.getCoverBitmap().getHeight();
