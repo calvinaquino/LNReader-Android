@@ -258,7 +258,7 @@ public class NonLeakingWebView extends WebView {
     @SuppressLint("NewApi")
     public void saveMyWebArchive(String page) {
         if (page == null) {
-            Log.w(TAG, "Empty page name, trying to resolve from current webview url!");
+            Log.w(TAG, "Empty page name, trying to resolve from current webView url!");
 
             String url = this.getUrl();
             if (Util.isStringNullOrEmpty(url)) {

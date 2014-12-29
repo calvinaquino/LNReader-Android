@@ -365,7 +365,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
             case R.id.invert_colors:
 
 			/*
-			 * Implement code to invert colors
+             * Implement code to invert colors
 			 */
                 UIHelper.ToggleColorPref(this);
                 UIHelper.Recreate(this);
@@ -464,6 +464,10 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
         }
     }
 
+    /**
+     * Volume key scrolling
+     */
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         boolean useVolumeRocker = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_USE_VOLUME_FOR_SCROLL, false);
@@ -530,7 +534,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
      */
     private void buildTOCMenu(PageModel referencePageModel) {
         Log.d(TAG, "Trying to create TOC");
-        // if(novelDetails != null) {
         try {
             BookModel book = referencePageModel.getBook(false);
             if (book != null) {
@@ -567,9 +570,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
                 tocMenu = builder.create();
             }
         } catch (Exception e) {
-            Log.e(TAG, "Cannot get current page for menu.", e);
+            Log.e(TAG, "Cannot get current page for TOC menu.", e);
         }
-        // }
     }
 
     /**
@@ -663,7 +665,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
                                 PageModel page = content.getPageModel();
                                 if (!page.getPage().endsWith("&action=edit&redlink=1")) {
                                     page.setFinishedRead(true);
-                                    page = NovelsDao.getInstance().updatePageModel(page);
+                                    NovelsDao.getInstance().updatePageModel(page);
                                 }
                             } catch (Exception ex) {
                                 Log.e(TAG, "Error updating PageModel for Content: " + content.getPage(), ex);
@@ -676,7 +678,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
                 // save for jump to last read.
                 SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance());
                 SharedPreferences.Editor editor = sharedPrefs.edit();
-                String lastPage = "";
+                String lastPage;
                 if (content != null) {
                     lastPage = content.getPage();
                 } else {
@@ -783,7 +785,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
     }
 
     /**
-     * Setup the chapter from DB
+     * Setup the chapter from DB, Internal page only
      * Including JS for Bookmark highlighting, last read position, and CSS
      *
      * @param loadedContent
@@ -858,7 +860,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
     }
 
     /**
-     * Setup webview
+     * Setup webView
      */
     @SuppressLint({"NewApi", "SetJavaScriptEnabled"})
     private void setWebViewSettings() {

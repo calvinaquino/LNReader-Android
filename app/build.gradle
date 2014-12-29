@@ -17,7 +17,7 @@ android {
             applicationVariants.all { variant ->
                 variant.outputs.each { output ->
                     def manifestParser = new com.android.builder.core.DefaultManifestParser()
-                    output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace(".apk", "-" + manifestParser.getVersionName(android.sourceSets.main.manifest.srcFile) + ".apk"))
+                    output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace("app-release.apk", "BakaReader-EX-" + manifestParser.getVersionName(android.sourceSets.main.manifest.srcFile) + ".apk"))
                 }
             }
         }
