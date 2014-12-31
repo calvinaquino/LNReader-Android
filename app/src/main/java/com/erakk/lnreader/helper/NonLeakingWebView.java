@@ -3,11 +3,6 @@
  */
 package com.erakk.lnreader.helper;
 
-import java.io.File;
-import java.lang.ref.WeakReference;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -19,6 +14,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.webkit.ValueCallback;
+import android.webkit.WebBackForwardList;
+import android.webkit.WebHistoryItem;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
@@ -28,6 +25,11 @@ import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
+
+import java.io.File;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  * see http://stackoverflow.com/questions/3130654/memory-leak-in-webview and
@@ -138,6 +140,23 @@ public class NonLeakingWebView extends WebView {
 
         checkZoomEvent(ev);
         return true;
+    }
+
+    public static final String PREFIX_PAGEMODEL = "pageModel:";
+
+    @Override
+    public boolean canGoBack() {
+        WebBackForwardList history = this.copyBackForwardList();
+        WebHistoryItem prevData = history.getItemAtIndex(history.getCurrentIndex() - 1);
+        if (prevData != null) {
+            if (prevData.getUrl().startsWith(PREFIX_PAGEMODEL)) {
+                Log.d(TAG, "Previous data is internal page: " + prevData.getUrl());
+                return false;
+            } else
+                Log.d(TAG, "Back to: " + prevData.getUrl());
+        }
+
+        return super.canGoBack();
     }
 
     protected static class MyWebViewClient extends WebViewClient {
@@ -255,6 +274,11 @@ public class NonLeakingWebView extends WebView {
         }
     }
 
+    /**
+     * Save as webarchive, only works for API 11++
+     *
+     * @param page
+     */
     @SuppressLint("NewApi")
     public void saveMyWebArchive(String page) {
         if (page == null) {

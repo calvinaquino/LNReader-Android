@@ -1,8 +1,8 @@
 package com.erakk.lnreader;
 
-import java.util.Date;
-
 import android.graphics.Color;
+
+import java.util.Date;
 
 public class Constants {
 
@@ -21,7 +21,7 @@ public class Constants {
     public static final String EXTRA_SCROLL_Y = "com.erakk.lnreader.SCROLL_Y";
     public static final String EXTRA_P_INDEX = "pIndex";
     public static final String EXTRA_CALLER_ACTIVITY = "caller_activity";
-    public static final String EXTRA_PAGE_EXTERNAL = "com.erakk.lnreader.page.isExternal";
+    public static final String EXTRA_PAGE_IS_EXTERNAL = "com.erakk.lnreader.page.isExternal";
 
     public static final String EXTRA_FIND_MISSING_MODE = "find_missing_mode";
     public static final String PREF_MISSING_CHAPTER = "find_missing_chapter";

@@ -1,5 +1,9 @@
-1.1.25-beta1
+1.1.25-beta2
 - Fix Issue #173: Update parser to handle external chapter.
+- Fix issue #174: Novel cover scaling.
+- Wrap image viewer in html to allow better scaling.
+- Refactor DisplayNovelContentActivity and BakaTsukiWebViewClient.
+- Add Browser Back for external pages, may only works for KitKat+.
 
 1.1.24
 - Fix Issue #169: Keep current image after screen rotation.
