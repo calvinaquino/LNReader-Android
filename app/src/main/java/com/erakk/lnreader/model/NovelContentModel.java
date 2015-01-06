@@ -1,11 +1,11 @@
 package com.erakk.lnreader.model;
 
-import java.util.ArrayList;
-import java.util.Date;
-
 import android.util.Log;
 
 import com.erakk.lnreader.dao.NovelsDao;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 public class NovelContentModel {
 	private static final String TAG = NovelContentModel.class.toString();
@@ -45,6 +45,14 @@ public class NovelContentModel {
 	public void setPage(String page) {
 		this.page = page;
 	}
+    public void refreshPageModel() throws Exception {
+        if(this.pageModel == null) {
+            NovelsDao dao = NovelsDao.getInstance();
+            PageModel tempPage = new PageModel();
+            tempPage.setPage(this.page);
+            this.pageModel = dao.getPageModel(tempPage, null);
+        }
+    }
 	public PageModel getPageModel() throws Exception {
 		if(this.pageModel == null) {
 			NovelsDao dao = NovelsDao.getInstance();
