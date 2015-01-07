@@ -835,7 +835,6 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
             html.append("</body></html>");
 
             wv.loadDataWithBaseURL(UIHelper.getBaseUrl(this), html.toString(), "text/html", "utf-8", NonLeakingWebView.PREFIX_PAGEMODEL + content.getPage());
-
             setChapterTitle(pageModel);
             Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() + " " + content.getLastZoom());
 
@@ -923,7 +922,17 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
         if (e == null) {
             if (result.getResultType() == NovelContentModel.class) {
                 NovelContentModel loadedContent = (NovelContentModel) result.getResult();
-                setContent(loadedContent);
+                Object lock = new Object();
+                try {
+                    synchronized (lock) {
+                        loadedContent.refreshPageModel(); // ensuring pageModel to be refreshed
+                    }
+                } catch (Exception e1) {
+                    Log.e(TAG, "Cannot load content.", e);
+                }
+                synchronized (lock) {
+                    setContent(loadedContent);
+                }
                 Document imageDoc = Jsoup.parse(loadedContent.getContent());
                 images = CommonParser.parseImagesFromContentPage(imageDoc);
             } else if (result.getResultType() == Boolean.class) {
