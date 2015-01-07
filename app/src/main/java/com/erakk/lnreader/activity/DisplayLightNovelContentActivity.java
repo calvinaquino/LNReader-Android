@@ -83,7 +83,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
     private AlertDialog tocMenu = null;
     private Menu _menu;
 
-    // region private helpers, initalized in onCreate()
+    // region private helpers, init in onCreate()
     private DisplayNovelContentTTSHelper tts;
     private DisplayNovelContentUIHelper uih;
     // endregion
@@ -922,16 +922,13 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
         if (e == null) {
             if (result.getResultType() == NovelContentModel.class) {
                 NovelContentModel loadedContent = (NovelContentModel) result.getResult();
-                Object lock = new Object();
-                try {
-                    synchronized (lock) {
+                synchronized (this) {
+                    try {
                         loadedContent.refreshPageModel(); // ensuring pageModel to be refreshed
+                        setContent(loadedContent);
+                    } catch (Exception e1) {
+                        Log.e(TAG, "Cannot load content.", e);
                     }
-                } catch (Exception e1) {
-                    Log.e(TAG, "Cannot load content.", e);
-                }
-                synchronized (lock) {
-                    setContent(loadedContent);
                 }
                 Document imageDoc = Jsoup.parse(loadedContent.getContent());
                 images = CommonParser.parseImagesFromContentPage(imageDoc);
