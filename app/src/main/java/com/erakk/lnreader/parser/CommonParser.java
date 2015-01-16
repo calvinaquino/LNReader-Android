@@ -1,21 +1,5 @@
 package com.erakk.lnreader.parser;
 
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
-
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -27,6 +11,22 @@ import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
+
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class CommonParser {
 
@@ -514,4 +514,45 @@ public class CommonParser {
     public static String normalizeInternalUrl(String url) {
         return url.replace("/project/index.php?title=", "").replace(Constants.ROOT_HTTPS, "").replace(Constants.ROOT_HTTP, "").replace(Constants.ROOT_URL, "");
     }
+
+
+    /**
+     * Parse novel cover from the first element of img with css class .thumbimage
+     *
+     * @param doc
+     * @param novel
+     * @return
+     */
+    public static String parseNovelCover(Document doc, NovelCollectionModel novel) {
+        String imageUrl = "";
+        Elements images = doc.select(".thumbimage");
+        if (images.size() > 0) {
+            imageUrl = images.first().attr("src");
+            if (!imageUrl.startsWith("http")) {
+                imageUrl = "http://www.baka-tsuki.org" + imageUrl;
+            }
+
+            // http://www.baka-tsuki.org/project/images/thumb/f/f5/Daimaou_v01_cover.jpg/294px-Daimaou_v01_cover.jpg
+            // http://www.baka-tsuki.org/project/images/f/f5/Daimaou_v01_cover.jpg
+            if (UIHelper.isUseBigCover(LNReaderApplication.getInstance())) {
+                imageUrl = imageUrl.replace("/thumb/", "/");
+                imageUrl = imageUrl.substring(0, imageUrl.lastIndexOf("/"));
+            }
+
+            Log.d(TAG, "Cover: " + imageUrl);
+        }
+        novel.setCover(imageUrl);
+
+        if (imageUrl != null && imageUrl.length() > 0) {
+            try {
+                URL url = new URL(imageUrl);
+                novel.setCoverUrl(url);
+            } catch (MalformedURLException e) {
+                Log.e(TAG, "Invalid URL: " + imageUrl, e);
+            }
+        }
+        // Log.d(TAG, "Complete parsing cover image");
+        return imageUrl;
+    }
+
 }

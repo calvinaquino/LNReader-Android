@@ -1,4 +1,7 @@
-1.1.25-beta3
+1.1.26-beta1
+- Add option to download high resolution cover image.
+
+1.1.25
 - Fix Issue #173: Update parser to handle external chapter.
 - Fix issue #174: Novel cover scaling.
 - Wrap image viewer in html to allow better scaling.

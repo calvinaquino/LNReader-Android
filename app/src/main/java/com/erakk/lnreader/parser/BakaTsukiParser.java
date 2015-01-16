@@ -3,16 +3,6 @@
  */
 package com.erakk.lnreader.parser;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
@@ -25,6 +15,14 @@ import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * @author Nandaka
@@ -89,7 +87,7 @@ public class BakaTsukiParser {
         novel.setRedirectTo(redirected);
 
         parseNovelSynopsis(doc, novel);
-        parseNovelCover(doc, novel);
+        CommonParser.parseNovelCover(doc, novel);
         parseNovelChapters(doc, novel);
 
         parseNovelStatus(doc, page);
@@ -423,34 +421,6 @@ public class BakaTsukiParser {
             }
         } while (walkBook);
         return books;
-    }
-
-    private static void parseNovelCover(Document doc, NovelCollectionModel novel) {
-        // Log.d(TAG, "Start parsing cover image");
-        // parse the cover image
-        String imageUrl = "";
-        Elements images = doc.select(".thumbimage");
-
-        if (images.size() > 0) {
-            imageUrl = images.first().attr("src");
-            if (!imageUrl.startsWith("http")) {
-                imageUrl = "http://www.baka-tsuki.org" + imageUrl;
-            }
-            Log.d(TAG, "Cover: " + imageUrl);
-        }
-        if (imageUrl != null && imageUrl.length() > 0) {
-            try {
-                URL url = new URL(imageUrl);
-                novel.setCoverUrl(url);
-                novel.setCover(url.toString());
-            } catch (MalformedURLException e) {
-                Log.e(TAG, "Invalid URL: " + imageUrl, e);
-            }
-        } else {
-            novel.setCoverUrl(null);
-            novel.setCover("");
-        }
-        // Log.d(TAG, "Complete parsing cover image");
     }
 
     private static String parseNovelSynopsis(Document doc, NovelCollectionModel novel) {
