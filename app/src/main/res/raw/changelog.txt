@@ -1,4 +1,4 @@
-1.1.26-beta1
+1.1.26
 - Add option to download high resolution cover image.
 
 1.1.25
