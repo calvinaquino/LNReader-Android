@@ -83,7 +83,9 @@ public class UIHelper {
      */
     @SuppressLint("NewApi")
     public static void Recreate(Activity activity) {
-        if (activity.isFinishing() || activity.isDestroyed())
+        if (activity.isFinishing())
+            return;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed())
             return;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
