@@ -24,7 +24,7 @@ public class AlternativeLanguageInfo {
 	private ArrayList<String> parserInfo;
 
 	private static Hashtable<String, AlternativeLanguageInfo> instance;
-	private static Object lock = new Object();
+	private static final Object lock = new Object();
 
 	/* List of methods */
 	private static void initHashMap() {

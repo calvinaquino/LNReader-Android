@@ -41,7 +41,7 @@ public class LNReaderApplication extends Application {
 	private static Hashtable<String, AsyncTask<?, ?, ?>> runningTasks;
 	private static ArrayList<DownloadModel> downloadList;
 
-	private static Object lock = new Object();
+	private static final Object lock = new Object();
 
 	@Override
 	public void onCreate() {
