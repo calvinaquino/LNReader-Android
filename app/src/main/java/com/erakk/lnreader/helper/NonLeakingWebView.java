@@ -137,8 +137,11 @@ public class NonLeakingWebView extends WebView {
             // Hide the control AFTER they where made visible by the default implementation.
             zoom_control.setVisible(showZoom);
         }
-
-        checkZoomEvent(ev);
+        try {
+            checkZoomEvent(ev);
+        }catch (IllegalArgumentException ex) {
+            Log.e(TAG, "Failed to handle zoom event.", ex);
+        }
         return true;
     }
 
