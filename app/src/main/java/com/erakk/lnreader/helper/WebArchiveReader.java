@@ -96,12 +96,13 @@ public abstract class WebArchiveReader {
 
     public boolean loadToWebView(final WebView v, final String anchorLink, final String historyUrl) {
         myWebView = v;
-        v.setWebViewClient(new WebClient());
-        WebSettings webSettings = v.getSettings();
-        webSettings.setDefaultTextEncodingName("UTF-8");
-
-        myLoadingArchive = true;
         try {
+            myWebView.setWebViewClient(new WebClient());
+            WebSettings webSettings = myWebView.getSettings();
+            webSettings.setDefaultTextEncodingName("UTF-8");
+
+            myLoadingArchive = true;
+
             // Find the first ArchiveResource in myDoc, should be <ArchiveResource>
             Element ar = (Element) myDoc.getDocumentElement().getFirstChild().getFirstChild();
             byte b[] = getElBytes(ar, "data");
@@ -137,7 +138,7 @@ public abstract class WebArchiveReader {
             else {
                 topHtml = new String(b);
                 /*
-				 * CharsetMatch match = new CharsetDetector().setText(b).detect();
+                 * CharsetMatch match = new CharsetDetector().setText(b).detect();
 				 * if (match != null)
 				 * try {
 				 * Lt.d("Guessed enc: " + match.getName() + " conf: " + match.getConfidence());
@@ -157,7 +158,7 @@ public abstract class WebArchiveReader {
             Log.d(TAG, "Base Url: " + baseUrl);
             v.loadDataWithBaseURL(baseUrl, topHtml, "text/html", "UTF-8", historyUrl);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Failed to load web archive", e);
             return false;
         }
         return true;

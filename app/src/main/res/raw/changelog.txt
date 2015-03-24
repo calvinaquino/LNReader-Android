@@ -1,6 +1,7 @@
 1.1.27
 - Fix Issue #181: Add check for older android for isDestroyed().
 - Fix Issue #182: Handle IllegalArgumentException for NonLeakingWebView.checkZoomEvent().
+- Fix Issue #183: Handle NullPointerException on some classes.
 
 1.1.26
 - Add option to download high resolution cover image.

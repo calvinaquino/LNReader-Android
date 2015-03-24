@@ -976,14 +976,14 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
     public void notifyLoadComplete() {
         isPageLoaded = true;
         if (webView != null && content != null) {
-
+            final NonLeakingWebView _webView = webView;
             // move to last read paragraph, delay after webView load the pages.
-            webView.postDelayed(new Runnable() {
+            _webView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     int y = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, content.getLastYScroll());
                     Log.d(TAG, "notifyLoadComplete(): Move to the saved pos: " + y);
-                    webView.loadUrl("javascript:goToParagraph(" + y + ")");
+                    _webView.loadUrl("javascript:goToParagraph(" + y + ")");
                 }
             }, UIHelper.getIntFromPreferences(Constants.PREF_KITKAT_WEBVIEW_FIX_DELAY, 500) + 100);
         }

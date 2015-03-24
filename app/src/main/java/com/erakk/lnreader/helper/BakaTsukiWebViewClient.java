@@ -89,7 +89,10 @@ public class BakaTsukiWebViewClient extends WebViewClient {
                 } else {
                     // set the intent page to the current page
                     caller.getIntent().removeExtra(Constants.EXTRA_PAGE);
-                    caller.getIntent().putExtra(Constants.EXTRA_PAGE, caller.content.getPage());
+                    if(caller.content != null)
+                        caller.getIntent().putExtra(Constants.EXTRA_PAGE, caller.content.getPage());
+                    else
+                        caller.getIntent().putExtra(Constants.EXTRA_PAGE, caller.getIntent().getStringExtra(Constants.EXTRA_PAGE));
                     caller.getIntent().removeExtra(Constants.EXTRA_PAGE_IS_EXTERNAL);
                     caller.getIntent().putExtra(Constants.EXTRA_PAGE_IS_EXTERNAL, false);
 
