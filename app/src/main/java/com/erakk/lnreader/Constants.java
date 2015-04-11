@@ -134,7 +134,6 @@ public class Constants {
     public static final String STATUS_ABANDONED = "abandoned";
     public static final String STATUS_PENDING = "pending";
     public static final String STATUS_ORIGINAL = "original";
-    public static final String STATUS_BAHASA_INDONESIA = "indonesian";
 
     public static final int COLOR_READ = Color.parseColor("#888888");
     public static final int COLOR_UNREAD = Color.parseColor("#dddddd");
@@ -142,7 +141,7 @@ public class Constants {
     public static final int COLOR_MISSING = Color.parseColor("#ff0000");
     public static final int COLOR_EXTERNAL = Color.parseColor("#3333ff");
     public static final int COLOR_REDLINK = Color.parseColor("#ff69b4");
-    ;
+
 
     public static final String ROOT_NOVEL_ENGLISH = "Category:Light_novel_(English)";
     public static final String ROOT_ORIGINAL = "Category:Original_novel";
@@ -171,6 +170,7 @@ public class Constants {
      */
     public static final String API_URL_CONTENT = "%s/project/api.php?action=parse&format=xml&prop=text|images&redirects=yes&page=%s";
     public static final String API_REDLINK = "&action=edit&redlink=1";
+
     /**
      * URL used for wiki API to get the page info
      */

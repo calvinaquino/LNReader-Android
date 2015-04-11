@@ -2,19 +2,9 @@
 <resources>    
     <string-array name="updateInterval">
         <item name="0">Tidak Pernah</item>
-        <item name="1">Setiap 15 menit</item>
-        <item name="2">Setiap 30 menit</item>
-        <item name="3">Setiap jam</item>
-        <item name="4">Setiap 12 jam</item>
-        <item name="5">Setiap hari</item>
-    </string-array>     
-    <string-array name="updateIntervalValues">
-        <item name="0">0</item>
-        <item name="1">1</item>
-        <item name="2">2</item>
-        <item name="3">3</item>
-        <item name="4">4</item>
-        <item name="5">5</item>
+        <item name="1">Setiap 6 jam</item>
+        <item name="2">Setiap 12 jam</item>
+        <item name="3">Setiap hari</item>
     </string-array>
     <string-array name="uiSelection">
         <item name="0">UI Awal</item>

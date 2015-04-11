@@ -279,14 +279,10 @@ public class UpdateService extends Service {
                 long now = nowDate.getTime();
 
                 if (updatesIntervalStr.equalsIgnoreCase("1")) {
-                    lastUpdate += 15 * 60 * 1000;
+                    lastUpdate += 6 * 60 * 60 * 1000;
                 } else if (updatesIntervalStr.equalsIgnoreCase("2")) {
-                    lastUpdate += 30 * 60 * 1000;
-                } else if (updatesIntervalStr.equalsIgnoreCase("3")) {
-                    lastUpdate += 60 * 60 * 1000;
-                } else if (updatesIntervalStr.equalsIgnoreCase("4")) {
                     lastUpdate += 12 * 60 * 60 * 1000;
-                } else if (updatesIntervalStr.equalsIgnoreCase("5")) {
+                } else if (updatesIntervalStr.equalsIgnoreCase("3")) {
                     lastUpdate += 24 * 60 * 60 * 1000;
                 }
 

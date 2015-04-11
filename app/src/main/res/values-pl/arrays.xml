@@ -2,19 +2,9 @@
 <resources>    
     <string-array name="updateInterval">
         <item name="0">Nigdy</item>
-        <item name="1">Co 15 minut</item>
-        <item name="2">Co 30 minut</item>
-        <item name="3">Co godzinę</item>
-        <item name="4">Co 12 godzin</item>
-        <item name="5">Codziennie</item>
-    </string-array>     
-    <string-array name="updateIntervalValues">
-        <item name="0">0</item>
-        <item name="1">1</item>
-        <item name="2">2</item>
-        <item name="3">3</item>
-        <item name="4">4</item>
-        <item name="5">5</item>
+        <item name="1">Co 6 godzinę</item>
+        <item name="2">Co 12 godzin</item>
+        <item name="3">Codziennie</item>
     </string-array>
     <string-array name="uiSelection">
         <item name="0">Domyślne UI</item>

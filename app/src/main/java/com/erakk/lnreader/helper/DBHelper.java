@@ -1,10 +1,6 @@
 //package com.nandaka.bakareaderclone.helper;
 package com.erakk.lnreader.helper;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -27,6 +23,10 @@ import com.erakk.lnreader.helper.db.NovelContentModelHelper;
 import com.erakk.lnreader.helper.db.PageModelHelper;
 import com.erakk.lnreader.helper.db.UpdateInfoModelHelper;
 import com.erakk.lnreader.model.PageModel;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class DBHelper extends SQLiteOpenHelper {
 	public static final String TAG = DBHelper.class.toString();
@@ -215,6 +215,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		Log.d(TAG, "source file: " + srcPath.getAbsolutePath());
 		Log.d(TAG, "destination file: " + dstPath.getAbsolutePath());
 		if (srcPath.exists()) {
+            if(!dstPath.exists()) {
+                dstPath.createNewFile();
+            }
 			Util.copyFile(srcPath, dstPath);
 			Log.d(TAG, "copy success");
 			return dstPath.getPath();
