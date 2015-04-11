@@ -981,9 +981,13 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
             _webView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    int y = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, content.getLastYScroll());
-                    Log.d(TAG, "notifyLoadComplete(): Move to the saved pos: " + y);
-                    _webView.loadUrl("javascript:goToParagraph(" + y + ")");
+                    try {
+                        int y = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, content.getLastYScroll());
+                        Log.d(TAG, "notifyLoadComplete(): Move to the saved pos: " + y);
+                        _webView.loadUrl("javascript:goToParagraph(" + y + ")");
+                    }catch ( NullPointerException ex) {
+                        Log.i(TAG, "Failed to load the content");
+                    }
                 }
             }, UIHelper.getIntFromPreferences(Constants.PREF_KITKAT_WEBVIEW_FIX_DELAY, 500) + 100);
         }
