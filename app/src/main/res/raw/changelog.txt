@@ -1,4 +1,4 @@
-1.1.28-beta1
+1.1.28
 - Fix Issue #184: Update category for teaser to Category:Teaser_(English).
 - Add Feature #187: New option to only update when Wifi is connected.
 - Change updates interval values to avoid hammering the server.
