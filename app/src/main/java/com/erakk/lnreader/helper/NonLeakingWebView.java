@@ -215,23 +215,27 @@ public class NonLeakingWebView extends WebView {
             }
 
             case MotionEvent.ACTION_MOVE: {
-                final int pointerIndex = ev.findPointerIndex(mActivePointerId);
-                final float x = ev.getX(pointerIndex);
-                final float y = ev.getY(pointerIndex);
+                try {
+                    final int pointerIndex = ev.findPointerIndex(mActivePointerId);
+                    final float x = ev.getX(pointerIndex);
+                    final float y = ev.getY(pointerIndex);
 
-                // Only move if the ScaleGestureDetector isn't processing a gesture.
-                if (!mScaleDetector.isInProgress()) {
-                    final float dx = x - mLastTouchX;
-                    final float dy = y - mLastTouchY;
+                    // Only move if the ScaleGestureDetector isn't processing a gesture.
+                    if (!mScaleDetector.isInProgress()) {
+                        final float dx = x - mLastTouchX;
+                        final float dy = y - mLastTouchY;
 
-                    mPosX += dx;
-                    mPosY += dy;
+                        mPosX += dx;
+                        mPosY += dy;
 
-                    invalidate();
+                        invalidate();
+                    }
+
+                    mLastTouchX = x;
+                    mLastTouchY = y;
+                }catch (ArrayIndexOutOfBoundsException ex) {
+                    Log.i(TAG, "Failed to get the motion event");
                 }
-
-                mLastTouchX = x;
-                mLastTouchY = y;
 
                 break;
             }
