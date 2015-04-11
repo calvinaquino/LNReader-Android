@@ -34,7 +34,12 @@ public class DisplayNovelContentTTSHelper {
 				Log.i(TAG, "Trying to get TTS Binder: " + retry);
 				if (ttsService == null || ttsBinder == null) {
 					setupTtsService();
-					ttsBinder.initConfig();
+					try{
+                        ttsBinder.initConfig();
+                    }
+                    catch (NullPointerException ex) {
+                        Log.i(TAG, "Failed to init TTS Binder, retrying...");
+                    }
 					break;
 				}
 				++retry;
