@@ -121,6 +121,7 @@ public class Constants {
     public static final String PREF_CSS_TABLE_BACKGROUND = "css_thumb-back";
     public static final String PREF_TTS_ENABLED = "tts_is_enabled";
     public static final String PREF_USE_BIG_COVER = "use_big_cover";
+    public static final String PREF_AUTO_UPDATE_USE_WIFI_ONLY = "auto_download_only_use_wifi";
 
     public static final float DISPLAY_SCALE = LNReaderApplication.getInstance().getResources().getDisplayMetrics().density;
 
@@ -174,5 +175,6 @@ public class Constants {
      * URL used for wiki API to get the page info
      */
     public static final String API_URL_INFO = "%s/project/api.php?action=query&prop=info|revisions&format=xml&redirects=yes&titles=%s";
+
 
 }

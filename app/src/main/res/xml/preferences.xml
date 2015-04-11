@@ -120,6 +120,11 @@
                 android:key="auto_download_updated_chapter"
                 android:summary="@string/auto_download_updated_chapter_summary"
                 android:title="@string/auto_download_updated_chapter_title" />
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="auto_download_only_use_wifi"
+                android:summary="@string/auto_download_only_use_wifi_summary"
+                android:title="@string/auto_download_only_use_wifi_title" />
             <Preference
                 android:key="run_update"
                 android:title="@string/run_update_text" />

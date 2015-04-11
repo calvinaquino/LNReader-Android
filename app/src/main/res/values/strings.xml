@@ -25,7 +25,7 @@
     <string name="novel_last_update">Last Update</string>
     <string name="novel_chapter">Novel Chapter</string>
     <string name="novel_chapter_dl">(DL)</string>
-    <string name="list_empty">List is Empty</string>
+    <string name="list_empty">List is Empty, please manually Refresh from the overflow menu.</string>
     <string name="update_service_name">LNReader Update Service</string>
     <string name="tts_service_name">LNReader TTS Service</string>
     <string name="auto_backup_service_name">LNReader Auto Backup Service</string>
@@ -483,4 +483,6 @@
     <string name="menu_show_external">Show External</string>
     <string name="use_big_cover_title">Use Hi-Res Cover</string>
     <string name="use_big_cover_summary">Download the full size version of the Novel Cover, may need to refresh the chapter list.</string>
+    <string name="auto_download_only_use_wifi_summary">Only automatically updates the list if Wifi is connected.</string>
+    <string name="auto_download_only_use_wifi_title">Only Use Wifi for Auto Update</string>
 </resources>

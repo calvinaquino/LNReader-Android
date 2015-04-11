@@ -1,5 +1,20 @@
 package com.erakk.lnreader.helper;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
+import android.os.StatFs;
+import android.util.Log;
+
+import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.callback.CallbackEventData;
+import com.erakk.lnreader.callback.ICallbackNotifier;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -33,19 +48,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
-
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.os.Build;
-import android.os.StatFs;
-import android.util.Log;
-
-import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.LNReaderApplication;
-import com.erakk.lnreader.R;
-import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.callback.CallbackEventData;
-import com.erakk.lnreader.callback.ICallbackNotifier;
 
 public class Util {
 
@@ -457,4 +459,12 @@ public class Util {
 		}
 		return -1;
 	}
+
+    public static boolean isWifiConnected() {
+        Context ctx = LNReaderApplication.getInstance().getApplicationContext();
+        ConnectivityManager connManager = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        return mWifi.isConnected();
+    }
 }

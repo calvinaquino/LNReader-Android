@@ -1,8 +1,5 @@
 package com.erakk.lnreader.service;
 
-import java.util.ArrayList;
-import java.util.Date;
-
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -22,16 +19,21 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.activity.UpdateHistoryActivity;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.model.UpdateInfoModel;
 import com.erakk.lnreader.model.UpdateType;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.GetUpdatedChaptersTask;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 public class UpdateService extends Service {
 	private final IBinder mBinder = new MyBinder();
@@ -261,39 +263,46 @@ public class UpdateService extends Service {
 			Log.i(TAG, "Forced run");
 			return true;
 		}
+        else {
+            // check wifi only preferences
+            if (UIHelper.isAutoUpdateOnlyUseWifi(this) && !Util.isWifiConnected()) {
+                Log.i(TAG, "Wifi is not connected!");
+                return false;
+            }
 
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-		String updatesIntervalStr = preferences.getString(Constants.PREF_UPDATE_INTERVAL, "0");
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+            String updatesIntervalStr = preferences.getString(Constants.PREF_UPDATE_INTERVAL, "0");
 
-		if (!updatesIntervalStr.equalsIgnoreCase("0")) {
-			long lastUpdate = preferences.getLong(Constants.PREF_LAST_UPDATE, 0);
-			Date nowDate = new Date();
-			long now = nowDate.getTime();
+            if (!updatesIntervalStr.equalsIgnoreCase("0")) {
+                long lastUpdate = preferences.getLong(Constants.PREF_LAST_UPDATE, 0);
+                Date nowDate = new Date();
+                long now = nowDate.getTime();
 
-			if (updatesIntervalStr.equalsIgnoreCase("1")) {
-				lastUpdate += 15 * 60 * 1000;
-			} else if (updatesIntervalStr.equalsIgnoreCase("2")) {
-				lastUpdate += 30 * 60 * 1000;
-			} else if (updatesIntervalStr.equalsIgnoreCase("3")) {
-				lastUpdate += 60 * 60 * 1000;
-			} else if (updatesIntervalStr.equalsIgnoreCase("4")) {
-				lastUpdate += 12 * 60 * 60 * 1000;
-			} else if (updatesIntervalStr.equalsIgnoreCase("5")) {
-				lastUpdate += 24 * 60 * 60 * 1000;
-			}
+                if (updatesIntervalStr.equalsIgnoreCase("1")) {
+                    lastUpdate += 15 * 60 * 1000;
+                } else if (updatesIntervalStr.equalsIgnoreCase("2")) {
+                    lastUpdate += 30 * 60 * 1000;
+                } else if (updatesIntervalStr.equalsIgnoreCase("3")) {
+                    lastUpdate += 60 * 60 * 1000;
+                } else if (updatesIntervalStr.equalsIgnoreCase("4")) {
+                    lastUpdate += 12 * 60 * 60 * 1000;
+                } else if (updatesIntervalStr.equalsIgnoreCase("5")) {
+                    lastUpdate += 24 * 60 * 60 * 1000;
+                }
 
-			Date lastUpdateDate = new Date(lastUpdate);
-			if (lastUpdate <= now) {
-				Log.e(TAG, "Updating: " + lastUpdateDate.toLocaleString() + " <= " + nowDate.toLocaleString());
-				return true;
-			}
+                Date lastUpdateDate = new Date(lastUpdate);
+                if (lastUpdate <= now) {
+                    Log.e(TAG, "Updating: " + lastUpdateDate.toLocaleString() + " <= " + nowDate.toLocaleString());
+                    return true;
+                }
 
-			Log.i(TAG, "Next Update: " + lastUpdateDate.toLocaleString() + ", Now: " + nowDate.toLocaleString());
-			return false;
-		} else {
-			Log.i(TAG, "Update Interval set to Never.");
-			return false;
-		}
+                Log.i(TAG, "Next Update: " + lastUpdateDate.toLocaleString() + ", Now: " + nowDate.toLocaleString());
+                return false;
+            } else {
+                Log.i(TAG, "Update Interval set to Never.");
+                return false;
+            }
+        }
 	}
 
 	public void cancelUpdate() {
