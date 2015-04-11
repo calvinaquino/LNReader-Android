@@ -145,7 +145,7 @@ public class Constants {
 
     public static final String ROOT_NOVEL_ENGLISH = "Category:Light_novel_(English)";
     public static final String ROOT_ORIGINAL = "Category:Original_novel";
-    public static final String ROOT_TEASER = "Category:Teasers";
+    public static final String ROOT_TEASER = "Category:Teaser_(English)";
 
     /* Section of Task Key */
     public static final String KEY_LOAD_CHAPTER = ":LoadChapter:";
