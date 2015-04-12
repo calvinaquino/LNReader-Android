@@ -1,29 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>    
+<resources>
     <string-array name="updateInterval">
         <item name="0">Jamais</item>
         <item name="1">Toutes les 6 heures</item>
         <item name="2">Toutes les 12 heures</item>
         <item name="3">Chaque jour</item>
+        <item name="4">Chaque jour 2</item>
+        <item name="5">Toutes les semaines</item>
     </string-array>
     <string-array name="uiSelection">
         <item name="0">UI par d&#233;faut</item>
         <item name="1">Tablet 1</item>
         <item name="2">Tablet 2</item>
     </string-array>
-    <string-array name="uiSelectionValues">
-        <item name="0">0</item>
-        <item name="1">1</item>
-        <item name="2">2</item>
-    </string-array>
     <string-array name="orientationSelection">
         <item name="0">Free</item>
         <item name="1">Horizontal</item>
         <item name="2">Vertical</item>
-    </string-array>
-    <string-array name="orientationSelectionValues">
-        <item name="0">0</item>
-        <item name="1">1</item>
-        <item name="2">2</item>
     </string-array>
 </resources>

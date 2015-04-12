@@ -5,25 +5,17 @@
         <item name="1">Elk 6 uur</item>
         <item name="2">Elke 12 uur</item>
         <item name="3">Elke dag</item>
+        <item name="4">Elke 2 dag</item>
+        <item name="5">Elke week</item>
     </string-array>
     <string-array name="uiSelection">
         <item name="0">Standaard UI</item>
         <item name="1">Tablet 1</item>
         <item name="2">Tablet 2</item>
     </string-array>
-    <string-array name="uiSelectionValues">
-        <item name="0">0</item>
-        <item name="1">1</item>
-        <item name="2">2</item>
-    </string-array>
     <string-array name="orientationSelection">
         <item name="0">Free</item>
         <item name="1">Horizontal</item>
         <item name="2">Vertical</item>
-    </string-array>
-    <string-array name="orientationSelectionValues">
-        <item name="0">0</item>
-        <item name="1">1</item>
-        <item name="2">2</item>
     </string-array>
 </resources>

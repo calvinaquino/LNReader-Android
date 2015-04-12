@@ -1,8 +1,9 @@
-1.1.28
+1.1.28b
 - Fix Issue #184: Update category for teaser to Category:Teaser_(English).
 - Add Feature #187: New option to only update when Wifi is connected.
 - Change updates interval values to avoid hammering the server.
 - Some fixes for unhandled exception
+- Fix error when opening settings.
 
 1.1.27
 - Fix Issue #181: Add check for older android for isDestroyed().

@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.erakk.lnreader"
     android:installLocation="auto"
-    android:versionCode="201504110"
-    android:versionName="1.1.28">
+    android:versionCode="201504120"
+    android:versionName="1.1.28b">
 
-    <uses-sdk
+<uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="21" />
 
@@ -15,7 +15,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
 
     <application
         android:name="com.erakk.lnreader.LNReaderApplication"
