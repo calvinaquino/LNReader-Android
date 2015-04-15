@@ -279,17 +279,7 @@ public class UpdateService extends Service {
                 Date nowDate = new Date();
                 long now = nowDate.getTime();
 
-                if (updatesIntervalStr.equalsIgnoreCase("1")) {
-                    lastUpdate += 6 * 60 * 60 * 1000;
-                } else if (updatesIntervalStr.equalsIgnoreCase("2")) {
-                    lastUpdate += 12 * 60 * 60 * 1000;
-                } else if (updatesIntervalStr.equalsIgnoreCase("3")) {
-                    lastUpdate += 24 * 60 * 60 * 1000;
-                } else if (updatesIntervalStr.equalsIgnoreCase("4")) {
-                    lastUpdate += 2 * 24 * 60 * 60 * 1000;
-                } else if (updatesIntervalStr.equalsIgnoreCase("5")) {
-                    lastUpdate += 7 * 24 * 60 * 60 * 1000;
-                }
+                lastUpdate += GetUpdateInterval(updatesIntervalStr);
 
                 Date lastUpdateDate = new Date(lastUpdate);
                 if (lastUpdate <= now) {
@@ -304,6 +294,22 @@ public class UpdateService extends Service {
                 return false;
             }
         }
+    }
+
+    public static long GetUpdateInterval(String updatesIntervalStr) {
+        long interval = 0;
+        if (updatesIntervalStr.equalsIgnoreCase("1")) {
+            interval = 6 * 60 * 60 * 1000;
+        } else if (updatesIntervalStr.equalsIgnoreCase("2")) {
+            interval = 12 * 60 * 60 * 1000;
+        } else if (updatesIntervalStr.equalsIgnoreCase("3")) {
+            interval = 24 * 60 * 60 * 1000;
+        } else if (updatesIntervalStr.equalsIgnoreCase("4")) {
+            interval = 2 * 24 * 60 * 60 * 1000;
+        } else if (updatesIntervalStr.equalsIgnoreCase("5")) {
+            interval = 7 * 24 * 60 * 60 * 1000;
+        }
+        return interval;
     }
 
     public void cancelUpdate() {
