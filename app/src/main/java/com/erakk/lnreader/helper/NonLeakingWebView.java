@@ -16,6 +16,7 @@ import android.view.ScaleGestureDetector;
 import android.webkit.ValueCallback;
 import android.webkit.WebBackForwardList;
 import android.webkit.WebHistoryItem;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
@@ -87,6 +88,11 @@ public class NonLeakingWebView extends WebView {
                 }
                 this.getSettings().setUserAgentString(userAgent);
             }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // allow to open local file even in https mode.
+            this.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
     }
 
