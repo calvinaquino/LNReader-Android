@@ -1,3 +1,7 @@
+1.1.29
+- Fix Issue #189: Images not loaded on Android 5.x
+- Fix update time interval scheduler.
+
 1.1.28b
 - Fix Issue #184: Update category for teaser to Category:Teaser_(English).
 - Add Feature #187: New option to only update when Wifi is connected.
