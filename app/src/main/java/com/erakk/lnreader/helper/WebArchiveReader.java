@@ -148,7 +148,7 @@ public abstract class WebArchiveReader {
 				 * }
 				 */
             }
-            String baseUrl = new String(getElBytes(ar, "url"));
+            String baseUrl = Util.SanitizeBaseUrl(new String(getElBytes(ar, "url")));
             if (!Util.isStringNullOrEmpty(anchorLink)) {
                 String[] urlParts = baseUrl.split("#", 2);
                 if (urlParts.length == 2) {

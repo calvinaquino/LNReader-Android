@@ -1,3 +1,6 @@
+1.1.30
+- Update blogspot handler for country redirect.
+
 1.1.29
 - Fix Issue #189: Images not loaded on Android 5.x
 - Fix update time interval scheduler.

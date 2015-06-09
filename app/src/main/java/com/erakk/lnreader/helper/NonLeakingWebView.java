@@ -324,8 +324,8 @@ public class NonLeakingWebView extends WebView {
 
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                String wacName = getWacNameForSaving(page, false);
-                final String p2 = page;
+                String wacName = getWacNameForSaving(Util.SanitizeBaseUrl(page), false);
+                final String p2 = Util.SanitizeBaseUrl(page);
                 this.saveWebArchive(wacName, false, new ValueCallback<String>() {
 
                     @Override

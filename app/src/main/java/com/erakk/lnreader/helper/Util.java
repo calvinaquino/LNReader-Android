@@ -421,6 +421,13 @@ public class Util {
 	}
 
 	public static String getBaseWacName(String url) {
+		url = SanitizeBaseUrl(url);
+
+		Log.d(TAG, "Using base url: " + url);
+		return Util.calculateCRC32(url);
+	}
+
+	public static String SanitizeBaseUrl(String url) {
 		// strip anchor link
 		if (url.contains("#")) {
 			url = url.substring(0, url.indexOf('#'));
@@ -430,9 +437,12 @@ public class Util {
 		if (url.contains(".blogspot.")) {
 			url = url.replace("?m=1", "");
 			Log.d(TAG, "Stripping mobile redirection parameter for blogspot.");
+			if(!url.contains(".blogspot.com/")) {
+				Log.d(TAG, "Stripping country redirection parameter for blogspot.");
+				url = url.replaceFirst("blogspot.[a-z]+/", "blogspot.com/");
+			}
 		}
-		Log.d(TAG, "Using base url: " + url);
-		return Util.calculateCRC32(url);
+		return url;
 	}
 
 	public static String getSavedWacName(String url) {
