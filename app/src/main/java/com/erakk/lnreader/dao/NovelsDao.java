@@ -3,23 +3,6 @@
  */
 package com.erakk.lnreader.dao;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
-
-import org.jsoup.Connection.Response;
-import org.jsoup.HttpStatusException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
@@ -41,6 +24,7 @@ import com.erakk.lnreader.helper.db.FindMissingModelHelper;
 import com.erakk.lnreader.helper.db.ImageModelHelper;
 import com.erakk.lnreader.helper.db.NovelCollectionModelHelper;
 import com.erakk.lnreader.helper.db.NovelContentModelHelper;
+import com.erakk.lnreader.helper.db.NovelContentUserHelperModel;
 import com.erakk.lnreader.helper.db.PageModelHelper;
 import com.erakk.lnreader.helper.db.UpdateInfoModelHelper;
 import com.erakk.lnreader.model.BookModel;
@@ -49,12 +33,30 @@ import com.erakk.lnreader.model.FindMissingModel;
 import com.erakk.lnreader.model.ImageModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
+import com.erakk.lnreader.model.NovelContentUserModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.model.UpdateInfoModel;
 import com.erakk.lnreader.parser.BakaTsukiParser;
 import com.erakk.lnreader.parser.BakaTsukiParserAlternative;
 import com.erakk.lnreader.parser.CommonParser;
 import com.erakk.lnreader.task.DownloadFileTask;
+
+import org.jsoup.Connection.Response;
+import org.jsoup.HttpStatusException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import java.io.EOFException;
+import java.io.File;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author Nandaka
@@ -1482,5 +1484,43 @@ public class NovelsDao {
 
 	private Response connect(String url, int retry) throws IOException {
 		return Jsoup.connect(url).setSecure(!getUseAppKeystore()).timeout(getTimeout(retry)).execute();
+	}
+
+
+	/*
+	 * NovelContentModel
+	 */
+
+	public NovelContentUserModel getNovelContentUserModel(String page, ICallbackNotifier notifier) throws Exception {
+		NovelContentUserModel content = null;
+
+		synchronized (dbh) {
+			// get from db
+			SQLiteDatabase db = dbh.getReadableDatabase();
+			try {
+				content = NovelContentUserHelperModel.getNovelContentUserModel(db, page);
+			} finally {
+				db.close();
+			}
+		}
+
+		return content;
+	}
+
+	public NovelContentUserModel updateNovelContentUserModel(NovelContentUserModel page, ICallbackNotifier notifier) throws Exception {
+		if (notifier != null) {
+			String message = "Updating user data: " + page.getPage();
+			notifier.onProgressCallback(new CallbackEventData(message, TAG));
+		}
+		// save the changes
+		synchronized (dbh) {
+			SQLiteDatabase db = dbh.getWritableDatabase();
+			try {
+				page = NovelContentUserHelperModel.insertModel(db, page);
+			} finally {
+				db.close();
+			}
+		}
+		return page;
 	}
 }

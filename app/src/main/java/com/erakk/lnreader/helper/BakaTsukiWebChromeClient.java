@@ -1,7 +1,5 @@
 package com.erakk.lnreader.helper;
 
-import java.lang.ref.WeakReference;
-
 import android.util.Log;
 import android.view.View;
 import android.webkit.ConsoleMessage;
@@ -15,6 +13,8 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookmarkModel;
+
+import java.lang.ref.WeakReference;
 
 public class BakaTsukiWebChromeClient extends WebChromeClient {
 	private static final String TAG = BakaTsukiWebChromeClient.class.toString();
@@ -103,6 +103,13 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 		return true;
 	}
 
+	private int scrollY;
+	private boolean requireScroll = false;
+	public void setScrollY(int y) {
+		this.scrollY = y;
+		this.requireScroll = true;
+	}
+
 	@Override
 	public void onProgressChanged(WebView view, int progress) {
 		Log.d(TAG, "Progress: " + progress);
@@ -115,6 +122,10 @@ public class BakaTsukiWebChromeClient extends WebChromeClient {
 					progressBar.setProgress(progress);
 				} else {
 					progressBar.setVisibility(View.GONE);
+					if(this.requireScroll) {
+						view.scrollTo(0, this.scrollY);
+						this.requireScroll = false;
+					}
 				}
 			}
 		}

@@ -20,6 +20,7 @@ import com.erakk.lnreader.helper.db.BookmarkModelHelper;
 import com.erakk.lnreader.helper.db.ImageModelHelper;
 import com.erakk.lnreader.helper.db.NovelCollectionModelHelper;
 import com.erakk.lnreader.helper.db.NovelContentModelHelper;
+import com.erakk.lnreader.helper.db.NovelContentUserHelperModel;
 import com.erakk.lnreader.helper.db.PageModelHelper;
 import com.erakk.lnreader.helper.db.UpdateInfoModelHelper;
 import com.erakk.lnreader.model.PageModel;
@@ -64,6 +65,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_LAST_X = "lastXScroll";
 	public static final String COLUMN_LAST_Y = "lastYScroll";
 	public static final String COLUMN_ZOOM = "lastZoom";
+	public static final String TABLE_NOVEL_CONTENT_USER = "novel_books_content_user";
 
 	public static final String TABLE_NOVEL_BOOKMARK = "novel_bookmark";
 	public static final String COLUMN_PARAGRAPH_INDEX = "p_index";
@@ -75,7 +77,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_UPDATE_TYPE = "update_type";
 
 	public static final String DATABASE_NAME = "pages.db";
-	public static final int DATABASE_VERSION = 27;
+	public static final int DATABASE_VERSION = 28;
 
 	// Use /files/database to standarize with newer android.
 	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files/databases";
@@ -111,6 +113,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(NovelContentModelHelper.DATABASE_CREATE_NOVEL_CONTENT);
 		db.execSQL(BookmarkModelHelper.DATABASE_CREATE_NOVEL_BOOKMARK);
 		db.execSQL(UpdateInfoModelHelper.DATABASE_CREATE_UPDATE_HISTORY);
+		// new table @ v28
+		db.execSQL(NovelContentUserHelperModel.DATABASE_CREATE_NOVEL_CONTENT_USER);
 	}
 
 	@Override
@@ -126,7 +130,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			Toast.makeText(ctx, ctx.getResources().getString(R.string.db_upgrade_backup_notification, filename), Toast.LENGTH_SHORT).show();
 			copyDB(ctx, true, filename);
 		} catch (Exception ex) {
-			Log.e(TAG, "Failed to backup db", ex);
+			Log.e(TAG, "Failed to show toast for backup db", ex);
 		}
 		Log.w(TAG, "Upgrading db from version " + oldVersion + " to " + newVersion);
 		if (oldVersion < 18) {
@@ -177,6 +181,16 @@ public class DBHelper extends SQLiteOpenHelper {
 			db.execSQL("UPDATE " + TABLE_PAGE + " SET " + COLUMN_PARENT + " = 'Category:Original_novel' WHERE " + COLUMN_PARENT + " = 'Category:Original'");
 			db.execSQL("UPDATE " + TABLE_PAGE + " SET " + COLUMN_PARENT + " = 'Category:Light_novel_(English)' WHERE " + COLUMN_PARENT + " = 'Main_Page'");
 		}
+		if (oldVersion == 27) {
+			db.execSQL(NovelContentUserHelperModel.DATABASE_CREATE_NOVEL_CONTENT_USER);
+
+			// move out the current user content settings to new table.
+			db.execSQL("insert into " + TABLE_NOVEL_CONTENT_USER +
+					   " select rowid, o." + COLUMN_PAGE + ", o." + COLUMN_LAST_X + ", o." + COLUMN_LAST_Y + ", o." + COLUMN_ZOOM + ", o." + COLUMN_LAST_UPDATE + ", o." + COLUMN_LAST_CHECK +
+					   " from " + TABLE_NOVEL_CONTENT + " o ");
+			// TODO: need to do some clean up...
+		}
+		Log.i(TAG, "Upgrade DB Complete: " + oldVersion + " to " + newVersion);
 	}
 
 	public void deletePagesDB(SQLiteDatabase db) {
@@ -203,19 +217,22 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 		File srcPath;
 		File dstPath;
+		String dbPath = getDbPath(context);
 		if (makeBackup) {
 			Log.d(TAG, "Creating database backup");
-			srcPath = new File(getDbPath(context));
+			srcPath = new File(dbPath);
 			dstPath = new File(filename);
 		} else {
 			Log.d(TAG, "Restoring database backup");
-			dstPath = new File(getDbPath(context));
+			dstPath = new File(dbPath);
 			srcPath = new File(filename);
 		}
 		Log.d(TAG, "source file: " + srcPath.getAbsolutePath());
 		Log.d(TAG, "destination file: " + dstPath.getAbsolutePath());
 		if (srcPath.exists()) {
             if(!dstPath.exists()) {
+				File dir = new File(dbPath.substring(0, dbPath.lastIndexOf("/")));
+				dir.mkdirs();
                 dstPath.createNewFile();
             }
 			Util.copyFile(srcPath, dstPath);

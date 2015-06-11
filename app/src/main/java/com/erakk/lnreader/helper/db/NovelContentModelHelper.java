@@ -4,9 +4,6 @@
  */
 package com.erakk.lnreader.helper.db;
 
-import java.io.File;
-import java.util.Date;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,6 +14,9 @@ import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
+
+import java.io.File;
+import java.util.Date;
 
 public class NovelContentModelHelper {
 
@@ -38,9 +38,6 @@ public class NovelContentModelHelper {
 		content.setId(cursor.getInt(0));
 		content.setContent(cursor.getString(1));
 		content.setPage(cursor.getString(2));
-		content.setLastXScroll(cursor.getInt(3));
-		content.setLastYScroll(cursor.getInt(4));
-		content.setLastZoom(cursor.getDouble(5));
 		content.setLastUpdate(new Date(cursor.getLong(6) * 1000));
 		content.setLastCheck(new Date(cursor.getLong(7) * 1000));
 		return content;
@@ -59,7 +56,8 @@ public class NovelContentModelHelper {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
 				content = cursorToNovelContent(cursor);
-				// Log.d(TAG, "Found: " + content.getPage() + " id: " + content.getId());
+				content.setUserData( NovelContentUserHelperModel.getNovelContentUserModel(db, page));
+
 				break;
 			}
 		} finally {
@@ -79,14 +77,11 @@ public class NovelContentModelHelper {
 	public static NovelContentModel insertNovelContent(SQLiteDatabase db, NovelContentModel content, PageModel page, boolean forceUpdateContent) throws Exception {
 		ContentValues cv = new ContentValues();
 		cv.put(DBHelper.COLUMN_PAGE, content.getPage());
-		cv.put(DBHelper.COLUMN_ZOOM, "" + content.getLastZoom());
 		cv.put(DBHelper.COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 
 		NovelContentModel temp = getNovelContent(db, content.getPage());
 		if (temp == null) {
 			cv.put(DBHelper.COLUMN_CONTENT, content.getContent());
-			cv.put(DBHelper.COLUMN_LAST_X, "" + content.getLastXScroll());
-			cv.put(DBHelper.COLUMN_LAST_Y, "" + content.getLastYScroll());
 
 			// Log.d(TAG, "Inserting Novel Content: " + content.getPage());
 			if (content.getLastUpdate() == null)
@@ -96,14 +91,6 @@ public class NovelContentModelHelper {
 			long id = helper.insertOrThrow(db, DBHelper.TABLE_NOVEL_CONTENT, null, cv);
 			Log.i(TAG, "Novel Content Inserted, New id: " + id);
 		} else {
-			if (content.isUpdatingFromInternet()) {
-				cv.put(DBHelper.COLUMN_LAST_X, "" + temp.getLastXScroll());
-				cv.put(DBHelper.COLUMN_LAST_Y, "" + temp.getLastYScroll());
-			} else {
-				cv.put(DBHelper.COLUMN_LAST_X, "" + content.getLastXScroll());
-				cv.put(DBHelper.COLUMN_LAST_Y, "" + content.getLastYScroll());
-			}
-
 			// skip updating existing content if the page/chapter already deleted.
 			if (!page.isMissing() || forceUpdateContent) {
 				Log.d(TAG, "Updating content for : " + content.getPage());
@@ -138,6 +125,8 @@ public class NovelContentModelHelper {
 
 	public static boolean deleteNovelContent(SQLiteDatabase db, NovelContentModel content) {
 		if (content != null && content.getId() > 0) {
+
+			NovelContentUserHelperModel.deleteNovelContentUser(db, content.getPage());
 			int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT, DBHelper.COLUMN_ID + " = ?", new String[] { "" + content.getId() });
 			Log.w(TAG, "NovelContent Deleted: " + result);
 			return result > 0 ? true : false;
@@ -147,6 +136,8 @@ public class NovelContentModelHelper {
 
 	public static int deleteNovelContent(SQLiteDatabase db, PageModel ref) {
 		if (ref != null && !Util.isStringNullOrEmpty(ref.getPage())) {
+
+			NovelContentUserHelperModel.deleteNovelContentUser(db, ref);
 
 			if (ref.isExternal()) {
 				String wacName = Util.getSavedWacName(ref.getPage());

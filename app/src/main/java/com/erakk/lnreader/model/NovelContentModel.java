@@ -14,10 +14,6 @@ public class NovelContentModel {
     private String page;
     private PageModel pageModel;
 
-    private int lastXScroll;
-    private int lastYScroll;
-    private double lastZoom;
-
     private Date lastUpdate;
     private Date lastCheck;
 
@@ -26,6 +22,16 @@ public class NovelContentModel {
     private ArrayList<ImageModel> images;
 
     private ArrayList<BookmarkModel> bookmarks;
+
+    public NovelContentUserModel getUserData() {
+        return userData;
+    }
+
+    public void setUserData(NovelContentUserModel userData) {
+        this.userData = userData;
+    }
+
+    private NovelContentUserModel userData;
 
     public int getId() {
         return id;
@@ -74,30 +80,6 @@ public class NovelContentModel {
 
     public void setPageModel(PageModel pageModel) {
         this.pageModel = pageModel;
-    }
-
-    public int getLastXScroll() {
-        return lastXScroll;
-    }
-
-    public void setLastXScroll(int lastXScroll) {
-        this.lastXScroll = lastXScroll;
-    }
-
-    public int getLastYScroll() {
-        return lastYScroll;
-    }
-
-    public void setLastYScroll(int lastYScroll) {
-        this.lastYScroll = lastYScroll;
-    }
-
-    public double getLastZoom() {
-        return lastZoom;
-    }
-
-    public void setLastZoom(double lastZoom) {
-        this.lastZoom = lastZoom;
     }
 
     public Date getLastUpdate() {

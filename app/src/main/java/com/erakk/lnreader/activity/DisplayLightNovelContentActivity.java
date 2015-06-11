@@ -48,6 +48,7 @@ import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.BookmarkModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
+import com.erakk.lnreader.model.NovelContentUserModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.parser.CommonParser;
 import com.erakk.lnreader.task.AsyncTaskResult;
@@ -62,6 +63,7 @@ import java.util.ArrayList;
 public class DisplayLightNovelContentActivity extends SherlockActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>>, OnInitListener, OnCompleteListener {
     private static final String TAG = DisplayLightNovelContentActivity.class.toString();
     public NovelContentModel content;
+    public NovelContentUserModel contentUserData;
     public ArrayList<String> images;
     private PageModel currPageModel = null;
 
@@ -72,6 +74,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
     private NonLeakingWebView webView;
     private BakaTsukiWebViewClient client;
+    private BakaTsukiWebChromeClient chromeClient;
 
     private boolean restored;
     private boolean isFullscreen;
@@ -107,7 +110,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
         client = new BakaTsukiWebViewClient(this);
         webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
         webView.setWebViewClient(client);
-        webView.setWebChromeClient(new BakaTsukiWebChromeClient(this));
+        chromeClient = new BakaTsukiWebChromeClient(this);
+        webView.setWebChromeClient(chromeClient);
 
         loadingText = (TextView) findViewById(R.id.emptyList);
         loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
@@ -422,11 +426,11 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
                 startActivity(bookmarkIntent);
                 return true;
             case R.id.menu_downloads_list:
-                Intent downloadsItent = new Intent(this, DownloadListActivity.class);
-                startActivity(downloadsItent);
+                Intent downloadsIntent = new Intent(this, DownloadListActivity.class);
+                startActivity(downloadsIntent);
                 return true;
             case R.id.menu_speak:
-                tts.start(webView, content.getLastYScroll());
+                tts.start(webView, contentUserData.getLastYScroll());
                 return true;
             case R.id.menu_pause_tts:
                 tts.pause();
@@ -648,7 +652,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
      */
     @SuppressWarnings("deprecation")
     public void setLastReadState() {
-        NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
+        final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
         final float currentScale = wv.getScale();
         final int lastY = wv.getScrollY() + wv.getBottom();
         final int contentHeight = wv.getContentHeight();
@@ -656,32 +660,38 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
             @Override
             public void run() {
-                if (content != null) {
-                    // save zoom level, position is updated from updateLastLine()
-                    content.setLastZoom(currentScale);
-                    try {
-                        content = NovelsDao.getInstance().updateNovelContent(content, false);
-                    } catch (Exception ex) {
-                        Log.e(TAG, "Error when saving state: " + ex.getMessage(), ex);
-                    }
-
-                    // check if complete read.
-                    if (contentHeight <= lastY) {
-                        if (content != null) {
-                            try {
-                                PageModel page = content.getPageModel();
-                                if (!page.getPage().endsWith("&action=edit&redlink=1")) {
-                                    page.setFinishedRead(true);
-                                    NovelsDao.getInstance().updatePageModel(page);
-                                }
-                            } catch (Exception ex) {
-                                Log.e(TAG, "Error updating PageModel for Content: " + content.getPage(), ex);
-                            }
-                        }
-                    }
-                    Log.d(TAG, "Update Content:X=" + content.getLastXScroll() + ":Y=" + content.getLastYScroll() + ":Z=" + content.getLastZoom());
+                if (contentUserData == null) {
+                    contentUserData = new NovelContentUserModel();
+                    contentUserData.setPage(currPageModel.getPage());
                 }
 
+                contentUserData.setLastZoom(currentScale);
+
+                // save zoom level, position is updated from updateLastLine()
+                // for external page, use the px
+                if(content == null) {
+                    Log.i(TAG, wv.getScrollY() + " " + wv.getBottom());
+                    contentUserData.setLastYScroll(wv.getScrollY());
+                }
+                // check if complete read.
+                if (contentHeight <= lastY) {
+                    try {
+                        PageModel page = currPageModel;
+                        if (!page.getPage().endsWith("&action=edit&redlink=1")) {
+                            page.setFinishedRead(true);
+                            NovelsDao.getInstance().updatePageModel(page);
+                        }
+                    } catch (Exception ex) {
+                        Log.e(TAG, "Error updating PageModel for Content: " + content.getPage(), ex);
+                    }
+                }
+
+                try {
+                    NovelsDao.getInstance().updateNovelContentUserModel(contentUserData, null);
+                    Log.d(TAG, "Update Content:X=" + contentUserData.getLastXScroll() + ":Y=" + contentUserData.getLastYScroll() + ":Z=" + contentUserData.getLastZoom());
+                }catch ( Exception ex) {
+                    Log.e(TAG, ex.getMessage(), ex);
+                }
                 // save for jump to last read.
                 SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance());
                 SharedPreferences.Editor editor = sharedPrefs.edit();
@@ -789,6 +799,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
     private void executeLoadWacTask(String wacName, String anchorLink, String historyUrl) {
         NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
         LoadWacTask task = new LoadWacTask(this, webView, wacName, client, anchorLink, historyUrl);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
             task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         else
@@ -806,7 +817,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
         this.content = loadedContent;
         try {
             PageModel pageModel = content.getPageModel();
-
+            currPageModel = pageModel;
+            getContentUserData(content.getPage());
             if (content.getLastUpdate().getTime() < pageModel.getLastUpdate().getTime())
                 Toast.makeText(this, getResources().getString(R.string.content_may_updated, content.getLastUpdate().toString(), pageModel.getLastUpdate().toString()), Toast.LENGTH_LONG).show();
 
@@ -814,13 +826,13 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
             final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
             setWebViewSettings();
 
-            int lastPos = content.getLastYScroll();
+            int lastPos = contentUserData.getLastYScroll();
             int pIndex = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, -1);
             if (pIndex > 0)
                 lastPos = pIndex;
 
-            if (content.getLastZoom() > 0) {
-                wv.setInitialScale((int) (content.getLastZoom() * 100));
+            if (contentUserData.getLastZoom() > 0) {
+                wv.setInitialScale((int) (contentUserData.getLastZoom() * 100));
             } else {
                 wv.setInitialScale(100);
             }
@@ -836,7 +848,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
 
             wv.loadDataWithBaseURL(UIHelper.getBaseUrl(this), html.toString(), "text/html", "utf-8", NonLeakingWebView.PREFIX_PAGEMODEL + content.getPage());
             setChapterTitle(pageModel);
-            Log.d(TAG, "Load Content: " + content.getLastXScroll() + " " + content.getLastYScroll() + " " + content.getLastZoom());
+            Log.d(TAG, "Load Content: " + contentUserData.getLastXScroll() + " " + contentUserData.getLastYScroll() + " " + contentUserData.getLastZoom());
 
             buildTOCMenu(pageModel);
             buildBookmarkMenu();
@@ -937,8 +949,22 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
                 Toast.makeText(this, message.getMessage(), Toast.LENGTH_SHORT).show();
                 boolean res = (Boolean) result.getResult();
                 if (!res) {
-                    PageModel p = new PageModel(getIntent().getStringExtra(Constants.EXTRA_PAGE));
+                    String page = getIntent().getStringExtra(Constants.EXTRA_PAGE);
+                    PageModel p = new PageModel(page);
+                    try{
+                        getContentUserData(page);
+                    }catch (Exception ex) {
+                        Log.e(TAG, ex.getMessage(), ex);
+                    }
                     loadExternalUrl(p, true);
+                }
+                else {
+                    try {
+                        contentUserData = getContentUserData(currPageModel.getPage());
+                        chromeClient.setScrollY(contentUserData.getLastYScroll());
+                    }catch (Exception ex) {
+                        Log.e(TAG, ex.getMessage(),ex);
+                    }
                 }
 
             } else {
@@ -950,6 +976,15 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
         }
         toggleProgressBar(false);
 
+    }
+
+    private NovelContentUserModel getContentUserData(String page) throws  Exception {
+        contentUserData = NovelsDao.getInstance().getNovelContentUserModel(page, null);
+        if (contentUserData == null) {
+            contentUserData = new NovelContentUserModel();
+            contentUserData.setPage(page);
+        }
+        return  contentUserData;
     }
 
     /**
@@ -966,8 +1001,13 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
      * @param pIndex
      */
     public void updateLastLine(int pIndex) {
-        if (content != null)
-            content.setLastYScroll(pIndex);
+        try {
+            if (contentUserData == null)
+                getContentUserData(currPageModel.getPage());
+            contentUserData.setLastYScroll(pIndex);
+        }catch (Exception ex) {
+            Log.e(TAG, "updateLastLine(): " + ex.getMessage(), ex);
+        }
     }
 
     /**
@@ -982,7 +1022,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
                 @Override
                 public void run() {
                     try {
-                        int y = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, content.getLastYScroll());
+                        int y = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, contentUserData.getLastYScroll());
                         Log.d(TAG, "notifyLoadComplete(): Move to the saved pos: " + y);
                         _webView.loadUrl("javascript:goToParagraph(" + y + ")");
                     }catch ( NullPointerException ex) {
@@ -1104,7 +1144,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
     }
 
     public void sendHtmlForSpeak(String html) {
-        tts.start(html, content.getLastYScroll());
+        tts.start(html, contentUserData.getLastYScroll());
     }
     // endregion
 }

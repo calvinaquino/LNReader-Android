@@ -495,9 +495,6 @@ public class BakaTsukiParserAlternative {
         content.setImages(images);
         content.setContent(CommonParser.replaceImagePath(text));
 
-        content.setLastXScroll(0);
-        content.setLastYScroll(0);
-        content.setLastZoom(Constants.DISPLAY_SCALE);
         return content;
     }
 }
