@@ -1,14 +1,14 @@
 package com.erakk.lnreader.activity;
 
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -19,12 +19,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.BaseActivity;
+import com.erakk.lnreader.UI.activity.MainActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.UpdateInfoModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
@@ -35,7 +34,9 @@ import com.erakk.lnreader.model.UpdateType;
 import com.erakk.lnreader.service.UpdateService;
 import com.erakk.lnreader.task.AsyncTaskResult;
 
-public class UpdateHistoryActivity extends SherlockActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
+import java.util.ArrayList;
+
+public class UpdateHistoryActivity extends BaseActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
 	private static final String TAG = UpdateHistoryActivity.class.toString();
 	private ArrayList<UpdateInfoModel> updateList;
 	private ListView updateListView;
@@ -94,7 +95,7 @@ public class UpdateHistoryActivity extends SherlockActivity implements IExtended
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.activity_update_history, menu);
+		getMenuInflater().inflate(R.menu.activity_update_history, menu);
 		return true;
 	}
 

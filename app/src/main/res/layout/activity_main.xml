@@ -1,9 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:gravity="top"
+	android:orientation="vertical">
+
+	<android.support.v7.widget.Toolbar
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/toolbar"
+		android:minHeight="?attr/actionBarSize"
+		android:background="?attr/colorPrimary"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+		android:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+	</android.support.v7.widget.Toolbar>
+
+<ScrollView
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="fill_parent"
     android:layout_gravity="center" >
-    
+
     <LinearLayout 
         android:id="@+id/menu_main"
         android:layout_width="fill_parent"
@@ -156,3 +173,4 @@
 	    </LinearLayout>
     </LinearLayout>
 </ScrollView>
+</LinearLayout>

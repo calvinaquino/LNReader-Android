@@ -6,18 +6,18 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.BaseActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
@@ -30,7 +30,7 @@ import com.erakk.lnreader.task.LoadImageTask;
 
 import java.util.ArrayList;
 
-public class DisplayImageActivity extends SherlockActivity implements IExtendedCallbackNotifier<AsyncTaskResult<ImageModel>> {
+public class DisplayImageActivity extends BaseActivity implements IExtendedCallbackNotifier<AsyncTaskResult<ImageModel>> {
     private static final String TAG = DisplayImageActivity.class.toString();
     private NonLeakingWebView imgWebView;
     private LoadImageTask task;
@@ -134,7 +134,7 @@ public class DisplayImageActivity extends SherlockActivity implements IExtendedC
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.activity_display_image, menu);
+        getMenuInflater().inflate(R.menu.activity_display_image, menu);
         _menu = menu;
         setPrevNextButtonState();
         return true;

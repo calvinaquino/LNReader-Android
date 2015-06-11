@@ -1,22 +1,22 @@
-package com.erakk.lnreader.fragment;
+package com.erakk.lnreader.UI.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTabHost;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.activity.INovelListHelper;
 
 
-public class DisplayNovelTabFragment extends SherlockFragment {
+public class DisplayNovelTabFragment extends Fragment {
 	// TabSpec Names
 	private static final String MAIN_SPEC = "Main";
 	private static final String TEASER_SPEC = "Teaser";
@@ -36,7 +36,7 @@ public class DisplayNovelTabFragment extends SherlockFragment {
 		View view = inflater.inflate(R.layout.fragment_display_novel_tab, container, false);
 
 		mTabHost = (FragmentTabHost) view.findViewById(android.R.id.tabhost);
-		mTabHost.setup(getSherlockActivity(), getChildFragmentManager(), R.id.content);
+		mTabHost.setup(getActivity(), getChildFragmentManager(), R.id.content);
 
 		Bundle mainBundle = new Bundle();
 		mainBundle.putString(Constants.EXTRA_NOVEL_LIST_MODE, Constants.EXTRA_NOVEL_LIST_MODE_MAIN);
@@ -64,7 +64,7 @@ public class DisplayNovelTabFragment extends SherlockFragment {
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item) {
 		Fragment currentTab = getChildFragmentManager().findFragmentById(R.id.content);
 		Log.d(TAG, "Current fragment: " + currentTab.getClass().toString());
 		switch(item.getItemId()) {

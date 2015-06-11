@@ -1,8 +1,4 @@
-package com.erakk.lnreader.fragment;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
+package com.erakk.lnreader.UI.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -13,11 +9,14 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -32,8 +31,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
@@ -54,7 +51,11 @@ import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.DownloadNovelContentTask;
 import com.erakk.lnreader.task.LoadNovelDetailsTask;
 
-public class DisplayLightNovelDetailsFragment extends SherlockFragment implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class DisplayLightNovelDetailsFragment extends Fragment implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
     public static final String TAG = DisplayLightNovelDetailsFragment.class.toString();
     private PageModel page;
     private NovelCollectionModel novelCol;
@@ -78,7 +79,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        UIHelper.SetActionBarDisplayHomeAsUp(getSherlockActivity(), true);
+        UIHelper.SetActionBarDisplayHomeAsUp(getActivity(), true);
         View view = inflater.inflate(R.layout.activity_display_light_novel_details, container, false);
 
         // Get intent and message
@@ -114,7 +115,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
             }
         });
 
-        getSherlockActivity().setTitle(page.getTitle());
+        getActivity().setTitle(page.getTitle());
 
         setHasOptionsMenu(true);
 
@@ -123,7 +124,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
     }
 
     private void loadChapter(PageModel chapter) {
-        boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(getSherlockActivity()).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
+        boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
 
         if (chapter.isExternal() && !useInternalWebView) {
             try {
@@ -133,11 +134,11 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
             } catch (Exception ex) {
                 String message = getResources().getString(R.string.error_parsing_url, chapter.getPage());
                 Log.e(TAG, message, ex);
-                Toast.makeText(getSherlockActivity(), message, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
             }
         } else {
-            if (chapter.isExternal() || chapter.isDownloaded() || !UIHelper.getDownloadTouchPreference(getSherlockActivity())) {
-                Intent intent = new Intent(getSherlockActivity(), DisplayLightNovelContentActivity.class);
+            if (chapter.isExternal() || chapter.isDownloaded() || !UIHelper.getDownloadTouchPreference(getActivity())) {
+                Intent intent = new Intent(getActivity(), DisplayLightNovelContentActivity.class);
                 intent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
                 startActivity(intent);
             } else {
@@ -154,18 +155,18 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, com.actionbarsherlock.view.MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.fragment_display_light_novel_details, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(TAG, "menu Option called.");
         switch (item.getItemId()) {
             case R.id.menu_refresh_chapter_list:
                 Log.d(TAG, "Refreshing Details");
                 executeTask(page, true);
-                Toast.makeText(getSherlockActivity(), getResources().getString(R.string.refreshing_detail), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getResources().getString(R.string.refreshing_detail), Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.menu_details_download_all:
             /*
@@ -194,7 +195,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
         super.onCreateContextMenu(menu, v, menuInfo);
         ExpandableListView.ExpandableListContextMenuInfo info = (ExpandableListView.ExpandableListContextMenuInfo) menuInfo;
 
-        MenuInflater inflater = getSherlockActivity().getMenuInflater();
+        MenuInflater inflater = getActivity().getMenuInflater();
         int type = ExpandableListView.getPackedPositionType(info.packedPosition);
         if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
             inflater.inflate(R.menu.novel_details_volume_context_menu, menu);
@@ -245,7 +246,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			 * Implement code to clear this volume cache
 			 */
                 BookModel bookClear = novelCol.getBookCollections().get(groupPosition);
-                Toast.makeText(getSherlockActivity(), String.format(getResources().getString(R.string.toast_clear_volume), bookClear.getTitle()), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), String.format(getResources().getString(R.string.toast_clear_volume), bookClear.getTitle()), Toast.LENGTH_SHORT).show();
                 dao.deleteBookCache(bookClear);
                 for (PageModel page : bookClear.getChapterCollection()) {
                     page.setDownloaded(false);
@@ -257,7 +258,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			/*
 			 * Implement code to mark entire volume as read
 			 */
-                Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_mark_volume), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getResources().getString(R.string.toast_mark_volume), Toast.LENGTH_SHORT).show();
                 BookModel book2 = novelCol.getBookCollections().get(groupPosition);
                 for (Iterator<PageModel> iPage = book2.getChapterCollection().iterator(); iPage.hasNext(); ) {
                     PageModel page = iPage.next();
@@ -271,7 +272,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			/*
 			 * Implement code to mark entire volume as unread
 			 */
-                Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_mark_volume2), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getResources().getString(R.string.toast_mark_volume2), Toast.LENGTH_SHORT).show();
                 BookModel ubook2 = novelCol.getBookCollections().get(groupPosition);
                 for (Iterator<PageModel> iPage = ubook2.getChapterCollection().iterator(); iPage.hasNext(); ) {
                     PageModel page = iPage.next();
@@ -298,7 +299,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			 * Implement code to clear this chapter cache
 			 */
                 chapter = bookModelAdapter.getChild(groupPosition, childPosition);
-                Toast.makeText(getSherlockActivity(), String.format(getResources().getString(R.string.toast_clear_chapter), chapter.getTitle()), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), String.format(getResources().getString(R.string.toast_clear_chapter), chapter.getTitle()), Toast.LENGTH_SHORT).show();
                 dao.deleteChapterCache(chapter);
                 chapter.setDownloaded(false);
                 bookModelAdapter.notifyDataSetChanged();
@@ -312,7 +313,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
                 chapter.setFinishedRead(!chapter.isFinishedRead());
                 dao.updatePageModel(chapter);
                 bookModelAdapter.notifyDataSetChanged();
-                Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_toggle_read), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getResources().getString(R.string.toast_toggle_read), Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.delete_volume:
 
@@ -320,7 +321,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			 * Implement code to delete this volume cache
 			 */
                 BookModel bookDel = novelCol.getBookCollections().get(groupPosition);
-                Toast.makeText(getSherlockActivity(), getResources().getString(R.string.delete_this_volume, bookDel.getTitle()), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getResources().getString(R.string.delete_this_volume, bookDel.getTitle()), Toast.LENGTH_SHORT).show();
                 dao.deleteBooks(bookDel);
                 novelCol.getBookCollections().remove(groupPosition);
                 bookModelAdapter.notifyDataSetChanged();
@@ -331,7 +332,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 			 * Implement code to delete this chapter cache
 			 */
                 chapter = bookModelAdapter.getChild(groupPosition, childPosition);
-                Toast.makeText(getSherlockActivity(), getResources().getString(R.string.delete_this_chapter, chapter.getTitle()), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getResources().getString(R.string.delete_this_chapter, chapter.getTitle()), Toast.LENGTH_SHORT).show();
                 dao.deleteNovelContent(chapter);
                 dao.deletePage(chapter);
                 novelCol.getBookCollections().get(groupPosition).getChapterCollection().remove(chapter);
@@ -399,20 +400,20 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
             if (type == 0) {
                 if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
                     exists = true;
-                    Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_download_on_queue), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getResources().getString(R.string.toast_download_on_queue), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_downloading, name), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getResources().getString(R.string.toast_downloading, name), Toast.LENGTH_SHORT).show();
                     LNReaderApplication.getInstance().addDownload(id, name);
                 }
             } else if (type == 1) {
-                Toast.makeText(getSherlockActivity(), "" + toastText, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "" + toastText, Toast.LENGTH_SHORT).show();
             } else if (type == 2) {
                 String downloadDescription = LNReaderApplication.getInstance().getDownloadDescription(id);
                 if (downloadDescription != null) {
                     String message = getResources().getString(R.string.toast_download_finish, page.getTitle(), downloadDescription);
                     if (hasError)
                         message = getResources().getString(R.string.toast_download_finish_with_error, page.getTitle(), downloadDescription);
-                    Toast.makeText(getSherlockActivity(), message, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                 }
                 LNReaderApplication.getInstance().removeDownload(id);
             }
@@ -485,7 +486,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
                     // Prepare header
                     if ((expandList.getHeaderViewsCount() == 0) && getArguments().getBoolean("show_list_child")) {
                         page = novelCol.getPageModel();
-                        LayoutInflater layoutInflater = getSherlockActivity().getLayoutInflater();
+                        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
                         View synopsis = layoutInflater.inflate(R.layout.activity_display_synopsis, null);
                         TextView textViewTitle = (TextView) synopsis.findViewById(R.id.title);
                         TextView textViewSynopsis = (TextView) synopsis.findViewById(R.id.synopsys);
@@ -515,9 +516,9 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                 if (isChecked) {
-                                    Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_add_watch, page.getTitle()), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), getResources().getString(R.string.toast_add_watch, page.getTitle()), Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_remove_watch, page.getTitle()), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), getResources().getString(R.string.toast_remove_watch, page.getTitle()), Toast.LENGTH_SHORT).show();
                                 }
                                 // update the db!
                                 page.setWatched(isChecked);
@@ -528,7 +529,7 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
                         ImageView ImageViewCover = (ImageView) synopsis.findViewById(R.id.cover);
                         if (novelCol.getCoverBitmap() == null) {
                             // IN app test, is returning empty bitmap
-                            Toast.makeText(getSherlockActivity(), getResources().getString(R.string.toast_err_bitmap_empty), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), getResources().getString(R.string.toast_err_bitmap_empty), Toast.LENGTH_LONG).show();
                         } else {
                             ImageViewCover.setOnClickListener(new OnClickListener() {
 
@@ -537,11 +538,11 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
                                     handleCoverClick(novelCol.getCoverUrl());
                                 }
                             });
-                            if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && UIHelper.getStrechCoverPreference(getSherlockActivity())) {
+                            if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && UIHelper.getStrechCoverPreference(getActivity())) {
                                 Drawable coverDrawable = new BitmapDrawable(getResources(), novelCol.getCoverBitmap());
                                 int coverHeight = novelCol.getCoverBitmap().getHeight();
                                 int coverWidth = novelCol.getCoverBitmap().getWidth();
-                                double screenWidth = UIHelper.getScreenWidth(getSherlockActivity()) * 0.9;
+                                double screenWidth = UIHelper.getScreenWidth(getActivity()) * 0.9;
                                 double ratio = screenWidth / coverWidth;
                                 int finalHeight = (int) (coverHeight * ratio);
                                 ImageViewCover.setBackground(coverDrawable);
@@ -556,11 +557,11 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
 
                         expandList.addHeaderView(synopsis);
                     }
-                    bookModelAdapter = new BookModelAdapter(getSherlockActivity(), novelCol.getBookCollections());
+                    bookModelAdapter = new BookModelAdapter(getActivity(), novelCol.getBookCollections());
                     expandList.setAdapter(bookModelAdapter);
                 } catch (Exception e2) {
                     Log.e(TAG, "Error when setting up chapter list: " + e2.getMessage(), e2);
-                    Toast.makeText(getSherlockActivity(), getResources().getString(R.string.error_setting_chapter_list, e2.getMessage()), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getResources().getString(R.string.error_setting_chapter_list, e2.getMessage()), Toast.LENGTH_SHORT).show();
                 }
             }
         } else {
@@ -568,14 +569,14 @@ public class DisplayLightNovelDetailsFragment extends SherlockFragment implement
             if (e.getMessage() != null)
                 msg += ": " + e.getMessage();
             Log.e(TAG, msg, e);
-            Toast.makeText(getSherlockActivity(), msg, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
         }
         toggleProgressBar(false);
     }
 
     private void handleCoverClick(URL coverUrl) {
         String bigCoverUrl = CommonParser.getImageFilePageFromImageUrl(coverUrl.toString());
-        Intent intent = new Intent(getSherlockActivity(), DisplayImageActivity.class);
+        Intent intent = new Intent(getActivity(), DisplayImageActivity.class);
         intent.putExtra(Constants.EXTRA_IMAGE_URL, bigCoverUrl);
         startActivity(intent);
     }

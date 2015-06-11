@@ -3,16 +3,16 @@ package com.erakk.lnreader.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.Menu;
+import android.view.MenuItem;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.BaseActivity;
+import com.erakk.lnreader.UI.fragment.DisplayLightNovelDetailsFragment;
+import com.erakk.lnreader.UI.fragment.DisplaySynopsisFragment;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.fragment.DisplayLightNovelDetailsFragment;
-import com.erakk.lnreader.fragment.DisplaySynopsisFragment;
 
-public class TestDisplayNovelDetailsActivity extends SherlockFragmentActivity {
+public class TestDisplayNovelDetailsActivity extends BaseActivity {
 
 	
 	@Override
@@ -48,7 +48,7 @@ public class TestDisplayNovelDetailsActivity extends SherlockFragmentActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.fragactivity_display_novel_list, menu);
+		getMenuInflater().inflate(R.menu.fragactivity_display_novel_list, menu);
 		return true;
 	}
 	

@@ -1,9 +1,5 @@
 package com.erakk.lnreader.activity;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
 import android.app.Activity;
 import android.app.LocalActivityManager;
 import android.content.Intent;
@@ -11,22 +7,26 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.BaseActivity;
 import com.erakk.lnreader.UIHelper;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 /*
  * Modified by : freedomofkeima
  */
 
 @SuppressWarnings("deprecation")
-public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
+public class DisplayAlternativeNovelPagerActivity extends BaseActivity {
 
 	static TabHost tabHost;
 	private boolean isInverted;
@@ -130,7 +130,7 @@ public class DisplayAlternativeNovelPagerActivity extends SherlockActivity {
 	// Option Menu related
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
+		getMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
 		return true;
 	}
 

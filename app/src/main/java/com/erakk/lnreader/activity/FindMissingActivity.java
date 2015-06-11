@@ -1,37 +1,10 @@
 package com.erakk.lnreader.activity;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.erakk.lnreader.UI.activity.BaseActivity;
 
-import android.annotation.SuppressLint;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
-import android.os.AsyncTask;
-import android.os.AsyncTask.Status;
-import android.os.Build;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+public class FindMissingActivity extends BaseActivity  {
 
-import com.actionbarsherlock.app.SherlockListActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.LNReaderApplication;
-import com.erakk.lnreader.R;
-import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.adapter.FindMissingAdapter;
-import com.erakk.lnreader.callback.ICallbackEventData;
-import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
-import com.erakk.lnreader.dao.NovelsDao;
-import com.erakk.lnreader.model.FindMissingModel;
-import com.erakk.lnreader.task.DeleteMissingTask;
-
-public class FindMissingActivity extends SherlockListActivity implements IExtendedCallbackNotifier<Integer> {
-
-	private static final String TAG = FindMissingActivity.class.toString();
+	/*private static final String TAG = FindMissingActivity.class.toString();
 	private boolean isInverted;
 	private ArrayList<FindMissingModel> models = null;
 	private FindMissingAdapter adapter = null;
@@ -203,5 +176,5 @@ public class FindMissingActivity extends SherlockListActivity implements IExtend
 	@Override
 	public boolean downloadListSetup(String taskId, String message, int setupType, boolean hasError) {
 		return false;
-	}
+	}*/
 }

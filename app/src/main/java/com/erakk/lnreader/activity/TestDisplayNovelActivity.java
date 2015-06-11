@@ -5,18 +5,18 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.view.Menu;
+import android.view.MenuItem;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.BaseActivity;
+import com.erakk.lnreader.UI.fragment.DisplayLightNovelDetailsFragment;
+import com.erakk.lnreader.UI.fragment.DisplayLightNovelListFragment;
+import com.erakk.lnreader.UI.fragment.DisplayNovelTabFragment;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.fragment.DisplayLightNovelDetailsFragment;
-import com.erakk.lnreader.fragment.DisplayLightNovelListFragment;
-import com.erakk.lnreader.fragment.DisplayNovelTabFragment;
 
-public class TestDisplayNovelActivity extends SherlockFragmentActivity implements
+public class TestDisplayNovelActivity extends BaseActivity implements
 DisplayLightNovelListFragment.FragmentListener{
 
 	private boolean isInverted;
@@ -42,7 +42,7 @@ DisplayLightNovelListFragment.FragmentListener{
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.fragactivity_display_novel_list, menu);
+		getMenuInflater().inflate(R.menu.fragactivity_display_novel_list, menu);
 		return true;
 	}
 

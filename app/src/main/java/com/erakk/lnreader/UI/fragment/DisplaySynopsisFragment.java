@@ -1,6 +1,4 @@
-package com.erakk.lnreader.fragment;
-
-import java.net.URL;
+package com.erakk.lnreader.UI.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -9,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +21,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
@@ -39,7 +37,9 @@ import com.erakk.lnreader.parser.CommonParser;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.LoadNovelDetailsTask;
 
-public class DisplaySynopsisFragment extends SherlockFragment implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
+import java.net.URL;
+
+public class DisplaySynopsisFragment extends Fragment implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
     public static final String TAG = DisplaySynopsisFragment.class.toString();
     private final NovelsDao dao = NovelsDao.getInstance();
     private NovelCollectionModel novelCol;
@@ -53,7 +53,7 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IExtend
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        UIHelper.SetActionBarDisplayHomeAsUp(getSherlockActivity(), true);
+        UIHelper.SetActionBarDisplayHomeAsUp(getActivity(), true);
         View view = inflater.inflate(R.layout.activity_display_synopsis, container, false);
 
         currentLayout = view;
@@ -190,9 +190,9 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IExtend
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                             if (isChecked) {
-                                Toast.makeText(getSherlockActivity(), "Added to watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "Added to watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(getSherlockActivity(), "Removed from watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "Removed from watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
                             }
                             // update the db!
                             page.setWatched(isChecked);
@@ -203,7 +203,7 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IExtend
                     ImageView ImageViewCover = (ImageView) currentLayout.findViewById(R.id.cover);
                     if (novelCol.getCoverBitmap() == null) {
                         // IN app test, is returning empty bitmap
-                        Toast.makeText(getSherlockActivity(), "Bitmap empty", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "Bitmap empty", Toast.LENGTH_LONG).show();
                     } else {
                         ImageViewCover.setOnClickListener(new OnClickListener() {
 
@@ -212,11 +212,11 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IExtend
                                 handleCoverClick(novelCol.getCoverUrl());
                             }
                         });
-                        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && UIHelper.getStrechCoverPreference(getSherlockActivity())) {
+                        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && UIHelper.getStrechCoverPreference(getActivity())) {
                             Drawable coverDrawable = new BitmapDrawable(getResources(), novelCol.getCoverBitmap());
                             int coverHeight = novelCol.getCoverBitmap().getHeight();
                             int coverWidth = novelCol.getCoverBitmap().getWidth();
-                            double screenWidth = UIHelper.getScreenWidth(getSherlockActivity()) * 0.9;
+                            double screenWidth = UIHelper.getScreenWidth(getActivity()) * 0.9;
                             double ratio = screenWidth / coverWidth;
                             int finalHeight = (int) (coverHeight * ratio);
                             ImageViewCover.setBackground(coverDrawable);
@@ -231,19 +231,19 @@ public class DisplaySynopsisFragment extends SherlockFragment implements IExtend
 
                 } catch (Exception e2) {
                     Log.e(TAG, "Error when setting up chapter list: " + e2.getMessage(), e2);
-                    Toast.makeText(getSherlockActivity(), e2.getClass().toString() + ": " + e2.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), e2.getClass().toString() + ": " + e2.getMessage(), Toast.LENGTH_SHORT).show();
                 }
                 Log.d(TAG, "Loaded: " + novelCol.getPage());
             }
         } else {
             Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
-            Toast.makeText(getSherlockActivity(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
     private void handleCoverClick(URL coverUrl) {
         String bigCoverUrl = CommonParser.getImageFilePageFromImageUrl(coverUrl.toString());
-        Intent intent = new Intent(getSherlockActivity(), DisplayImageActivity.class);
+        Intent intent = new Intent(getActivity(), DisplayImageActivity.class);
         intent.putExtra(Constants.EXTRA_IMAGE_URL, bigCoverUrl);
         startActivity(intent);
     }

@@ -1,6 +1,4 @@
-package com.erakk.lnreader.fragment;
-
-import java.util.ArrayList;
+package com.erakk.lnreader.UI.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -10,6 +8,7 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -24,7 +23,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockListFragment;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
@@ -43,12 +41,14 @@ import com.erakk.lnreader.task.DownloadNovelDetailsTask;
 import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadNovelsTask;
 
+import java.util.ArrayList;
+
 /*
  * Author: Nandaka
  * Copy from: NovelsActivity.java
  */
 
-public class DisplayLightNovelListFragment extends SherlockListFragment implements IAsyncTaskOwner, INovelListHelper {
+public class DisplayLightNovelListFragment extends ListFragment implements IAsyncTaskOwner, INovelListHelper {
 	private static final String TAG = DisplayLightNovelListFragment.class.toString();
 	private final ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	private PageModelAdapter adapter;
@@ -90,13 +90,13 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 		onlyWatched = getArguments().getBoolean(Constants.EXTRA_ONLY_WATCHED, false);
 
 		if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
-			getSherlockActivity().setTitle("Light Novels");
+			getActivity().setTitle("Light Novels");
 		}
 		else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
-			getSherlockActivity().setTitle("Light Novels: Teasers");
+			getActivity().setTitle("Light Novels: Teasers");
 		}
 		else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
-			getSherlockActivity().setTitle("Light Novels: Original");
+			getActivity().setTitle("Light Novels: Original");
 		}
 
 		return view;
@@ -141,9 +141,9 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 
 	@Override
 	public void refreshList() {
-		boolean onlyWatched = getSherlockActivity().getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
+		boolean onlyWatched = getActivity().getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
 		updateContent(true, onlyWatched);
-		Toast.makeText(getSherlockActivity(), "Refreshing Main Novel...", Toast.LENGTH_SHORT).show();
+		Toast.makeText(getActivity(), "Refreshing Main Novel...", Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -165,10 +165,10 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 
 	@Override
 	public void manualAdd() {
-		AlertDialog.Builder alert = new AlertDialog.Builder(getSherlockActivity());
+		AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
 		alert.setTitle(getString(R.string.add_novel_main, mode));
 
-		LayoutInflater factory = LayoutInflater.from(getSherlockActivity());
+		LayoutInflater factory = LayoutInflater.from(getActivity());
 		View inputView = factory.inflate(R.layout.layout_add_new_novel, null);
 		final EditText inputName = (EditText) inputView.findViewById(R.id.page);
 		final EditText inputTitle = (EditText) inputView.findViewById(R.id.title);
@@ -207,14 +207,14 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 			}
 			executeAddTask(temp);
 		} else {
-			Toast.makeText(getSherlockActivity(), "Empty Input", Toast.LENGTH_LONG).show();
+			Toast.makeText(getActivity(), "Empty Input", Toast.LENGTH_LONG).show();
 		}
 	}
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		MenuInflater inflater = getSherlockActivity().getMenuInflater();
+		MenuInflater inflater = getActivity().getMenuInflater();
 		inflater.inflate(R.menu.novel_context_menu, menu);
 	}
 
@@ -233,10 +233,10 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 				PageModel novel = listItems.get(info.position);
 				if (novel.isWatched()) {
 					novel.setWatched(false);
-					Toast.makeText(getSherlockActivity(), "Removed from watch list: " + novel.getTitle(), Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), "Removed from watch list: " + novel.getTitle(), Toast.LENGTH_SHORT).show();
 				} else {
 					novel.setWatched(true);
-					Toast.makeText(getSherlockActivity(), "Added to watch list: " + novel.getTitle(), Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), "Added to watch list: " + novel.getTitle(), Toast.LENGTH_SHORT).show();
 				}
 				NovelsDao.getInstance().updatePageModel(novel);
 				adapter.notifyDataSetChanged();
@@ -279,20 +279,20 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 		try {
 			// Check size
 			int resourceId = R.layout.novel_list_item;
-			if (UIHelper.isSmallScreen(getSherlockActivity())) {
+			if (UIHelper.isSmallScreen(getActivity())) {
 				resourceId = R.layout.novel_list_item_small;
 			}
 			if (adapter != null) {
 				adapter.setResourceId(resourceId);
 			} else {
-				adapter = new PageModelAdapter(getSherlockActivity(), resourceId, listItems);
+				adapter = new PageModelAdapter(getActivity(), resourceId, listItems);
 			}
-			boolean alphOrder = UIHelper.isAlphabeticalOrder(getSherlockActivity());
+			boolean alphOrder = UIHelper.isAlphabeticalOrder(getActivity());
 			executeTask(isRefresh, onlyWatched, alphOrder);
 			setListAdapter(adapter);
 		} catch (Exception e) {
 			Log.e(TAG, e.getMessage(), e);
-			Toast.makeText(getSherlockActivity(), "Error when updating: " + e.getMessage(), Toast.LENGTH_LONG).show();
+			Toast.makeText(getActivity(), "Error when updating: " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -336,18 +336,18 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 		if (type == 0) {
 			if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
 				exists = true;
-				Toast.makeText(getSherlockActivity(), "Download already on queue.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity(), "Download already on queue.", Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(getSherlockActivity(), "Downloading " + name + ".", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity(), "Downloading " + name + ".", Toast.LENGTH_SHORT).show();
 				LNReaderApplication.getInstance().addDownload(id, name);
 			}
 		} else if (type == 1) {
-			Toast.makeText(getSherlockActivity(), toastText, Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), toastText, Toast.LENGTH_SHORT).show();
 		} else if (type == 2) {
 			String message = String.format("%s's download finished!", LNReaderApplication.getInstance().getDownloadDescription(id));
 			if (hasError)
 				message = String.format("%s's download finished with error(s)!", LNReaderApplication.getInstance().getDownloadDescription(id));
-			Toast.makeText(getSherlockActivity(), message, Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
 			LNReaderApplication.getInstance().removeDownload(id);
 		}
 		return exists;
@@ -505,13 +505,13 @@ public class DisplayLightNovelListFragment extends SherlockListFragment implemen
 			}
 		} else {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
-			Toast.makeText(getSherlockActivity(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
+			Toast.makeText(getActivity(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
 
 	@Override
 	public Context getContext() {
-		Context ctx = this.getSherlockActivity();
+		Context ctx = this.getActivity();
 		if (ctx == null)
 			return LNReaderApplication.getInstance().getApplicationContext();
 		return ctx;

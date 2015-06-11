@@ -1,7 +1,4 @@
-package com.erakk.lnreader.activity;
-
-import java.util.Iterator;
-import java.util.Map.Entry;
+package com.erakk.lnreader.UI.activity;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -16,25 +13,38 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.activity.DisplayAlternativeNovelPagerActivity;
+import com.erakk.lnreader.activity.DisplayBookmarkActivity;
+import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
+import com.erakk.lnreader.activity.DisplayLightNovelListActivity;
+import com.erakk.lnreader.activity.DisplayNovelPagerActivity;
+import com.erakk.lnreader.activity.DisplaySearchActivity;
+import com.erakk.lnreader.activity.DisplaySettingsActivity;
+import com.erakk.lnreader.activity.DownloadListActivity;
+import com.erakk.lnreader.activity.TestDisplayNovelActivity;
+import com.erakk.lnreader.activity.TestDisplayNovelActivityTwo;
+import com.erakk.lnreader.activity.UpdateHistoryActivity;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.CheckDBReadyTask;
 
-public class MainActivity extends SherlockActivity implements IExtendedCallbackNotifier<AsyncTaskResult<Boolean>> {
+import java.util.Iterator;
+import java.util.Map.Entry;
+
+public class MainActivity extends BaseActivity implements IExtendedCallbackNotifier<AsyncTaskResult<Boolean>> {
 	private static final String TAG = MainActivity.class.toString();
 	private boolean isInverted;
 	private final Context ctx = this;
@@ -81,7 +91,7 @@ public class MainActivity extends SherlockActivity implements IExtendedCallbackN
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.activity_main, menu);
+		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
 

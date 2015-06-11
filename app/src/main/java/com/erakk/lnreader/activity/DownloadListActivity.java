@@ -1,21 +1,21 @@
 package com.erakk.lnreader.activity;
 
-import java.util.ArrayList;
-
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.BaseActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.DownloadListAdapter;
 import com.erakk.lnreader.model.DownloadModel;
 
-public class DownloadListActivity extends SherlockActivity {
+import java.util.ArrayList;
+
+public class DownloadListActivity extends BaseActivity {
 	private static final String TAG = DownloadListActivity.class.toString();
 	ArrayList<DownloadModel> downloadList;
 	ListView downloadListView;

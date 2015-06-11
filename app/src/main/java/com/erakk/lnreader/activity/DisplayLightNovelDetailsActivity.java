@@ -1,9 +1,5 @@
 package com.erakk.lnreader.activity;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,7 +12,9 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.CheckBox;
@@ -30,12 +28,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.BaseActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.BookModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
@@ -50,7 +46,11 @@ import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.DownloadNovelContentTask;
 import com.erakk.lnreader.task.LoadNovelDetailsTask;
 
-public class DisplayLightNovelDetailsActivity extends SherlockActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+public class DisplayLightNovelDetailsActivity extends BaseActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
 	public static final String TAG = DisplayLightNovelDetailsActivity.class.toString();
 	private PageModel page;
 	private NovelCollectionModel novelCol;
@@ -177,7 +177,7 @@ public class DisplayLightNovelDetailsActivity extends SherlockActivity implement
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.activity_display_light_novel_details, menu);
+		getMenuInflater().inflate(R.menu.activity_display_light_novel_details, menu);
 		return true;
 	}
 

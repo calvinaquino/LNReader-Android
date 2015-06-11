@@ -6,18 +6,18 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.BaseActivity;
 import com.erakk.lnreader.UIHelper;
 
 @SuppressWarnings("deprecation")
-public class DisplayNovelPagerActivity extends SherlockActivity {
+public class DisplayNovelPagerActivity extends BaseActivity {
 	// TabSpec Names
 	private static final String MAIN_SPEC = "Main";
 	private static final String TEASER_SPEC = "Teaser";
@@ -128,7 +128,7 @@ public class DisplayNovelPagerActivity extends SherlockActivity {
 	// Option Menu related
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
+		getMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
 		return true;
 	}
 

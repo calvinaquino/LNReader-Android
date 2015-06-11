@@ -14,6 +14,8 @@ import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -23,12 +25,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.BaseActivity;
+import com.erakk.lnreader.UI.activity.MainActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.BookmarkModelAdapter;
 import com.erakk.lnreader.adapter.PageModelAdapter;
@@ -60,7 +61,7 @@ import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
 
-public class DisplayLightNovelContentActivity extends SherlockActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>>, OnInitListener, OnCompleteListener {
+public class DisplayLightNovelContentActivity extends BaseActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>>, OnInitListener, OnCompleteListener {
     private static final String TAG = DisplayLightNovelContentActivity.class.toString();
     public NovelContentModel content;
     public NovelContentUserModel contentUserData;
@@ -312,7 +313,7 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
     @Override
     @SuppressLint("NewApi")
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.activity_display_light_novel_content, menu);
+        getMenuInflater().inflate(R.menu.activity_display_light_novel_content, menu);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (getFullscreenPreferences()) {

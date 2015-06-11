@@ -3,14 +3,14 @@ package com.erakk.lnreader.activity;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.BaseActivity;
 import com.erakk.lnreader.UIHelper;
 
-public class DisplayChangelogActivity extends SherlockActivity {
+public class DisplayChangelogActivity extends BaseActivity {
 	private static final String TAG = DisplayChangelogActivity.class.toString();
 
 	@Override

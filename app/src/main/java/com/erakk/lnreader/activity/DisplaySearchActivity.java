@@ -1,9 +1,5 @@
 package com.erakk.lnreader.activity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -28,16 +25,19 @@ import android.widget.ProgressBar;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.BaseActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.SearchPageModelAdapter;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
 
-public class DisplaySearchActivity extends SherlockActivity {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class DisplaySearchActivity extends BaseActivity {
 	protected static final String TAG = DisplaySearchActivity.class.toString();
 	private boolean isInverted;
 	private final Handler mHandler = new Handler();

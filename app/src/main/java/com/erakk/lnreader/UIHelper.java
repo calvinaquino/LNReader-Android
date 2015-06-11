@@ -106,11 +106,11 @@ public class UIHelper {
      */
     public static void SetTheme(Activity activity, Integer layoutId) {
         CheckScreenRotation(activity);
-        if (PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
-            activity.setTheme(R.style.AppTheme2);
-        } else {
+        //if (PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
+        //    activity.setTheme(R.style.AppTheme2);
+        //} else {
             activity.setTheme(R.style.AppTheme);
-        }
+        //}
         if (layoutId != null) {
             activity.setContentView(layoutId);
         }
