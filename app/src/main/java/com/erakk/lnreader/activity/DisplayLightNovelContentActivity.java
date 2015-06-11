@@ -674,7 +674,8 @@ public class DisplayLightNovelContentActivity extends SherlockActivity implement
                     contentUserData.setLastYScroll(wv.getScrollY());
                 }
                 // check if complete read.
-                if (contentHeight <= lastY) {
+                double isReadThreshold = contentHeight * currentScale;
+                if (isReadThreshold <= lastY) {
                     try {
                         PageModel page = currPageModel;
                         if (!page.getPage().endsWith("&action=edit&redlink=1")) {

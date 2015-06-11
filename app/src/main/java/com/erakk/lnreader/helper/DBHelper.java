@@ -186,9 +186,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
 			// move out the current user content settings to new table.
 			db.execSQL("insert into " + TABLE_NOVEL_CONTENT_USER +
-					   " select rowid, o." + COLUMN_PAGE + ", o." + COLUMN_LAST_X + ", o." + COLUMN_LAST_Y + ", o." + COLUMN_ZOOM + ", o." + COLUMN_LAST_UPDATE + ", o." + COLUMN_LAST_CHECK +
-					   " from " + TABLE_NOVEL_CONTENT + " o ");
-			// TODO: need to do some clean up...
+					" select rowid, o." + COLUMN_PAGE + ", o." + COLUMN_LAST_X + ", o." + COLUMN_LAST_Y + ", o." + COLUMN_ZOOM + ", o." + COLUMN_LAST_UPDATE + ", o." + COLUMN_LAST_CHECK +
+					" from " + TABLE_NOVEL_CONTENT + " o ");
+
 		}
 		Log.i(TAG, "Upgrade DB Complete: " + oldVersion + " to " + newVersion);
 	}
