@@ -507,7 +507,7 @@ public class UIHelper {
     }
 
     public static boolean getUpdateIncludeExternal(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_UPDATE_INCLUDE_EXTERNAL, true);
+        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_UPDATE_INCLUDE_EXTERNAL, false);
     }
 
     public static boolean getQuickLoad(Context context) {
@@ -555,7 +555,6 @@ public class UIHelper {
     }
 
     public static void selectAlternativeLanguage(Activity activity) {
-
 		/* Counts number of selected Alternative Language */
         int selection = 0;
 
@@ -587,6 +586,7 @@ public class UIHelper {
             Intent intent = new Intent(activity, NovelListContainerActivity.class);
             intent.putExtra(Constants.EXTRA_NOVEL_LIST_MODE, Constants.EXTRA_NOVEL_LIST_ALT);
             activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         }
     }
 
@@ -594,12 +594,14 @@ public class UIHelper {
         Intent intent = new Intent(activity, NovelListContainerActivity.class);
         intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
         activity.startActivity(intent);
+        activity.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
     }
 
     public static void openWatchList(Activity activity) {
         Intent intent = new Intent(activity, NovelListContainerActivity.class);
         intent.putExtra(Constants.EXTRA_ONLY_WATCHED, true);
         activity.startActivity(intent);
+        activity.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
     }
 
     public static void openLastRead(Activity activity) {
@@ -608,6 +610,7 @@ public class UIHelper {
             Intent intent = new Intent(activity, DisplayLightNovelContentActivity.class);
             intent.putExtra(Constants.EXTRA_PAGE, lastReadPage);
             activity.startActivity(intent);
+            activity.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         } else {
             Toast.makeText(activity, activity.getResources().getString(R.string.no_last_novel), Toast.LENGTH_SHORT).show();
         }

@@ -121,6 +121,11 @@
                 android:summary="@string/auto_download_updated_chapter_summary"
                 android:title="@string/auto_download_updated_chapter_title" />
             <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="update_include_external"
+                android:summary="@string/update_include_external_summary"
+                android:title="@string/update_include_external_title" />
+            <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="auto_download_only_use_wifi"
                 android:summary="@string/auto_download_only_use_wifi_summary"
@@ -183,11 +188,6 @@
                 android:key="update_include_redlink"
                 android:summary="@string/update_include_redlink_summary"
                 android:title="@string/update_include_redlink_title" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="update_include_external"
-                android:summary="@string/update_include_external_summary"
-                android:title="@string/update_include_external_title" />
             <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="aggresive_title_clean_up"

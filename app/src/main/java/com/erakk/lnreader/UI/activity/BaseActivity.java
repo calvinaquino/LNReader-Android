@@ -90,6 +90,7 @@ public class BaseActivity extends AppCompatActivity {
     public void openSettings(MenuItem view) {
         Intent intent = new Intent(this, DisplaySettingsActivity.class);
         startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         // FOR TESTING
         // resetFirstRun();
     }
@@ -104,6 +105,7 @@ public class BaseActivity extends AppCompatActivity {
             i.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, DownloadFragment.class.toString());
             startActivity(i);
         }
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         mDrawerLayout.closeDrawers();
     }
 
@@ -117,6 +119,7 @@ public class BaseActivity extends AppCompatActivity {
             i.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, UpdateInfoFragment.class.toString());
             startActivity(i);
         }
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         mDrawerLayout.closeDrawers();
     }
 
@@ -130,6 +133,7 @@ public class BaseActivity extends AppCompatActivity {
             i.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, BookmarkFragment.class.toString());
             startActivity(i);
         }
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         mDrawerLayout.closeDrawers();
     }
 
@@ -143,6 +147,7 @@ public class BaseActivity extends AppCompatActivity {
             i.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, SearchFragment.class.toString());
             startActivity(i);
         }
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         mDrawerLayout.closeDrawers();
     }
 

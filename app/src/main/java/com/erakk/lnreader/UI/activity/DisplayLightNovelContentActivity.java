@@ -58,6 +58,7 @@ import com.erakk.lnreader.task.LoadWacTask;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class DisplayLightNovelContentActivity extends BaseActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>>, OnInitListener, OnCompleteListener {
@@ -179,11 +180,13 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         // (activity destroyed, onCreate called again)
         // when the user navigate using next/prev/jumpTo
         if (!restored) {
-            PageModel pageModel = new PageModel(getIntent().getStringExtra(Constants.EXTRA_PAGE));
+            String page = getIntent().getStringExtra(Constants.EXTRA_PAGE);
+            PageModel pageModel = new PageModel(page);
             try {
                 pageModel = NovelsDao.getInstance().getPageModel(pageModel, null, false);
                 if (pageModel == null) {
                     Toast.makeText(this, getResources().getString(R.string.bookmark_content_load_error), Toast.LENGTH_LONG).show();
+                    Log.w(TAG, "Missing page: " + page);
                     onBackPressed();
                 } else {
                     currPageModel = pageModel;
@@ -540,7 +543,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
      *
      * @param referencePageModel
      */
-    private void buildTOCMenu(PageModel referencePageModel) {
+    private void buildTOCMenu(final PageModel referencePageModel) {
         Log.d(TAG, "Trying to create TOC");
         try {
             BookModel book = referencePageModel.getBook(false);
@@ -572,7 +575,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        backToIndex();
+                        backToIndex(referencePageModel);
                     }
                 });
                 tocMenu = builder.create();
@@ -585,16 +588,10 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     /**
      * Back to Novel Details
      */
-    public void backToIndex() {
-        String page = getIntent().getStringExtra(Constants.EXTRA_PAGE);
-        PageModel pageModel = new PageModel(page);
+    public void backToIndex(PageModel referencePageModel) {
         try {
-            pageModel = NovelsDao.getInstance().getExistingPageModel(pageModel, null).getParentPageModel();
+            PageModel pageModel = NovelsDao.getInstance().getExistingPageModel(referencePageModel, null).getParentPageModel();
 
-//            Intent i = new Intent(this, DisplayLightNovelDetailsActivity.class);
-//            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//            i.putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
-//            startActivity(i);
             Intent intent = new Intent(this, NovelListContainerActivity.class);
             intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
             intent.putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
@@ -662,6 +659,9 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
 
             @Override
             public void run() {
+                if (currPageModel == null)
+                    return;
+
                 if (contentUserData == null) {
                     contentUserData = new NovelContentUserModel();
                     contentUserData.setPage(currPageModel.getPage());
@@ -671,7 +671,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
 
                 // save zoom level, position is updated from updateLastLine()
                 // for external page, use the px
-                if(content == null) {
+                if (content == null) {
                     Log.i(TAG, wv.getScrollY() + " " + wv.getBottom());
                     contentUserData.setLastYScroll(wv.getScrollY());
                 }
@@ -692,14 +692,17 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 try {
                     NovelsDao.getInstance().updateNovelContentUserModel(contentUserData, null);
                     Log.d(TAG, "Update Content:X=" + contentUserData.getLastXScroll() + ":Y=" + contentUserData.getLastYScroll() + ":Z=" + contentUserData.getLastZoom());
-                }catch ( Exception ex) {
+                } catch (Exception ex) {
                     Log.e(TAG, ex.getMessage(), ex);
                 }
                 // save for jump to last read.
                 SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance());
                 SharedPreferences.Editor editor = sharedPrefs.edit();
                 String lastPage;
-                if (content != null) {
+
+                if (currPageModel.isExternal()) {
+                    lastPage = currPageModel.getPage();
+                } else if (content != null) {
                     lastPage = content.getPage();
                 } else {
                     lastPage = getIntent().getStringExtra(Constants.EXTRA_PAGE);
@@ -771,6 +774,11 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             } else {
                 if (refresh) {
                     Toast.makeText(this, "Refreshing WAC: " + wacName, Toast.LENGTH_SHORT).show();
+                    // delete the WAC file
+                    File f = new File(wacName);
+                    if (f.exists())
+                        f.delete();
+
                     Log.i(TAG, "Refreshing WAC: " + wacName);
                 } else {
                     Log.w(TAG, "WAC not available: " + wacName);
@@ -954,19 +962,18 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 if (!res) {
                     String page = getIntent().getStringExtra(Constants.EXTRA_PAGE);
                     PageModel p = new PageModel(page);
-                    try{
+                    try {
                         getContentUserData(page);
-                    }catch (Exception ex) {
+                    } catch (Exception ex) {
                         Log.e(TAG, ex.getMessage(), ex);
                     }
                     loadExternalUrl(p, true);
-                }
-                else {
+                } else {
                     try {
                         contentUserData = getContentUserData(currPageModel.getPage());
                         chromeClient.setScrollY(contentUserData.getLastYScroll());
-                    }catch (Exception ex) {
-                        Log.e(TAG, ex.getMessage(),ex);
+                    } catch (Exception ex) {
+                        Log.e(TAG, ex.getMessage(), ex);
                     }
                 }
 
@@ -981,13 +988,13 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
 
     }
 
-    private NovelContentUserModel getContentUserData(String page) throws  Exception {
+    private NovelContentUserModel getContentUserData(String page) throws Exception {
         contentUserData = NovelsDao.getInstance().getNovelContentUserModel(page, null);
         if (contentUserData == null) {
             contentUserData = new NovelContentUserModel();
             contentUserData.setPage(page);
         }
-        return  contentUserData;
+        return contentUserData;
     }
 
     /**
@@ -1008,7 +1015,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             if (contentUserData == null)
                 getContentUserData(currPageModel.getPage());
             contentUserData.setLastYScroll(pIndex);
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             Log.e(TAG, "updateLastLine(): " + ex.getMessage(), ex);
         }
     }
@@ -1028,7 +1035,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                         int y = getIntent().getIntExtra(Constants.EXTRA_P_INDEX, contentUserData.getLastYScroll());
                         Log.d(TAG, "notifyLoadComplete(): Move to the saved pos: " + y);
                         _webView.loadUrl("javascript:goToParagraph(" + y + ")");
-                    }catch ( NullPointerException ex) {
+                    } catch (NullPointerException ex) {
                         Log.i(TAG, "Failed to load the content");
                     }
                 }
