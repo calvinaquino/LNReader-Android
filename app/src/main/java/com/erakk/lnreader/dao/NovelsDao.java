@@ -897,10 +897,12 @@ public class NovelsDao {
 				headers = connect(page.getPage(), retry).headers();
 				break;
 			} catch (HttpStatusException hex) {
-				Log.e(TAG, "Error when getting updated date for: " + page.getPage(), hex);
 				if (hex.getStatusCode() == 404) {
+					Log.w(TAG, "Page not Found (404) for: " + page.getPage());
+					page.setMissing(true);
 					break;
 				}
+				Log.e(TAG, "Error when getting updated date for: " + page.getPage(), hex);
 			} catch (Exception e) {
 				Log.e(TAG, "Error when getting updated date for: " + page.getPage(), e);
 				++retry;

@@ -35,6 +35,8 @@ DisplayLightNovelListFragment.FragmentListener{
 		} else {
 			transaction.replace(R.id.mainFrame, new DisplayNovelTabFragment()).commit();
 		}
+
+		initToolbar();
 	}
 
 	@Override
@@ -62,10 +64,6 @@ DisplayLightNovelListFragment.FragmentListener{
 		case R.id.invert_colors:
 			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);
-			return true;
-		case R.id.menu_bookmarks:
-			Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
-			startActivity(bookmarkIntent);
 			return true;
 		case R.id.menu_downloads_list:
 			Intent downloadsItent = new Intent(this, DownloadListActivity.class);

@@ -1,7 +1,5 @@
 package com.erakk.lnreader.adapter;
 
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.Log;
@@ -10,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +15,8 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.PageModel;
+
+import java.util.List;
 
 public class SearchPageModelAdapter extends PageModelAdapter {
 	private static final String TAG = SearchPageModelAdapter.class.toString();
@@ -69,21 +68,23 @@ public class SearchPageModelAdapter extends PageModelAdapter {
 			holder.txtLastCheck.setText(context.getResources().getString(R.string.last_check) + ": " + Util.formatDateForDisplay(context, page.getLastCheck()));
 		}
 		if (holder.chkIsWatched != null) {
+			holder.chkIsWatched.setTag(page.getPage());
 			if (page.getType().equalsIgnoreCase(PageModel.TYPE_NOVEL)) {
 				holder.chkIsWatched.setVisibility(View.VISIBLE);
 				holder.chkIsWatched.setChecked(page.isWatched());
-				holder.chkIsWatched.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				holder.chkIsWatched.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-						if (isChecked) {
-							Toast.makeText(context, "Added to watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
-						} else {
-							Toast.makeText(context, "Removed from watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
+						if(buttonView.getTag() == page.getPage()) {
+							if (isChecked) {
+								Toast.makeText(context, "Added to watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
+							} else {
+								Toast.makeText(context, "Removed from watch list: " + page.getTitle(), Toast.LENGTH_SHORT).show();
+							}
+							page.setWatched(isChecked);
+							NovelsDao.getInstance().updatePageModel(page);
 						}
-
-						page.setWatched(isChecked);
-						NovelsDao.getInstance().updatePageModel(page);
 					}
 				});
 			} else {

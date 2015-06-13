@@ -1,0 +1,45 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/itemLightNovel"
+            android:onClick="openNovelList"
+            android:title="@string/light_novels" />
+        <item
+            android:id="@+id/itemWatchList"
+            android:onClick="openWatchList"
+            android:title="@string/watch_list" />
+        <item
+            android:id="@+id/itemResumeNovel"
+            android:onClick="openLastRead"
+            android:title="@string/jump_last_read" />
+        <item
+            android:id="@+id/itemAltLanguage"
+            android:onClick="openAltNovelList"
+            android:title="@string/alternative_language" />
+        <item
+            android:id="@+id/main_search_button"
+            android:icon="@drawable/ic_main_search"
+            android:onClick="openSearch"
+            android:title="@string/search" />
+        <item
+            android:id="@+id/main_bookmarks_button"
+            android:icon="@drawable/ic_main_bookmarks"
+            android:onClick="openBookmarks"
+            android:title="@string/bookmarks" />
+        <item
+            android:id="@+id/main_updates_button"
+            android:icon="@drawable/ic_main_updates"
+            android:onClick="openUpdatesList"
+            android:title="@string/updates" />
+        <item
+            android:id="@+id/main_download_button"
+            android:icon="@drawable/ic_main_downloads"
+            android:onClick="openDownloadsList"
+            android:title="@string/download_list" />
+        <item
+            android:id="@+id/main_settings_button"
+            android:icon="@drawable/ic_main_settings"
+            android:onClick="openSettings"
+            android:title="@string/settings" />
+    </group>
+</menu>

@@ -125,7 +125,7 @@
                 android:value=".UI.activity.MainActivity" />
         </activity>
         <activity
-            android:name="com.erakk.lnreader.activity.TestDisplayNovelActivity"
+            android:name=".UI.activity.NovelListContainerActivity"
             android:label="Test"
             android:parentActivityName=".UI.activity.MainActivity">
             <meta-data

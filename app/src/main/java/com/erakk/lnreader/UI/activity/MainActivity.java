@@ -5,48 +5,26 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 
-import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.activity.DisplayAlternativeNovelPagerActivity;
-import com.erakk.lnreader.activity.DisplayBookmarkActivity;
-import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
-import com.erakk.lnreader.activity.DisplayLightNovelListActivity;
-import com.erakk.lnreader.activity.DisplayNovelPagerActivity;
-import com.erakk.lnreader.activity.DisplaySearchActivity;
-import com.erakk.lnreader.activity.DisplaySettingsActivity;
-import com.erakk.lnreader.activity.DownloadListActivity;
-import com.erakk.lnreader.activity.TestDisplayNovelActivity;
-import com.erakk.lnreader.activity.TestDisplayNovelActivityTwo;
-import com.erakk.lnreader.activity.UpdateHistoryActivity;
+import com.erakk.lnreader.UI.fragment.MainFragment;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.CheckDBReadyTask;
 
-import java.util.Iterator;
-import java.util.Map.Entry;
-
-public class MainActivity extends BaseActivity implements IExtendedCallbackNotifier<AsyncTaskResult<Boolean>> {
+public class MainActivity extends BaseActivity implements IExtendedCallbackNotifier<AsyncTaskResult<Boolean>>  {
 	private static final String TAG = MainActivity.class.toString();
-	private boolean isInverted;
 	private final Context ctx = this;
 
 	private AlertDialog dialog;
@@ -55,16 +33,8 @@ public class MainActivity extends BaseActivity implements IExtendedCallbackNotif
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		UIHelper.setLanguage(this);
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			UIHelper.SetTheme(this, R.layout.activity_main);
-		else {
-			UIHelper.SetTheme(this, R.layout.activity_main_no_tab);
-		}
-		UIHelper.SetActionBarDisplayHomeAsUp(this, false);
-		isInverted = UIHelper.getColorPreferences(this);
-		setIconColor();
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		transaction.replace(R.id.mainFrame, new MainFragment()).commit();
 
 		if (isFirstRun()) {
 			// Show copyrights
@@ -81,184 +51,17 @@ public class MainActivity extends BaseActivity implements IExtendedCallbackNotif
 				}
 			}).show();
 		}
-		Log.d(TAG, "Main created.");
 
 		// check db access
 		if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
 			checkDBAccess();
 		}
-	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_main, menu);
-		return true;
-	}
-
-	@Override
-	protected void onRestart() {
-		super.onRestart();
-		if (isInverted != UIHelper.getColorPreferences(this)) {
-			UIHelper.Recreate(this);
-			setIconColor();
-		}
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.invert_colors:
-			UIHelper.ToggleColorPref(this);
-			UIHelper.Recreate(this);
-			setIconColor();
-			return true;
-		case android.R.id.home:
-			finish();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	public void onBackPressed() {
-		// always exit if pressing back on Main Activity.
-		finish();
-	}
-
-	public void openNovelList(View view) {
-		String ui = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_UI_SELECTION, "0");
-		if (ui.equalsIgnoreCase("0")) {
-			Intent intent = new Intent(this, DisplayNovelPagerActivity.class);
-			intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
-			startActivity(intent);
-		} else if (ui.equalsIgnoreCase("1")) {
-			Intent intent = new Intent(this, TestDisplayNovelActivity.class);
-			intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
-			startActivity(intent);
-		} else if (ui.equalsIgnoreCase("2")) {
-			Intent intent = new Intent(this, TestDisplayNovelActivityTwo.class);
-			intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
-			startActivity(intent);
-		}
-	}
-
-	public void openNovelListNoTab(View view) {
-		Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
-		intent.putExtra(Constants.EXTRA_NOVEL_LIST_MODE, Constants.EXTRA_NOVEL_LIST_MODE_MAIN);
-		intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
-		startActivity(intent);
-	}
-
-	public void openTeaserList(View view) {
-		Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
-		intent.putExtra(Constants.EXTRA_NOVEL_LIST_MODE, Constants.EXTRA_NOVEL_LIST_MODE_TEASER);
-		startActivity(intent);
-	}
-
-	public void openOriginalsList(View view) {
-		Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
-		intent.putExtra(Constants.EXTRA_NOVEL_LIST_MODE, Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL);
-		startActivity(intent);
-	}
-
-	public void openDownloadsList(View view) {
-		Intent intent = new Intent(this, DownloadListActivity.class);
-		startActivity(intent);
-	}
-
-	public void openUpdatesList(View view) {
-		Intent intent = new Intent(this, UpdateHistoryActivity.class);
-		startActivity(intent);
-	}
-
-	public void openBookmarks(View view) {
-		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
-		startActivity(bookmarkIntent);
-	}
-
-	public void openSearch(View view) {
-		Intent intent = new Intent(this, DisplaySearchActivity.class);
-		startActivity(intent);
-	}
-
-	public void openWatchList(View view) {
-		Intent intent = new Intent(this, DisplayLightNovelListActivity.class);
-		intent.putExtra(Constants.EXTRA_ONLY_WATCHED, true);
-		startActivity(intent);
-	}
-
-	public void openSettings(View view) {
-		Intent intent = new Intent(this, DisplaySettingsActivity.class);
-		startActivity(intent);
-		// FOR TESTING
-		// resetFirstRun();
-	}
-
-	public void jumpLastRead(View view) {
-		String lastReadPage = PreferenceManager.getDefaultSharedPreferences(this).getString(Constants.PREF_LAST_READ, "");
-		if (lastReadPage.length() > 0) {
-			Intent intent = new Intent(this, DisplayLightNovelContentActivity.class);
-			intent.putExtra(Constants.EXTRA_PAGE, lastReadPage);
-			startActivity(intent);
-		} else {
-			Toast.makeText(this, getResources().getString(R.string.no_last_novel), Toast.LENGTH_SHORT).show();
-		}
-	}
-
-	/* Open An activity to select alternative language */
-	public void openAlternativeNovelList(View view) {
-		selectAlternativeLanguage();
-	}
-
-	/**
-	 * Create a dialog for alternative language selection
-	 */
-
-	public void selectAlternativeLanguage() {
-
-		/* Counts number of selected Alternative Language */
-		int selection = 0;
-
-		/* Checking number of selected languages */
-		Iterator<Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
-		while (it.hasNext()) {
-			AlternativeLanguageInfo info = it.next().getValue();
-			if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(info.getLanguage(), true))
-				selection++;
-			it.remove();
-		}
-
-		if (selection == 0) {
-			/* Build an AlertDialog */
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
-			/* Title for AlertDialog */
-			alertDialogBuilder.setMessage(getResources().getString(R.string.no_selected_language));
-			alertDialogBuilder.setCancelable(false);
-			alertDialogBuilder.setPositiveButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int id) {
-					dialog.dismiss();
-				}
-			});
-			/* Create alert dialog */
-			AlertDialog alertDialog = alertDialogBuilder.create();
-			alertDialog.show();
-		} else {
-			/* Start next Activity */
-			Intent intent = new Intent(ctx, DisplayAlternativeNovelPagerActivity.class);
-			startActivity(intent);
-		}
+		initToolbar();
 
 	}
 
-	private void setIconColor() {
-		LinearLayout rightMenu = (LinearLayout) findViewById(R.id.menu_right);
-		int childCount = rightMenu.getChildCount();
-		for (int i = 0; i < childCount; ++i) {
-			ImageButton btn = (ImageButton) rightMenu.getChildAt(i);
-			btn.setImageDrawable(UIHelper.setColorFilter(btn.getDrawable()));
-		}
-	}
+	// region private method
 
 	private boolean isFirstRun() {
 		return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_FIRST_RUN, true);
@@ -298,6 +101,10 @@ public class MainActivity extends BaseActivity implements IExtendedCallbackNotif
 		dialog.show();
 	}
 
+	// endregion
+
+	// region IExtendedCallbackNotifier implementation
+
 	@Override
 	public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<Boolean> result) {
 		if (dialog != null) {
@@ -318,4 +125,7 @@ public class MainActivity extends BaseActivity implements IExtendedCallbackNotif
 		// TODO Auto-generated method stub
 		return false;
 	}
+	// endregion
+
+
 }

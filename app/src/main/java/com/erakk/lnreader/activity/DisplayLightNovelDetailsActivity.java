@@ -216,10 +216,6 @@ public class DisplayLightNovelDetailsActivity extends BaseActivity implements IE
 			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);
 			return true;
-		case R.id.menu_bookmarks:
-			Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
-			startActivity(bookmarkIntent);
-			return true;
 		case R.id.menu_details_download_all:
 			/*
 			 * Download all chapters

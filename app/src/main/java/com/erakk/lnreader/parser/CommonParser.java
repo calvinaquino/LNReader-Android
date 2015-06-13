@@ -6,6 +6,7 @@ import android.util.Log;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.ImageModel;
@@ -290,11 +291,18 @@ public class CommonParser {
         // http://www.baka-tsuki.org/project/images/4/4a/Bakemonogatari_Up.png
         // http://www.baka-tsuki.org/project/images/thumb/4/4a/Bakemonogatari_Up.png/200px-Bakemonogatari_Up.png
         // http://www.baka-tsuki.org/project/index.php?title=File:Bakemonogatari_Up.png
+        // http://www.baka-tsuki.org/project/thumb.php?f=KNT_V01_NewCover.jpg&width=250
         String[] tokens = imageUrl.split("/");
         if (imageUrl.contains("/thumb/")) {
             // from thumbnail
             pageUrl = tokens[8];
-        } else {
+        }
+        else if(imageUrl.contains("/thumb.php?")) {
+            String[] temp = imageUrl.split("f=");
+            temp = temp[1].split("&");
+            pageUrl = temp[0];
+        }
+        else {
             // from full page
             pageUrl = tokens[7];
         }
@@ -532,11 +540,27 @@ public class CommonParser {
                 imageUrl = "http://www.baka-tsuki.org" + imageUrl;
             }
 
+            // http://www.baka-tsuki.org/project/thumb.php?f=KNT_V01_NewCover.jpg&width=250
+            // http://www.baka-tsuki.org/project/images/9/9d/KNT_V01_NewCover.jpg
             // http://www.baka-tsuki.org/project/images/thumb/f/f5/Daimaou_v01_cover.jpg/294px-Daimaou_v01_cover.jpg
             // http://www.baka-tsuki.org/project/images/f/f5/Daimaou_v01_cover.jpg
             if (UIHelper.isUseBigCover(LNReaderApplication.getInstance())) {
-                imageUrl = imageUrl.replace("/thumb/", "/");
-                imageUrl = imageUrl.substring(0, imageUrl.lastIndexOf("/"));
+                if(!imageUrl.contains(".php?")) {
+                    imageUrl = imageUrl.replace("/thumb/", "/");
+                    imageUrl = imageUrl.substring(0, imageUrl.lastIndexOf("/"));
+                }
+                else {
+                    // need to check the original file
+                    String filePage = getImageFilePageFromImageUrl(imageUrl);
+                    ImageModel image = new ImageModel();
+                    image.setName(filePage);
+                    try{
+                        image = NovelsDao.getInstance().getImageModelFromInternet(image, null);
+                        imageUrl = image.getUrl().toString();
+                    }catch (Exception ex) {
+                        Log.e(TAG, "Failed parsing big cover: " + filePage, ex);
+                    }
+                }
             }
 
             Log.d(TAG, "Cover: " + imageUrl);

@@ -3,9 +3,9 @@ package com.erakk.lnreader.activity;
 import android.app.Activity;
 import android.app.LocalActivityManager;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,7 +14,6 @@ import android.widget.TabHost.TabSpec;
 
 import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.activity.BaseActivity;
 import com.erakk.lnreader.UIHelper;
 
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ import java.util.Map.Entry;
  */
 
 @SuppressWarnings("deprecation")
-public class DisplayAlternativeNovelPagerActivity extends BaseActivity {
+public class DisplayAlternativeNovelPagerActivity extends AppCompatActivity {
 
 	static TabHost tabHost;
 	private boolean isInverted;
@@ -36,15 +35,15 @@ public class DisplayAlternativeNovelPagerActivity extends BaseActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		//if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			UIHelper.SetTheme(this, R.layout.activity_display_novel_pager);
 			UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 			setContentView(R.layout.activity_display_novel_pager);
-		} else {
-			UIHelper.SetTheme(this, R.layout.activity_display_novel_pager_fix);
-			UIHelper.SetActionBarDisplayHomeAsUp(this, true);
-			setContentView(R.layout.activity_display_novel_pager_fix);
-		}
+		//} else {
+//			UIHelper.SetTheme(this, R.layout.activity_display_novel_pager_fix);
+//			UIHelper.SetActionBarDisplayHomeAsUp(this, true);
+//			setContentView(R.layout.activity_display_novel_pager_fix);
+//		}
 		tabHost = (TabHost) findViewById(android.R.id.tabhost);
 		lam = new LocalActivityManager(this, false);
 		lam.dispatchCreate(savedInstanceState);
@@ -158,10 +157,6 @@ public class DisplayAlternativeNovelPagerActivity extends BaseActivity {
 		case R.id.menu_download_all_info:
 			if (activity instanceof INovelListHelper)
 				((INovelListHelper) activity).downloadAllNovelInfo();
-			return true;
-		case R.id.menu_bookmarks:
-			Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
-			startActivity(bookmarkIntent);
 			return true;
 		case R.id.menu_downloads_list:
 			Intent downloadsItent = new Intent(this, DownloadListActivity.class);

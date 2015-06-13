@@ -34,6 +34,7 @@ public class Constants {
     public static final String EXTRA_NOVEL_LIST_MODE_MAIN = "Main";
     public static final String EXTRA_NOVEL_LIST_MODE_ORIGINAL = "Original";
     public static final String EXTRA_NOVEL_LIST_MODE_TEASER = "Teaser";
+    public static final String EXTRA_NOVEL_LIST_ALT = "alternate";
 
     public static final String NOVEL_BOOK_DIVIDER = "%NOVEL_BOOK_DIVIDER%";
     public static final long CHECK_INTERVAL = 7 * 24 * 3600 * 1000;
@@ -177,4 +178,5 @@ public class Constants {
     public static final String API_URL_INFO = "%s/project/api.php?action=query&prop=info|revisions&format=xml&redirects=yes&titles=%s";
 
 
+    public static final String EXTRA_NOVEL_LANG = "lang";
 }

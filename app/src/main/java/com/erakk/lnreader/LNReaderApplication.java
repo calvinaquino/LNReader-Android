@@ -1,9 +1,5 @@
 package com.erakk.lnreader;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Application;
@@ -28,6 +24,10 @@ import com.erakk.lnreader.model.DownloadModel;
 import com.erakk.lnreader.service.AutoBackupService;
 import com.erakk.lnreader.service.UpdateService;
 import com.erakk.lnreader.task.AsyncTaskResult;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Hashtable;
 
 /*
  * http://www.devahead.com/blog/2011/06/extending-the-android-application-class-and-dealing-with-singleton/

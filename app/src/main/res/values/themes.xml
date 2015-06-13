@@ -5,11 +5,16 @@
     <style name="AppTheme.Base" parent="Theme.AppCompat">
         <item name="colorPrimary">#222222</item>
         <item name="colorPrimaryDark">#222222</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
         <!-- Both of these are needed -->
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
     </style>
 </resources>

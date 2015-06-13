@@ -1,6 +1,46 @@
 package com.erakk.lnreader.activity;
 
-import com.erakk.lnreader.UI.activity.BaseActivity;
+import android.annotation.SuppressLint;
+import android.app.ListActivity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.internal.widget.AdapterViewCompat;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.erakk.lnreader.AlternativeLanguageInfo;
+import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.adapter.PageModelAdapter;
+import com.erakk.lnreader.callback.CallbackEventData;
+import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.model.NovelCollectionModel;
+import com.erakk.lnreader.model.PageModel;
+import com.erakk.lnreader.task.AddNovelTask;
+import com.erakk.lnreader.task.AsyncTaskResult;
+import com.erakk.lnreader.task.DownloadNovelDetailsTask;
+import com.erakk.lnreader.task.IAsyncTaskOwner;
+import com.erakk.lnreader.task.LoadAlternativeTask;
+
+import java.util.ArrayList;
 
 /*
  * Author of Original File: Nandaka
@@ -8,8 +48,8 @@ import com.erakk.lnreader.UI.activity.BaseActivity;
  * 
  */
 
-public class DisplayAlternativeNovelListActivity extends BaseActivity { //implements IAsyncTaskOwner, INovelListHelper {
-	/*private static final String TAG = DisplayAlternativeNovelListActivity.class.toString();
+public class DisplayAlternativeNovelListActivity extends ListActivity implements IAsyncTaskOwner, INovelListHelper {
+	private static final String TAG = DisplayAlternativeNovelListActivity.class.toString();
 	private final ArrayList<PageModel> listItems = new ArrayList<PageModel>();
 	private PageModelAdapter adapter;
 	private LoadAlternativeTask task = null;
@@ -31,7 +71,7 @@ public class DisplayAlternativeNovelListActivity extends BaseActivity { //implem
 		loadingText = (TextView) findViewById(R.id.emptyList);
 		loadingBar = (ProgressBar) findViewById(R.id.empttListProgress);
 
-		*//* Get Extra *//*
+		//* Get Extra *//
 		Intent intent = getIntent();
 		language = intent.getStringExtra("LANG");
 
@@ -65,12 +105,12 @@ public class DisplayAlternativeNovelListActivity extends BaseActivity { //implem
 		intent.putExtra(Constants.EXTRA_TITLE, o.getTitle());
 		intent.putExtra(Constants.EXTRA_ONLY_WATCHED, getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false));
 		startActivity(intent);
-		Log.d("DisplayAlternativeNovelListActivity", o.getPage() + " (" + o.getTitle() + ")");
+		Log.d(TAG, o.getPage() + " (" + o.getTitle() + ")");
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
+		getMenuInflater().inflate(R.menu.activity_display_light_novel_list, menu);
 		return true;
 	}
 
@@ -177,7 +217,7 @@ public class DisplayAlternativeNovelListActivity extends BaseActivity { //implem
 	}
 
 	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.novel_context_menu, menu);
@@ -185,12 +225,12 @@ public class DisplayAlternativeNovelListActivity extends BaseActivity { //implem
 
 	@Override
 	public boolean onContextItemSelected(android.view.MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		AdapterViewCompat.AdapterContextMenuInfo info = (AdapterViewCompat.AdapterContextMenuInfo) item.getMenuInfo();
 		switch (item.getItemId()) {
 		case R.id.add_to_watch:
-			*//*
-			 * Implement code to toggle watch of this novel
-			 *//*
+			/*
+			  Implement code to toggle watch of this novel
+			 */
 			if (info.position > -1) {
 				PageModel novel = listItems.get(info.position);
 				if (novel.isWatched()) {
@@ -205,9 +245,9 @@ public class DisplayAlternativeNovelListActivity extends BaseActivity { //implem
 			}
 			return true;
 		case R.id.download_novel:
-			*//*
+			/*
 			 * Implement code to download novel synopsis
-			 *//*
+			 */
 			if (info.position > -1) {
 				PageModel novel = listItems.get(info.position);
 				ArrayList<PageModel> novels = new ArrayList<PageModel>();
@@ -443,5 +483,5 @@ public class DisplayAlternativeNovelListActivity extends BaseActivity { //implem
 	@Override
 	public Context getContext() {
 		return this;
-	}*/
+	}
 }

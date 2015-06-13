@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -26,11 +27,15 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.erakk.lnreader.UI.activity.NovelListContainerActivity;
+import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.helper.Util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 /*
@@ -109,11 +114,12 @@ public class UIHelper {
         //if (PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
         //    activity.setTheme(R.style.AppTheme2);
         //} else {
-            activity.setTheme(R.style.AppTheme);
+        //    activity.setTheme(R.style.AppTheme);
         //}
         if (layoutId != null) {
             activity.setContentView(layoutId);
         }
+
     }
 
     public static boolean CheckKeepAwake(Activity activity) {
@@ -546,5 +552,65 @@ public class UIHelper {
 
     public static boolean isAutoUpdateOnlyUseWifi(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_AUTO_UPDATE_USE_WIFI_ONLY, true);
+    }
+
+
+    public static void selectAlternativeLanguage(Activity activity) {
+
+		/* Counts number of selected Alternative Language */
+        int selection = 0;
+
+		/* Checking number of selected languages */
+        Iterator<Map.Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
+        while (it.hasNext()) {
+            AlternativeLanguageInfo info = it.next().getValue();
+            if (PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(info.getLanguage(), true))
+                selection++;
+            it.remove();
+        }
+
+        if (selection == 0) {
+            /* Build an AlertDialog */
+            android.support.v7.app.AlertDialog.Builder alertDialogBuilder = new android.support.v7.app.AlertDialog.Builder(activity);
+            /* Title for AlertDialog */
+            alertDialogBuilder.setMessage(activity.getResources().getString(R.string.no_selected_language));
+            alertDialogBuilder.setCancelable(false);
+            alertDialogBuilder.setPositiveButton(activity.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.dismiss();
+                }
+            });
+			/* Create alert dialog */
+            android.support.v7.app.AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        } else {
+            Intent intent = new Intent(activity, NovelListContainerActivity.class);
+            intent.putExtra(Constants.EXTRA_NOVEL_LIST_MODE, Constants.EXTRA_NOVEL_LIST_ALT);
+            activity.startActivity(intent);
+        }
+    }
+
+    public static void openNovelList(Activity activity) {
+        Intent intent = new Intent(activity, NovelListContainerActivity.class);
+        intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
+        activity.startActivity(intent);
+    }
+
+    public static void openWatchList(Activity activity) {
+        Intent intent = new Intent(activity, NovelListContainerActivity.class);
+        intent.putExtra(Constants.EXTRA_ONLY_WATCHED, true);
+        activity.startActivity(intent);
+    }
+
+    public static void openLastRead(Activity activity) {
+        String lastReadPage = PreferenceManager.getDefaultSharedPreferences(activity).getString(Constants.PREF_LAST_READ, "");
+        if (lastReadPage.length() > 0) {
+            Intent intent = new Intent(activity, DisplayLightNovelContentActivity.class);
+            intent.putExtra(Constants.EXTRA_PAGE, lastReadPage);
+            activity.startActivity(intent);
+        } else {
+            Toast.makeText(activity, activity.getResources().getString(R.string.no_last_novel), Toast.LENGTH_SHORT).show();
+        }
     }
 }

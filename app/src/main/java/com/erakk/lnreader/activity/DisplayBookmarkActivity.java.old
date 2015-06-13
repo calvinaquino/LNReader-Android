@@ -3,10 +3,10 @@ package com.erakk.lnreader.activity;
 import com.erakk.lnreader.UI.activity.BaseActivity;
 
 public class DisplayBookmarkActivity extends BaseActivity {
-
-//	private boolean isInverted;
-//	private BookmarkModelAdapter adapter = null;
-//	private ArrayList<BookmarkModel> bookmarks = null;
+//
+//    private boolean isInverted;
+//    private BookmarkModelAdapter adapter = null;
+//    private ArrayList<BookmarkModel> bookmarks = null;
 //
 //	@Override
 //	protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,7 @@ public class DisplayBookmarkActivity extends BaseActivity {
 //	@Override
 //	public boolean onCreateOptionsMenu(Menu menu) {
 //		// Inflate the menu; this adds items to the action bar if it is present.
-//		getSupportMenuInflater().inflate(R.menu.activity_display_bookmark, menu);
+//        getMenuInflater().inflate(R.menu.activity_display_bookmark, menu);
 //		return true;
 //	}
 //

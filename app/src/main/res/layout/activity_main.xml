@@ -1,22 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:gravity="top"
-	android:orientation="vertical">
 
-	<android.support.v7.widget.Toolbar
-		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/toolbar"
-		android:minHeight="?attr/actionBarSize"
-		android:background="?attr/colorPrimary"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-		android:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-	</android.support.v7.widget.Toolbar>
-
-<ScrollView
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:layout_gravity="center" >
@@ -39,14 +23,13 @@
 	        android:orientation="vertical" >
 	        
 	        <Button
-	            android:id="@+id/button1"
+	            android:id="@+id/btnLightNovel"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
    	            android:layout_gravity="center"
 	            android:layout_marginTop="10dp"
 	            android:minHeight="66dp"
 	            android:minWidth="165dp"
-	            android:onClick="openNovelList"
 	            android:background="@drawable/button_states"	            
 	            android:textStyle="bold"
 	            android:textSize="20sp"
@@ -55,14 +38,13 @@
 	            android:text="@string/light_novels" />
 	
    	        <Button
-   	            android:id="@+id/button4"
+   	            android:id="@+id/btnWatchList"
    	            android:layout_width="wrap_content"
    	            android:layout_height="wrap_content"
    	            android:layout_gravity="center"
 	            android:layout_marginTop="35dp"
    	            android:minHeight="66dp"
    	            android:minWidth="165dp"
-	            android:onClick="openWatchList"
 	            android:background="@drawable/button_states"	            
 	            android:textStyle="bold"
 	            android:textSize="20sp"
@@ -71,14 +53,13 @@
 	            android:text="@string/watch_list" />
 	            
 	        <Button
-	            android:id="@+id/button6"
+	            android:id="@+id/btnResumeNovel"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
    	            android:layout_gravity="center"
 	            android:layout_marginTop="35dp"
 	            android:minHeight="66dp"
 	            android:minWidth="165dp"
-   	            android:onClick="jumpLastRead"
 	            android:background="@drawable/button_states"	            
 	            android:textStyle="bold"
 	            android:textSize="20sp"
@@ -87,7 +68,7 @@
    	            android:text="@string/jump_last_read" />	  
    	            
 	        <Button
-	            android:id="@+id/button7"
+	            android:id="@+id/btnAltLanguage"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
    	            android:layout_gravity="center"
@@ -95,7 +76,6 @@
 	            android:layout_marginBottom="30dp"
 	            android:minHeight="66dp"
 	            android:minWidth="165dp"
-	            android:onClick="openAlternativeNovelList"
 	            android:background="@drawable/button_states"	            
 	            android:textStyle="bold"
 	            android:textSize="20sp"
@@ -103,7 +83,7 @@
 	            android:focusable="true"
    	            android:text="@string/alternative_language" />		        
 	    </LinearLayout>
-	    
+	    <!--
 	    <View 
 		    android:id="@+id/divider_vertical"
 	        android:layout_width="1dp"
@@ -124,7 +104,6 @@
 	            android:id="@+id/main_search_button"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
-   	            android:onClick="openSearch"
    	            android:layout_gravity="bottom|center_horizontal"
    	            android:src="@drawable/ic_main_search"
    	            android:background="@drawable/button_states"
@@ -134,7 +113,6 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_marginTop="20dp"
-   	            android:onClick="openBookmarks"
    	            android:layout_gravity="bottom|center_horizontal"
    	            android:src="@drawable/ic_main_bookmarks"
    	            android:background="@drawable/button_states"
@@ -144,7 +122,6 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_marginTop="20dp"
-   	            android:onClick="openUpdatesList"
    	            android:layout_gravity="bottom|center_horizontal"
    	            android:src="@drawable/ic_main_updates"
    	            android:background="@drawable/button_states"
@@ -154,7 +131,6 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_marginTop="20dp"
-   	            android:onClick="openDownloadsList"
    	            android:layout_gravity="bottom|center_horizontal"
    	            android:src="@drawable/ic_main_downloads"
    	            android:background="@drawable/button_states"
@@ -164,13 +140,12 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:layout_marginTop="20dp"
-   	            android:onClick="openSettings"
    	            android:layout_gravity="bottom|center_horizontal"
    	            android:src="@drawable/ic_main_settings"
    	            android:background="@drawable/button_states"
    	            android:contentDescription="@string/settings"/>
 	        
 	    </LinearLayout>
+	    -->
     </LinearLayout>
 </ScrollView>
-</LinearLayout>

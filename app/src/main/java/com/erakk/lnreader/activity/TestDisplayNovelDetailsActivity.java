@@ -33,7 +33,7 @@ public class TestDisplayNovelDetailsActivity extends BaseActivity {
         	Fragment list = new DisplayLightNovelDetailsFragment();
         	list.setArguments(fromPevIntent);
         	
-        	getSupportFragmentManager().beginTransaction().replace(R.id.leftFragment, synopsis_panel).commit();
+        	getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame, synopsis_panel).commit();
         	getSupportFragmentManager().beginTransaction().replace(R.id.rightFragment, list).commit();
         	
         } else {
@@ -69,10 +69,6 @@ public class TestDisplayNovelDetailsActivity extends BaseActivity {
 			UIHelper.ToggleColorPref(this);
 			UIHelper.Recreate(this);
 			return true;
-		case R.id.menu_bookmarks:
-    		Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
-        	startActivity(bookmarkIntent);
-			return true;    
 		case R.id.menu_downloads_list:
     		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
         	startActivity(downloadsItent);;

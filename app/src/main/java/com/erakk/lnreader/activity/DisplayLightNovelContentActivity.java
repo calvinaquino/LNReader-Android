@@ -422,10 +422,6 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 if (bookmarkMenu != null)
                     bookmarkMenu.show();
                 return true;
-            case R.id.menu_bookmarks:
-                Intent bookmarkIntent = new Intent(this, DisplayBookmarkActivity.class);
-                startActivity(bookmarkIntent);
-                return true;
             case R.id.menu_downloads_list:
                 Intent downloadsIntent = new Intent(this, DownloadListActivity.class);
                 startActivity(downloadsIntent);
