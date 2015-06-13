@@ -24,6 +24,7 @@ import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UI.activity.BaseActivity;
 import com.erakk.lnreader.UI.activity.MainActivity;
+import com.erakk.lnreader.UI.activity.NovelListContainerActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.UpdateInfoModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
@@ -73,7 +74,8 @@ public class UpdateHistoryActivity extends BaseActivity implements IExtendedCall
 	private void openChapter(UpdateInfoModel item) {
 		Intent intent = null;
 		if (item.getUpdateType() == UpdateType.NewNovel) {
-			intent = new Intent(this, DisplayLightNovelDetailsActivity.class);
+			intent = new Intent(this, NovelListContainerActivity.class);
+			intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
 			intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
 		}
 		else if (item.getUpdateType() == UpdateType.New ||

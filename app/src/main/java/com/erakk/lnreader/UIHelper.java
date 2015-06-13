@@ -27,8 +27,8 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.UI.activity.NovelListContainerActivity;
-import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.helper.Util;
 
 import java.io.ByteArrayOutputStream;
@@ -553,7 +553,6 @@ public class UIHelper {
     public static boolean isAutoUpdateOnlyUseWifi(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_AUTO_UPDATE_USE_WIFI_ONLY, true);
     }
-
 
     public static void selectAlternativeLanguage(Activity activity) {
 

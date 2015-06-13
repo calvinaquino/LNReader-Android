@@ -1,4 +1,4 @@
-package com.erakk.lnreader.activity;
+package com.erakk.lnreader.UI.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.activity.BaseActivity;
+import com.erakk.lnreader.UI.fragment.DownloadFragment;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
@@ -46,7 +46,7 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UIHelper.SetTheme(this, R.layout.activity_display_image);
+        initLayout(R.layout.activity_display_image);
         UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
         setupWebView();
@@ -172,8 +172,9 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
                 executeTask(url, true);
                 return true;
             case R.id.menu_downloads_list:
-                Intent downloadsItent = new Intent(this, DownloadListActivity.class);
-                startActivity(downloadsItent);
+                Intent downloadsIntent = new Intent(this, MainActivity.class);
+                downloadsIntent.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, DownloadFragment.class.toString());
+                startActivity(downloadsIntent);
                 return true;
             case R.id.menu_chapter_previous:
                 currentImageIndex--;

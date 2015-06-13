@@ -11,8 +11,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.service.TtsService;
 import com.erakk.lnreader.service.TtsService.TtsBinder;
 

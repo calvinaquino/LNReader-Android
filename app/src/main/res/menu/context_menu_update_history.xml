@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_open_chapter"
+        android:title="@string/open_chapter_title" />
+    <item
+        android:id="@+id/menu_open_details"
+        android:title="@string/open_details_title" />
+    <item
+        android:id="@+id/menu_update_delete_selected"
+        android:title="@string/update_delete_selected_title" />
+
+</menu>

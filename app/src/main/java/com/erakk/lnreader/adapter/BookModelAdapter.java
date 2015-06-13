@@ -1,7 +1,5 @@
 package com.erakk.lnreader.adapter;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -23,6 +21,8 @@ import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.PageModel;
+
+import java.util.ArrayList;
 
 public class BookModelAdapter extends BaseExpandableListAdapter {
 
@@ -86,7 +86,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 		BookModelChildViewHolder holder;
 		if (view == null) {
 			LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			int resourceId = R.layout.expandchapter_list_item;
+			int resourceId = R.layout.item_expand_chapter;
 
 			view = inflater.inflate(resourceId, null);
 			holder = new BookModelChildViewHolder();
@@ -303,7 +303,7 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
 
 		if (view == null || view.getTag().equals(HIDDEN_VOLUME)) {
 			LayoutInflater inf = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			view = inf.inflate(R.layout.expandvolume_list_item, null);
+			view = inf.inflate(R.layout.item_expand_volume, null);
 			holder = new BookModelGroupViewHolder();
 			holder.txtNovel = (TextView) view.findViewById(R.id.novel_volume);
 			holder.container = (ViewGroup) view.findViewById(R.id.novel_volume_container);

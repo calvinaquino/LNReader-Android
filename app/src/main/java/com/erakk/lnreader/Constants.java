@@ -179,4 +179,5 @@ public class Constants {
 
 
     public static final String EXTRA_NOVEL_LANG = "lang";
+    public static final String EXTRA_INITIAL_FRAGMENT = "initialFragment";
 }

@@ -14,9 +14,8 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.UI.fragment.DisplayLightNovelDetailsFragment;
 import com.erakk.lnreader.UI.fragment.DisplayLightNovelListFragment;
 import com.erakk.lnreader.UI.fragment.DisplayNovelTabFragment;
+import com.erakk.lnreader.UI.fragment.DownloadFragment;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.activity.DisplaySettingsActivity;
-import com.erakk.lnreader.activity.DownloadListActivity;
 
 public class NovelListContainerActivity extends BaseActivity implements
         DisplayLightNovelListFragment.FragmentListener {
@@ -25,15 +24,15 @@ public class NovelListContainerActivity extends BaseActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(null);
-        UIHelper.SetTheme(this, R.layout.fragactivity_framework);
+        super.onCreate(savedInstanceState);
+        initLayout(R.layout.fragactivity_framework);
         UIHelper.SetActionBarDisplayHomeAsUp(this, true);
-        setContentView(R.layout.fragactivity_framework);
 
         // get the intent args
         boolean onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
         String mode = getIntent().getStringExtra(Constants.EXTRA_NOVEL_LIST_MODE);
         String lang = getIntent().getStringExtra(Constants.EXTRA_NOVEL_LANG);
+        String loadedNovel = getIntent().getStringExtra(Constants.EXTRA_PAGE);
         Log.i(TAG, "IsWatched: " + onlyWatched + " Mode: " + mode + " lang: " + lang);
 
         // Fragment setup
@@ -42,6 +41,7 @@ public class NovelListContainerActivity extends BaseActivity implements
         b.putString(Constants.EXTRA_NOVEL_LIST_MODE, mode);
         b.putBoolean(Constants.EXTRA_ONLY_WATCHED, onlyWatched);
         b.putString(Constants.EXTRA_NOVEL_LANG, lang);
+        b.putString(Constants.EXTRA_PAGE, loadedNovel);
 
         Fragment f;
         if (onlyWatched) {
@@ -51,13 +51,12 @@ public class NovelListContainerActivity extends BaseActivity implements
         }
         f.setArguments(b);
         transaction.replace(R.id.mainFrame, f).commit();
-
-        initToolbar();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.fragactivity_display_novel_list, menu);
+        //getMenuInflater().inflate(R.menu.fragactivity_display_novel_list, menu);
+        super.onCreateOptionsMenu(menu);
         return true;
     }
 
@@ -80,9 +79,9 @@ public class NovelListContainerActivity extends BaseActivity implements
                 UIHelper.Recreate(this);
                 return true;
             case R.id.menu_downloads_list:
-                Intent downloadsItent = new Intent(this, DownloadListActivity.class);
-                startActivity(downloadsItent);
-                ;
+                Intent downloadsIntent = new Intent(this, MainActivity.class);
+                downloadsIntent.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, DownloadFragment.class.toString());
+                startActivity(downloadsIntent);
                 return true;
             case android.R.id.home:
                 super.onBackPressed();
@@ -106,6 +105,8 @@ public class NovelListContainerActivity extends BaseActivity implements
         } else {
             getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame, novelDetailFrag).addToBackStack(null).commit();
         }
+
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
     }
 
 }

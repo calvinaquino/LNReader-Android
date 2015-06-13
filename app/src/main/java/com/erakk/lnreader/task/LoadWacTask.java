@@ -2,6 +2,7 @@ package com.erakk.lnreader.task;
 
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -69,15 +70,21 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
         publishProgress(new CallbackEventData(msg, source));
         try {
             if (wacName.endsWith(".mht")) {
-                Log.i(TAG, "Using MHT Loader");
-                String tempPath = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + "/wac/temp";
-                File f = new File(tempPath);
-                if (!f.exists())
-                    f.mkdirs();
-                File w = new File(wacName);
-                extractedMhtName = MHTUtil.exportHtml(wacName, tempPath, w.getName());
-                Log.d(TAG, "Exported to: " + extractedMhtName);
-                return true;
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    // Kitkat able to open mht directly...
+                    return true;
+                } else {
+                    Log.i(TAG, "Using MHT Loader");
+                    String tempPath = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + "/wac/temp";
+                    File f = new File(tempPath);
+                    if (!f.exists())
+                        f.mkdirs();
+                    File w = new File(wacName);
+                    extractedMhtName = MHTUtil.exportHtml(wacName, tempPath, w.getName());
+                    Log.d(TAG, "Exported to: " + extractedMhtName);
+                    return true;
+                }
             } else if (wacName.endsWith(".wac")) {
                 Log.i(TAG, "Using WAC Loader");
                 FileInputStream is;
@@ -96,7 +103,10 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
         String message = null;
         if (result.getResult()) {
             if (wacName.endsWith(".mht")) {
-                wv.loadUrl("file://" + Uri.encode(extractedMhtName, "/\\") + "#" + anchorLink);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    wv.loadUrl("file://" + wacName + "#" + anchorLink);
+                } else
+                    wv.loadUrl("file://" + Uri.encode(extractedMhtName, "/\\") + "#" + anchorLink);
             } else {
                 wr.loadToWebView(wv, anchorLink, historyUrl);
             }

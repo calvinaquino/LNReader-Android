@@ -1,11 +1,5 @@
 package com.erakk.lnreader.adapter;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +8,12 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.erakk.lnreader.R;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 
 public class FileListAdapter extends ArrayAdapter<File>  {
 	private final ArrayList<File> files;
@@ -29,7 +29,7 @@ public class FileListAdapter extends ArrayAdapter<File>  {
 		View v = convertView;
 		if (v == null) {
 			LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			v = vi.inflate(R.layout.file_list_item, null);
+			v = vi.inflate(R.layout.item_file, null);
 		}
 		File d = files.get(position);
 		if (d != null) {

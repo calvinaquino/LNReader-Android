@@ -1,25 +1,25 @@
-package com.erakk.lnreader.UI.fragment;
+package com.erakk.lnreader.activity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleExpandableListAdapter;
@@ -27,7 +27,7 @@ import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
+import com.erakk.lnreader.UI.activity.BaseActivity;
 import com.erakk.lnreader.UI.activity.NovelListContainerActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.SearchPageModelAdapter;
@@ -38,35 +38,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class SearchFragment extends Fragment {
-    protected static final String TAG = SearchFragment.class.toString();
+public class DisplaySearchActivity extends BaseActivity {
+    protected static final String TAG = DisplaySearchActivity.class.toString();
     private boolean isInverted;
     private final Handler mHandler = new Handler();
     private long mStartTime;
     private ProgressBar progress = null;
     SearchPageModelAdapter adapter = null;
     private CheckBox chkNovelOnly = null;
-    private Context ctx;
+    private final Context ctx = this;
     private ExpandableListView languageSelection = null;
-
-    public SearchFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
+        UIHelper.SetTheme(this, R.layout.activity_search);
+        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        ctx = getActivity();
+        setTitle(getResources().getString(R.string.search));
+        isInverted = UIHelper.getColorPreferences(this);
 
-        View view = inflater.inflate(R.layout.fragment_search, null);
-
-        final EditText search = (EditText) view.findViewById(R.id.searchText);
+        final EditText search = (EditText) findViewById(R.id.searchText);
         search.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -84,11 +76,22 @@ public class SearchFragment extends Fragment {
         });
 
 		/* A section for Expandable List */
-        languageSelection = (ExpandableListView) view.findViewById(R.id.categorySearchLanguage);
-
-
-        languageSelection.setAdapter(setupAdapter());
-        languageSelection.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+        languageSelection = (ExpandableListView) findViewById(R.id.categorySearchLanguage);
+        SimpleExpandableListAdapter languageAdapter = new SimpleExpandableListAdapter(this, createGroupList(), // groupData
+                // describes
+                // the
+                // first-level
+                // entries
+                R.layout.activity_search_group, // Layout for the first-level entries
+                new String[]{"searchOption"}, // Key in the groupData maps to display
+                new int[]{R.id.optionName}, // Data under "colorName" key goes into this TextView
+                createChildList(), // childData describes second-level entries
+                R.layout.activity_search_child, // Layout for second-level entries
+                new String[]{"languagePreferences"}, // Keys in childData maps to display
+                new int[]{R.id.languageOptionName} // Data under the keys above go into these TextViews
+        );
+        languageSelection.setAdapter(languageAdapter);
+        languageSelection.setOnChildClickListener(new OnChildClickListener() {
 
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
@@ -102,31 +105,31 @@ public class SearchFragment extends Fragment {
                 }
                 doSearch(search.getEditableText());
                 progress.setVisibility(View.VISIBLE);
-                languageSelection.setAdapter(setupAdapter());
+                recreateUI();
                 return false;
             }
         });
         /* End of Expandable List section */
 
-        ListView searchResult = (ListView) view.findViewById(R.id.searchResult);
-        int resourceId = R.layout.item_novel;
-        if (UIHelper.isSmallScreen(getActivity())) {
-            resourceId = R.layout.item_novel_small;
+        ListView searchResult = (ListView) findViewById(R.id.searchResult);
+        int resourceId = R.layout.novel_list_item;
+        if (UIHelper.isSmallScreen(this)) {
+            resourceId = R.layout.novel_list_item_small;
         }
-        adapter = new SearchPageModelAdapter(getActivity(), resourceId, new ArrayList<PageModel>());
+        adapter = new SearchPageModelAdapter(this, resourceId, new ArrayList<PageModel>());
         searchResult.setAdapter(adapter);
-        searchResult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        searchResult.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
                 LoadItem(arg2);
             }
         });
 
-        progress = (ProgressBar) view.findViewById(R.id.progressBar1);
+        progress = (ProgressBar) findViewById(R.id.progressBar1);
 
-        chkNovelOnly = (CheckBox) view.findViewById(R.id.chkNovelOnly);
-        chkNovelOnly.setChecked(PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.PREF_IS_NOVEL_ONLY, false));
-        chkNovelOnly.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        chkNovelOnly = (CheckBox) findViewById(R.id.chkNovelOnly);
+        chkNovelOnly.setChecked(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_IS_NOVEL_ONLY, false));
+        chkNovelOnly.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -136,31 +139,6 @@ public class SearchFragment extends Fragment {
             }
         });
 
-
-        getActivity().setTitle(R.string.search);
-        return view;
-    }
-
-    private SimpleExpandableListAdapter setupAdapter() {
-        return new SimpleExpandableListAdapter(getActivity(), createGroupList(), // groupData describes the first-level entries
-                R.layout.fragment_search_item_header, // Layout for the first-level entries
-                new String[]{"searchOption"}, // Key in the groupData maps to display
-                new int[]{R.id.optionName}, // Data under "colorName" key goes into this TextView
-                createChildList(), // childData describes second-level entries
-                R.layout.fragment_search_item_text, // Layout for second-level entries
-                new String[]{"languagePreferences"}, // Keys in childData maps to display
-                new int[]{R.id.languageOptionName} // Data under the keys above go into these TextViews
-        );
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
     }
 
     /* A section for Expandable List */
@@ -175,11 +153,11 @@ public class SearchFragment extends Fragment {
     private List<ArrayList<HashMap<String, String>>> createChildList() {
         ArrayList<ArrayList<HashMap<String, String>>> firstTierOption = new ArrayList<ArrayList<HashMap<String, String>>>();
         ArrayList<HashMap<String, String>> secondTierOption = new ArrayList<HashMap<String, String>>();
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPrefs.edit();
         for (int n = 0; n < Constants.languageList.length; n++) {
             HashMap<String, String> child = new HashMap<String, String>();
-            /* Put a shared Preference if null */
+			/* Put a shared Preference if null */
             if (!sharedPrefs.contains("Search:" + Constants.languageList[n])) {
                 editor.putBoolean("Search:" + Constants.languageList[n], true);
                 editor.commit();
@@ -195,13 +173,13 @@ public class SearchFragment extends Fragment {
     }
 
     private void recreateUI() {
-        UIHelper.Recreate(getActivity());
+        UIHelper.Recreate(this);
     }
 
 	/* End of Expandable List section */
 
     protected void SetNovelOnly(boolean isChecked) {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPrefs.edit();
         editor.putBoolean(Constants.PREF_IS_NOVEL_ONLY, isChecked);
         editor.commit();
@@ -212,16 +190,17 @@ public class SearchFragment extends Fragment {
 
         Intent intent = null;
         if (page.getType().equalsIgnoreCase(PageModel.TYPE_NOVEL)) {
-            intent = new Intent(getActivity(), NovelListContainerActivity.class);
+            //intent = new Intent(this, DisplayLightNovelDetailsActivity.class);
+            intent = new Intent(this, NovelListContainerActivity.class);
             intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
         } else if (page.getType().equalsIgnoreCase(PageModel.TYPE_CONTENT)) {
-            intent = new Intent(getActivity(), DisplayLightNovelContentActivity.class);
+            intent = new Intent(this, DisplayLightNovelContentActivity.class);
         }
         if (intent != null) {
             intent.putExtra(Constants.EXTRA_PAGE, page.getPage());
             startActivity(intent);
         } else {
-            Toast.makeText(getActivity(), "Unknown type for: " + page.getPage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Unknown type for: " + page.getPage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -230,13 +209,13 @@ public class SearchFragment extends Fragment {
 
     protected void doSearch(Editable s) {
         searchString = s.toString();
-        boolean isNovelOnly = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.PREF_IS_NOVEL_ONLY, false);
+        boolean isNovelOnly = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_IS_NOVEL_ONLY, false);
         synchronized (s) {
             mStartTime = System.currentTimeMillis();
             if (callback != null) {
                 mHandler.removeCallbacks(callback);
             }
-            callback = new SearchHelper(mStartTime, isNovelOnly, getActivity());
+            callback = new SearchHelper(mStartTime, isNovelOnly, this);
             mHandler.postDelayed(callback, 1000);
         }
     }
@@ -276,5 +255,28 @@ public class SearchFragment extends Fragment {
                 progress.setVisibility(View.GONE);
             }
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (isInverted != UIHelper.getColorPreferences(this)) {
+            UIHelper.Recreate(this);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                super.onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

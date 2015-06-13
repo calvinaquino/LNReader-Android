@@ -88,11 +88,11 @@ public class NonLeakingWebView extends WebView {
                 }
                 this.getSettings().setUserAgentString(userAgent);
             }
-        }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // allow to open local file even in https mode.
-            this.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                // allow to open local file even in https mode.
+                this.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+            }
         }
     }
 
@@ -135,7 +135,7 @@ public class NonLeakingWebView extends WebView {
     public boolean onTouchEvent(MotionEvent ev) {
         // TODO: Error when exiting the current activity with zoom control shown.
         // E/WindowManager(6797): android.view.WindowLeaked: Activity
-        // com.erakk.lnreader.activity.DisplayImageActivity has leaked window
+        // com.erakk.lnreader.UI.activity.DisplayImageActivity has leaked window
         // android.widget.ZoomButtonsController$Container{41c709a0 V.E..... ........ 0,0-540,73} that was originally
         // added here
         super.onTouchEvent(ev);

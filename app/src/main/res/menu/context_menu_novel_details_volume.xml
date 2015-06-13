@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/download_volume"
+        android:title="Download Volume" />
+    <item
+        android:id="@+id/clear_volume"
+        android:title="Clear Volume Cache" />
+    <item
+        android:id="@+id/mark_volume"
+        android:title="Mark entire Volume as Read" />
+    <item
+        android:id="@+id/mark_volume2"
+        android:title="Mark entire Volume as Unread" />
+    <item
+        android:id="@+id/delete_volume"
+        android:title="Delete Volume" />
+</menu>

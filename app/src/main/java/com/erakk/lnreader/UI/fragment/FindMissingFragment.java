@@ -15,8 +15,8 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.FindMissingActivity;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.activity.FindMissingActivity;
 import com.erakk.lnreader.adapter.FindMissingAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
@@ -75,7 +75,7 @@ public class FindMissingFragment extends ListFragment implements IExtendedCallba
     }
 
     private void setItems(String extra) {
-        int resourceId = R.layout.find_missing_list_item;
+        int resourceId = R.layout.item_find_missing;
         models = NovelsDao.getInstance().getMissingItems(extra);
         adapter = new FindMissingAdapter(getActivity(), resourceId, models, extra, dowloadSelected, elseSelected);
         setListAdapter(adapter);

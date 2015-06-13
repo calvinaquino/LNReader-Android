@@ -29,9 +29,8 @@ import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.INovelListHelper;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.activity.DisplayLightNovelDetailsActivity;
-import com.erakk.lnreader.activity.INovelListHelper;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
@@ -87,7 +86,6 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
         mode = getArguments().getString(Constants.EXTRA_NOVEL_LIST_MODE);
         onlyWatched = getArguments().getBoolean(Constants.EXTRA_ONLY_WATCHED, false);
         lang = getArguments().getString(Constants.EXTRA_NOVEL_LANG);
-
         Log.i(TAG, "IsWatched: " + onlyWatched + " Mode: " + mode + " lang: " + lang);
 
         ActionBar a = ((AppCompatActivity) getActivity()).getSupportActionBar();
@@ -100,12 +98,16 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
                 a.setTitle("Light Novels");
             }
         }
+
+        String page = getArguments().getString(Constants.EXTRA_PAGE);
+        if (page != null)
+            loadNovel(page);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.activity_display_light_novel_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_display_light_novel_list, container, false);
 
         loadingText = (TextView) view.findViewById(R.id.emptyList);
         loadingBar = (ProgressBar) view.findViewById(R.id.empttListProgress);
@@ -151,6 +153,13 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
         // Need to send it through
     }
 
+    private void loadNovel(String page) {
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.EXTRA_PAGE, page);
+
+        mFragListener.changeNextFragment(bundle);
+    }
+
     @Override
     public void refreshList() {
         boolean onlyWatched = getActivity().getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
@@ -179,7 +188,7 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
         alert.setTitle(getString(R.string.add_novel_main, mode));
 
         LayoutInflater factory = LayoutInflater.from(getActivity());
-        View inputView = factory.inflate(R.layout.layout_add_new_novel, null);
+        View inputView = factory.inflate(R.layout.dialog_add_new_novel, null);
         final EditText inputName = (EditText) inputView.findViewById(R.id.page);
         final EditText inputTitle = (EditText) inputView.findViewById(R.id.title);
         alert.setView(inputView);
@@ -223,7 +232,7 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getActivity().getMenuInflater();
-        inflater.inflate(R.menu.novel_context_menu, menu);
+        inflater.inflate(R.menu.context_menu_novel_item, menu);
     }
 
     @Override
@@ -286,9 +295,9 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
 
         try {
             // Check size
-            int resourceId = R.layout.novel_list_item;
+            int resourceId = R.layout.item_novel;
             if (UIHelper.isSmallScreen(getActivity())) {
-                resourceId = R.layout.novel_list_item_small;
+                resourceId = R.layout.item_novel_small;
             }
             if (adapter != null) {
                 adapter.setResourceId(resourceId);
@@ -410,14 +419,14 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
         downloadTask = new DownloadNovelDetailsTask(this);
         if (novels == null || novels.size() == 0)
             return;
-        String key = DisplayLightNovelDetailsActivity.TAG + ":" + novels.get(0).getPage();
+        String key = DisplayLightNovelDetailsFragment.TAG + ":" + novels.get(0).getPage();
         if (novels.size() > 1) {
             if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
-                key = DisplayLightNovelDetailsActivity.TAG + ":All_Novels";
+                key = DisplayLightNovelDetailsFragment.TAG + ":All_Novels";
             } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
-                key = DisplayLightNovelDetailsActivity.TAG + ":All_Teasers";
+                key = DisplayLightNovelDetailsFragment.TAG + ":All_Teasers";
             } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
-                key = DisplayLightNovelDetailsActivity.TAG + ":All_Original";
+                key = DisplayLightNovelDetailsFragment.TAG + ":All_Original";
             }
         }
         boolean isAdded = LNReaderApplication.getInstance().addTask(key, downloadTask);
@@ -440,7 +449,7 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
     @SuppressLint("NewApi")
     private void executeAddTask(PageModel novel) {
         addTask = new AddNovelTask(this);
-        String key = DisplayLightNovelDetailsActivity.TAG + ":Add:" + novel.getPage();
+        String key = DisplayLightNovelDetailsFragment.TAG + ":Add:" + novel.getPage();
         boolean isAdded = LNReaderApplication.getInstance().addTask(key, addTask);
         if (isAdded) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)

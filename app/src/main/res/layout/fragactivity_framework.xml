@@ -25,6 +25,7 @@
             android:id="@+id/mainFrame"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
+
     </LinearLayout>
 
     <android.support.design.widget.NavigationView

@@ -5,7 +5,7 @@
     android:versionCode="201506110"
     android:versionName="1.1.31-beta1">
 
-<uses-sdk
+    <uses-sdk
         android:minSdkVersion="8"
         android:targetSdkVersion="21" />
 
@@ -36,161 +36,77 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.erakk.lnreader.activity.DisplayLightNovelListActivity"
+            android:name="com.erakk.lnreader.UI.activity.NovelListContainerActivity"
             android:label="@string/title_activity_display_light_novels">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".UI.activity.MainActivity" />
         </activity>
         <activity
-            android:name="com.erakk.lnreader.activity.DisplaySettingsActivity"
+            android:name=".UI.activity.DisplaySettingsActivity"
             android:label="@string/title_activity_display_settings">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".UI.activity.MainActivity" />
         </activity>
-        <activity android:name="com.erakk.lnreader.activity.DisplaySearchActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UI.activity.MainActivity" />
-        </activity>
         <activity
-            android:name="com.erakk.lnreader.activity.DisplayAlternativeNovelListActivity"
-            android:label="@string/title_activity_display_alternative_novels">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UI.activity.MainActivity" />
-        </activity>
-        <activity
-            android:name="com.erakk.lnreader.activity.DisplayLightNovelDetailsActivity"
-            android:configChanges="orientation"
-            android:label="@string/title_activity_light_novel_chapters">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.erakk.lnreader.activity.DisplayLightNovelListActivity" />
-        </activity>
-        <activity
-            android:name="com.erakk.lnreader.activity.DisplayLightNovelContentActivity"
+            android:name=".UI.activity.DisplayLightNovelContentActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_display_novel_content">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.erakk.lnreader.activity.DisplayLightNovelDetailsActivity" />
+                android:value="com.erakk.lnreader.UI.activity.NovelListContainerActivity" />
         </activity>
         <activity
-            android:name="com.erakk.lnreader.activity.DisplayImageActivity"
+            android:name=".UI.activity.DisplayImageActivity"
             android:label="@string/title_activity_display_image">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.erakk.lnreader.activity.DisplayLightNovelContentActivity" />
-        </activity>
-        <activity
-            android:name="com.erakk.lnreader.activity.DisplayBookmarkActivity"
-            android:label="@string/title_activity_display_bookmark"
-            android:parentActivityName=".UI.activity.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UI.activity.MainActivity" />
-        </activity>
-        <activity
-            android:name="com.erakk.lnreader.activity.DownloadListActivity"
-            android:label="@string/title_activity_download_list"
-            android:parentActivityName=".UI.activity.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UI.activity.MainActivity" />
-        </activity>
-        <activity
-            android:name="com.erakk.lnreader.activity.DisplayNovelPagerActivity"
-            android:label="@string/title_activity_display_novel_pager"
-            android:parentActivityName=".UI.activity.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UI.activity.MainActivity" />
-        </activity>
-        <activity
-            android:name="com.erakk.lnreader.activity.DisplayAlternativeNovelPagerActivity"
-            android:label="@string/title_activity_display_alternative_novel_pager"
-            android:parentActivityName=".UI.activity.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UI.activity.MainActivity" />
-        </activity>
-        <activity
-            android:name="com.erakk.lnreader.activity.UpdateHistoryActivity"
-            android:label="@string/title_activity_update_history"
-            android:parentActivityName=".UI.activity.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UI.activity.MainActivity" />
-        </activity>
-        <activity
-            android:name=".UI.activity.NovelListContainerActivity"
-            android:label="Test"
-            android:parentActivityName=".UI.activity.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UI.activity.MainActivity" />
-        </activity>
-        <activity
-            android:name="com.erakk.lnreader.activity.TestDisplayNovelActivityTwo"
-            android:label="Test2"
-            android:parentActivityName=".UI.activity.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UI.activity.MainActivity" />
-        </activity>
-        <activity
-            android:name="com.erakk.lnreader.activity.TestDisplayNovelDetailsActivity"
-            android:label="Test2 Details"
-            android:parentActivityName=".UI.activity.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UI.activity.MainActivity" />
+                android:value=".UI.activity.DisplayLightNovelContentActivity" />
         </activity>
 
         <service
             android:name="com.erakk.lnreader.service.TtsService"
             android:icon="@drawable/ic_launcher"
             android:label="@string/tts_service_name"
-            android:process=""></service>
+            android:process="" />
         <service
             android:name="com.erakk.lnreader.service.UpdateService"
             android:icon="@drawable/ic_launcher"
             android:label="@string/update_service_name"
-            android:process=""></service>
+            android:process="" />
         <service
             android:name="com.erakk.lnreader.service.AutoBackupService"
             android:icon="@drawable/ic_launcher"
             android:label="@string/auto_backup_service_name"
-            android:process=""></service>
+            android:process="" />
 
         <receiver android:name="com.erakk.lnreader.service.UpdateScheduleReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.erakk.lnreader.service.UpdateStartServiceReceiver"></receiver>
+        <receiver android:name="com.erakk.lnreader.service.UpdateStartServiceReceiver" />
         <receiver android:name="com.erakk.lnreader.service.AutoBackupScheduleReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.erakk.lnreader.service.AutoBackupStartServiceReceiver"></receiver>
+        <receiver android:name="com.erakk.lnreader.service.AutoBackupStartServiceReceiver" />
 
         <activity
-            android:name="com.erakk.lnreader.activity.DisplayCreditActivity"
-            android:label="@string/title_activity_display_credit"></activity>
+            android:name=".UI.activity.DisplayCreditActivity"
+            android:label="@string/title_activity_display_credit" />
         <activity
-            android:name="com.erakk.lnreader.activity.DisplayChangelogActivity"
-            android:label="@string/title_activity_display_changelog"></activity>
+            android:name=".UI.activity.DisplayChangelogActivity"
+            android:label="@string/title_activity_display_changelog" />
         <activity
-            android:name="com.erakk.lnreader.activity.FindMissingActivity"
+            android:name=".UI.activity.FindMissingActivity"
             android:label="@string/title_activity_find_missing"
-            android:parentActivityName="com.erakk.lnreader.activity.DisplaySettingsActivity">
+            android:parentActivityName=".UI.activity.DisplaySettingsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.erakk.lnreader.activity.DisplaySettingsActivity" />
+                android:value=".UI.activity.DisplaySettingsActivity" />
         </activity>
     </application>
 

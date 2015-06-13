@@ -9,8 +9,8 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookmarkModel;
 

@@ -1,4 +1,4 @@
-package com.erakk.lnreader.activity;
+package com.erakk.lnreader.UI.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -792,7 +792,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements IExte
 
 	private void showBackupsDB() {
 		ArrayList<File> backups = AutoBackupService.getBackupFiles(this);
-		final FileListAdapter adapter = new FileListAdapter(this, R.layout.file_list_item, backups);
+		final FileListAdapter adapter = new FileListAdapter(this, R.layout.item_file, backups);
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle("Choose Backup File");
 		builder.setAdapter(adapter, new OnClickListener() {

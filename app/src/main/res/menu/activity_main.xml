@@ -1,7 +1,0 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/invert_colors"
-        android:title="@string/invert_colors"
-        android:orderInCategory="2"
-        android:showAsAction="never" />
-
-</menu>

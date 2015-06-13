@@ -1,33 +1,34 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_chapter_previous"
         android:orderInCategory="1"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         android:title="@string/content_previous" />
     <item
         android:id="@+id/menu_chapter_next"
         android:orderInCategory="2"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         android:title="@string/content_next" />
     <item
         android:id="@+id/menu_chapter_toc"
         android:orderInCategory="3"
-        android:title="@string/content_toc"></item>
+        android:title="@string/content_toc" />
     <item
         android:id="@+id/menu_search"
         android:orderInCategory="4"
-        android:title="@string/content_search"></item>
+        android:title="@string/content_search" />
     <item
         android:id="@+id/menu_speak"
         android:orderInCategory="5"
         android:title="Start Text-To-Speech"
-        android:enabled="false"></item>
+        android:enabled="false" />
     <item
         android:id="@+id/menu_pause_tts"
         android:orderInCategory="6"
         android:title="Pause Text-To-Speech"
-        android:enabled="false"></item>
+        android:enabled="false" />
     <item
         android:id="@+id/invert_colors"
         android:orderInCategory="95"
@@ -39,11 +40,11 @@
     <item
         android:id="@+id/menu_bookmarks_here"
         android:orderInCategory="97"
-        android:title="@string/content_bookmark"></item>
+        android:title="@string/content_bookmark" />
     <item
         android:id="@+id/menu_bookmarks"
         android:orderInCategory="98"
-        android:title="@string/bookmarks"></item>
+        android:title="@string/bookmarks" />
     <item
         android:id="@+id/menu_downloads_list"
         android:orderInCategory="99"
@@ -55,11 +56,11 @@
     <item
         android:id="@+id/menu_save_external"
         android:title="@string/menu_save_external"
-        android:visible="false"></item>
+        android:visible="false" />
     <item
         android:id="@+id/menu_browser_back"
         android:title="Browser Back"
         android:visible="false"
-        android:enabled="false"></item>
+        android:enabled="false" />
 
 </menu>

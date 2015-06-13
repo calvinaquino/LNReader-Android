@@ -10,8 +10,11 @@ import android.view.MenuItem;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UI.activity.BaseActivity;
+import com.erakk.lnreader.UI.activity.DisplaySettingsActivity;
+import com.erakk.lnreader.UI.activity.MainActivity;
 import com.erakk.lnreader.UI.fragment.DisplayLightNovelListFragment;
 import com.erakk.lnreader.UI.fragment.DisplayNovelTabFragment;
+import com.erakk.lnreader.UI.fragment.DownloadFragment;
 import com.erakk.lnreader.UIHelper;
 
 public class TestDisplayNovelActivityTwo extends BaseActivity implements
@@ -35,8 +38,6 @@ DisplayLightNovelListFragment.FragmentListener{
 		} else {
 			transaction.replace(R.id.mainFrame, new DisplayNovelTabFragment()).commit();
 		}
-
-		initToolbar();
 	}
 
 	@Override
@@ -66,8 +67,9 @@ DisplayLightNovelListFragment.FragmentListener{
 			UIHelper.Recreate(this);
 			return true;
 		case R.id.menu_downloads_list:
-			Intent downloadsItent = new Intent(this, DownloadListActivity.class);
-			startActivity(downloadsItent);;
+			Intent downloadsIntent = new Intent(this, MainActivity.class);
+			downloadsIntent.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, DownloadFragment.class.toString());
+			startActivity(downloadsIntent);
 			return true;
 		case android.R.id.home:
 			super.onBackPressed();

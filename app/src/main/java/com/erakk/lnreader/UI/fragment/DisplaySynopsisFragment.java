@@ -24,8 +24,8 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.DisplayImageActivity;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.activity.DisplayImageActivity;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
@@ -54,7 +54,7 @@ public class DisplaySynopsisFragment extends Fragment implements IExtendedCallba
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         UIHelper.SetActionBarDisplayHomeAsUp(getActivity(), true);
-        View view = inflater.inflate(R.layout.activity_display_synopsis, container, false);
+        View view = inflater.inflate(R.layout.fragment_display_synopsis, container, false);
 
         currentLayout = view;
         // Get intent and message

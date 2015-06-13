@@ -72,9 +72,9 @@
     <string name="content_bookmark">Bookmarks on Chapter</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="download_list">Download List</string>
-    <string name="details_refresh">Refresh List</string>
+    <string name="details_refresh">Refresh Chapter List</string>
     <string name="details_download_all">Download All Chapters</string>
-    <string name="novel_list_refresh">Refresh</string>
+    <string name="novel_list_refresh">Refresh Novel List</string>
     <string name="novel_list_manual_add">Manual Add</string>
     <string name="novel_list_download_all">Download All Info</string>
     <string name="update_interval_summary">Define how often updates will be verified: %1$s</string>

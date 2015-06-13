@@ -6,10 +6,14 @@ import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UI.activity.BaseActivity;
+import com.erakk.lnreader.UI.activity.DisplaySettingsActivity;
+import com.erakk.lnreader.UI.activity.MainActivity;
 import com.erakk.lnreader.UI.fragment.DisplayLightNovelDetailsFragment;
 import com.erakk.lnreader.UI.fragment.DisplaySynopsisFragment;
+import com.erakk.lnreader.UI.fragment.DownloadFragment;
 import com.erakk.lnreader.UIHelper;
 
 public class TestDisplayNovelDetailsActivity extends BaseActivity {
@@ -70,8 +74,9 @@ public class TestDisplayNovelDetailsActivity extends BaseActivity {
 			UIHelper.Recreate(this);
 			return true;
 		case R.id.menu_downloads_list:
-    		Intent downloadsItent = new Intent(this, DownloadListActivity.class);
-        	startActivity(downloadsItent);;
+			Intent downloadsIntent = new Intent(this, MainActivity.class);
+			downloadsIntent.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, DownloadFragment.class.toString());
+			startActivity(downloadsIntent);
 			return true; 
 		case android.R.id.home:
 			super.onBackPressed();

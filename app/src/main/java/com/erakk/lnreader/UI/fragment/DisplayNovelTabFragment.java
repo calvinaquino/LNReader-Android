@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.activity.INovelListHelper;
+import com.erakk.lnreader.UI.INovelListHelper;
 
 import java.util.Hashtable;
 
@@ -50,6 +50,8 @@ public class DisplayNovelTabFragment extends Fragment {
             Bundle mainBundle = new Bundle();
             mainBundle.putString(Constants.EXTRA_NOVEL_LIST_MODE, Constants.EXTRA_NOVEL_LIST_MODE_MAIN);
             mainBundle.putBoolean(Constants.EXTRA_ONLY_WATCHED, false);
+            mainBundle.putString(Constants.EXTRA_PAGE, getArguments().getString(Constants.EXTRA_PAGE));
+
             mTabHost.addTab(mTabHost.newTabSpec(MAIN_SPEC).setIndicator(MAIN_SPEC),
                     DisplayLightNovelListFragment.class, mainBundle);
 

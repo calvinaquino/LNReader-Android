@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -24,9 +23,9 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
+import com.erakk.lnreader.UI.activity.NovelListContainerActivity;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
-import com.erakk.lnreader.activity.DisplayLightNovelDetailsActivity;
 import com.erakk.lnreader.adapter.UpdateInfoModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
@@ -62,7 +61,7 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.activity_update_history, null);
+        View view = inflater.inflate(R.layout.fragment_update_history, null);
         updateListView = (ListView) view.findViewById(R.id.update_list);
         updateListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -75,15 +74,14 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
         updateContent();
         LNReaderApplication.getInstance().setUpdateServiceListener(this);
         registerForContextMenu(updateListView);
-
+        getActivity().setTitle(getResources().getString(R.string.updates));
+        LNReaderApplication.getInstance().setUpdateServiceListener(this);
         return view;
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        ((AppCompatActivity)activity).getSupportActionBar().setTitle(getResources().getString(R.string.updates));
-        LNReaderApplication.getInstance().setUpdateServiceListener(this);
     }
 
     @Override
@@ -93,14 +91,14 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.activity_update_history, menu);
+        inflater.inflate(R.menu.fragment_update_history, menu);
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = getActivity().getMenuInflater();
-        inflater.inflate(R.menu.update_history_context_menu, menu);
+        inflater.inflate(R.menu.context_menu_update_history, menu);
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
         UpdateInfoModel chapter = updateList.get(info.position);
         if (chapter.getUpdateType() == UpdateType.NewNovel) {
@@ -137,7 +135,6 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
                 return super.onContextItemSelected(item);
         }
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -188,6 +185,9 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
 
     @Override
     public void onProgressCallback(ICallbackEventData message) {
+        if (!this.isVisible())
+            return;
+
         final LinearLayout p = (LinearLayout) getActivity().findViewById(R.id.layout_update_status);
         if (p != null) {
             p.setVisibility(View.VISIBLE);
@@ -229,7 +229,8 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
         // TODO: change to fragment
         Intent intent = null;
         if (item.getUpdateType() == UpdateType.NewNovel) {
-            intent = new Intent(getActivity(), DisplayLightNovelDetailsActivity.class);
+            intent = new Intent(getActivity(), NovelListContainerActivity.class);
+            intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
             intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
         } else if (item.getUpdateType() == UpdateType.New ||
                 item.getUpdateType() == UpdateType.Updated ||
@@ -248,8 +249,8 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
     }
 
     private void openDetails(UpdateInfoModel item) {
-        // TODO: change to fragment
-        Intent intent = new Intent(getActivity(), DisplayLightNovelDetailsActivity.class);
+        Intent intent = new Intent(getActivity(), NovelListContainerActivity.class);
+        intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
         if (item.getUpdateType() == UpdateType.NewNovel) {
             intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
         } else if (item.getUpdateType() == UpdateType.New ||
@@ -284,7 +285,7 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
     public void updateContent() {
         try {
             updateList = NovelsDao.getInstance().getAllUpdateHistory();
-            int resourceId = R.layout.update_list_item;
+            int resourceId = R.layout.item_update;
             adapter = new UpdateInfoModelAdapter(getActivity(), resourceId, updateList);
             updateListView.setAdapter(adapter);
 

@@ -1,6 +1,7 @@
 package com.erakk.lnreader.UI.fragment;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -10,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -34,9 +36,9 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.DisplayImageActivity;
+import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.activity.DisplayImageActivity;
-import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.adapter.BookModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
@@ -72,15 +74,8 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
     private String touchedForDownload;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        UIHelper.SetActionBarDisplayHomeAsUp(getActivity(), true);
-        View view = inflater.inflate(R.layout.activity_display_light_novel_details, container, false);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
 
         // Get intent and message
         page = new PageModel();
@@ -95,6 +90,20 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
         } catch (Exception e) {
             Log.e(TAG, "Error when getting Page Model for " + page.getPage(), e);
         }
+
+        ((AppCompatActivity) activity).getSupportActionBar().setTitle(page.getTitle());
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        UIHelper.SetActionBarDisplayHomeAsUp(getActivity(), true);
+        View view = inflater.inflate(R.layout.fragment_display_light_novel_details, container, false);
 
         loadingText = (TextView) view.findViewById(R.id.emptyList);
         loadingBar = (ProgressBar) view.findViewById(R.id.empttListProgress);
@@ -114,39 +123,13 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                 return false;
             }
         });
-
-        getActivity().setTitle(page.getTitle());
-
         setHasOptionsMenu(true);
 
         executeTask(page, false);
+
         return view;
     }
 
-    private void loadChapter(PageModel chapter) {
-        boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
-
-        if (chapter.isExternal() && !useInternalWebView) {
-            try {
-                Uri url = Uri.parse(chapter.getPage());
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
-                startActivity(browserIntent);
-            } catch (Exception ex) {
-                String message = getResources().getString(R.string.error_parsing_url, chapter.getPage());
-                Log.e(TAG, message, ex);
-                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            if (chapter.isExternal() || chapter.isDownloaded() || !UIHelper.getDownloadTouchPreference(getActivity())) {
-                Intent intent = new Intent(getActivity(), DisplayLightNovelContentActivity.class);
-                intent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
-                startActivity(intent);
-            } else {
-                downloadTask = new DownloadNovelContentTask(new PageModel[]{chapter}, DisplayLightNovelDetailsFragment.this);
-                downloadTask.execute();
-            }
-        }
-    }
 
     @Override
     public void onResume() {
@@ -170,7 +153,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                 return true;
             case R.id.menu_details_download_all:
             /*
-			 * Download all chapters
+             * Download all chapters
 			 */
                 ArrayList<PageModel> availableChapters = novelCol.getFlattedChapterList();
                 ArrayList<PageModel> notDownloadedChapters = new ArrayList<PageModel>();
@@ -198,9 +181,9 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
         MenuInflater inflater = getActivity().getMenuInflater();
         int type = ExpandableListView.getPackedPositionType(info.packedPosition);
         if (type == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
-            inflater.inflate(R.menu.novel_details_volume_context_menu, menu);
+            inflater.inflate(R.menu.context_menu_novel_details_volume, menu);
         } else if (type == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
-            inflater.inflate(R.menu.novel_details_chapter_context_menu, menu);
+            inflater.inflate(R.menu.context_menu_novel_details_chapter, menu);
         }
     }
 
@@ -343,51 +326,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
         }
     }
 
-    @SuppressLint("NewApi")
-    private void executeTask(PageModel pageModel, boolean willRefresh) {
-        task = new LoadNovelDetailsTask(pageModel, willRefresh, this);
-        String key = TAG + ":" + pageModel.getPage();
-        boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
-        if (isAdded) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            else
-                task.execute();
-        } else {
-            Log.i(TAG, "Continue execute task: " + key);
-            LoadNovelDetailsTask tempTask = (LoadNovelDetailsTask) LNReaderApplication.getInstance().getTask(key);
-            if (tempTask != null) {
-                task = tempTask;
-                task.owner = this;
-            }
-            toggleProgressBar(true);
-        }
-    }
-
-    @SuppressLint("NewApi")
-    private void executeDownloadTask(ArrayList<PageModel> chapters, boolean isAll) {
-        if (page != null) {
-            downloadTask = new DownloadNovelContentTask(chapters.toArray(new PageModel[chapters.size()]), this);
-            String key = TAG + ":DownloadChapters:" + page.getPage();
-            if (isAll) {
-                key = TAG + ":DownloadChaptersAll:" + page.getPage();
-            }
-            boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
-            if (isAdded) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                    downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                else
-                    downloadTask.execute();
-            } else {
-                Log.i(TAG, "Continue download task: " + key);
-                DownloadNovelContentTask tempTask = (DownloadNovelContentTask) LNReaderApplication.getInstance().getTask(key);
-                if (tempTask != null) {
-                    downloadTask = tempTask;
-                    downloadTask.owner = this;
-                }
-            }
-        }
-    }
+    // region IExtendedCallbackNotifier
 
     @Override
     public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
@@ -440,20 +379,6 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
         }
     }
 
-    public void toggleProgressBar(boolean show) {
-        if (show) {
-            loadingText.setText("Loading List, please wait...");
-            loadingText.setVisibility(TextView.VISIBLE);
-            loadingBar.setVisibility(ProgressBar.VISIBLE);
-            expandList.setVisibility(ListView.GONE);
-        } else {
-            loadingText.setVisibility(TextView.GONE);
-            loadingBar.setVisibility(ProgressBar.GONE);
-            expandList.setVisibility(ListView.VISIBLE);
-        }
-    }
-
-
     @Override
     @SuppressLint("NewApi")
     public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<?> result) {
@@ -487,7 +412,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                     if ((expandList.getHeaderViewsCount() == 0) && getArguments().getBoolean("show_list_child")) {
                         page = novelCol.getPageModel();
                         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-                        View synopsis = layoutInflater.inflate(R.layout.activity_display_synopsis, null);
+                        View synopsis = layoutInflater.inflate(R.layout.fragment_display_synopsis, null);
                         TextView textViewTitle = (TextView) synopsis.findViewById(R.id.title);
                         TextView textViewSynopsis = (TextView) synopsis.findViewById(R.id.synopsys);
                         textViewTitle.setTextSize(20);
@@ -526,6 +451,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                             }
                         });
 
+                        // cover
                         ImageView ImageViewCover = (ImageView) synopsis.findViewById(R.id.cover);
                         if (novelCol.getCoverBitmap() == null) {
                             // IN app test, is returning empty bitmap
@@ -542,7 +468,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                                 Drawable coverDrawable = new BitmapDrawable(getResources(), novelCol.getCoverBitmap());
                                 int coverHeight = novelCol.getCoverBitmap().getHeight();
                                 int coverWidth = novelCol.getCoverBitmap().getWidth();
-                                double screenWidth = UIHelper.getScreenWidth(getActivity()) * 0.9;
+                                double screenWidth = this.getView().getWidth() * 0.9; //UIHelper.getScreenWidth(getActivity()) * 0.9;
                                 double ratio = screenWidth / coverWidth;
                                 int finalHeight = (int) (coverHeight * ratio);
                                 ImageViewCover.setBackground(coverDrawable);
@@ -574,10 +500,99 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
         toggleProgressBar(false);
     }
 
+    // endregion
+
+    // region private method
     private void handleCoverClick(URL coverUrl) {
         String bigCoverUrl = CommonParser.getImageFilePageFromImageUrl(coverUrl.toString());
         Intent intent = new Intent(getActivity(), DisplayImageActivity.class);
         intent.putExtra(Constants.EXTRA_IMAGE_URL, bigCoverUrl);
         startActivity(intent);
     }
+
+    public void toggleProgressBar(boolean show) {
+        if (show) {
+            loadingText.setText("Loading List, please wait...");
+            loadingText.setVisibility(TextView.VISIBLE);
+            loadingBar.setVisibility(ProgressBar.VISIBLE);
+            expandList.setVisibility(ListView.GONE);
+        } else {
+            loadingText.setVisibility(TextView.GONE);
+            loadingBar.setVisibility(ProgressBar.GONE);
+            expandList.setVisibility(ListView.VISIBLE);
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private void executeTask(PageModel pageModel, boolean willRefresh) {
+        task = new LoadNovelDetailsTask(pageModel, willRefresh, this);
+        String key = TAG + ":" + pageModel.getPage();
+        boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
+        if (isAdded) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            else
+                task.execute();
+        } else {
+            Log.i(TAG, "Continue execute task: " + key);
+            LoadNovelDetailsTask tempTask = (LoadNovelDetailsTask) LNReaderApplication.getInstance().getTask(key);
+            if (tempTask != null) {
+                task = tempTask;
+                task.owner = this;
+            }
+            toggleProgressBar(true);
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private void executeDownloadTask(ArrayList<PageModel> chapters, boolean isAll) {
+        if (page != null) {
+            downloadTask = new DownloadNovelContentTask(chapters.toArray(new PageModel[chapters.size()]), this);
+            String key = TAG + ":DownloadChapters:" + page.getPage();
+            if (isAll) {
+                key = TAG + ":DownloadChaptersAll:" + page.getPage();
+            }
+            boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
+            if (isAdded) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                    downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                else
+                    downloadTask.execute();
+            } else {
+                Log.i(TAG, "Continue download task: " + key);
+                DownloadNovelContentTask tempTask = (DownloadNovelContentTask) LNReaderApplication.getInstance().getTask(key);
+                if (tempTask != null) {
+                    downloadTask = tempTask;
+                    downloadTask.owner = this;
+                }
+            }
+        }
+    }
+
+    private void loadChapter(PageModel chapter) {
+        boolean useInternalWebView = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(Constants.PREF_USE_INTERNAL_WEBVIEW, false);
+
+        if (chapter.isExternal() && !useInternalWebView) {
+            try {
+                Uri url = Uri.parse(chapter.getPage());
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
+                startActivity(browserIntent);
+            } catch (Exception ex) {
+                String message = getResources().getString(R.string.error_parsing_url, chapter.getPage());
+                Log.e(TAG, message, ex);
+                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            if (chapter.isExternal() || chapter.isDownloaded() || !UIHelper.getDownloadTouchPreference(getActivity())) {
+                Intent intent = new Intent(getActivity(), DisplayLightNovelContentActivity.class);
+                intent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
+                startActivity(intent);
+            } else {
+                downloadTask = new DownloadNovelContentTask(new PageModel[]{chapter}, DisplayLightNovelDetailsFragment.this);
+                downloadTask.execute();
+            }
+        }
+    }
+
+    // endregion
 }

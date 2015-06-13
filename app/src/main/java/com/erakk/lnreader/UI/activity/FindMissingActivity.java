@@ -1,12 +1,36 @@
-package com.erakk.lnreader.activity;
+package com.erakk.lnreader.UI.activity;
 
-import com.erakk.lnreader.UI.activity.BaseActivity;
+import android.annotation.SuppressLint;
+import android.content.DialogInterface;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class FindMissingActivity extends BaseActivity  {
+import com.erakk.lnreader.Constants;
+import com.erakk.lnreader.LNReaderApplication;
+import com.erakk.lnreader.R;
+import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.adapter.FindMissingAdapter;
+import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
+import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.model.FindMissingModel;
+import com.erakk.lnreader.task.DeleteMissingTask;
 
-	/*private static final String TAG = FindMissingActivity.class.toString();
-	private boolean isInverted;
-	private ArrayList<FindMissingModel> models = null;
+import java.util.ArrayList;
+import java.util.List;
+
+public class FindMissingActivity extends BaseActivity implements IExtendedCallbackNotifier<Integer> {
+
+    private static final String TAG = FindMissingActivity.class.toString();
+    private boolean isInverted;
+    private ArrayList<FindMissingModel> models = null;
 	private FindMissingAdapter adapter = null;
 	private String mode;
 	private boolean dowloadSelected = false;
@@ -35,7 +59,7 @@ public class FindMissingActivity extends BaseActivity  {
 					this
 					, getResources().getString(R.string.maint_warning_text)
 					, getResources().getString(R.string.maint_warning_title)
-					, new OnClickListener() {
+                    , new DialogInterface.OnClickListener() {
 
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
@@ -48,11 +72,11 @@ public class FindMissingActivity extends BaseActivity  {
 	}
 
 	private void setItems(String extra) {
-		int resourceId = R.layout.find_missing_list_item;
-		models = NovelsDao.getInstance().getMissingItems(extra);
+        int resourceId = R.layout.item_find_missing;
+        models = NovelsDao.getInstance().getMissingItems(extra);
 		adapter = new FindMissingAdapter(this, resourceId, models, extra, dowloadSelected, elseSelected);
-		setListAdapter(adapter);
-	}
+        getListView().setAdapter(adapter);
+    }
 
 	@Override
 	protected void onRestart() {
@@ -65,9 +89,9 @@ public class FindMissingActivity extends BaseActivity  {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getSupportMenuInflater().inflate(R.menu.activity_find_missing, menu);
-		return true;
-	}
+        getMenuInflater().inflate(R.menu.activity_find_missing, menu);
+        return true;
+    }
 
 	@SuppressLint("NewApi")
 	private void executeDeleteTask(List<FindMissingModel> items, String mode) {
@@ -103,6 +127,10 @@ public class FindMissingActivity extends BaseActivity  {
 		}
 	}
 
+    private ListView getListView() {
+        return (ListView) findViewById(android.R.id.list);
+    }
+
 	@Override
 	public void onProgressCallback(ICallbackEventData message) {
 		toggleProgressBar(true);
@@ -137,9 +165,9 @@ public class FindMissingActivity extends BaseActivity  {
 			}
 			return true;
 		case R.id.menu_clear_all:
-			if(task != null && task.getStatus() !=Status.FINISHED) {
-				Toast.makeText(this, getString(R.string.task_delete_running), Toast.LENGTH_SHORT).show();
-				return true;
+            if (task != null && task.getStatus() != AsyncTask.Status.FINISHED) {
+                Toast.makeText(this, getString(R.string.task_delete_running), Toast.LENGTH_SHORT).show();
+                return true;
 			}
 			if (adapter != null) {
 				List<FindMissingModel> items = adapter.getItems();
@@ -149,9 +177,9 @@ public class FindMissingActivity extends BaseActivity  {
 			}
 			return true;
 		case R.id.menu_clear_selected:
-			if(task != null && task.getStatus() !=Status.FINISHED) {
-				Toast.makeText(this, getString(R.string.task_delete_running), Toast.LENGTH_SHORT).show();
-				return true;
+            if (task != null && task.getStatus() != AsyncTask.Status.FINISHED) {
+                Toast.makeText(this, getString(R.string.task_delete_running), Toast.LENGTH_SHORT).show();
+                return true;
 			}
 			if (adapter != null) {
 				List<FindMissingModel> items = adapter.getItems();
@@ -176,5 +204,5 @@ public class FindMissingActivity extends BaseActivity  {
 	@Override
 	public boolean downloadListSetup(String taskId, String message, int setupType, boolean hasError) {
 		return false;
-	}*/
+    }
 }

@@ -5,13 +5,14 @@
 
     <EditText
         android:id="@+id/searchText"
+        android:imeOptions="actionSearch"
+        android:singleLine="true"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/chkNovelOnly"
-        android:ems="10"
-        android:hint="@string/hint_search" >
+        android:ems="10">
 
         <requestFocus />
     </EditText>

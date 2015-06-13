@@ -1,4 +1,4 @@
-package com.erakk.lnreader.activity;
+package com.erakk.lnreader.UI.activity;
 
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
@@ -7,7 +7,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.activity.BaseActivity;
 import com.erakk.lnreader.UIHelper;
 
 public class DisplayChangelogActivity extends BaseActivity {
@@ -16,9 +15,8 @@ public class DisplayChangelogActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		UIHelper.setLanguage(this);
-		UIHelper.SetTheme(this, R.layout.activity_display_changelog);
-		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
+        initLayout(R.layout.activity_display_changelog);
+        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
 		TextView txtChangelog = (TextView) findViewById(R.id.txtChangelog);
 		txtChangelog.setText(UIHelper.readRawStringResources(this, R.raw.changelog));

@@ -1,7 +1,5 @@
 package com.erakk.lnreader.adapter;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +10,8 @@ import android.widget.TextView;
 
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.model.DownloadModel;
+
+import java.util.ArrayList;
 
 public class DownloadListAdapter extends ArrayAdapter<DownloadModel> {
         private ArrayList<DownloadModel> downloads;
@@ -26,7 +26,7 @@ public class DownloadListAdapter extends ArrayAdapter<DownloadModel> {
                 View v = convertView;
                 if (v == null) {
                     LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    v = vi.inflate(R.layout.download_list_item, null);
+                        v = vi.inflate(R.layout.item_download, null);
                 }
                 DownloadModel d = downloads.get(position);
                 if (d != null) {

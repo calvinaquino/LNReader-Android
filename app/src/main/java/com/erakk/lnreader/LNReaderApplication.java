@@ -18,7 +18,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.erakk.lnreader.activity.DownloadListActivity;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.model.DownloadModel;
 import com.erakk.lnreader.service.AutoBackupService;
@@ -34,7 +33,6 @@ import java.util.Hashtable;
  */
 public class LNReaderApplication extends Application {
 	private static final String TAG = LNReaderApplication.class.toString();
-	private static DownloadListActivity downloadListActivity = null;
 	private static UpdateService updateService = null;
 	private static AutoBackupService autoBackupService = null;
 	private static LNReaderApplication instance;
@@ -42,6 +40,8 @@ public class LNReaderApplication extends Application {
 	private static ArrayList<DownloadModel> downloadList;
 
 	private static final Object lock = new Object();
+
+	private static IExtendedCallbackNotifier<DownloadModel> downloadNotifier = null;
 
 	@Override
 	public void onCreate() {
@@ -62,8 +62,6 @@ public class LNReaderApplication extends Application {
 	}
 
 	protected void initSingletons() {
-		if (downloadListActivity == null)
-			downloadListActivity = DownloadListActivity.getInstance();
 		if (runningTasks == null)
 			runningTasks = new Hashtable<String, AsyncTask<?, ?, ?>>();
 		if (downloadList == null)
@@ -114,11 +112,16 @@ public class LNReaderApplication extends Application {
 	/*
 	 * DownloadActivity method
 	 */
+
+	public void setDownloadNotifier(IExtendedCallbackNotifier<DownloadModel> notifier) {
+		LNReaderApplication.downloadNotifier = notifier;
+	}
+
 	public int addDownload(String id, String name) {
 		synchronized (lock) {
 			downloadList.add(new DownloadModel(id, name, 0));
-			if (DownloadListActivity.getInstance() != null)
-				DownloadListActivity.getInstance().updateContent();
+			if (downloadNotifier != null)
+				downloadNotifier.onCompleteCallback(null, null);
 			return downloadList.size();
 		}
 	}
@@ -132,8 +135,8 @@ public class LNReaderApplication extends Application {
 				}
 			}
 		}
-		if (DownloadListActivity.getInstance() != null)
-			DownloadListActivity.getInstance().updateContent();
+		if (downloadNotifier != null)
+			downloadNotifier.onCompleteCallback(null, null);
 	}
 
 	public String getDownloadDescription(String id) {
@@ -190,9 +193,8 @@ public class LNReaderApplication extends Application {
 		if (downloadList.get(idx) != null) {
 			downloadList.get(idx).setDownloadMessage(message);
 		}
-		if (DownloadListActivity.getInstance() != null) {
-			DownloadListActivity.getInstance().updateContent();
-		}
+		if (downloadNotifier != null)
+			downloadNotifier.onCompleteCallback(null, null);
 
 		oldProgress = downloadList.get(index).getDownloadProgress();
 		tempIncrease = (progress - oldProgress);
@@ -212,9 +214,8 @@ public class LNReaderApplication extends Application {
 						temp.setDownloadProgress(temp.getDownloadProgress() + Increment);
 					}
 				}
-				if (DownloadListActivity.getInstance() != null) {
-					DownloadListActivity.getInstance().updateContent();
-				}
+				if (downloadNotifier != null)
+					downloadNotifier.onCompleteCallback(null, null);
 			}
 
 			@Override

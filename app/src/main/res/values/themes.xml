@@ -7,6 +7,7 @@
         <item name="colorPrimaryDark">#222222</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="drawerArrowStyle">@style/AppTheme.DrawerArrowStyle</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

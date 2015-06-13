@@ -1,4 +1,4 @@
-package com.erakk.lnreader.activity;
+package com.erakk.lnreader.UI.activity;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -28,8 +28,7 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.activity.BaseActivity;
-import com.erakk.lnreader.UI.activity.MainActivity;
+import com.erakk.lnreader.UI.fragment.DownloadFragment;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.BookmarkModelAdapter;
 import com.erakk.lnreader.adapter.PageModelAdapter;
@@ -99,7 +98,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
 
         isFullscreen = getFullscreenPreferences();
         UIHelper.ToggleFullscreen(this, isFullscreen);
-        UIHelper.SetTheme(this, R.layout.activity_display_light_novel_content);
+        initLayout(R.layout.activity_display_light_novel_content);
         UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
         // UI Helper
@@ -423,7 +422,8 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                     bookmarkMenu.show();
                 return true;
             case R.id.menu_downloads_list:
-                Intent downloadsIntent = new Intent(this, DownloadListActivity.class);
+                Intent downloadsIntent = new Intent(this, MainActivity.class);
+                downloadsIntent.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, DownloadFragment.class.toString());
                 startActivity(downloadsIntent);
                 return true;
             case R.id.menu_speak:
@@ -554,9 +554,9 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 }
                 Log.d(TAG, "TOC Found: " + chapters.size());
 
-                int resourceId = R.layout.jumpto_list_item;
+                int resourceId = R.layout.item_jump_to;
                 // if (UIHelper.IsSmallScreen(this)) {
-                // resourceId = R.layout.jumpto_list_item;
+                // resourceId = R.layout.item_jump_to;
                 // }
                 jumpAdapter = new PageModelAdapter(this, resourceId, chapters);
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -591,10 +591,15 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         try {
             pageModel = NovelsDao.getInstance().getExistingPageModel(pageModel, null).getParentPageModel();
 
-            Intent i = new Intent(this, DisplayLightNovelDetailsActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            i.putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
-            startActivity(i);
+//            Intent i = new Intent(this, DisplayLightNovelDetailsActivity.class);
+//            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            i.putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
+//            startActivity(i);
+            Intent intent = new Intent(this, NovelListContainerActivity.class);
+            intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
+            intent.putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
+            this.startActivity(intent);
+
             finish();
         } catch (Exception e) {
             Log.e(TAG, "Failed to get parent page model", e);
@@ -607,9 +612,9 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     public void buildBookmarkMenu() {
         if (content != null) {
             try {
-                int resourceId = R.layout.bookmark_list_item;
+                int resourceId = R.layout.item_bookmark;
                 if (UIHelper.isSmallScreen(this)) {
-                    resourceId = R.layout.bookmark_list_item_small;
+                    resourceId = R.layout.item_bookmark_small;
                 }
                 bookmarkAdapter = new BookmarkModelAdapter(this, resourceId, content.getBookmarks(), content.getPageModel());
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);

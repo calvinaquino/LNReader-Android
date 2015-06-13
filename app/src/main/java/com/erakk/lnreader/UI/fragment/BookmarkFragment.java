@@ -4,17 +4,18 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.adapter.BookmarkModelAdapter;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookmarkModel;
@@ -44,11 +45,16 @@ public class BookmarkFragment extends ListFragment {
         setHasOptionsMenu(true);
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        getActivity().setTitle(R.string.bookmarks);
+        return view;
+    }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        ((AppCompatActivity)activity).getSupportActionBar().setTitle(getResources().getString(R.string.bookmarks));
         getBookmarks();
     }
 
@@ -62,7 +68,7 @@ public class BookmarkFragment extends ListFragment {
         super.onListItemClick(l, v, position, id);
         // Get the item that was clicked
         BookmarkModel page = adapter.getItem(position);
-        // TODO: replace with fragment
+
         // Create new intent
         Intent intent = new Intent(getActivity(), DisplayLightNovelContentActivity.class);
         intent.putExtra(Constants.EXTRA_PAGE, page.getPage());
@@ -72,7 +78,7 @@ public class BookmarkFragment extends ListFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.activity_display_bookmark, menu);
+        inflater.inflate(R.menu.fragment_display_bookmark, menu);
     }
 
     @Override
@@ -88,9 +94,9 @@ public class BookmarkFragment extends ListFragment {
     // region private methods
 
     private void getBookmarks() {
-        int resourceId = R.layout.bookmark_list_item;
+        int resourceId = R.layout.item_bookmark;
         if (UIHelper.isSmallScreen(getActivity())) {
-            resourceId = R.layout.bookmark_list_item;
+            resourceId = R.layout.item_bookmark;
         }
         bookmarks = NovelsDao.getInstance().getAllBookmarks(UIHelper.getAllBookmarkOrder(getActivity()));
         adapter = new BookmarkModelAdapter(getActivity(), resourceId, bookmarks, null);

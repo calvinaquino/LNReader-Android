@@ -19,9 +19,10 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
+import com.erakk.lnreader.UI.activity.MainActivity;
+import com.erakk.lnreader.UI.fragment.UpdateInfoFragment;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.activity.DisplayLightNovelContentActivity;
-import com.erakk.lnreader.activity.UpdateHistoryActivity;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
@@ -196,7 +197,8 @@ public class UpdateService extends Service {
         }
         contentText += ".";
 
-        Intent notificationIntent = new Intent(this, UpdateHistoryActivity.class);
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, UpdateInfoFragment.class.toString());
         notificationIntent.putExtra(Constants.EXTRA_CALLER_ACTIVITY, UpdateService.class.toString());
         int pendingFlag = PendingIntent.FLAG_CANCEL_CURRENT;
         PendingIntent contentIntent = PendingIntent.getActivity(this, Constants.CONSOLIDATED_NOTIFIER_ID, notificationIntent, pendingFlag);
