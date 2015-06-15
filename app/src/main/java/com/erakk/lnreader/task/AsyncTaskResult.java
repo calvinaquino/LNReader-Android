@@ -11,9 +11,11 @@ public class AsyncTaskResult<T> {
 		this.resultType = resultType;
 	}
 
-	public AsyncTaskResult(Exception error) {
+	public AsyncTaskResult(T result, Class<? extends Object> resultType, Exception error) {
 		super();
 		this.error = error;
+		this.result = result;
+		this.resultType = resultType;
 	}
 
 	public T getResult() {

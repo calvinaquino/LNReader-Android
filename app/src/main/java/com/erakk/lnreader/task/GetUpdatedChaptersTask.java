@@ -1,8 +1,5 @@
 package com.erakk.lnreader.task;
 
-import java.util.ArrayList;
-import java.util.Date;
-
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -21,6 +18,9 @@ import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.service.UpdateScheduleReceiver;
 import com.erakk.lnreader.service.UpdateService;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskResult<ArrayList<PageModel>>> implements ICallbackNotifier {
 	private static final String TAG = GetUpdatedChaptersTask.class.toString();
@@ -51,7 +51,7 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 			return new AsyncTaskResult<ArrayList<PageModel>>(result, result.getClass());
 		} catch (Exception ex) {
 			Log.e(TAG, "Error when updating", ex);
-			return new AsyncTaskResult<ArrayList<PageModel>>(ex);
+			return new AsyncTaskResult<ArrayList<PageModel>>(null, ArrayList.class, ex);
 		}
 	}
 

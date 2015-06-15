@@ -72,18 +72,22 @@ public class BaseActivity extends AppCompatActivity {
     // region drawer onClick Handler
 
     public void openNovelList(MenuItem view) {
+        mDrawerLayout.closeDrawers();
         UIHelper.openNovelList(this);
     }
 
     public void openWatchList(MenuItem item) {
+        mDrawerLayout.closeDrawers();
         UIHelper.openWatchList(this);
     }
 
     public void openLastRead(MenuItem item) {
+        mDrawerLayout.closeDrawers();
         UIHelper.openLastRead(this);
     }
 
     public void openAltNovelList(MenuItem item) {
+        mDrawerLayout.closeDrawers();
         UIHelper.selectAlternativeLanguage(this);
     }
 
@@ -96,6 +100,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void openDownloadsList(MenuItem view) {
+        mDrawerLayout.closeDrawers();
         View f = findViewById(R.id.mainFrame);
         if (f != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -109,10 +114,10 @@ public class BaseActivity extends AppCompatActivity {
             startActivity(i);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         }
-        mDrawerLayout.closeDrawers();
     }
 
     public void openUpdatesList(MenuItem view) {
+        mDrawerLayout.closeDrawers();
         View f = findViewById(R.id.mainFrame);
         if (f != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -126,10 +131,10 @@ public class BaseActivity extends AppCompatActivity {
             startActivity(i);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         }
-        mDrawerLayout.closeDrawers();
     }
 
     public void openBookmarks(MenuItem view) {
+        mDrawerLayout.closeDrawers();
         View f = findViewById(R.id.mainFrame);
         if (f != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -143,10 +148,10 @@ public class BaseActivity extends AppCompatActivity {
             startActivity(i);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         }
-        mDrawerLayout.closeDrawers();
     }
 
     public void openSearch(MenuItem view) {
+        mDrawerLayout.closeDrawers();
         View f = findViewById(R.id.mainFrame);
         if (f != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -160,7 +165,6 @@ public class BaseActivity extends AppCompatActivity {
             startActivity(i);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         }
-        mDrawerLayout.closeDrawers();
     }
 
     // endregion

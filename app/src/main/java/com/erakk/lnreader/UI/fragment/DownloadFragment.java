@@ -50,6 +50,7 @@ public class DownloadFragment extends Fragment implements IExtendedCallbackNotif
     public void onResume() {
         super.onResume();
         LNReaderApplication.getInstance().setDownloadNotifier(this);
+        updateContent();
     }
 
     @Override

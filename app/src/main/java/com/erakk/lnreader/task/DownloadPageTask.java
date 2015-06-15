@@ -1,14 +1,14 @@
 //package com.nandaka.bakareaderclone.helper;
 package com.erakk.lnreader.task;
 
-import java.net.URL;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import android.os.AsyncTask;
-import android.util.Log;
+import java.net.URL;
 
 public class DownloadPageTask extends AsyncTask<URL, Void, AsyncTaskResult<Document>> {
 	@Override
@@ -21,7 +21,7 @@ public class DownloadPageTask extends AsyncTask<URL, Void, AsyncTaskResult<Docum
 			Log.d("DownloadPageTask", "Complete: " + arg0[0].toString());
 			return new AsyncTaskResult<Document>(response.parse(), Document.class);
 		} catch (Exception e) {
-			return new AsyncTaskResult<Document>(e);
+			return new AsyncTaskResult<Document>(null, Document.class, e);
 		}
 	}
 }

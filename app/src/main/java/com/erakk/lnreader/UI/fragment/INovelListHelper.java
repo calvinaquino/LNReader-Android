@@ -1,4 +1,4 @@
-package com.erakk.lnreader.UI;
+package com.erakk.lnreader.UI.fragment;
 
 public interface INovelListHelper {
 	public void manualAdd();

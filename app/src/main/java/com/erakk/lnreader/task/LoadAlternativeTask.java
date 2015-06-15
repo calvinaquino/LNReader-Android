@@ -1,7 +1,5 @@
 package com.erakk.lnreader.task;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -13,6 +11,8 @@ import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
+
+import java.util.ArrayList;
 
 /*
  * Modified by : freedomofkeima
@@ -63,7 +63,7 @@ public class LoadAlternativeTask extends AsyncTask<Void, ICallbackEventData, Asy
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting " + language + " list: " + e.getMessage(), e);
 			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_alt_task_error, language, e.getMessage()), source));
-			return new AsyncTaskResult<PageModel[]>(e);
+			return new AsyncTaskResult<PageModel[]>(null, PageModel[].class, e);
 		}
 	}
 

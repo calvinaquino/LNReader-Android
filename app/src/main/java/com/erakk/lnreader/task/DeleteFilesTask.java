@@ -1,8 +1,5 @@
 package com.erakk.lnreader.task;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -10,6 +7,9 @@ import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.helper.Util;
+
+import java.io.File;
+import java.util.ArrayList;
 
 public class DeleteFilesTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskResult<Integer>> {
 	private static final String TAG = DeleteFilesTask.class.toString();
@@ -41,7 +41,7 @@ public class DeleteFilesTask extends AsyncTask<Void, ICallbackEventData, AsyncTa
 			return new AsyncTaskResult<Integer>(count, Integer.class);
 		} catch (Exception e) {
 			Log.e(TAG, "Failed to delete: " + filename, e);
-			return new AsyncTaskResult<Integer>(e);
+			return new AsyncTaskResult<Integer>(0, Integer.class, e);
 		}
 	}
 

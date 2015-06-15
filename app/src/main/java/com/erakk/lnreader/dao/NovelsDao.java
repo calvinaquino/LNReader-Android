@@ -673,6 +673,19 @@ public class NovelsDao {
 					novel = BakaTsukiParserAlternative.ParseNovelDetails(doc, page);
 				else
 					novel = BakaTsukiParser.ParseNovelDetails(doc, page);
+			}catch (HttpStatusException hex) {
+                ++retry;
+                if (notifier != null) {
+                    String message = context.getResources().getString(R.string.load_novel_retry, retry, getRetry(), hex.getMessage());
+                    notifier.onProgressCallback(new CallbackEventData(message, TAG));
+                }
+                if (hex.getStatusCode() == 404) {
+                    Log.w(TAG, "Page not Found (404) for: " + page.getPage());
+                    page.setMissing(true);
+                    throw hex;
+                }
+                if (retry >= getRetry())
+                    throw hex;
 			} catch (EOFException eof) {
 				++retry;
 				if (notifier != null) {

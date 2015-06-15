@@ -1,6 +1,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/ligh_novel_synopsys_screen"
+    android:id="@+id/novel_synopsis_screen"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
 

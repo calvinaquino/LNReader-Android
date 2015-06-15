@@ -68,14 +68,8 @@ public class LNReaderApplication extends Application {
 			downloadList = new ArrayList<DownloadModel>();
 	}
 
-	/*
-	 * AsyncTask listing method
-	 */
-	public static Hashtable<String, AsyncTask<?, ?, ?>> getTaskList() {
-		return runningTasks;
-	}
-
-	public AsyncTask<?, ?, ?> getTask(String key) {
+    // region AsyncTask listing method
+    public AsyncTask<?, ?, ?> getTask(String key) {
 		return runningTasks.get(key);
 	}
 
@@ -100,6 +94,8 @@ public class LNReaderApplication extends Application {
 		}
 	}
 
+    // endregion
+
 	public boolean isOnline() {
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo netInfo = cm.getActiveNetworkInfo();
@@ -109,9 +105,7 @@ public class LNReaderApplication extends Application {
 		return false;
 	}
 
-	/*
-	 * DownloadActivity method
-	 */
+    // region DownloadActivity method
 
 	public void setDownloadNotifier(IExtendedCallbackNotifier<DownloadModel> notifier) {
 		LNReaderApplication.downloadNotifier = notifier;
@@ -224,9 +218,10 @@ public class LNReaderApplication extends Application {
 		}.start();
 	}
 
-	/*
-	 * UpdateService method
-	 */
+    // endregion
+
+    // region UpdateService method
+
 	private ServiceConnection mConnection = new ServiceConnection() {
 
 		@Override
@@ -267,43 +262,11 @@ public class LNReaderApplication extends Application {
 			updateService.cancelUpdate();
 	}
 
-	@Override
-	public void onLowMemory() {
+    // endregion
 
-		/*
-		 * java.lang.IllegalArgumentException
-		 * in android.app.LoadedApk.forgetServiceDispatcher
-		 * 
-		 * probable crash: updateService is not checked if it exists after onLowMemory.
-		 * Technically fixed. needs checking.
-		 */
-		if (mConnection != null && isMyServiceRunning(UpdateService.class)) {
-			Log.w(TAG, "Low Memory, Trying to unbind updateService...");
-			try {
-				unbindService(mConnection);
-				mConnection = null;
-				Log.i(TAG, "Unbind updateService done.");
-			} catch (Exception ex) {
-				Log.e(TAG, "Failed to unbind.", ex);
-			}
-		}
-		if (mConnection2 != null && isMyServiceRunning(AutoBackupService.class)) {
-			Log.w(TAG, "Low Memory, Trying to unbind autoBackupService...");
-			try {
-				unbindService(mConnection2);
-				mConnection2 = null;
-				Log.i(TAG, "Unbind autoBackupService done.");
-			} catch (Exception ex) {
-				Log.e(TAG, "Failed to unbind.", ex);
-			}
-		}
-		super.onLowMemory();
-	}
+    // region CSS caching method.
+    // Also used for caching javascript.
 
-	/*
-	 * CSS caching method.
-	 * Also used for caching javascript.
-	 */
 	private Hashtable<Integer, String> cssCache = null;
 
 	public String ReadCss(int styleId) {
@@ -314,6 +277,8 @@ public class LNReaderApplication extends Application {
 		}
 		return cssCache.get(styleId);
 	}
+
+    // endregion
 
 	public void resetFirstRun() {
 		SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
@@ -327,10 +292,8 @@ public class LNReaderApplication extends Application {
 		startActivity(i);
 	}
 
-	/*
-	 * AutoBackup Service method
-	 */
-	private ServiceConnection mConnection2 = new ServiceConnection() {
+    // region AutoBackup Service method
+    private ServiceConnection mConnection2 = new ServiceConnection() {
 
 		@Override
 		public void onServiceConnected(ComponentName className, IBinder binder) {
@@ -362,6 +325,9 @@ public class LNReaderApplication extends Application {
 		autoBackupService.setOnCallbackNotifier(notifier);
 		autoBackupService.onStartCommand(null, BIND_AUTO_CREATE, (int) (new Date().getTime() / 1000));
 	}
+    // endregion
+
+    // region service helper
 
 	/***
 	 * http://stackoverflow.com/a/5921190
@@ -378,4 +344,39 @@ public class LNReaderApplication extends Application {
 		}
 		return false;
 	}
+
+    @Override
+    public void onLowMemory() {
+
+		/*
+         * java.lang.IllegalArgumentException
+		 * in android.app.LoadedApk.forgetServiceDispatcher
+		 *
+		 * probable crash: updateService is not checked if it exists after onLowMemory.
+		 * Technically fixed. needs checking.
+		 */
+        if (mConnection != null && isMyServiceRunning(UpdateService.class)) {
+            Log.w(TAG, "Low Memory, Trying to unbind updateService...");
+            try {
+                unbindService(mConnection);
+                mConnection = null;
+                Log.i(TAG, "Unbind updateService done.");
+            } catch (Exception ex) {
+                Log.e(TAG, "Failed to unbind.", ex);
+            }
+        }
+        if (mConnection2 != null && isMyServiceRunning(AutoBackupService.class)) {
+            Log.w(TAG, "Low Memory, Trying to unbind autoBackupService...");
+            try {
+                unbindService(mConnection2);
+                mConnection2 = null;
+                Log.i(TAG, "Unbind autoBackupService done.");
+            } catch (Exception ex) {
+                Log.e(TAG, "Failed to unbind.", ex);
+            }
+        }
+        super.onLowMemory();
+    }
+
+    // endregion
 }

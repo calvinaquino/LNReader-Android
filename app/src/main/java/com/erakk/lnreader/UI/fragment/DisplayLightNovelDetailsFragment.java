@@ -409,7 +409,11 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                 // now add the volume and chapter list.
                 try {
                     // Prepare header
-                    if ((expandList.getHeaderViewsCount() == 0) && getArguments().getBoolean("show_list_child")) {
+                    if (getArguments().getBoolean("show_list_child")) {
+                        // remove existing header
+                        if (expandList.getHeaderViewsCount() > 0)
+                            expandList.removeHeaderView(expandList.findViewById(R.id.novel_synopsis_screen));
+
                         page = novelCol.getPageModel();
                         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
                         View synopsis = layoutInflater.inflate(R.layout.fragment_display_synopsis, null);

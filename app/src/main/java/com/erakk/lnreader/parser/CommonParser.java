@@ -80,13 +80,13 @@ public class CommonParser {
      * @return
      */
     public static String sanitize(String title, boolean isAggresive) {
-        Log.d(TAG, "Before: " + title);
+        Log.v(TAG, "Before: " + title);
         title = title.replaceAll("<.+?>", "") // Strip tags
                 .replaceAll("\\[.+?\\]", "") // Strip [___]s
                 .replaceAll("- PDF", "").replaceAll("\\(PDF\\)", "") // Strip (PDF)
                         // Strip - (Full Text)
                 .replaceAll("- (Full Text)", "").replaceAll("- \\(.*Full Text.*\\)", "").replace("\\(.*Full Text.*\\)", "");
-        Log.d(TAG, "After: " + title);
+        Log.v(TAG, "After: " + title);
         if (isAggresive) {
             if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_AGGRESIVE_TITLE_CLEAN_UP, true)) {
                 // Leaves only the text before brackets (might be a bit too aggressive)
@@ -206,7 +206,7 @@ public class CommonParser {
             PageModel temp = pageModels.get(i);
 
             String to = URLDecoder.decode(temp.getPage(), "utf-8");
-            Log.d(TAG, "parsePageAPI source: " + to);
+            Log.v(TAG, "parsePageAPI source: " + to);
             if (Util.isStringNullOrEmpty(to)) {
                 Log.e(TAG, "Empty source detected for url: " + url);
                 continue;
@@ -217,7 +217,7 @@ public class CommonParser {
             if (nElements != null && nElements.size() > 0) {
                 Element nElement = nElements.first();
                 to = nElement.attr("to");
-                Log.d(TAG, "parsePageAPI normalized: " + to);
+                Log.v(TAG, "parsePageAPI normalized: " + to);
                 if (Util.isStringNullOrEmpty(to)) {
                     Log.e(TAG, "Empty normalized source detected for url: " + url);
                     continue;
@@ -248,7 +248,7 @@ public class CommonParser {
                 Element rev = pElement.select("rev").first();
                 if (rev != null) {
                     tempDate = rev.attr("timestamp");
-                    Log.d(TAG, "Using timestamp from revision");
+                    Log.v(TAG, "Using timestamp from revision");
                 }
 
                 int wikiId = -1;
@@ -296,13 +296,11 @@ public class CommonParser {
         if (imageUrl.contains("/thumb/")) {
             // from thumbnail
             pageUrl = tokens[8];
-        }
-        else if(imageUrl.contains("/thumb.php?")) {
+        } else if (imageUrl.contains("/thumb.php?")) {
             String[] temp = imageUrl.split("f=");
             temp = temp[1].split("&");
             pageUrl = temp[0];
-        }
-        else {
+        } else {
             // from full page
             pageUrl = tokens[7];
         }
@@ -540,24 +538,22 @@ public class CommonParser {
                 imageUrl = "http://www.baka-tsuki.org" + imageUrl;
             }
 
-            // http://www.baka-tsuki.org/project/thumb.php?f=KNT_V01_NewCover.jpg&width=250
-            // http://www.baka-tsuki.org/project/images/9/9d/KNT_V01_NewCover.jpg
             // http://www.baka-tsuki.org/project/images/thumb/f/f5/Daimaou_v01_cover.jpg/294px-Daimaou_v01_cover.jpg
-            // http://www.baka-tsuki.org/project/images/f/f5/Daimaou_v01_cover.jpg
             if (UIHelper.isUseBigCover(LNReaderApplication.getInstance())) {
-                if(!imageUrl.contains(".php?")) {
+                if (imageUrl.contains("/thumb/")) {
                     imageUrl = imageUrl.replace("/thumb/", "/");
                     imageUrl = imageUrl.substring(0, imageUrl.lastIndexOf("/"));
-                }
-                else {
+                } else if (imageUrl.contains(".php?")) {
+                    // http://www.baka-tsuki.org/project/thumb.php?f=KNT_V01_NewCover.jpg&width=250
+                    // http://www.baka-tsuki.org/project/index.php?title=File:Znt_novel_cover.jpg
                     // need to check the original file
                     String filePage = getImageFilePageFromImageUrl(imageUrl);
                     ImageModel image = new ImageModel();
                     image.setName(filePage);
-                    try{
+                    try {
                         image = NovelsDao.getInstance().getImageModelFromInternet(image, null);
                         imageUrl = image.getUrl().toString();
-                    }catch (Exception ex) {
+                    } catch (Exception ex) {
                         Log.e(TAG, "Failed parsing big cover: " + filePage, ex);
                     }
                 }

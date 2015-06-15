@@ -55,7 +55,7 @@ public class LoadNovelContentTask extends AsyncTask<Void, ICallbackEventData, As
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting novel content: " + e.getMessage(), e);
 			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_content_task_error, e.getMessage()), source));
-			return new AsyncTaskResult<NovelContentModel>(e);
+			return new AsyncTaskResult<NovelContentModel>(null, NovelContentModel.class, e);
 		}
 	}
 

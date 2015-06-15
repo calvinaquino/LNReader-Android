@@ -55,7 +55,7 @@ public class LoadImageTask extends AsyncTask<Void, ICallbackEventData, AsyncTask
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting image: " + e.getMessage(), e);
 			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_image_task_error, e.getMessage()), this.taskId));
-			return new AsyncTaskResult<ImageModel>(e);
+			return new AsyncTaskResult<ImageModel>(null, ImageModel.class, e);
 		}
 	}
 

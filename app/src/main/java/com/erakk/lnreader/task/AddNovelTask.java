@@ -33,7 +33,7 @@ public class AddNovelTask extends AsyncTask<PageModel, ICallbackEventData, Async
 			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.add_novel_task_check, page.getPage()), source));
 			page = NovelsDao.getInstance().getUpdateInfo(page, this);
 			if (page.isMissing()) {
-				return new AsyncTaskResult<NovelCollectionModel>(new Exception(ctx.getResources().getString(R.string.add_novel_task_missing, page.getPage())));
+				return new AsyncTaskResult<NovelCollectionModel>(null, NovelCollectionModel.class, new Exception(ctx.getResources().getString(R.string.add_novel_task_missing, page.getPage())));
 			}
 
 			NovelCollectionModel novelCol = NovelsDao.getInstance().getNovelDetailsFromInternet(page, this);
@@ -42,7 +42,7 @@ public class AddNovelTask extends AsyncTask<PageModel, ICallbackEventData, Async
 		} catch (Exception e) {
 			Log.e("AddNovelTask", e.getClass().toString() + ": " + e.getMessage(), e);
 			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.add_novel_task_error, page.getPage(), e.getMessage()), source));
-			return new AsyncTaskResult<NovelCollectionModel>(e);
+			return new AsyncTaskResult<NovelCollectionModel>(null, NovelCollectionModel.class, e);
 		}
 	}
 

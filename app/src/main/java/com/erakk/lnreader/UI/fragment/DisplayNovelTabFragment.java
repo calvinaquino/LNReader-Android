@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.INovelListHelper;
 
 import java.util.Hashtable;
 

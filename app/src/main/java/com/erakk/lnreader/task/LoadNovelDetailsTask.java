@@ -57,8 +57,9 @@ public class LoadNovelDetailsTask extends AsyncTask<Void, ICallbackEventData, As
 		} catch (Exception e) {
 			Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
 			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novel_detail_task_error, e.getMessage()), source));
-			return new AsyncTaskResult<NovelCollectionModel>(e);
-		}
+            return new AsyncTaskResult<NovelCollectionModel>(null, NovelCollectionModel.class
+                    , e);
+        }
 	}
 
 	@Override
