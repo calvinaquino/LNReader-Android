@@ -4,10 +4,7 @@
 
 package com.erakk.lnreader.helper;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.app.AlertDialog.Builder;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences.Editor;
@@ -19,6 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckedTextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SimpleFontPreference extends DialogPreference implements DialogInterface.OnClickListener
 {
@@ -96,7 +96,7 @@ public class SimpleFontPreference extends DialogPreference implements DialogInte
 	}
 
 	@Override
-	protected void onPrepareDialogBuilder( Builder builder )
+	protected void onPrepareDialogBuilder( AlertDialog.Builder builder )
 	{
 		super.onPrepareDialogBuilder(builder);
 

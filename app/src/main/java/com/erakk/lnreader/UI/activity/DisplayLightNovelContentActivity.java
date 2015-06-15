@@ -1,7 +1,6 @@
 package com.erakk.lnreader.UI.activity;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -12,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech.OnInitListener;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -50,13 +50,9 @@ import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.NovelContentUserModel;
 import com.erakk.lnreader.model.PageModel;
-import com.erakk.lnreader.parser.CommonParser;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.LoadNovelContentTask;
 import com.erakk.lnreader.task.LoadWacTask;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -65,31 +61,23 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     private static final String TAG = DisplayLightNovelContentActivity.class.toString();
     public NovelContentModel content;
     public NovelContentUserModel contentUserData;
-    public ArrayList<String> images;
     private PageModel currPageModel = null;
 
     private NovelCollectionModel novelDetails;
     private LoadNovelContentTask task;
-    private PageModelAdapter jumpAdapter = null;
-    private BookmarkModelAdapter bookmarkAdapter = null;
-
-    private NonLeakingWebView webView;
-    private BakaTsukiWebViewClient client;
-    private BakaTsukiWebChromeClient chromeClient;
 
     private boolean restored;
     private boolean isFullscreen;
     private boolean isPageLoaded = false;
 
-    private TextView loadingText;
-    private ProgressBar loadingBar;
     private AlertDialog bookmarkMenu = null;
     private AlertDialog tocMenu = null;
+
     private Menu _menu;
 
     // region private helpers, init in onCreate()
-    private DisplayNovelContentTTSHelper tts;
-    private DisplayNovelContentUIHelper uih;
+    private DisplayNovelContentTTSHelper _tts;
+    private DisplayNovelContentUIHelper _uih;
     // endregion
 
     @Override
@@ -102,35 +90,35 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         initLayout(R.layout.activity_display_light_novel_content);
         UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
-        // UI Helper
-        uih = new DisplayNovelContentUIHelper(this);
-        uih.prepareCompatSearchBox(webView);
-        uih.prepareTopDownButton();
-
         // custom link handler
-        client = new BakaTsukiWebViewClient(this);
-        webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
+        NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
+        BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(this);
         webView.setWebViewClient(client);
-        chromeClient = new BakaTsukiWebChromeClient(this);
+        BakaTsukiWebChromeClient chromeClient = new BakaTsukiWebChromeClient(this);
         webView.setWebChromeClient(chromeClient);
 
-        loadingText = (TextView) findViewById(R.id.emptyList);
-        loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
+        // UI Helper
+        _uih = new DisplayNovelContentUIHelper(this);
+        _uih.prepareCompatSearchBox(webView);
+        _uih.prepareTopDownButton();
 
-        tts = new DisplayNovelContentTTSHelper(this);
+
+
+        _tts = new DisplayNovelContentTTSHelper(this);
 
         Log.d(TAG, "OnCreate Completed.");
     }
 
     @Override
     protected void onDestroy() {
+        NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
         if (webView != null) {
             RelativeLayout rootView = (RelativeLayout) findViewById(R.id.rootView);
             rootView.removeView(webView);
             webView.removeAllViews();
             webView.destroy();
         }
-        tts.unbindTtsService();
+        _tts.unbindTtsService();
 
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onDestroy();
@@ -199,7 +187,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         }
         setWebViewSettings();
         if (UIHelper.isTTSEnabled(this))
-            tts.setupTtsService();
+            _tts.setupTtsService();
 
         Log.d(TAG, "onResume Completed");
     }
@@ -218,6 +206,8 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
                     _menu.findItem(R.id.menu_save_external).setVisible(true);
                 _menu.findItem(R.id.menu_browser_back).setVisible(true);
+
+                NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
                 if (webView != null)
                     _menu.findItem(R.id.menu_browser_back).setEnabled(webView.canGoBack());
             }
@@ -228,40 +218,13 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         return true;
     }
 
-    private void setPrevNextButtonState(PageModel pageModel) {
-        if (_menu != null) {
-            boolean isNextEnabled = false;
-            boolean isPrevEnabled = false;
-
-            try {
-                PageModel prevPage = novelDetails.getPrev(pageModel.getPage(), UIHelper.getShowMissing(this),
-                        UIHelper.getShowRedlink(this));
-                if (prevPage != null)
-                    isPrevEnabled = true;
-            } catch (Exception ex) {
-                Log.e(TAG, "Failed to get prev chapter: " + pageModel.getPage(), ex);
-            }
-            try {
-                PageModel nextPage = novelDetails.getNext(pageModel.getPage(), UIHelper.getShowMissing(this),
-                        UIHelper.getShowRedlink(this));
-                if (nextPage != null)
-                    isNextEnabled = true;
-            } catch (Exception ex) {
-                Log.e(TAG, "Failed to get next chapter: " + pageModel.getPage(), ex);
-            }
-
-            _menu.findItem(R.id.menu_chapter_next).setEnabled(isNextEnabled);
-            _menu.findItem(R.id.menu_chapter_previous).setEnabled(isPrevEnabled);
-        }
-    }
-
     @Override
     public void onPause() {
         super.onPause();
 
         setLastReadState();
         if (getTtsStopOnPause()) {
-            tts.stop();
+            _tts.stop();
         }
         Log.d(TAG, "onPause Completed");
     }
@@ -324,13 +287,14 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             }
         }
 
-        tts.setupTTSMenu(menu);
+        _tts.setupTTSMenu(menu);
         _menu = menu;
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
         switch (item.getItemId()) {
             case R.id.menu_settings:
                 Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
@@ -430,10 +394,10 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 startActivity(downloadsIntent);
                 return true;
             case R.id.menu_speak:
-                tts.start(webView, contentUserData.getLastYScroll());
+                _tts.start(webView, contentUserData.getLastYScroll());
                 return true;
             case R.id.menu_pause_tts:
-                tts.pause();
+                _tts.pause();
                 return true;
             case R.id.menu_save_external:
                 // save based on current intent page name.
@@ -483,6 +447,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             if (invertScroll)
                 scrollSize = scrollSize * -1;
 
+            NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
             if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
                 webView.flingScroll(0, -scrollSize);
                 Log.d("Volume", "Up Pressed");
@@ -510,140 +475,6 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     }
 
     // endregion
-
-    /**
-     * Move between chapters
-     *
-     * @param page
-     */
-    public void jumpTo(PageModel page) {
-        setLastReadState();
-        tts.stop();
-        Intent currIntent = this.getIntent();
-        currIntent.putExtra(Constants.EXTRA_PAGE, page.getPage());
-        currIntent.putExtra(Constants.EXTRA_PAGE_IS_EXTERNAL, page.isExternal());
-
-        // open external page as Intent to open browser
-        if (page.isExternal() && !getHandleExternalLinkPreferences()) {
-            try {
-                Uri url = Uri.parse(page.getPage());
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
-                startActivity(browserIntent);
-            } catch (Exception ex) {
-                String message = getResources().getString(R.string.error_parsing_url, page.getPage());
-                Log.e(TAG, message, ex);
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-            }
-        } else
-            executeTask(page, false);
-    }
-
-    /**
-     * Build Table-of-Contents
-     *
-     * @param referencePageModel
-     */
-    private void buildTOCMenu(final PageModel referencePageModel) {
-        Log.d(TAG, "Trying to create TOC");
-        try {
-            BookModel book = referencePageModel.getBook(false);
-            if (book != null) {
-                ArrayList<PageModel> chapters = book.getChapterCollection();
-                for (PageModel chapter : chapters) {
-                    if (chapter.getPage().contentEquals(referencePageModel.getPage())) {
-                        chapter.setHighlighted(true);
-                    } else
-                        chapter.setHighlighted(false);
-                }
-                Log.d(TAG, "TOC Found: " + chapters.size());
-
-                int resourceId = R.layout.item_jump_to;
-                // if (UIHelper.IsSmallScreen(this)) {
-                // resourceId = R.layout.item_jump_to;
-                // }
-                jumpAdapter = new PageModelAdapter(this, resourceId, chapters);
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(getResources().getString(R.string.content_toc));
-                builder.setAdapter(jumpAdapter, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        PageModel page = jumpAdapter.getItem(which);
-                        jumpTo(page);
-                    }
-                });
-                builder.setNegativeButton(R.string.back_to_index, new OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        backToIndex(referencePageModel);
-                    }
-                });
-                tocMenu = builder.create();
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Cannot get current page for TOC menu.", e);
-        }
-    }
-
-    /**
-     * Back to Novel Details
-     */
-    public void backToIndex(PageModel referencePageModel) {
-        try {
-            PageModel pageModel = NovelsDao.getInstance().getExistingPageModel(referencePageModel, null).getParentPageModel();
-
-            Intent intent = new Intent(this, NovelListContainerActivity.class);
-            intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
-            intent.putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
-            this.startActivity(intent);
-
-            finish();
-        } catch (Exception e) {
-            Log.e(TAG, "Failed to get parent page model", e);
-        }
-    }
-
-    /**
-     * Build Bookmarks-on-Chapter menu
-     */
-    public void buildBookmarkMenu() {
-        if (content != null) {
-            try {
-                int resourceId = R.layout.item_bookmark;
-                if (UIHelper.isSmallScreen(this)) {
-                    resourceId = R.layout.item_bookmark_small;
-                }
-                bookmarkAdapter = new BookmarkModelAdapter(this, resourceId, content.getBookmarks(), content.getPageModel());
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle(getResources().getString(R.string.bookmarks));
-                builder.setAdapter(bookmarkAdapter, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        BookmarkModel bookmark = bookmarkAdapter.getItem(which);
-                        NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
-                        wv.loadUrl("javascript:goToParagraph(" + bookmark.getpIndex() + ")");
-                    }
-                });
-                builder.setNegativeButton(R.string.cancel, null);
-                builder.setPositiveButton(R.string.menu_show_clear_all, new OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        int total = 0;
-                        for (BookmarkModel bookmark : content.getBookmarks()) {
-                            total += NovelsDao.getInstance().deleteBookmark(bookmark);
-                            NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
-                            wv.loadUrl("javascript:toogleHighlightById(" + bookmark.getpIndex() + ")");
-                        }
-                        Toast.makeText(getBaseContext(), getString(R.string.toast_show_deleted_count, total), Toast.LENGTH_SHORT).show();
-                    }
-                });
-                bookmarkMenu = builder.create();
-            } catch (Exception e) {
-                Log.e(TAG, "Error getting pageModel: " + e.getMessage(), e);
-            }
-        }
-    }
 
     /**
      * Update last read chapter and the position.
@@ -745,7 +576,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                     task = tempTask;
                     task.owner = this;
                 }
-                toggleProgressBar(true);
+                toggleProgressBar(true, "");
             }
         }
         setPrevNextButtonState(pageModel);
@@ -764,6 +595,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             String url = pageModel.getPage();
             String wacName = Util.getSavedWacName(url);
             final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
+            final BakaTsukiWebViewClient client = (BakaTsukiWebViewClient) wv.getWebViewClient();
             if (!Util.isStringNullOrEmpty(wacName) && !refresh) {
                 client.setExternalNeedSave(false);
                 String[] urlParts = url.split("#", 2);
@@ -808,7 +640,8 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
      */
     @SuppressLint({"InlinedApi", "NewApi"})
     private void executeLoadWacTask(String wacName, String anchorLink, String historyUrl) {
-        NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
+        final NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
+        final BakaTsukiWebViewClient client = (BakaTsukiWebViewClient) webView.getWebViewClient();
         LoadWacTask task = new LoadWacTask(this, webView, wacName, client, anchorLink, historyUrl);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -824,7 +657,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
      * @param loadedContent
      */
     @SuppressLint("NewApi")
-    public void setContent(NovelContentModel loadedContent) {
+    private void setContent(NovelContentModel loadedContent) {
         this.content = loadedContent;
         try {
             PageModel pageModel = content.getPageModel();
@@ -877,36 +710,6 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         }
     }
 
-    /**
-     * Set activity title to current chapter title.
-     *
-     * @param pageModel
-     */
-    private void setChapterTitle(PageModel pageModel) {
-        String title = pageModel.getPage();
-        try {
-            if (pageModel.getParent() != null) {
-                Log.d(TAG, "Parent Page: " + pageModel.getParent());
-                novelDetails = NovelsDao.getInstance().getNovelDetails(pageModel.getParentPageModel(), null, false);
-                String volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
-                title = pageModel.getTitle() + " (" + volume + ")";
-            }
-        } catch (Exception ex) {
-            Log.e(TAG, "Error when setting title: " + ex.getMessage(), ex);
-        }
-        setTitle(title);
-    }
-
-    /**
-     * Used for floating button on fullscreen mode to open the menu.
-     *
-     * @param view
-     */
-    public void openMenu(View view) {
-        invalidateOptionsMenu();
-        openOptionsMenu();
-    }
-
     // region webView related method
 
     /**
@@ -953,8 +756,6 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                         Log.e(TAG, "Cannot load content.", e);
                     }
                 }
-                Document imageDoc = Jsoup.parse(loadedContent.getContent());
-                images = CommonParser.parseImagesFromContentPage(imageDoc);
             } else if (result.getResultType() == Boolean.class) {
                 // Load WAC
                 Toast.makeText(this, message.getMessage(), Toast.LENGTH_SHORT).show();
@@ -971,6 +772,8 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 } else {
                     try {
                         contentUserData = getContentUserData(currPageModel.getPage());
+                        final NonLeakingWebView webView =(NonLeakingWebView) findViewById(R.id.webViewContent);
+                        final BakaTsukiWebChromeClient chromeClient = (BakaTsukiWebChromeClient) webView.getWebChromeClient();
                         chromeClient.setScrollY(contentUserData.getLastYScroll());
                     } catch (Exception ex) {
                         Log.e(TAG, ex.getMessage(), ex);
@@ -984,7 +787,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             Log.e(TAG, "Error when loading novel content: " + e.getMessage(), e);
             Toast.makeText(this, e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-        toggleProgressBar(false);
+        toggleProgressBar(false, null);
 
     }
 
@@ -995,14 +798,6 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             contentUserData.setPage(page);
         }
         return contentUserData;
-    }
-
-    /**
-     * Update Bookmark-on-Chapter data upon receiving event from webView client
-     */
-    public void refreshBookmarkData() {
-        if (bookmarkAdapter != null)
-            bookmarkAdapter.refreshData();
     }
 
     /**
@@ -1024,6 +819,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
      * Used to move to the last read position upon receiving load complete event from webView client
      */
     public void notifyLoadComplete() {
+        NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
         isPageLoaded = true;
         if (webView != null && content != null) {
             final NonLeakingWebView _webView = webView;
@@ -1072,16 +868,19 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     // region Progress bar related
     @Override
     public void onProgressCallback(ICallbackEventData message) {
-        toggleProgressBar(true);
-        loadingText.setText(message.getMessage());
+        toggleProgressBar(true, message.getMessage());
     }
 
-    public void toggleProgressBar(boolean show) {
+    public void toggleProgressBar(boolean show, String message) {
+        NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
+        TextView loadingText = (TextView) findViewById(R.id.emptyList);
+        ProgressBar loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
         if (webView == null || loadingBar == null || loadingText == null)
             return;
         synchronized (this) {
             if (show) {
                 loadingText.setVisibility(TextView.VISIBLE);
+                loadingText.setText(message);
                 loadingBar.setVisibility(ProgressBar.VISIBLE);
                 webView.setVisibility(ListView.GONE);
             } else {
@@ -1096,46 +895,53 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     // region Search box
     @SuppressWarnings("deprecation")
     private void showSearchBox() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
             webView.showFindDialog("", true);
-        else {
+        } else {
             RelativeLayout searchBox = (RelativeLayout) findViewById(R.id.searchBox);
             searchBox.setVisibility(View.VISIBLE);
         }
     }
 
     public void searchNext(View view) {
+        NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
         webView.findNext(true);
     }
 
     public void searchPrev(View view) {
+        NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
         webView.findNext(false);
     }
 
     public void closeSearchBox(View view) {
-        uih.closeSearchBox(webView);
+        NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
+        _uih.closeSearchBox(webView);
     }
     // endregion
 
     // region Top-Down button
     public void toggleTopButton(boolean enable) {
-        uih.toggleTopButton(enable);
+        _uih.toggleTopButton(enable);
     }
 
     public void toggleBottomButton(boolean enable) {
-        uih.toggleBottomButton(enable);
+        _uih.toggleBottomButton(enable);
     }
 
     public void goTop(View view) {
+
+        NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
         webView.pageUp(true);
     }
 
     public void goBottom(View view) {
+        NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
         webView.pageDown(true);
     }
     // endregion
 
-    // region TTS
+    // region TTS methods
     private boolean getTtsStopOnPause() {
         return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_TTS_TTS_STOP_ON_LOST_FOCUS, true);
     }
@@ -1149,12 +955,231 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     public void onComplete(Object i, Class<?> source) {
         Log.d(TAG, "Data: " + i + " from: " + source.getCanonicalName());
         if (i != null && source == TtsHelper.class) {
-            tts.autoScroll(webView, i.toString());
+            NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
+            _tts.autoScroll(webView, i.toString());
         }
     }
 
     public void sendHtmlForSpeak(String html) {
-        tts.start(html, contentUserData.getLastYScroll());
+        _tts.start(html, contentUserData.getLastYScroll());
     }
+    // endregion
+
+    // region private methods
+
+    // region bookmark handler
+    /**
+     * Build Bookmarks-on-Chapter menu
+     */
+    public void buildBookmarkMenu() {
+        if (content != null) {
+            try {
+                int resourceId = R.layout.item_bookmark;
+                if (UIHelper.isSmallScreen(this)) {
+                    resourceId = R.layout.item_bookmark_small;
+                }
+
+                final BookmarkModelAdapter bookmarkAdapter = new BookmarkModelAdapter(this, resourceId, content.getBookmarks(), content.getPageModel());
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(getResources().getString(R.string.bookmarks));
+                builder.setAdapter(bookmarkAdapter, new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        BookmarkModel bookmark = bookmarkAdapter.getItem(which);
+                        NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
+                        wv.loadUrl("javascript:goToParagraph(" + bookmark.getpIndex() + ")");
+                    }
+                });
+                builder.setNegativeButton(R.string.cancel, null);
+                builder.setPositiveButton(R.string.menu_show_clear_all, new OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        int total = 0;
+                        for (BookmarkModel bookmark : content.getBookmarks()) {
+                            total += NovelsDao.getInstance().deleteBookmark(bookmark);
+                            NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
+                            wv.loadUrl("javascript:toogleHighlightById(" + bookmark.getpIndex() + ")");
+                        }
+                        Toast.makeText(getBaseContext(), getString(R.string.toast_show_deleted_count, total), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                bookmarkMenu = builder.create();
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error getting pageModel: " + e.getMessage(), e);
+            }
+        }
+    }
+
+    /**
+     * Update Bookmark-on-Chapter data upon receiving event from webView client
+     */
+    public void refreshBookmarkData() {
+        if(bookmarkMenu != null) {
+            BookmarkModelAdapter bookmarkAdapter = (BookmarkModelAdapter) bookmarkMenu.getListView().getAdapter();
+            if (bookmarkAdapter != null) {
+                bookmarkAdapter.refreshData();
+            }
+        }
+    }
+
+    // endregion
+
+    // region TOC handler
+
+    /**
+     * Move between chapters
+     *
+     * @param page
+     */
+    public void jumpTo(PageModel page) {
+        setLastReadState();
+        _tts.stop();
+        Intent currIntent = this.getIntent();
+        currIntent.putExtra(Constants.EXTRA_PAGE, page.getPage());
+        currIntent.putExtra(Constants.EXTRA_PAGE_IS_EXTERNAL, page.isExternal());
+
+        // open external page as Intent to open browser
+        if (page.isExternal() && !getHandleExternalLinkPreferences()) {
+            try {
+                Uri url = Uri.parse(page.getPage());
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
+                startActivity(browserIntent);
+            } catch (Exception ex) {
+                String message = getResources().getString(R.string.error_parsing_url, page.getPage());
+                Log.e(TAG, message, ex);
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            }
+        } else
+            executeTask(page, false);
+    }
+
+    /**
+     * Build Table-of-Contents
+     *
+     * @param referencePageModel
+     */
+    private void buildTOCMenu(final PageModel referencePageModel) {
+        Log.d(TAG, "Trying to create TOC");
+        try {
+            BookModel book = referencePageModel.getBook(false);
+            if (book != null) {
+                ArrayList<PageModel> chapters = book.getChapterCollection();
+                for (PageModel chapter : chapters) {
+                    if (chapter.getPage().contentEquals(referencePageModel.getPage())) {
+                        chapter.setHighlighted(true);
+                    } else
+                        chapter.setHighlighted(false);
+                }
+                Log.d(TAG, "TOC Found: " + chapters.size());
+
+                final PageModelAdapter jumpAdapter = new PageModelAdapter(this,  R.layout.item_jump_to, chapters);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(getResources().getString(R.string.content_toc));
+                builder.setAdapter(jumpAdapter, new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        PageModel page = jumpAdapter.getItem(which);
+                        jumpTo(page);
+                    }
+                });
+                builder.setNegativeButton(R.string.cancel, null);
+                builder.setPositiveButton(R.string.back_to_index, new OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        backToIndex(referencePageModel);
+                    }
+                });
+                tocMenu = builder.create();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Cannot get current page for TOC menu.", e);
+        }
+    }
+
+    /**
+     * Back to Novel Details
+     */
+    public void backToIndex(PageModel referencePageModel) {
+        try {
+            PageModel pageModel = NovelsDao.getInstance().getExistingPageModel(referencePageModel, null).getParentPageModel();
+
+            Intent intent = new Intent(this, NovelListContainerActivity.class);
+            intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
+            intent.putExtra(Constants.EXTRA_PAGE, pageModel.getPage());
+            this.startActivity(intent);
+
+            finish();
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get parent page model", e);
+        }
+    }
+
+    // endregion
+
+    /**
+     * Used for floating button on fullscreen mode to open the menu.
+     *
+     * @param view
+     */
+    public void openMenu(View view) {
+        invalidateOptionsMenu();
+        openOptionsMenu();
+    }
+
+    /**
+     * Set activity title to current chapter title.
+     *
+     * @param pageModel
+     */
+    private void setChapterTitle(PageModel pageModel) {
+        String title = pageModel.getPage();
+        try {
+            if (pageModel.getParent() != null) {
+                Log.d(TAG, "Parent Page: " + pageModel.getParent());
+                novelDetails = NovelsDao.getInstance().getNovelDetails(pageModel.getParentPageModel(), null, false);
+                String volume = pageModel.getParent().replace(pageModel.getParentPageModel().getPage() + Constants.NOVEL_BOOK_DIVIDER, "");
+                title = pageModel.getTitle() + " (" + volume + ")";
+            }
+        } catch (Exception ex) {
+            Log.e(TAG, "Error when setting title: " + ex.getMessage(), ex);
+        }
+        setTitle(title);
+    }
+
+    /**
+     * Set Previous and Next button state.
+     *
+     * @param pageModel
+     */
+    private void setPrevNextButtonState(PageModel pageModel) {
+        if (_menu != null) {
+            boolean isNextEnabled = false;
+            boolean isPrevEnabled = false;
+
+            try {
+                PageModel prevPage = novelDetails.getPrev(pageModel.getPage(), UIHelper.getShowMissing(this),
+                        UIHelper.getShowRedlink(this));
+                if (prevPage != null)
+                    isPrevEnabled = true;
+            } catch (Exception ex) {
+                Log.e(TAG, "Failed to get prev chapter: " + pageModel.getPage(), ex);
+            }
+            try {
+                PageModel nextPage = novelDetails.getNext(pageModel.getPage(), UIHelper.getShowMissing(this),
+                        UIHelper.getShowRedlink(this));
+                if (nextPage != null)
+                    isNextEnabled = true;
+            } catch (Exception ex) {
+                Log.e(TAG, "Failed to get next chapter: " + pageModel.getPage(), ex);
+            }
+
+            _menu.findItem(R.id.menu_chapter_next).setEnabled(isNextEnabled);
+            _menu.findItem(R.id.menu_chapter_previous).setEnabled(isPrevEnabled);
+        }
+    }
+
     // endregion
 }

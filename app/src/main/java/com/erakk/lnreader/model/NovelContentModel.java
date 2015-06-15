@@ -3,6 +3,10 @@ package com.erakk.lnreader.model;
 import android.util.Log;
 
 import com.erakk.lnreader.dao.NovelsDao;
+import com.erakk.lnreader.parser.CommonParser;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -127,5 +131,14 @@ public class NovelContentModel {
 
     public void setBookmarks(ArrayList<BookmarkModel> bookmarks) {
         this.bookmarks = bookmarks;
+    }
+
+    private ArrayList<String> _bigImages;
+    public ArrayList<String> getBigImages() {
+        if(_bigImages ==null) {
+            Document imageDoc = Jsoup.parse(getContent());
+            _bigImages = CommonParser.parseImagesFromContentPage(imageDoc);
+        }
+        return _bigImages;
     }
 }

@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.webkit.ValueCallback;
 import android.webkit.WebBackForwardList;
+import android.webkit.WebChromeClient;
 import android.webkit.WebHistoryItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -145,7 +146,7 @@ public class NonLeakingWebView extends WebView {
         }
         try {
             checkZoomEvent(ev);
-        }catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             Log.e(TAG, "Failed to handle zoom event.", ex);
         }
         return true;
@@ -239,7 +240,7 @@ public class NonLeakingWebView extends WebView {
 
                     mLastTouchX = x;
                     mLastTouchY = y;
-                }catch (ArrayIndexOutOfBoundsException ex) {
+                } catch (ArrayIndexOutOfBoundsException ex) {
                     Log.i(TAG, "Failed to get the motion event");
                 }
 
@@ -280,6 +281,23 @@ public class NonLeakingWebView extends WebView {
         super.setWebViewClient(client);
         this.currentWebClient = client;
     }
+
+    public WebViewClient getWebViewClient() {
+        return this.currentWebClient;
+    }
+
+    private WebChromeClient currentWebChromeClient;
+
+    @Override
+    public void setWebChromeClient(WebChromeClient client) {
+        super.setWebChromeClient(client);
+        this.currentWebChromeClient = client;
+    }
+
+    public WebChromeClient getWebChromeClient() {
+        return this.currentWebChromeClient;
+    }
+
 
     private void triggerOnScaleChanged(float oldScale, float newScale) {
         if (currentWebClient != null) {
@@ -369,4 +387,6 @@ public class NonLeakingWebView extends WebView {
             return true;
         }
     }
+
+
 }
