@@ -15,10 +15,10 @@ import com.erakk.lnreader.UI.fragment.DisplayLightNovelDetailsFragment;
 import com.erakk.lnreader.UI.fragment.DisplayLightNovelListFragment;
 import com.erakk.lnreader.UI.fragment.DisplayNovelTabFragment;
 import com.erakk.lnreader.UI.fragment.DownloadFragment;
+import com.erakk.lnreader.UI.fragment.IFragmentListener;
 import com.erakk.lnreader.UIHelper;
 
-public class NovelListContainerActivity extends BaseActivity implements
-        DisplayLightNovelListFragment.FragmentListener {
+public class NovelListContainerActivity extends BaseActivity implements IFragmentListener {
 
     private static final String TAG = NovelListContainerActivity.class.toString();
 

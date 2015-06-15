@@ -68,17 +68,13 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
 
     private TextView loadingText;
     private ProgressBar loadingBar;
-    FragmentListener mFragListener;
-
-    public interface FragmentListener {
-        void changeNextFragment(Bundle bundle);
-    }
+    IFragmentListener mFragListener;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mFragListener = (FragmentListener) activity;
+            mFragListener = (IFragmentListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement FragListener");
         }

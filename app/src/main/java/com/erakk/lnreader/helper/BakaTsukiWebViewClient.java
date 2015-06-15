@@ -49,7 +49,12 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 
         if (url.contains("title=File:")) {
             handleImageLinkActivity(url, caller);
-        } else {
+        } else if (url.startsWith("wyciwyg://")) {
+            // ignore wyciwyg:// protocol
+            return true;
+        } else
+
+        {
             boolean isHandled = handleInternalPage(view, url, caller);
 
             if (!isHandled) {
@@ -89,7 +94,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
                 } else {
                     // set the intent page to the current page
                     caller.getIntent().removeExtra(Constants.EXTRA_PAGE);
-                    if(caller.content != null)
+                    if (caller.content != null)
                         caller.getIntent().putExtra(Constants.EXTRA_PAGE, caller.content.getPage());
                     else
                         caller.getIntent().putExtra(Constants.EXTRA_PAGE, caller.getIntent().getStringExtra(Constants.EXTRA_PAGE));
@@ -101,6 +106,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
                 }
             }
         }
+
         return true;
     }
 

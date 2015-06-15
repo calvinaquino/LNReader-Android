@@ -99,13 +99,16 @@ public class BaseActivity extends AppCompatActivity {
         View f = findViewById(R.id.mainFrame);
         if (f != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.mainFrame, new DownloadFragment()).addToBackStack(DownloadFragment.class.toString()).commit();
+            transaction.replace(getLeftFrame(), new DownloadFragment())
+                    .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left)
+                    .addToBackStack(DownloadFragment.class.toString())
+                    .commit();
         } else {
             Intent i = new Intent(this, MainActivity.class);
             i.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, DownloadFragment.class.toString());
             startActivity(i);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         }
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         mDrawerLayout.closeDrawers();
     }
 
@@ -113,13 +116,16 @@ public class BaseActivity extends AppCompatActivity {
         View f = findViewById(R.id.mainFrame);
         if (f != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.mainFrame, new UpdateInfoFragment()).addToBackStack(UpdateInfoFragment.class.toString()).commit();
+            transaction.replace(getLeftFrame(), new UpdateInfoFragment())
+                    .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left)
+                    .addToBackStack(UpdateInfoFragment.class.toString())
+                    .commit();
         } else {
             Intent i = new Intent(this, MainActivity.class);
             i.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, UpdateInfoFragment.class.toString());
             startActivity(i);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         }
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         mDrawerLayout.closeDrawers();
     }
 
@@ -127,13 +133,16 @@ public class BaseActivity extends AppCompatActivity {
         View f = findViewById(R.id.mainFrame);
         if (f != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.mainFrame, new BookmarkFragment()).addToBackStack(BookmarkFragment.class.toString()).commit();
+            transaction.replace(getLeftFrame(), new BookmarkFragment())
+                    .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left)
+                    .addToBackStack(BookmarkFragment.class.toString())
+                    .commit();
         } else {
             Intent i = new Intent(this, MainActivity.class);
             i.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, BookmarkFragment.class.toString());
             startActivity(i);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         }
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         mDrawerLayout.closeDrawers();
     }
 
@@ -141,17 +150,27 @@ public class BaseActivity extends AppCompatActivity {
         View f = findViewById(R.id.mainFrame);
         if (f != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.mainFrame, new SearchFragment()).addToBackStack(SearchFragment.class.toString()).commit();
+            transaction.replace(getLeftFrame(), new SearchFragment())
+                    .setCustomAnimations(R.anim.abc_fade_in, R.anim.slide_out_left, R.anim.abc_fade_in, R.anim.slide_out_left)
+                    .addToBackStack(SearchFragment.class.toString())
+                    .commit();
         } else {
             Intent i = new Intent(this, MainActivity.class);
             i.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, SearchFragment.class.toString());
             startActivity(i);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         }
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         mDrawerLayout.closeDrawers();
     }
 
     // endregion
+
+    protected int getLeftFrame() {
+        View v = findViewById(R.id.rightFragment);
+        if (v != null)
+            return R.id.rightFragment;
+        else return R.id.mainFrame;
+    }
 
     protected void initLayout(@LayoutRes int layout) {
         setContentView(layout);
@@ -188,5 +207,4 @@ public class BaseActivity extends AppCompatActivity {
             Log.w(TAG, "No toolbar detected!");
         }
     }
-
 }
