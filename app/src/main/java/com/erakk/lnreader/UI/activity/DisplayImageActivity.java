@@ -32,12 +32,9 @@ import java.util.ArrayList;
 
 public class DisplayImageActivity extends BaseActivity implements IExtendedCallbackNotifier<AsyncTaskResult<ImageModel>> {
     private static final String TAG = DisplayImageActivity.class.toString();
-    private NonLeakingWebView imgWebView;
+
     private LoadImageTask task;
     private String url;
-
-    private TextView loadingText;
-    private ProgressBar loadingBar;
 
     private ArrayList<String> images;
     private int currentImageIndex = 0;
@@ -51,9 +48,6 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
 
         setupWebView();
 
-        loadingText = (TextView) findViewById(R.id.emptyList);
-        loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
-
         Intent intent = getIntent();
         url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
 
@@ -64,19 +58,18 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
     }
 
     public void setupWebView() {
-        imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
+        NonLeakingWebView imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
         imgWebView.getSettings().setAllowFileAccess(true);
         imgWebView.getSettings().setLoadWithOverviewMode(true);
         imgWebView.getSettings().setUseWideViewPort(true);
-        if (UIHelper.getColorPreferences(this))
-            imgWebView.setBackgroundColor(0);
+        imgWebView.setBackgroundColor(0);
 
         imgWebView.getSettings().setBuiltInZoomControls(UIHelper.getZoomPreferences(this));
         imgWebView.setDisplayZoomControl(UIHelper.getZoomControlPreferences(this));
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         setupWebView();
 
@@ -102,6 +95,7 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        NonLeakingWebView imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
         if (imgWebView != null) {
             RelativeLayout rootView = (RelativeLayout) findViewById(R.id.rootView);
             rootView.removeView(imgWebView);
@@ -112,7 +106,7 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
 
     @SuppressLint("NewApi")
     private void executeTask(String url, boolean refresh) {
-        imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
+        NonLeakingWebView imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
         task = new LoadImageTask(url, refresh, this);
         String key = TAG + ":" + url;
         boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
@@ -194,6 +188,9 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
     }
 
     public void toggleProgressBar(boolean show) {
+        NonLeakingWebView imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
+        TextView loadingText = (TextView) findViewById(R.id.emptyList);
+        ProgressBar loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
         if (imgWebView == null || loadingBar == null || loadingText == null)
             return;
         if (show) {
@@ -225,7 +222,7 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
                 if (!Util.isStringNullOrEmpty(imageModel.getPath())) {
                     String imageUrl = "file:///" + Util.sanitizeFilename(imageModel.getPath());
                     imageUrl = imageUrl.replace("file:////", "file:///");
-                    imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
+                    NonLeakingWebView imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
                     if (imgWebView != null) {
                         StringBuilder html = new StringBuilder();
                         html.append("<html><head>");
@@ -260,6 +257,9 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
     @Override
     public void onProgressCallback(ICallbackEventData message) {
         toggleProgressBar(true);
+
+        TextView loadingText = (TextView) findViewById(R.id.emptyList);
+        ProgressBar loadingBar = (ProgressBar) findViewById(R.id.loadProgress);
 
         loadingText.setText(message.getMessage());
 

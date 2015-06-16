@@ -106,7 +106,6 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel> {
 		if (holder.imgIsDownloaded != null) {
 			if (model.isDownloaded()) {
 				holder.imgIsDownloaded.setVisibility(View.VISIBLE);
-				UIHelper.setColorFilter(holder.imgIsDownloaded);
 			}
 			else {
 				holder.imgIsDownloaded.setVisibility(View.GONE);

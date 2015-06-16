@@ -46,7 +46,6 @@ public class FindMissingFragment extends ListFragment implements IExtendedCallba
         UIHelper.SetTheme(getActivity(), R.layout.activity_find_missing);
         UIHelper.SetActionBarDisplayHomeAsUp(getActivity(), true);
 
-        isInverted = UIHelper.getColorPreferences(getActivity());
         getActivity().setContentView(R.layout.activity_find_missing);
 
         mode = getActivity().getIntent().getStringExtra(Constants.EXTRA_FIND_MISSING_MODE);

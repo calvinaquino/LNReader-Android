@@ -53,6 +53,12 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        
+    }
+
+    @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
@@ -92,6 +98,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void openSettings(MenuItem view) {
+        mDrawerLayout.closeDrawers();
         Intent intent = new Intent(this, DisplaySettingsActivity.class);
         startActivity(intent);
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);

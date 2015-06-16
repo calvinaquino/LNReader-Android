@@ -29,7 +29,7 @@ import java.util.List;
 public class FindMissingActivity extends BaseActivity implements IExtendedCallbackNotifier<Integer> {
 
     private static final String TAG = FindMissingActivity.class.toString();
-    private boolean isInverted;
+
     private ArrayList<FindMissingModel> models = null;
 	private FindMissingAdapter adapter = null;
 	private String mode;
@@ -43,7 +43,6 @@ public class FindMissingActivity extends BaseActivity implements IExtendedCallba
 		UIHelper.SetTheme(this, R.layout.activity_find_missing);
 		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
-		isInverted = UIHelper.getColorPreferences(this);
 		setContentView(R.layout.activity_find_missing);
 
 		mode = getIntent().getStringExtra(Constants.EXTRA_FIND_MISSING_MODE);
@@ -81,9 +80,6 @@ public class FindMissingActivity extends BaseActivity implements IExtendedCallba
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		if (isInverted != UIHelper.getColorPreferences(this)) {
-			UIHelper.Recreate(this);
-		}
 	}
 
 	@Override

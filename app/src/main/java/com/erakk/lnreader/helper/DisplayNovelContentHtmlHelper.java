@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.model.BookmarkModel;
 
@@ -88,7 +89,7 @@ public class DisplayNovelContentHtmlHelper {
         if (UIHelper.getCssUseCustomColorPreferences(ctx)) {
             styleId = R.raw.style_custom_color;
             key = "style_custom_color" + UIHelper.getBackgroundColor(ctx) + UIHelper.getForegroundColor(ctx) + UIHelper.getLinkColor(ctx) + UIHelper.getThumbBorderColor(ctx) + UIHelper.getThumbBackgroundColor(ctx);
-        } else if (UIHelper.getColorPreferences(ctx)) {
+        } else if (DisplayLightNovelContentActivity.getColorPreferences(ctx)) {
             styleId = R.raw.style_dark;
             key = "style_dark";
         } else {

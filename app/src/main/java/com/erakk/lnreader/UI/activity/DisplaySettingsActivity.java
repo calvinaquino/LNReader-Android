@@ -63,7 +63,7 @@ import java.util.Map;
 
 public class DisplaySettingsActivity extends PreferenceActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
 	private static final String TAG = DisplaySettingsActivity.class.toString();
-	private boolean isInverted;
+
 	private DeleteFilesTask deleteTask;
 	private ZipFilesTask zipTask;
 	private UnZipFilesTask unzipTask;
@@ -229,7 +229,6 @@ public class DisplaySettingsActivity extends PreferenceActivity implements IExte
 		// non preferences setup
 		LNReaderApplication.getInstance().setUpdateServiceListener(this);
 		LNReaderApplication.getInstance().setAutoBackupServiceListener(this);
-		isInverted = UIHelper.getColorPreferences(this);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -315,15 +314,15 @@ public class DisplaySettingsActivity extends PreferenceActivity implements IExte
 		setAlternateLanguageList();
 
 		// Invert Color
-		Preference invertColors = findPreference(Constants.PREF_INVERT_COLOR);
-		invertColors.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-
-			@Override
-			public boolean onPreferenceClick(Preference p) {
-				recreateUI();
-				return true;
-			}
-		});
+//		Preference invertColors = findPreference(Constants.PREF_INVERT_COLOR);
+//		invertColors.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+//
+//			@Override
+//			public boolean onPreferenceClick(Preference p) {
+//				recreateUI();
+//				return true;
+//			}
+//		});
 
 		// Orientation Selection
 		final Preference orientation = findPreference(Constants.PREF_ORIENTATION);
@@ -1229,9 +1228,6 @@ public class DisplaySettingsActivity extends PreferenceActivity implements IExte
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		if (isInverted != UIHelper.getColorPreferences(this)) {
-			UIHelper.Recreate(this);
-		}
 	}
 
 	@Override

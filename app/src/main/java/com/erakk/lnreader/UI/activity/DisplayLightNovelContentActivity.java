@@ -1,6 +1,7 @@
 package com.erakk.lnreader.UI.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -101,7 +102,6 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         _uih = new DisplayNovelContentUIHelper(this);
         _uih.prepareCompatSearchBox(webView);
         _uih.prepareTopDownButton();
-
 
 
         _tts = new DisplayNovelContentTTSHelper(this);
@@ -567,7 +567,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 else
                     task.execute();
             } else {
-                if (UIHelper.getColorPreferences(this))
+                if (getColorPreferences(this))
                     webView.loadData("<p style='background: black; color: white;'>" + getResources().getString(R.string.background_task_load) + "</p>", "text/html", "utf-8");
                 else
                     webView.loadData("<p style='background: white; color: black;'>" + getResources().getString(R.string.background_task_load) + "</p>", "text/html", "utf-8");
@@ -729,7 +729,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         wv.getSettings().setLoadWithOverviewMode(true);
         // wv.getSettings().setUseWideViewPort(true);
         wv.getSettings().setLoadsImagesAutomatically(getShowImagesPreferences());
-        if (UIHelper.getColorPreferences(this))
+        if (getColorPreferences(this))
             wv.setBackgroundColor(0);
         wv.getSettings().setJavaScriptEnabled(true);
 
@@ -772,7 +772,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 } else {
                     try {
                         contentUserData = getContentUserData(currPageModel.getPage());
-                        final NonLeakingWebView webView =(NonLeakingWebView) findViewById(R.id.webViewContent);
+                        final NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
                         final BakaTsukiWebChromeClient chromeClient = (BakaTsukiWebChromeClient) webView.getWebChromeClient();
                         chromeClient.setScrollY(contentUserData.getLastYScroll());
                     } catch (Exception ex) {
@@ -968,6 +968,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     // region private methods
 
     // region bookmark handler
+
     /**
      * Build Bookmarks-on-Chapter menu
      */
@@ -1016,7 +1017,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
      * Update Bookmark-on-Chapter data upon receiving event from webView client
      */
     public void refreshBookmarkData() {
-        if(bookmarkMenu != null) {
+        if (bookmarkMenu != null) {
             BookmarkModelAdapter bookmarkAdapter = (BookmarkModelAdapter) bookmarkMenu.getListView().getAdapter();
             if (bookmarkAdapter != null) {
                 bookmarkAdapter.refreshData();
@@ -1074,7 +1075,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 }
                 Log.d(TAG, "TOC Found: " + chapters.size());
 
-                final PageModelAdapter jumpAdapter = new PageModelAdapter(this,  R.layout.item_jump_to, chapters);
+                final PageModelAdapter jumpAdapter = new PageModelAdapter(this, R.layout.item_jump_to, chapters);
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(getResources().getString(R.string.content_toc));
                 builder.setAdapter(jumpAdapter, new OnClickListener() {
@@ -1181,5 +1182,15 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         }
     }
 
+
+    /**
+     * Get invert color preferences
+     *
+     * @param ctx
+     * @return true if dark theme.
+     */
+    public static boolean getColorPreferences(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_INVERT_COLOR, true);
+    }
     // endregion
 }

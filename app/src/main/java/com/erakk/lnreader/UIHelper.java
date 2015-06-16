@@ -10,8 +10,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.PorterDuff.Mode;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -24,7 +22,6 @@ import android.view.View;
 import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
@@ -288,28 +285,28 @@ public class UIHelper {
         return builder.create();
     }
 
-    /**
-     * Change the color of image in ImageView, works nicely with single coloured images.
-     *
-     * @param targetIv
-     */
-    public static ImageView setColorFilter(ImageView targetIv) {
-        if (PreferenceManager.getDefaultSharedPreferences(targetIv.getContext()).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
-            targetIv.setColorFilter(Constants.COLOR_UNREAD);
-        } else {
-            targetIv.setColorFilter(Constants.COLOR_UNREAD_DARK);
-        }
-        return targetIv;
-    }
-
-    public static Drawable setColorFilter(Drawable targetIv) {
-        if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
-            targetIv.setColorFilter(Constants.COLOR_UNREAD, Mode.SRC_ATOP);
-        } else {
-            targetIv.setColorFilter(Constants.COLOR_UNREAD_DARK, Mode.SRC_ATOP);
-        }
-        return targetIv;
-    }
+//    /**
+//     * Change the color of image in ImageView, works nicely with single coloured images.
+//     *
+//     * @param targetIv
+//     */
+//    public static ImageView setColorFilter(ImageView targetIv) {
+//        if (PreferenceManager.getDefaultSharedPreferences(targetIv.getContext()).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
+//            targetIv.setColorFilter(Constants.COLOR_UNREAD);
+//        } else {
+//            targetIv.setColorFilter(Constants.COLOR_UNREAD_DARK);
+//        }
+//        return targetIv;
+//    }
+//
+//    public static Drawable setColorFilter(Drawable targetIv) {
+//        if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
+//            targetIv.setColorFilter(Constants.COLOR_UNREAD, Mode.SRC_ATOP);
+//        } else {
+//            targetIv.setColorFilter(Constants.COLOR_UNREAD_DARK, Mode.SRC_ATOP);
+//        }
+//        return targetIv;
+//    }
 
     public static void setLanguage(Context activity, String key) {
         try {
@@ -404,17 +401,6 @@ public class UIHelper {
     }
 
 	/* PREFERENCES HELPER */
-
-    /**
-     * Get invert color preferences
-     *
-     * @param ctx
-     * @return true if dark theme.
-     */
-    public static boolean getColorPreferences(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_INVERT_COLOR, true);
-    }
-
     public static boolean getCssUseCustomColorPreferences(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_CSS_CUSTOM_COLOR, false);
     }
