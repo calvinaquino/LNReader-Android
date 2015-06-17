@@ -383,7 +383,7 @@ public class CommonParser {
         // External link
         if (link.className().contains("external text")) {
             p.setExternal(true);
-            p.setPage(href);
+            p.setPage(Util.SanitizeBaseUrl(href, false));
             // Log.d(TAG, "Found external link for " + p.getTitle() + ": " + link.attr("href"));
         } else {
             p.setExternal(false);

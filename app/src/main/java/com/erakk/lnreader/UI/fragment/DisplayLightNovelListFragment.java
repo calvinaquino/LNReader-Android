@@ -8,9 +8,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -83,17 +81,6 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
         lang = getArguments().getString(Constants.EXTRA_NOVEL_LANG);
         Log.i(TAG, "IsWatched: " + onlyWatched + " Mode: " + mode + " lang: " + lang);
 
-        ActionBar a = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (a != null) {
-            if (onlyWatched) {
-                a.setTitle("Watched Novels");
-            } else if (lang != null) {
-                a.setTitle("Alt. Novels");
-            } else {
-                a.setTitle("Light Novels");
-            }
-        }
-
         String page = getArguments().getString(Constants.EXTRA_PAGE);
         if (page != null)
             loadNovel(page);
@@ -107,6 +94,13 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
         loadingText = (TextView) view.findViewById(R.id.emptyList);
         loadingBar = (ProgressBar) view.findViewById(R.id.empttListProgress);
 
+        if (onlyWatched) {
+            getActivity().setTitle("Watched Novels");
+        } else if (lang != null) {
+            getActivity().setTitle("Alt. Novels");
+        } else {
+            getActivity().setTitle("Light Novels");
+        }
 
         return view;
     }

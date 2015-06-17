@@ -124,7 +124,7 @@ public class NonLeakingWebView extends WebView {
             try {
                 Class webview = Class.forName("android.webkit.WebView");
                 Method method = webview.getMethod("getZoomButtonsController");
-                zoom_control = (ZoomButtonsController) method.invoke(this, null);
+                zoom_control = (ZoomButtonsController) method.invoke(this);
                 showZoom = show;
             } catch (Exception e) {
                 Log.e(TAG, "Error when getting zoom control", e);

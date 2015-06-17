@@ -37,7 +37,7 @@ public class LoadWacTask extends AsyncTask<Void, ICallbackEventData, AsyncTaskRe
         this.anchorLink = anchorLink;
         this.historyUrl = historyUrl;
 
-        wr = new WebArchiveReader() {
+        wr = new WebArchiveReader(client) {
 
             @Override
             protected void onFinished(WebView webView) {

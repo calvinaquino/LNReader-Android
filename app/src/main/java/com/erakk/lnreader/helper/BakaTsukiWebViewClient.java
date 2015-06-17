@@ -44,7 +44,9 @@ public class BakaTsukiWebViewClient extends WebViewClient {
         if (caller == null)
             return false;
 
-        caller.setLastReadState();
+        if (view.canGoBack())
+            caller.setLastReadState();
+
         Log.i(TAG, "Handling: " + url);
 
         if (url.contains("title=File:")) {
@@ -62,14 +64,14 @@ public class BakaTsukiWebViewClient extends WebViewClient {
                 if (useInternalWebView) {
                     // set intent to external page
                     caller.getIntent().removeExtra(Constants.EXTRA_PAGE);
-                    caller.getIntent().putExtra(Constants.EXTRA_PAGE, url);
+                    caller.getIntent().putExtra(Constants.EXTRA_PAGE, Util.SanitizeBaseUrl(url, false));
                     caller.getIntent().removeExtra(Constants.EXTRA_PAGE_IS_EXTERNAL);
                     caller.getIntent().putExtra(Constants.EXTRA_PAGE_IS_EXTERNAL, true);
 
                     // check if the same page and trying to load anchor link.
                     // need to handle if page use urlParams to do navigation.
                     if (url.contains("#")) {
-                        String currUrl = view.getUrl();
+                        String currUrl = Util.SanitizeBaseUrl(view.getUrl(), false);
                         String[] urlParts = url.split("#", 2);
                         String[] urlQuery = urlParts[0].split("\\?", 2);
                         if (!Util.isStringNullOrEmpty(currUrl) && currUrl.startsWith(urlQuery[0])) {
@@ -77,8 +79,10 @@ public class BakaTsukiWebViewClient extends WebViewClient {
                                 view.loadUrl("javascript:window.location.hash=" + urlParts[1] + ";");
                         }
                     } else {
+                        // don't sanitize the url due to redirect issue
                         PageModel pageModel = new PageModel();
                         pageModel.setPage(url);
+                        pageModel.setExternal(true);
                         PageModel temp = pageModel;
                         try {
                             temp = NovelsDao.getInstance().getExistingPageModel(pageModel, null);

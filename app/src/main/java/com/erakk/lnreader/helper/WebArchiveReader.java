@@ -35,6 +35,12 @@ public abstract class WebArchiveReader {
     private final ArrayList<String> urlList = new ArrayList<String>();
     private final ArrayList<Element> urlNodes = new ArrayList<Element>();
 
+    private final WebViewClient originalClient;
+
+    public WebArchiveReader(WebViewClient originalClient) {
+        this.originalClient = originalClient;
+    }
+
     protected abstract void onFinished(WebView webView);
 
     public boolean readWebArchive(InputStream is) {
@@ -97,7 +103,7 @@ public abstract class WebArchiveReader {
     public boolean loadToWebView(final WebView v, final String anchorLink, final String historyUrl) {
         myWebView = v;
         try {
-            myWebView.setWebViewClient(new WebClient());
+            myWebView.setWebViewClient(new WACWebClient());
             WebSettings webSettings = myWebView.getSettings();
             webSettings.setDefaultTextEncodingName("UTF-8");
 
@@ -159,20 +165,24 @@ public abstract class WebArchiveReader {
             v.loadDataWithBaseURL(baseUrl, topHtml, "text/html", "UTF-8", historyUrl);
         } catch (Exception e) {
             Log.e(TAG, "Failed to load web archive", e);
+            myWebView.setWebViewClient(originalClient);
             return false;
         }
         return true;
     }
 
-    private class WebClient extends WebViewClient {
+    private class WACWebClient extends WebViewClient {
+
         @SuppressLint("NewApi")
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
             if (!myLoadingArchive)
                 return null;
+
             int n = urlList.indexOf(url);
             if (n < 0)
                 return null;
+
             Element parentEl = urlNodes.get(n);
             byte[] b = getElBytes(parentEl, "mimeType");
             String mimeType = b == null ? "text/html" : new String(b);
@@ -184,8 +194,8 @@ public abstract class WebArchiveReader {
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            // our WebClient is no longer needed in view
-            view.setWebViewClient(null);
+            // our WACWebClient is no longer needed in view
+            view.setWebViewClient(originalClient);
             myLoadingArchive = false;
             onFinished(myWebView);
         }

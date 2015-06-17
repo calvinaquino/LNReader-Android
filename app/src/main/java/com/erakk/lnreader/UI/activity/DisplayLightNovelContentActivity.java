@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -80,6 +81,50 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     private DisplayNovelContentTTSHelper _tts;
     private DisplayNovelContentUIHelper _uih;
     // endregion
+
+
+    public void updateCurrentPageModel(PageModel reference, NovelContentModel refContent, NovelContentUserModel refContentUser) {
+        String pageModelStr = "";
+        String contentPageStr = "";
+        String contentUserPageStr = "";
+
+        if (reference != null) {
+            this.currPageModel = reference;
+            pageModelStr = reference.getPage();
+        } else if (currPageModel != null) {
+            pageModelStr = currPageModel.getPage();
+        }
+
+        if (refContent != null) {
+            this.content = refContent;
+            contentPageStr = refContent.getPage();
+        } else if (content != null) {
+            contentPageStr = content.getPage();
+        }
+
+        if (refContentUser != null) {
+            this.contentUserData = refContentUser;
+            contentUserPageStr = refContentUser.getPage();
+        } else if (contentUserData != null) {
+            contentUserPageStr = contentUserData.getPage();
+        }
+
+        final String message = String.format("PageModel: %s\nContent Page: %s\nContent User Page: %s", pageModelStr, contentPageStr, contentUserPageStr);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView txtDebug = (TextView) findViewById(R.id.txtDebug);
+                try {
+                    PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                    if (pInfo.versionName.contains("beta"))
+                        txtDebug.setVisibility(View.VISIBLE);
+                    txtDebug.setText(message);
+                } catch (Exception ex) {
+                    txtDebug.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -177,7 +222,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                     Log.w(TAG, "Missing page: " + page);
                     onBackPressed();
                 } else {
-                    currPageModel = pageModel;
+                    updateCurrentPageModel(pageModel, null, null);
                     this.getIntent().putExtra(Constants.EXTRA_PAGE_IS_EXTERNAL, currPageModel.isExternal());
                     executeTask(pageModel, false);
                 }
@@ -259,7 +304,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             PageModel pageModel = new PageModel(restoredPage);
             pageModel = NovelsDao.getInstance().getPageModel(pageModel, null);
             executeTask(pageModel, false);
-            currPageModel = pageModel;
+            updateCurrentPageModel(pageModel, null, null);
         } catch (Exception e) {
             Log.e(TAG, "Error when restoring instance", e);
         }
@@ -483,9 +528,12 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     @SuppressWarnings("deprecation")
     public void setLastReadState() {
         final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
+
+        // get the values from UI Thread due to Android restriction.
         final float currentScale = wv.getScale();
         final int lastY = wv.getScrollY() + wv.getBottom();
         final int contentHeight = wv.getContentHeight();
+
         new Thread(new Runnable() {
 
             @Override
@@ -496,29 +544,12 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 if (contentUserData == null) {
                     contentUserData = new NovelContentUserModel();
                     contentUserData.setPage(currPageModel.getPage());
+                    updateCurrentPageModel(null, null, contentUserData);
                 }
+                updateCurrentPageModel(null, null, contentUserData);
 
-                contentUserData.setLastZoom(currentScale);
-
-                // save zoom level, position is updated from updateLastLine()
-                // for external page, use the px
-                if (content == null) {
-                    Log.i(TAG, wv.getScrollY() + " " + wv.getBottom());
-                    contentUserData.setLastYScroll(wv.getScrollY());
-                }
-                // check if complete read.
-                double isReadThreshold = contentHeight * currentScale;
-                if (isReadThreshold <= lastY) {
-                    try {
-                        PageModel page = currPageModel;
-                        if (!page.getPage().endsWith("&action=edit&redlink=1")) {
-                            page.setFinishedRead(true);
-                            NovelsDao.getInstance().updatePageModel(page);
-                        }
-                    } catch (Exception ex) {
-                        Log.e(TAG, "Error updating PageModel for Content: " + content.getPage(), ex);
-                    }
-                }
+                checkLastYAndScale();
+                checkIsReadComplete();
 
                 try {
                     NovelsDao.getInstance().updateNovelContentUserModel(contentUserData, null);
@@ -526,6 +557,23 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 } catch (Exception ex) {
                     Log.e(TAG, ex.getMessage(), ex);
                 }
+
+                String lastPage = saveLastReadChapter();
+
+                Log.i(TAG, "Last Read State Update complete: " + lastPage);
+            }
+
+            private void checkLastYAndScale() {
+                contentUserData.setLastZoom(currentScale);
+
+                // save zoom level, position is updated from updateLastLine()
+                // for external page, use the px
+                if (content == null) {
+                    contentUserData.setLastYScroll(wv.getScrollY());
+                }
+            }
+
+            private String saveLastReadChapter() {
                 // save for jump to last read.
                 SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance());
                 SharedPreferences.Editor editor = sharedPrefs.edit();
@@ -540,7 +588,22 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 }
                 editor.putString(Constants.PREF_LAST_READ, lastPage);
                 editor.commit();
-                Log.i(TAG, "Last Read State Update complete: " + lastPage);
+                return lastPage;
+            }
+
+            private void checkIsReadComplete() {
+                double isReadThreshold = contentHeight * currentScale;
+
+                try {
+                    PageModel page = currPageModel;
+                    if (isReadThreshold <= lastY && !page.getPage().endsWith("&action=edit&redlink=1")) {
+                        Log.i(TAG, "Complete Read PageModel for Content: " + currPageModel.getPage() + " check value: " + isReadThreshold + " <= " + lastY);
+                        page.setFinishedRead(true);
+                    }
+                    NovelsDao.getInstance().updatePageModel(page);
+                } catch (Exception ex) {
+                    Log.e(TAG, "Error updating PageModel for Content: " + currPageModel.getPage(), ex);
+                }
             }
         }).start();
     }
@@ -580,6 +643,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             }
         }
         setPrevNextButtonState(pageModel);
+        updateCurrentPageModel(pageModel, null, null);
     }
 
     /**
@@ -596,6 +660,8 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             String wacName = Util.getSavedWacName(url);
             final NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
             final BakaTsukiWebViewClient client = (BakaTsukiWebViewClient) wv.getWebViewClient();
+
+            // available
             if (!Util.isStringNullOrEmpty(wacName) && !refresh) {
                 client.setExternalNeedSave(false);
                 String[] urlParts = url.split("#", 2);
@@ -604,6 +670,8 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 } else
                     executeLoadWacTask(wacName, "", url);
             } else {
+
+                // delete if refresh
                 if (refresh) {
                     Toast.makeText(this, "Refreshing WAC: " + wacName, Toast.LENGTH_SHORT).show();
                     // delete the WAC file
@@ -622,12 +690,18 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 wv.loadUrl(url);
 
                 Intent currIntent = this.getIntent();
-                currIntent.putExtra(Constants.EXTRA_PAGE, url);
+                currIntent.putExtra(Constants.EXTRA_PAGE, Util.SanitizeBaseUrl(url, false));
                 currIntent.putExtra(Constants.EXTRA_PAGE_IS_EXTERNAL, true);
+
+                // sanitize here after redirect
+                pageModel.setPage(Util.SanitizeBaseUrl(url, false));
             }
             setChapterTitle(pageModel);
             buildTOCMenu(pageModel);
             content = null;
+            contentUserData = getContentUserData(pageModel.getPage());
+
+            updateCurrentPageModel(pageModel, content, null);
         } catch (Exception ex) {
             Log.e(TAG, "Cannot load external content: " + pageModel.getPage(), ex);
         }
@@ -661,8 +735,10 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         this.content = loadedContent;
         try {
             PageModel pageModel = content.getPageModel();
-            currPageModel = pageModel;
-            getContentUserData(content.getPage());
+            contentUserData = getContentUserData(content.getPage());
+
+            updateCurrentPageModel(pageModel, content, contentUserData);
+
             if (content.getLastUpdate().getTime() < pageModel.getLastUpdate().getTime())
                 Toast.makeText(this, getResources().getString(R.string.content_may_updated, content.getLastUpdate().toString(), pageModel.getLastUpdate().toString()), Toast.LENGTH_LONG).show();
 
@@ -764,7 +840,8 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                     String page = getIntent().getStringExtra(Constants.EXTRA_PAGE);
                     PageModel p = new PageModel(page);
                     try {
-                        getContentUserData(page);
+                        contentUserData = getContentUserData(page);
+                        updateCurrentPageModel(null, null, contentUserData);
                     } catch (Exception ex) {
                         Log.e(TAG, ex.getMessage(), ex);
                     }
@@ -772,6 +849,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 } else {
                     try {
                         contentUserData = getContentUserData(currPageModel.getPage());
+                        updateCurrentPageModel(null, null, contentUserData);
                         final NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
                         final BakaTsukiWebChromeClient chromeClient = (BakaTsukiWebChromeClient) webView.getWebChromeClient();
                         chromeClient.setScrollY(contentUserData.getLastYScroll());
@@ -792,12 +870,12 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     }
 
     private NovelContentUserModel getContentUserData(String page) throws Exception {
-        contentUserData = NovelsDao.getInstance().getNovelContentUserModel(page, null);
-        if (contentUserData == null) {
-            contentUserData = new NovelContentUserModel();
-            contentUserData.setPage(page);
+        NovelContentUserModel temp = NovelsDao.getInstance().getNovelContentUserModel(page, null);
+        if (temp == null) {
+            temp = new NovelContentUserModel();
+            temp.setPage(page);
         }
-        return contentUserData;
+        return temp;
     }
 
     /**
@@ -808,8 +886,9 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     public void updateLastLine(int pIndex) {
         try {
             if (contentUserData == null)
-                getContentUserData(currPageModel.getPage());
+                contentUserData = getContentUserData(currPageModel.getPage());
             contentUserData.setLastYScroll(pIndex);
+            updateCurrentPageModel(null, null, contentUserData);
         } catch (Exception ex) {
             Log.e(TAG, "updateLastLine(): " + ex.getMessage(), ex);
         }

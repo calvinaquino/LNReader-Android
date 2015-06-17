@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -87,11 +86,11 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
 
         try {
             page = dao.getPageModel(page, null);
+            getActivity().setTitle(page.getTitle());
         } catch (Exception e) {
             Log.e(TAG, "Error when getting Page Model for " + page.getPage(), e);
+            getActivity().setTitle(page.getPage());
         }
-
-        ((AppCompatActivity) activity).getSupportActionBar().setTitle(page.getTitle());
     }
 
     @Override
@@ -135,6 +134,11 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
     public void onResume() {
         super.onResume();
         Log.d(TAG, "OnResume: " + task.getStatus().toString());
+        if (bookModelAdapter != null)
+            bookModelAdapter.refreshData();
+        if (expandList != null)
+            expandList.invalidateViews();
+
     }
 
     @Override

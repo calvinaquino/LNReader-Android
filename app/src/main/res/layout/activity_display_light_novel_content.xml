@@ -20,6 +20,13 @@
             android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
+        <TextView
+            android:id="@+id/txtDebug"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="8sp"
+            android:visibility="gone" />
+
         <RelativeLayout
             android:id="@+id/rootView"
             android:layout_width="match_parent"

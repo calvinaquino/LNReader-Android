@@ -55,7 +55,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        
+
     }
 
     @Override
