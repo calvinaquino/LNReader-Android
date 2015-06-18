@@ -2,21 +2,21 @@ package com.erakk.lnreader.UI.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.internal.widget.AdapterViewCompat;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -30,14 +30,15 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.CallbackEventData;
+import com.erakk.lnreader.callback.DownloadCallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.task.AddNovelTask;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.DownloadNovelDetailsTask;
-import com.erakk.lnreader.task.IAsyncTaskOwner;
 import com.erakk.lnreader.task.LoadAlternativeTask;
 import com.erakk.lnreader.task.LoadNovelsTask;
 
@@ -48,24 +49,26 @@ import java.util.ArrayList;
  * Copy from: NovelsActivity.java
  */
 
-public class DisplayLightNovelListFragment extends ListFragment implements IAsyncTaskOwner, INovelListHelper {
+public class DisplayLightNovelListFragment extends ListFragment implements IExtendedCallbackNotifier<AsyncTaskResult<?>>, INovelListHelper {
     private static final String TAG = DisplayLightNovelListFragment.class.toString();
+
     private final ArrayList<PageModel> listItems = new ArrayList<PageModel>();
     private PageModelAdapter adapter;
+
     private LoadNovelsTask task = null;
     private LoadAlternativeTask altTask = null;
     private DownloadNovelDetailsTask downloadTask = null;
     private AddNovelTask addTask = null;
+
     private boolean onlyWatched = false;
     private String touchedForDownload;
-    private ListView listView = null;
-
     private String mode;
     private String lang;
 
     private TextView loadingText;
     private ProgressBar loadingBar;
-    IFragmentListener mFragListener;
+
+    private IFragmentListener mFragListener;
 
     @Override
     public void onAttach(Activity activity) {
@@ -87,12 +90,15 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_display_light_novel_list, container, false);
-
-        loadingText = (TextView) view.findViewById(R.id.emptyList);
-        loadingBar = (ProgressBar) view.findViewById(R.id.empttListProgress);
 
         if (onlyWatched) {
             getActivity().setTitle("Watched Novels");
@@ -101,6 +107,9 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
         } else {
             getActivity().setTitle("Light Novels");
         }
+
+        loadingText = (TextView) view.findViewById(R.id.emptyList);
+        loadingBar = (ProgressBar) getActivity().findViewById(R.id.empttListProgress);
 
         return view;
     }
@@ -115,10 +124,25 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
          ****************************************************/
 
         registerForContextMenu(getListView());
-        listView = getListView();
 
         // Encapsulated in updateContent
         updateContent(false, onlyWatched);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_display_novel_watched, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_download_all_info:
+                this.downloadAllNovelInfo();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -138,8 +162,206 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
         mFragListener.changeNextFragment(bundle);
 
         Log.d(TAG, o.getPage() + " (" + o.getTitle() + ")");
+    }
 
-        // Need to send it through
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.context_menu_novel_item, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(android.view.MenuItem item) {
+        if (!(item.getMenuInfo() instanceof AdapterViewCompat.AdapterContextMenuInfo))
+            return super.onContextItemSelected(item);
+        Log.d(TAG, "Context menu called");
+        AdapterViewCompat.AdapterContextMenuInfo info = (AdapterViewCompat.AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case R.id.add_to_watch:
+            /*
+             * Implement code to toggle watch of this novel
+			 */
+                if (info.position > -1) {
+                    PageModel novel = listItems.get(info.position);
+                    if (novel.isWatched()) {
+                        novel.setWatched(false);
+                        Toast.makeText(getActivity(), "Removed from watch list: " + novel.getTitle(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        novel.setWatched(true);
+                        Toast.makeText(getActivity(), "Added to watch list: " + novel.getTitle(), Toast.LENGTH_SHORT).show();
+                    }
+                    NovelsDao.getInstance().updatePageModel(novel);
+                    adapter.notifyDataSetChanged();
+                }
+                return true;
+            case R.id.download_novel:
+            /*
+             * Implement code to download novel synopsis
+			 */
+                if (info.position > -1) {
+                    PageModel novel = listItems.get(info.position);
+                    ArrayList<PageModel> novels = new ArrayList<PageModel>();
+                    novels.add(novel);
+                    touchedForDownload = novel.getTitle() + "'s information";
+                    executeDownloadTask(novels);
+                }
+                return true;
+            case R.id.delete_novel:
+                if (info.position > -1) {
+                    toggleProgressBar(true);
+                    PageModel novel = listItems.get(info.position);
+                    int result = NovelsDao.getInstance().deleteNovel(novel);
+                    if (result > 0) {
+                        listItems.remove(novel);
+                        adapter.notifyDataSetChanged();
+                    }
+                    toggleProgressBar(false);
+                }
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
+    // region private methods
+
+    private void updateContent(boolean isRefresh, boolean onlyWatched) {
+        // use the cached items.
+        if (!isRefresh && listItems != null && listItems.size() > 0)
+            return;
+
+        try {
+            // Check size
+            int resourceId = R.layout.item_novel;
+            if (UIHelper.isSmallScreen(getActivity())) {
+                resourceId = R.layout.item_novel_small;
+            }
+            if (adapter != null) {
+                adapter.setResourceId(resourceId);
+            } else {
+                adapter = new PageModelAdapter(getActivity(), resourceId, listItems);
+            }
+            boolean alphOrder = UIHelper.isAlphabeticalOrder(getActivity());
+
+            if (lang == null)
+                executeTask(isRefresh, onlyWatched, alphOrder);
+            else {
+                executeAltTask(isRefresh, alphOrder, lang);
+            }
+
+            setListAdapter(adapter);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage(), e);
+            Toast.makeText(getActivity(), "Error when updating: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private void executeTask(boolean isRefresh, boolean onlyWatched, boolean alphOrder) {
+        if (mode == null)
+            mode = Constants.EXTRA_NOVEL_LIST_MODE_MAIN;
+
+        task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder, mode);
+        String key = null;
+        if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+            key = TAG + ":" + Constants.ROOT_NOVEL_ENGLISH;
+        } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
+            key = TAG + ":" + Constants.ROOT_TEASER;
+        } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+            key = TAG + ":" + Constants.ROOT_ORIGINAL;
+        }
+        boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
+        if (isAdded) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            else
+                task.execute();
+        } else {
+            Log.i(TAG, "Continue execute task: " + key);
+            LoadNovelsTask tempTask = (LoadNovelsTask) LNReaderApplication.getInstance().getTask(key);
+            if (tempTask != null) {
+                task = tempTask;
+                task.owner = this;
+            }
+            toggleProgressBar(true);
+        }
+    }
+
+    private void executeAltTask(boolean isRefresh, boolean alphOrder, String lang) {
+        altTask = new LoadAlternativeTask(this, isRefresh, alphOrder, lang);
+        String key = null;
+        if (lang != null)
+            key = TAG + ":" + AlternativeLanguageInfo.getAlternativeLanguageInfo().get(lang).getCategoryInfo();
+        boolean isAdded = LNReaderApplication.getInstance().addTask(key, altTask);
+        if (isAdded) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                altTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            else
+                altTask.execute();
+        } else {
+            Log.i(TAG, "Continue execute task: " + key);
+            LoadAlternativeTask tempTask = (LoadAlternativeTask) LNReaderApplication.getInstance().getTask(key);
+            if (tempTask != null) {
+                altTask = tempTask;
+                altTask.owner = this;
+            }
+            toggleProgressBar(true);
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private void executeDownloadTask(ArrayList<PageModel> novels) {
+        downloadTask = new DownloadNovelDetailsTask(this);
+        if (novels == null || novels.size() == 0)
+            return;
+
+        String key = DisplayLightNovelDetailsFragment.TAG + ":" + novels.get(0).getPage();
+        if (novels.size() > 1) {
+            if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+                key = DisplayLightNovelDetailsFragment.TAG + ":All_Novels";
+            } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
+                key = DisplayLightNovelDetailsFragment.TAG + ":All_Teasers";
+            } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
+                key = DisplayLightNovelDetailsFragment.TAG + ":All_Original";
+            }
+        }
+        boolean isAdded = LNReaderApplication.getInstance().addTask(key, downloadTask);
+        if (isAdded) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, novels.toArray(new PageModel[novels.size()]));
+            else
+                downloadTask.execute(novels.toArray(new PageModel[novels.size()]));
+        } else {
+            Log.i(TAG, "Continue download task: " + key);
+            DownloadNovelDetailsTask tempTask = (DownloadNovelDetailsTask) LNReaderApplication.getInstance().getTask(key);
+            if (tempTask != null) {
+                downloadTask = tempTask;
+                downloadTask.owner = this;
+            }
+            toggleProgressBar(true);
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private void executeAddTask(PageModel novel) {
+        String key = DisplayLightNovelDetailsFragment.TAG + ":Add:" + novel.getPage();
+        addTask = new AddNovelTask(this, key);
+        boolean isAdded = LNReaderApplication.getInstance().addTask(key, addTask);
+        if (isAdded) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                addTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[]{novel});
+            else
+                addTask.execute(new PageModel[]{novel});
+        } else {
+            Log.i(TAG, "Continue Add task: " + key);
+            AddNovelTask tempTask = (AddNovelTask) LNReaderApplication.getInstance().getTask(key);
+            if (tempTask != null) {
+                addTask = tempTask;
+                addTask.owner = this;
+            }
+            toggleProgressBar(true);
+        }
     }
 
     private void loadNovel(String page) {
@@ -158,11 +380,10 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
 
     @Override
     public void downloadAllNovelInfo() {
-        if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
-            if (onlyWatched)
-                touchedForDownload = "Watched Light Novels information";
-            else
-                touchedForDownload = "All Main Light Novels information";
+        if (onlyWatched) {
+            touchedForDownload = "Watched Light Novels information";
+        } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+            touchedForDownload = "All Main Light Novels information";
         } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
             touchedForDownload = "All Teaser Light Novels information";
         } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
@@ -217,276 +438,36 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
         }
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getActivity().getMenuInflater();
-        inflater.inflate(R.menu.context_menu_novel_item, menu);
-    }
+    private void toggleProgressBar(boolean show) {
+        ListView listView = getListView();
 
-    @Override
-    public boolean onContextItemSelected(android.view.MenuItem item) {
-        if (!(item.getMenuInfo() instanceof AdapterContextMenuInfo))
-            return super.onContextItemSelected(item);
-        Log.d(TAG, "Context menu called");
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        switch (item.getItemId()) {
-            case R.id.add_to_watch:
-            /*
-             * Implement code to toggle watch of this novel
-			 */
-                if (info.position > -1) {
-                    PageModel novel = listItems.get(info.position);
-                    if (novel.isWatched()) {
-                        novel.setWatched(false);
-                        Toast.makeText(getActivity(), "Removed from watch list: " + novel.getTitle(), Toast.LENGTH_SHORT).show();
-                    } else {
-                        novel.setWatched(true);
-                        Toast.makeText(getActivity(), "Added to watch list: " + novel.getTitle(), Toast.LENGTH_SHORT).show();
-                    }
-                    NovelsDao.getInstance().updatePageModel(novel);
-                    adapter.notifyDataSetChanged();
-                }
-                return true;
-            case R.id.download_novel:
-            /*
-             * Implement code to download novel synopsis
-			 */
-                if (info.position > -1) {
-                    PageModel novel = listItems.get(info.position);
-                    ArrayList<PageModel> novels = new ArrayList<PageModel>();
-                    novels.add(novel);
-                    touchedForDownload = novel.getTitle() + "'s information";
-                    executeDownloadTask(novels);
-                }
-                return true;
-            case R.id.delete_novel:
-                if (info.position > -1) {
-                    toggleProgressBar(true);
-                    PageModel novel = listItems.get(info.position);
-                    int result = NovelsDao.getInstance().deleteNovel(novel);
-                    if (result > 0) {
-                        listItems.remove(novel);
-                        adapter.notifyDataSetChanged();
-                    }
-                    toggleProgressBar(false);
-                }
-                return true;
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
-
-    private void updateContent(boolean isRefresh, boolean onlyWatched) {
-        // use the cached items.
-        if (!isRefresh && listItems != null && listItems.size() > 0)
+        if (listView == null || loadingText == null || loadingBar == null)
             return;
 
-        try {
-            // Check size
-            int resourceId = R.layout.item_novel;
-            if (UIHelper.isSmallScreen(getActivity())) {
-                resourceId = R.layout.item_novel_small;
-            }
-            if (adapter != null) {
-                adapter.setResourceId(resourceId);
-            } else {
-                adapter = new PageModelAdapter(getActivity(), resourceId, listItems);
-            }
-            boolean alphOrder = UIHelper.isAlphabeticalOrder(getActivity());
-
-            if (lang == null)
-                executeTask(isRefresh, onlyWatched, alphOrder);
-            else {
-                executeAltTask(isRefresh, alphOrder, lang);
-            }
-
-            setListAdapter(adapter);
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage(), e);
-            Toast.makeText(getActivity(), "Error when updating: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @SuppressLint("NewApi")
-    private void executeTask(boolean isRefresh, boolean onlyWatched, boolean alphOrder) {
-        if (mode == null)
-            mode = Constants.EXTRA_NOVEL_LIST_MODE_MAIN;
-        task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder, mode);
-        String key = null;
-        if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
-            key = TAG + ":" + Constants.ROOT_NOVEL_ENGLISH;
-        } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
-            key = TAG + ":" + Constants.ROOT_TEASER;
-        } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
-            key = TAG + ":" + Constants.ROOT_ORIGINAL;
-        }
-        boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
-        if (isAdded) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            else
-                task.execute();
-        } else {
-            Log.i(TAG, "Continue execute task: " + key);
-            LoadNovelsTask tempTask = (LoadNovelsTask) LNReaderApplication.getInstance().getTask(key);
-            if (tempTask != null) {
-                task = tempTask;
-                task.owner = this;
-            }
-            toggleProgressBar(true);
-        }
-    }
-
-    private void executeAltTask(boolean isRefresh, boolean alphOrder, String lang) {
-        altTask = new LoadAlternativeTask(this, isRefresh, alphOrder, lang);
-        String key = null;
-        if (lang != null)
-            key = TAG + ":" + AlternativeLanguageInfo.getAlternativeLanguageInfo().get(lang).getCategoryInfo();
-        boolean isAdded = LNReaderApplication.getInstance().addTask(key, altTask);
-        if (isAdded) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                altTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            else
-                altTask.execute();
-        } else {
-            Log.i(TAG, "Continue execute task: " + key);
-            LoadAlternativeTask tempTask = (LoadAlternativeTask) LNReaderApplication.getInstance().getTask(key);
-            if (tempTask != null) {
-                altTask = tempTask;
-                altTask.owner = this;
-            }
-            toggleProgressBar(true);
-        }
-    }
-
-    @Override
-    public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
-        boolean exists = false;
-        if (!this.isAdded() || this.isDetached())
-            return exists;
-
-        String name = touchedForDownload;
-        if (type == 0) {
-            if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
-                exists = true;
-                Toast.makeText(getActivity(), "Download already on queue.", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getActivity(), "Downloading " + name + ".", Toast.LENGTH_SHORT).show();
-                LNReaderApplication.getInstance().addDownload(id, name);
-            }
-        } else if (type == 1) {
-            Toast.makeText(getActivity(), toastText, Toast.LENGTH_SHORT).show();
-        } else if (type == 2) {
-            String message = String.format("%s's download finished!", LNReaderApplication.getInstance().getDownloadDescription(id));
-            if (hasError)
-                message = String.format("%s's download finished with error(s)!", LNReaderApplication.getInstance().getDownloadDescription(id));
-            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-            LNReaderApplication.getInstance().removeDownload(id);
-        }
-        return exists;
-    }
-
-    @Override
-    public void updateProgress(String id, int current, int total, String messString) {
-        double cur = current;
-        double tot = total;
-        double result = (cur / tot) * 100;
-        LNReaderApplication.getInstance().updateDownload(id, (int) result, messString);
-        if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
-            loadingBar.setIndeterminate(false);
-            loadingBar.setMax(total);
-            loadingBar.setProgress(current);
-            loadingBar.setProgress(0);
-            loadingBar.setProgress(current);
-            loadingBar.setMax(total);
-        }
-    }
-
-    @SuppressLint("NewApi")
-    private void executeDownloadTask(ArrayList<PageModel> novels) {
-        downloadTask = new DownloadNovelDetailsTask(this);
-        if (novels == null || novels.size() == 0)
-            return;
-        String key = DisplayLightNovelDetailsFragment.TAG + ":" + novels.get(0).getPage();
-        if (novels.size() > 1) {
-            if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
-                key = DisplayLightNovelDetailsFragment.TAG + ":All_Novels";
-            } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
-                key = DisplayLightNovelDetailsFragment.TAG + ":All_Teasers";
-            } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
-                key = DisplayLightNovelDetailsFragment.TAG + ":All_Original";
-            }
-        }
-        boolean isAdded = LNReaderApplication.getInstance().addTask(key, downloadTask);
-        if (isAdded) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, novels.toArray(new PageModel[novels.size()]));
-            else
-                downloadTask.execute(novels.toArray(new PageModel[novels.size()]));
-        } else {
-            Log.i(TAG, "Continue download task: " + key);
-            DownloadNovelDetailsTask tempTask = (DownloadNovelDetailsTask) LNReaderApplication.getInstance().getTask(key);
-            if (tempTask != null) {
-                downloadTask = tempTask;
-                downloadTask.owner = this;
-            }
-            toggleProgressBar(true);
-        }
-    }
-
-    @SuppressLint("NewApi")
-    private void executeAddTask(PageModel novel) {
-        addTask = new AddNovelTask(this);
-        String key = DisplayLightNovelDetailsFragment.TAG + ":Add:" + novel.getPage();
-        boolean isAdded = LNReaderApplication.getInstance().addTask(key, addTask);
-        if (isAdded) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                addTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[]{novel});
-            else
-                addTask.execute(new PageModel[]{novel});
-        } else {
-            Log.i(TAG, "Continue Add task: " + key);
-            AddNovelTask tempTask = (AddNovelTask) LNReaderApplication.getInstance().getTask(key);
-            if (tempTask != null) {
-                addTask = tempTask;
-                addTask.owner = this;
-            }
-            toggleProgressBar(true);
-        }
-    }
-
-    @Override
-    public void toggleProgressBar(boolean show) {
         if (show) {
             loadingText.setText("Loading List, please wait...");
             loadingText.setVisibility(TextView.VISIBLE);
             loadingBar.setVisibility(ProgressBar.VISIBLE);
-            if (listView != null)
-                listView.setVisibility(ListView.GONE);
+            listView.setVisibility(ListView.GONE);
         } else {
             loadingText.setVisibility(TextView.GONE);
             loadingBar.setVisibility(ProgressBar.GONE);
-            if (listView != null)
-                listView.setVisibility(ListView.VISIBLE);
+            listView.setVisibility(ListView.VISIBLE);
         }
     }
+    // endregion
+
+    // region IExtendedCallbackNotifier<AsyncTaskResult<?>> implementation
 
     @Override
-    public void setMessageDialog(ICallbackEventData message) {
-        // if(dialog.isShowing())
-        // dialog.setMessage(message.getMessage());
-        if (loadingText.getVisibility() == TextView.VISIBLE)
-            loadingText.setText(message.getMessage());
-    }
-
-    @Override
-    public void onGetResult(AsyncTaskResult<?> result, Class<?> t) {
+    public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<?> result) {
         if (!isAdded())
             return;
 
         Exception e = result.getError();
         if (e == null) {
+            Class t = result.getResultType();
+
             // from LoadNovelsTask
             if (t == PageModel[].class) {
                 PageModel[] list = (PageModel[]) result.getResult();
@@ -499,19 +480,23 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
                     // Show message if watch list is empty
                     if (list.length == 0 && onlyWatched) {
                         Log.d(TAG, "WatchList result set message empty");
-                        loadingText.setVisibility(TextView.VISIBLE);
-                        loadingText.setText("Watch List is empty.");
+                        if (loadingText != null) {
+                            loadingText.setVisibility(TextView.VISIBLE);
+                            loadingText.setText("Watch List is empty.");
+                        }
                     }
                 } else {
                     toggleProgressBar(false);
-                    loadingText.setVisibility(TextView.VISIBLE);
-                    loadingText.setText("List is empty.");
+                    if (loadingText != null) {
+                        loadingText.setVisibility(TextView.VISIBLE);
+                        loadingText.setText("List is empty.");
+                    }
                     Log.w(TAG, "Empty ArrayList!");
                 }
             }
             // from DownloadNovelDetailsTask
             else if (t == NovelCollectionModel[].class) {
-                setMessageDialog(new CallbackEventData("Download complete.", "DownloadNovelDetailsTask"));
+                onProgressCallback(new CallbackEventData("Download complete.", "DownloadNovelDetailsTask"));
                 NovelCollectionModel[] list = (NovelCollectionModel[]) result.getResult();
                 for (NovelCollectionModel novelCol : list) {
                     try {
@@ -543,10 +528,51 @@ public class DisplayLightNovelListFragment extends ListFragment implements IAsyn
     }
 
     @Override
-    public Context getContext() {
-        Context ctx = this.getActivity();
-        if (ctx == null)
-            return LNReaderApplication.getInstance().getApplicationContext();
-        return ctx;
+    public void onProgressCallback(ICallbackEventData message) {
+        if (loadingText != null && loadingText.getVisibility() == TextView.VISIBLE)
+            loadingText.setText(message.getMessage());
+
+        if (message instanceof DownloadCallbackEventData) {
+            DownloadCallbackEventData downloadData = (DownloadCallbackEventData) message;
+            LNReaderApplication.getInstance().updateDownload(message.getSource(), downloadData.getPercentage(), message.getMessage());
+
+            if (loadingBar != null && loadingBar.getVisibility() == View.VISIBLE) {
+                loadingBar.setIndeterminate(false);
+                loadingBar.setMax(100);
+                loadingBar.setProgress(downloadData.getPercentage());
+                loadingBar.setProgress(0);
+                loadingBar.setProgress(downloadData.getPercentage());
+                loadingBar.setMax(100);
+            }
+        }
     }
+
+    @Override
+    public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
+        if (!this.isAdded() || this.isDetached())
+            return false;
+
+        boolean exists = false;
+        String name = touchedForDownload;
+        if (type == 0) {
+            if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
+                exists = true;
+                Toast.makeText(getActivity(), "Download already on queue.", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), "Downloading " + name + ".", Toast.LENGTH_SHORT).show();
+                LNReaderApplication.getInstance().addDownload(id, name);
+            }
+        } else if (type == 1) {
+            Toast.makeText(getActivity(), toastText, Toast.LENGTH_SHORT).show();
+        } else if (type == 2) {
+            String message = String.format("%s's download finished!", LNReaderApplication.getInstance().getDownloadDescription(id));
+            if (hasError)
+                message = String.format("%s's download finished with error(s)!", LNReaderApplication.getInstance().getDownloadDescription(id));
+            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            LNReaderApplication.getInstance().removeDownload(id);
+        }
+        return exists;
+    }
+
+    // endregion
 }

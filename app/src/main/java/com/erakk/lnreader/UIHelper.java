@@ -1,7 +1,6 @@
 package com.erakk.lnreader;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,13 +13,14 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.View.OnSystemUiVisibilityChangeListener;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -68,12 +68,11 @@ public class UIHelper {
      * @param enable   enable up behaviour
      */
     @SuppressLint("NewApi")
-    public static void SetActionBarDisplayHomeAsUp(Activity activity, boolean enable) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            ActionBar actionBar = activity.getActionBar();
-            if (actionBar != null)
-                actionBar.setDisplayHomeAsUpEnabled(enable);
-        }
+    public static void SetActionBarDisplayHomeAsUp(AppCompatActivity activity, boolean enable) {
+        ActionBar actionBar = activity.getSupportActionBar();
+        if (actionBar != null)
+            actionBar.setDisplayHomeAsUpEnabled(enable);
+
         // CheckScreenRotation(activity);
         CheckKeepAwake(activity);
     }
@@ -87,7 +86,7 @@ public class UIHelper {
     public static void Recreate(Activity activity) {
         if (activity.isFinishing())
             return;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed())
             return;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -156,7 +155,7 @@ public class UIHelper {
     }
 
     @SuppressLint("NewApi")
-    public static void ToggleFullscreen(final Activity activity, boolean fullscreen) {
+    public static void ToggleFullscreen(final AppCompatActivity activity, boolean fullscreen) {
         if (fullscreen) {
             // Use Immersive Mode for KitKat
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -182,16 +181,16 @@ public class UIHelper {
                         });
             }
             // Hide action bar for supported versions
-            else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                ActionBar actionBar = activity.getActionBar();
+            else { //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                ActionBar actionBar = activity.getSupportActionBar();
                 if (actionBar != null)
                     actionBar.hide();
                 activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-            } else {
-                activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+//            } else {
+//                activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//                activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//                activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
             }
         } else {
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
@@ -210,15 +209,15 @@ public class UIHelper {
     }
 
     @SuppressLint("NewApi")
-    public static void ToggleActionBar(Activity activity, boolean show) {
+    public static void ToggleActionBar(AppCompatActivity activity, boolean show) {
         if (!show) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                ActionBar actionBar = activity.getActionBar();
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            ActionBar actionBar = activity.getSupportActionBar();
                 if (actionBar != null)
                     actionBar.hide();
-            } else {
-                activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            }
+//            } else {
+//                activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//            }
         }
     }
 
@@ -274,7 +273,7 @@ public class UIHelper {
      * @param message
      * @param caption
      * @param listener
-     * @return
+     * @return new Alert Dialog with Yes/No buttons.
      */
     public static AlertDialog createYesNoDialog(Context context, String message, String caption, DialogInterface.OnClickListener listener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -285,29 +284,6 @@ public class UIHelper {
         return builder.create();
     }
 
-//    /**
-//     * Change the color of image in ImageView, works nicely with single coloured images.
-//     *
-//     * @param targetIv
-//     */
-//    public static ImageView setColorFilter(ImageView targetIv) {
-//        if (PreferenceManager.getDefaultSharedPreferences(targetIv.getContext()).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
-//            targetIv.setColorFilter(Constants.COLOR_UNREAD);
-//        } else {
-//            targetIv.setColorFilter(Constants.COLOR_UNREAD_DARK);
-//        }
-//        return targetIv;
-//    }
-//
-//    public static Drawable setColorFilter(Drawable targetIv) {
-//        if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
-//            targetIv.setColorFilter(Constants.COLOR_UNREAD, Mode.SRC_ATOP);
-//        } else {
-//            targetIv.setColorFilter(Constants.COLOR_UNREAD_DARK, Mode.SRC_ATOP);
-//        }
-//        return targetIv;
-//    }
-
     public static void setLanguage(Context activity, String key) {
         try {
             /* Changing configuration to user's choice */
@@ -317,7 +293,7 @@ public class UIHelper {
             DisplayMetrics dm = res.getDisplayMetrics();
             Configuration conf = res.getConfiguration();
             conf.locale = myLocale;
-			/* update resources */
+            /* update resources */
             res.updateConfiguration(conf, dm);
         } catch (Exception ex) {
             Log.e(TAG, "Failed to set language: " + key, ex);
@@ -326,7 +302,7 @@ public class UIHelper {
     }
 
     public static void setLanguage(Context activity) {
-		/* Set starting language */
+        /* Set starting language */
         String locale = PreferenceManager.getDefaultSharedPreferences(activity).getString(Constants.PREF_LANGUAGE, "en");
         setLanguage(activity, locale);
     }
@@ -400,7 +376,7 @@ public class UIHelper {
         return temp;
     }
 
-	/* PREFERENCES HELPER */
+    /* PREFERENCES HELPER */
     public static boolean getCssUseCustomColorPreferences(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_CSS_CUSTOM_COLOR, false);
     }

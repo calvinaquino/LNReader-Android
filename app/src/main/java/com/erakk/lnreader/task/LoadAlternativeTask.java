@@ -9,6 +9,7 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
 
@@ -23,10 +24,10 @@ public class LoadAlternativeTask extends AsyncTask<Void, ICallbackEventData, Asy
 	private boolean refreshOnly = false;
 	private boolean alphOrder = false;
 	private String language = null;
-	public volatile IAsyncTaskOwner owner;
+	public volatile IExtendedCallbackNotifier<AsyncTaskResult<?>> owner;
 	private String source;
 
-	public LoadAlternativeTask(IAsyncTaskOwner owner, boolean refreshOnly, boolean alphOrder, String language) {
+	public LoadAlternativeTask(IExtendedCallbackNotifier<AsyncTaskResult<?>> owner, boolean refreshOnly, boolean alphOrder, String language) {
 		this.refreshOnly = refreshOnly;
 		this.alphOrder = alphOrder;
 		this.owner = owner;
@@ -41,12 +42,12 @@ public class LoadAlternativeTask extends AsyncTask<Void, ICallbackEventData, Asy
 	@Override
 	protected void onPreExecute() {
 		// executed on UI thread.
-		owner.toggleProgressBar(true);
+		owner.onProgressCallback(new CallbackEventData( "Loading Alternative Languange novels...", source));
 	}
 
 	@Override
 	protected AsyncTaskResult<PageModel[]> doInBackground(Void... arg0) {
-		Context ctx = owner.getContext();
+		Context ctx = LNReaderApplication.getInstance();
 		// different thread from UI
 		try {
 			ArrayList<PageModel> novels = new ArrayList<PageModel>();
@@ -69,13 +70,12 @@ public class LoadAlternativeTask extends AsyncTask<Void, ICallbackEventData, Asy
 
 	@Override
 	protected void onProgressUpdate(ICallbackEventData... values) {
-		owner.setMessageDialog(values[0]);
+		owner.onProgressCallback(values[0]);
 	}
 
 	@Override
 	protected void onPostExecute(AsyncTaskResult<PageModel[]> result) {
 		// executed on UI thread.
-		owner.setMessageDialog(new CallbackEventData(LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.load_novel_alt_task_complete, language), source));
-		owner.onGetResult(result, PageModel[].class);
+		owner.onCompleteCallback(new CallbackEventData(LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.load_novel_alt_task_complete, language), source), result);
 	}
 }

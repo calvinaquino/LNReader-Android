@@ -10,6 +10,7 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
 
@@ -21,10 +22,10 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
     private boolean onlyWatched = false;
     private boolean alphOrder = false;
     private final String mode;
-    public volatile IAsyncTaskOwner owner;
+    public volatile IExtendedCallbackNotifier<AsyncTaskResult<?>> owner;
     private String source;
 
-    public LoadNovelsTask(IAsyncTaskOwner owner, boolean refreshOnly, boolean onlyWatched, boolean alphOrder, String mode) {
+    public LoadNovelsTask(IExtendedCallbackNotifier<AsyncTaskResult<?>> owner, boolean refreshOnly, boolean onlyWatched, boolean alphOrder, String mode) {
         this.refreshOnly = refreshOnly;
         this.onlyWatched = onlyWatched;
         this.alphOrder = alphOrder;
@@ -40,7 +41,7 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
     @Override
     protected void onPreExecute() {
         // executed on UI thread.
-        owner.toggleProgressBar(true);
+        owner.onProgressCallback(new CallbackEventData("Loading novels...", source));
     }
 
     @Override
@@ -90,25 +91,26 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
 
     @Override
     protected void onProgressUpdate(ICallbackEventData... values) {
-        owner.setMessageDialog(values[0]);
+        owner.onProgressCallback(values[0]);
     }
 
     @Override
     protected void onPostExecute(AsyncTaskResult<PageModel[]> result) {
+        Context ctx = LNReaderApplication.getInstance();
         // executed on UI thread.
         CallbackEventData message = null;
         if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
             if (onlyWatched) {
-                message = new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novels_task_watched_complete), source);
+                message = new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_watched_complete), source);
             } else {
-                message = new CallbackEventData(owner.getContext().getResources().getString(R.string.load_novels_task_complete), source);
+                message = new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_complete), source);
             }
         } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
-            message = new CallbackEventData(owner.getContext().getResources().getString(R.string.load_original_task_complete), source);
+            message = new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_complete), source);
         } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
-            message = new CallbackEventData(owner.getContext().getResources().getString(R.string.load_teaser_task_complete), source);
+            message = new CallbackEventData(ctx.getResources().getString(R.string.load_teaser_task_complete), source);
         }
-        owner.setMessageDialog(message);
-        owner.onGetResult(result, PageModel[].class);
+
+        owner.onCompleteCallback(message, result);
     }
 }

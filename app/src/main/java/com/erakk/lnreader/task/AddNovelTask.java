@@ -4,20 +4,23 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 
 public class AddNovelTask extends AsyncTask<PageModel, ICallbackEventData, AsyncTaskResult<NovelCollectionModel>> implements ICallbackNotifier {
-	public volatile IAsyncTaskOwner owner;
+	public volatile IExtendedCallbackNotifier<AsyncTaskResult<?>> owner;
 	private String source;
 
-	public AddNovelTask(IAsyncTaskOwner displayLightNovelListActivity) {
+	public AddNovelTask(IExtendedCallbackNotifier<AsyncTaskResult<?>> displayLightNovelListActivity, String source) {
 		this.owner = displayLightNovelListActivity;
+		this.source = source;
 	}
 
 	@Override
@@ -27,7 +30,7 @@ public class AddNovelTask extends AsyncTask<PageModel, ICallbackEventData, Async
 
 	@Override
 	protected AsyncTaskResult<NovelCollectionModel> doInBackground(PageModel... params) {
-		Context ctx = owner.getContext();
+		Context ctx = LNReaderApplication.getInstance();
 		PageModel page = params[0];
 		try {
 			publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.add_novel_task_check, page.getPage()), source));
@@ -49,12 +52,12 @@ public class AddNovelTask extends AsyncTask<PageModel, ICallbackEventData, Async
 	@Override
 	protected void onProgressUpdate(ICallbackEventData... values) {
 		// executed on UI thread.
-		owner.setMessageDialog(values[0]);
+		owner.onProgressCallback(values[0]);
 	}
 
 	@Override
 	protected void onPostExecute(AsyncTaskResult<NovelCollectionModel> result) {
-		owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.add_novel_task_complete), source));
-		owner.onGetResult(result, NovelCollectionModel.class);
+		Context ctx = LNReaderApplication.getInstance();
+		owner.onCompleteCallback(new CallbackEventData(ctx.getResources().getString(R.string.add_novel_task_complete), source), result);
 	}
 }

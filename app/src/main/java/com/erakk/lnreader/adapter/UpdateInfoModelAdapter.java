@@ -160,8 +160,10 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View row = convertView;
-        UpdateInfoModelHolder holder = null;
+        if (convertView == null) {
+            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+            convertView = inflater.inflate(layoutResourceId, parent, false);
+        }
 
         final UpdateInfoModel page = data.get(position);
         boolean freshData = false;
@@ -169,11 +171,8 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
             freshData = true;
         }
 
-        LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-        row = inflater.inflate(layoutResourceId, parent, false);
-
-        holder = new UpdateInfoModelHolder();
-        holder.txtUpdateType = (TextView) row.findViewById(R.id.update_type);
+        UpdateInfoModelHolder holder = new UpdateInfoModelHolder();
+        holder.txtUpdateType = (TextView) convertView.findViewById(R.id.update_type);
         if (holder.txtUpdateType != null) {
             switch (page.getUpdateType()) {
                 case New:
@@ -199,7 +198,7 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
                 holder.txtUpdateType.setTypeface(null, Typeface.BOLD);
         }
 
-        holder.txtUpdateTitle = (TextView) row.findViewById(R.id.update_chapter);
+        holder.txtUpdateTitle = (TextView) convertView.findViewById(R.id.update_chapter);
         if (holder.txtUpdateTitle != null) {
             holder.txtUpdateTitle.setText(page.getUpdateTitle());
             if (freshData)
@@ -219,12 +218,12 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
             }
         }
 
-        holder.txtUpdateDate = (TextView) row.findViewById(R.id.update_date);
+        holder.txtUpdateDate = (TextView) convertView.findViewById(R.id.update_date);
         if (holder.txtUpdateDate != null) {
             holder.txtUpdateDate.setText(context.getResources().getString(R.string.updated) + " " + Util.formatDateForDisplay(context, page.getUpdateDate()));
         }
 
-        holder.chkSelected = (CheckBox) row.findViewById(R.id.chk_selection);
+        holder.chkSelected = (CheckBox) convertView.findViewById(R.id.chk_selection);
         if (holder.chkSelected != null) {
             // holder.txtUpdateDate.setText("Update:" + Util.formatDateForDisplay(page.getUpdateDate()));
             holder.chkSelected.setChecked(page.isSelected());
@@ -239,7 +238,7 @@ public class UpdateInfoModelAdapter extends ArrayAdapter<UpdateInfoModel> {
         }
 
         // row.setTag(holder);
-        return row;
+        return convertView;
     }
 
     static class UpdateInfoModelHolder {

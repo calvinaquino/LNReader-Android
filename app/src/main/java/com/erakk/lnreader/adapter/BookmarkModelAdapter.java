@@ -1,9 +1,5 @@
 package com.erakk.lnreader.adapter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
@@ -22,6 +18,10 @@ import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookmarkModel;
 import com.erakk.lnreader.model.PageModel;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 	private static final String TAG = BookmarkModelAdapter.class.toString();
@@ -69,31 +69,32 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View row = convertView;
-		LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-		row = inflater.inflate(layoutResourceId, parent, false);
+		if(convertView == null) {
+			LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+			convertView = inflater.inflate(layoutResourceId, parent, false);
+		}
 
 		BookmarkModelHolder holder = new BookmarkModelHolder();
-
 		final BookmarkModel bookmark = data.get(position);
-		setTitleAndSubtitle(row, holder, bookmark);
 
-		holder.txtPIndex = (TextView) row.findViewById(R.id.p_index);
+		setTitleAndSubtitle(convertView, holder, bookmark);
+
+		holder.txtPIndex = (TextView) convertView.findViewById(R.id.p_index);
 		if (holder.txtPIndex != null) {
 			holder.txtPIndex.setText("#" + bookmark.getpIndex());
 		}
 
-		holder.txtCreateDate = (TextView) row.findViewById(R.id.create_date);
+		holder.txtCreateDate = (TextView) convertView.findViewById(R.id.create_date);
 		if (holder.txtCreateDate != null) {
 			holder.txtCreateDate.setText(context.getResources().getString(R.string.added) + " " + Util.formatDateForDisplay(context, bookmark.getCreationDate()));
 		}
 
-		holder.txtExcerpt = (TextView) row.findViewById(R.id.excerpt);
+		holder.txtExcerpt = (TextView) convertView.findViewById(R.id.excerpt);
 		if (holder.txtExcerpt != null) {
 			holder.txtExcerpt.setText(bookmark.getExcerpt());
 		}
 
-		holder.chkSelection = (CheckBox) row.findViewById(R.id.chk_selection);
+		holder.chkSelection = (CheckBox) convertView.findViewById(R.id.chk_selection);
 		if (holder.chkSelection != null) {
 			if (showCheckBox) {
 				holder.chkSelection.setVisibility(View.VISIBLE);
@@ -109,8 +110,8 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 				holder.chkSelection.setVisibility(View.GONE);
 		}
 
-		row.setTag(holder);
-		return row;
+		convertView.setTag(holder);
+		return convertView;
 	}
 
 	/**
@@ -155,10 +156,10 @@ public class BookmarkModelAdapter extends ArrayAdapter<BookmarkModel> {
 
 	static class BookmarkModelHolder {
 		TextView txtPageTitle;
+        TextView txtPageSubTitle;
 		TextView txtPIndex;
 		TextView txtExcerpt;
 		TextView txtCreateDate;
-		TextView txtPageSubTitle;
 		CheckBox chkSelection;
 	}
 }

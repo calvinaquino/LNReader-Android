@@ -29,7 +29,8 @@ public class FileListAdapter extends ArrayAdapter<File>  {
 		View v = convertView;
 		if (v == null) {
 			LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			v = vi.inflate(R.layout.item_file, null);
+			// v = vi.inflate(R.layout.item_file, null); // need to pass as null
+			v = vi.inflate(R.layout.item_file, parent, false);
 		}
 		File d = files.get(position);
 		if (d != null) {

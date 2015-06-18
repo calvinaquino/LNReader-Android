@@ -26,7 +26,6 @@ public class DisplayNovelTabFragment extends Fragment {
     private static final String TEASER_SPEC = "Teaser";
     private static final String ORIGINAL_SPEC = "Original";
     private static final String TAG = DisplayNovelTabFragment.class.toString();
-    private FragmentTabHost mTabHost;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,7 +38,7 @@ public class DisplayNovelTabFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_display_novel_tab, container, false);
 
-        mTabHost = (FragmentTabHost) view.findViewById(android.R.id.tabhost);
+        FragmentTabHost mTabHost = (FragmentTabHost) view.findViewById(android.R.id.tabhost);
         mTabHost.setup(getActivity(), getChildFragmentManager(), R.id.content);
 
         String mode = getArguments().getString(Constants.EXTRA_NOVEL_LIST_MODE);

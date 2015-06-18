@@ -155,7 +155,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements IExte
 	public void onCreate(Bundle savedInstanceState) {
 		UIHelper.SetTheme(this, null);
 		super.onCreate(savedInstanceState);
-		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
+		//UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
 		// This man is deprecated but but we may want to be able to run on older API
 		addPreferencesFromResource(R.xml.preferences);

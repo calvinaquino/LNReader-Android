@@ -33,10 +33,8 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
     @Override
     protected void onPreExecute() {
         // executed on UI thread.
-        boolean exists = false;
-        exists = owner.downloadListSetup(this.taskId, null, 0, false);
-        if (exists)
-            this.cancel(true);
+        owner.downloadListSetup(this.taskId, null, 0, false);
+        LNReaderApplication.getInstance().addDownload(this.taskId, this.taskId);
     }
 
     @Override
@@ -86,6 +84,7 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
         // executed on UI thread.
         DownloadCallbackEventData message = new DownloadCallbackEventData(values[0].getMessage(), currentChapter, chapters.length, this.taskId);
         owner.onProgressCallback(message);
+        LNReaderApplication.getInstance().updateDownload(this.taskId, message.getPercentage(), message.getMessage());
     }
 
     @Override

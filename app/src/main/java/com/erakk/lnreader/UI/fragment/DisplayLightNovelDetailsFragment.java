@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -101,7 +102,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        UIHelper.SetActionBarDisplayHomeAsUp(getActivity(), true);
+        UIHelper.SetActionBarDisplayHomeAsUp((AppCompatActivity) getActivity(), true);
         View view = inflater.inflate(R.layout.fragment_display_light_novel_details, container, false);
 
         loadingText = (TextView) view.findViewById(R.id.emptyList);
@@ -533,8 +534,8 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
 
     @SuppressLint("NewApi")
     private void executeTask(PageModel pageModel, boolean willRefresh) {
-        task = new LoadNovelDetailsTask(pageModel, willRefresh, this);
         String key = TAG + ":" + pageModel.getPage();
+        task = new LoadNovelDetailsTask(pageModel, willRefresh, this, key);
         boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
         if (isAdded) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)

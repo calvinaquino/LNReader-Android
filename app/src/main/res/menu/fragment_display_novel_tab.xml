@@ -9,9 +9,9 @@
         android:orderInCategory="2"
         android:title="@string/novel_list_manual_add"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/menu_download_all_info"
-        android:orderInCategory="1"
-        android:title="@string/novel_list_download_all"
-        app:showAsAction="ifRoom" />
+    <!--<item-->
+        <!--android:id="@+id/menu_download_all_info"-->
+        <!--android:orderInCategory="1"-->
+        <!--android:title="@string/novel_list_download_all"-->
+        <!--app:showAsAction="ifRoom" />-->
 </menu>

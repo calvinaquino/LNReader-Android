@@ -7,8 +7,10 @@ import android.util.Log;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.callback.CallbackEventData;
+import com.erakk.lnreader.callback.DownloadCallbackEventData;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.BakaReaderException;
 import com.erakk.lnreader.helper.Util;
@@ -20,22 +22,20 @@ import java.util.ArrayList;
 public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEventData, AsyncTaskResult<NovelCollectionModel[]>> implements ICallbackNotifier {
 
     private static final String TAG = DownloadNovelDetailsTask.class.toString();
-    public volatile IAsyncTaskOwner owner;
+    public volatile IExtendedCallbackNotifier<AsyncTaskResult<?>> owner;
     private int currentPart = 0;
     private int totalParts = 0;
     private final String taskId;
 
-    public DownloadNovelDetailsTask(IAsyncTaskOwner owner) {
+    public DownloadNovelDetailsTask(IExtendedCallbackNotifier<AsyncTaskResult<?>> owner) {
         this.owner = owner;
         this.taskId = this.toString();
     }
 
     @Override
     protected void onPreExecute() {
-        boolean exists = false;
-        exists = owner.downloadListSetup(this.taskId, null, 0, false);
-        if (exists)
-            this.cancel(true);
+        owner.downloadListSetup(this.taskId, null, 0, false);
+        LNReaderApplication.getInstance().addDownload(this.taskId, this.taskId);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
 
     @Override
     protected AsyncTaskResult<NovelCollectionModel[]> doInBackground(PageModel... params) {
-        Context ctx = owner.getContext();
+        Context ctx = LNReaderApplication.getInstance();
         ArrayList<NovelCollectionModel> result = new ArrayList<NovelCollectionModel>();
         totalParts = params.length;
 
@@ -75,14 +75,15 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
     @Override
     protected void onProgressUpdate(ICallbackEventData... values) {
         // executed on UI thread.
-        owner.setMessageDialog(values[0]);
-        owner.updateProgress(this.taskId, currentPart, totalParts, values[0].getMessage());
+        DownloadCallbackEventData message = new DownloadCallbackEventData(values[0].getMessage(), currentPart, totalParts, this.taskId);
+        owner.onProgressCallback(message);
+        LNReaderApplication.getInstance().updateDownload(this.taskId, message.getPercentage(), message.getMessage());
     }
 
     @Override
     protected void onPostExecute(AsyncTaskResult<NovelCollectionModel[]> result) {
-        owner.setMessageDialog(new CallbackEventData(owner.getContext().getResources().getString(R.string.download_novel_details_task_complete), this.taskId));
-        owner.onGetResult(result, NovelCollectionModel[].class);
+        Context ctx = LNReaderApplication.getInstance();
+        owner.onCompleteCallback(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_details_task_complete), this.taskId), result);
         owner.downloadListSetup(this.taskId, null, 2, result.getError() != null ? true : false);
         LNReaderApplication.getInstance().removeDownload(this.taskId);
     }

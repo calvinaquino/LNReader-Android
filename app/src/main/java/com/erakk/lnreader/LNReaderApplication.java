@@ -113,9 +113,14 @@ public class LNReaderApplication extends Application {
 
 	public int addDownload(String id, String name) {
 		synchronized (lock) {
+			if(checkIfDownloadExists(name))
+                return -1;
+
 			downloadList.add(new DownloadModel(id, name, 0));
+
 			if (downloadNotifier != null)
 				downloadNotifier.onCompleteCallback(null, null);
+
 			return downloadList.size();
 		}
 	}
