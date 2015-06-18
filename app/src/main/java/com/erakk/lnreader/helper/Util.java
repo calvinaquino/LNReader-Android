@@ -451,19 +451,25 @@ public class Util {
         return url;
     }
 
-    public static String getSavedWacName(String url) {
+    public static String getSavedWacName(String actualUrl) {
         String path = UIHelper.getImageRoot(LNReaderApplication.getInstance()) + "/wac";
 
-        String filename = path + "/" + getBaseWacName(url);
-        String extensions[] = {".wac", ".mht"};
-        for (String ext : extensions) {
-            File temp = new File(filename + ext);
-            if (temp.exists()) {
-                Log.i(TAG, String.format("Web Archive found for %s: %s", url, temp.getAbsolutePath()));
-                return temp.getAbsolutePath();
+        String urlHttps = actualUrl.replace("http://", "https://");
+        String urlHttp = actualUrl.replace("https://", "http://");
+        String[] urls = {urlHttp, urlHttps};
+
+        for (String url : urls) {
+            String filename = path + "/" + getBaseWacName(url);
+            String extensions[] = {".wac", ".mht"};
+            for (String ext : extensions) {
+                File temp = new File(filename + ext);
+                if (temp.exists()) {
+                    Log.i(TAG, String.format("Web Archive found for %s: %s", url, temp.getAbsolutePath()));
+                    return temp.getAbsolutePath();
+                }
             }
         }
-        Log.w(TAG, String.format("Web Archive not found for %s", url));
+        Log.w(TAG, String.format("Web Archive not found for %s", actualUrl));
         return null;
     }
 
