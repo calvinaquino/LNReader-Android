@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.erakk.lnreader"
     android:installLocation="auto"
-    android:versionCode="201506170"
-    android:versionName="1.1.31-beta3">
+    android:versionCode="201506180"
+    android:versionName="1.1.31">
 
     <uses-sdk
         android:minSdkVersion="8"

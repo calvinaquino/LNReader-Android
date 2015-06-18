@@ -1,4 +1,4 @@
-1.1.31-beta3
+1.1.31
 - Update UI to use material design.
 - Replace ActionBarSherlock with appcompat.
 - Fix cover issue.
