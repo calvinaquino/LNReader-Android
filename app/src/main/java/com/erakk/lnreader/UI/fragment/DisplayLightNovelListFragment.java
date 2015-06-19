@@ -85,8 +85,9 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
         Log.i(TAG, "IsWatched: " + onlyWatched + " Mode: " + mode + " lang: " + lang);
 
         String page = getArguments().getString(Constants.EXTRA_PAGE);
+        String pageTitleHint = getArguments().getString(Constants.EXTRA_TITLE);
         if (page != null)
-            loadNovel(page);
+            loadNovel(page, pageTitleHint);
     }
 
     @Override
@@ -364,10 +365,10 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
         }
     }
 
-    private void loadNovel(String page) {
+    private void loadNovel(String page, String novelTitleHint) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.EXTRA_PAGE, page);
-
+        bundle.putString(Constants.EXTRA_TITLE, novelTitleHint);
         mFragListener.changeNextFragment(bundle);
     }
 

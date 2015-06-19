@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -56,7 +55,6 @@ import com.erakk.lnreader.task.LoadNovelDetailsTask;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class DisplayLightNovelDetailsFragment extends Fragment implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
     public static final String TAG = DisplayLightNovelDetailsFragment.class.toString();
@@ -80,12 +78,13 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
 
         // Get intent and message
         page = new PageModel();
-        String pageTitle = getArguments().getString(Constants.EXTRA_PAGE);
-        if (Util.isStringNullOrEmpty(pageTitle)) {
-            Log.w(TAG, "Page title is empty!");
+        String pageStr = getArguments().getString(Constants.EXTRA_PAGE);
+        String title = getArguments().getString(Constants.EXTRA_TITLE);
+        if (Util.isStringNullOrEmpty(pageStr)) {
+            Log.w(TAG, "Page is empty!");
         }
-        page.setPage(pageTitle);
-
+        page.setPage(pageStr);
+        getActivity().setTitle(title);
     }
 
     @Override
@@ -96,7 +95,6 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        UIHelper.SetActionBarDisplayHomeAsUp((AppCompatActivity) getActivity(), true);
         View view = inflater.inflate(R.layout.fragment_display_light_novel_details, container, false);
 
         loadingText = (TextView) view.findViewById(R.id.emptyList);
@@ -118,30 +116,34 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
             }
         });
         setHasOptionsMenu(true);
-
-        try {
-            page = dao.getPageModel(page, null);
-            getActivity().setTitle(page.getTitle());
-        } catch (Exception e) {
-            Log.e(TAG, "Error when getting Page Model for " + page.getPage(), e);
-            getActivity().setTitle(page.getPage());
-        }
-
         executeTask(page, false);
 
         return view;
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
         Log.d(TAG, "OnResume: " + task.getStatus().toString());
-        if (bookModelAdapter != null)
-            bookModelAdapter.refreshData();
-        if (expandList != null)
-            expandList.invalidateViews();
+        final Activity activity = getActivity();
+        new Thread(new Runnable() {
 
+            @Override
+            public void run() {
+                // try to refresh on different thread
+                if (bookModelAdapter != null)
+                    bookModelAdapter.refreshData();
+
+                activity.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (expandList != null)
+                            expandList.invalidateViews();
+                    }
+                });
+            }
+        }).start();
     }
 
     @Override
@@ -165,12 +167,12 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                 ArrayList<PageModel> availableChapters = novelCol.getFlattedChapterList();
                 ArrayList<PageModel> notDownloadedChapters = new ArrayList<PageModel>();
                 for (PageModel pageModel : availableChapters) {
-                    if (pageModel.isMissing() || pageModel.isExternal())
-                        continue;
-                    else if (!pageModel.isDownloaded()
-                            || (pageModel.isDownloaded() && dao.isContentUpdated(pageModel))) {
-                        notDownloadedChapters.add(pageModel);
-                    }
+                    // add to the list if not missing and not external
+                    if (!pageModel.isMissing() && !pageModel.isExternal())
+                        // and not yet downloaded or got updates.
+                        if (!pageModel.isDownloaded() || dao.isContentUpdated(pageModel)) {
+                            notDownloadedChapters.add(pageModel);
+                        }
                 }
                 touchedForDownload = "Volumes";
                 executeDownloadTask(notDownloadedChapters, true);
@@ -205,7 +207,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
         int groupPosition = ExpandableListView.getPackedPositionGroup(info.packedPosition);
         int childPosition = ExpandableListView.getPackedPositionChild(info.packedPosition);
 
-        PageModel chapter = null;
+        PageModel chapter;
 
         switch (item.getItemId()) {
             // Volume cases
@@ -217,8 +219,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                 BookModel book = novelCol.getBookCollections().get(groupPosition);
                 // get the chapter which not downloaded yet
                 ArrayList<PageModel> downloadingChapters = new ArrayList<PageModel>();
-                for (Iterator<PageModel> i = book.getChapterCollection().iterator(); i.hasNext(); ) {
-                    PageModel temp = i.next();
+                for (PageModel temp : book.getChapterCollection()) {
                     if (temp.isDownloaded()) {
                         if (dao.isContentUpdated(temp)) {
                             downloadingChapters.add(temp);
@@ -250,8 +251,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
 			 */
                 Toast.makeText(getActivity(), getResources().getString(R.string.toast_mark_volume), Toast.LENGTH_SHORT).show();
                 BookModel book2 = novelCol.getBookCollections().get(groupPosition);
-                for (Iterator<PageModel> iPage = book2.getChapterCollection().iterator(); iPage.hasNext(); ) {
-                    PageModel page = iPage.next();
+                for (PageModel page : book2.getChapterCollection()) {
                     page.setFinishedRead(true);
                     dao.updatePageModel(page);
                 }
@@ -260,12 +260,11 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
             case R.id.mark_volume2:
 
 			/*
-			 * Implement code to mark entire volume as unread
+             * Implement code to mark entire volume as unread
 			 */
                 Toast.makeText(getActivity(), getResources().getString(R.string.toast_mark_volume2), Toast.LENGTH_SHORT).show();
-                BookModel ubook2 = novelCol.getBookCollections().get(groupPosition);
-                for (Iterator<PageModel> iPage = ubook2.getChapterCollection().iterator(); iPage.hasNext(); ) {
-                    PageModel page = iPage.next();
+                BookModel unreadBooks = novelCol.getBookCollections().get(groupPosition);
+                for (PageModel page : unreadBooks.getChapterCollection()) {
                     page.setFinishedRead(false);
                     dao.updatePageModel(page);
                 }
@@ -275,7 +274,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
             case R.id.download_chapter:
 
 			/*
-			 * Implement code to download this chapter
+             * Implement code to download this chapter
 			 */
                 chapter = bookModelAdapter.getChild(groupPosition, childPosition);
                 String bookName = novelCol.getBookCollections().get(groupPosition).getTitle();
@@ -286,7 +285,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
             case R.id.clear_chapter:
 
 			/*
-			 * Implement code to clear this chapter cache
+             * Implement code to clear this chapter cache
 			 */
                 chapter = bookModelAdapter.getChild(groupPosition, childPosition);
                 Toast.makeText(getActivity(), String.format(getResources().getString(R.string.toast_clear_chapter), chapter.getTitle()), Toast.LENGTH_SHORT).show();
@@ -339,7 +338,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
     public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
         boolean exists = false;
         if (!this.isAdded() || this.isDetached())
-            return exists;
+            return false;
 
         if (page != null && !Util.isStringNullOrEmpty(page.getTitle())) {
             if (type == 0) {
@@ -401,7 +400,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                     for (BookModel book : novelCol.getBookCollections()) {
                         for (PageModel temp : book.getChapterCollection()) {
                             for (int i = 0; i < content.length; ++i) {
-                                if (temp.getPage() == content[i].getPage()) {
+                                if (temp.getPage().equalsIgnoreCase(content[i].getPage())) {
                                     temp.setDownloaded(true);
                                 }
                             }
@@ -438,6 +437,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                         if (page.isPending()) {
                             title += "\nStatus: Project Pending Authorization";
                         }
+                        getActivity().setTitle(page.getTitle());
 
                         textViewTitle.setText(title);
                         textViewSynopsis.setText(novelCol.getSynopsis());
@@ -523,7 +523,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
         startActivity(intent);
     }
 
-    public void toggleProgressBar(boolean show) {
+    private void toggleProgressBar(boolean show) {
         if (show) {
             loadingText.setText("Loading List, please wait...");
             loadingText.setVisibility(TextView.VISIBLE);
