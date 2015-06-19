@@ -81,7 +81,7 @@ public class LoadNovelDetailsTask extends AsyncTask<Void, ICallbackEventData, As
     protected void onPostExecute(AsyncTaskResult<NovelCollectionModel> result) {
         Context ctx = LNReaderApplication.getInstance().getApplicationContext();
         CallbackEventData message = new CallbackEventData(ctx.getResources().getString(R.string.load_novel_detail_task_complete), source);
-        owner.onCompleteCallback(message, result);
         LNReaderApplication.getInstance().removeDownload(source);
+        owner.onCompleteCallback(message, result);
     }
 }

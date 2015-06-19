@@ -24,10 +24,10 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
     private int currentChapter = 0;
     private final String taskId;
 
-    public DownloadNovelContentTask(PageModel[] chapters, IExtendedCallbackNotifier<AsyncTaskResult<?>> owner) {
+    public DownloadNovelContentTask(PageModel[] chapters, String taskId, IExtendedCallbackNotifier<AsyncTaskResult<?>> owner) {
         this.chapters = chapters;
         this.owner = owner;
-        this.taskId = this.toString();
+        this.taskId = taskId;
     }
 
     @Override
@@ -91,7 +91,8 @@ public class DownloadNovelContentTask extends AsyncTask<Void, ICallbackEventData
     protected void onPostExecute(AsyncTaskResult<NovelContentModel[]> result) {
         Context ctx = LNReaderApplication.getInstance().getApplicationContext();
         CallbackEventData message = new CallbackEventData(ctx.getResources().getString(R.string.download_novel_content_task_complete), this.taskId);
-        owner.onCompleteCallback(message, result);
         owner.downloadListSetup(this.taskId, message.getMessage(), 2, result.getError() != null ? true : false);
+        LNReaderApplication.getInstance().removeDownload(this.taskId);
+        owner.onCompleteCallback(message, result);
     }
 }

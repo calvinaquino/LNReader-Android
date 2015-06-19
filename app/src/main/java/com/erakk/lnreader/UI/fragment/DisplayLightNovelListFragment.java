@@ -553,21 +553,20 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
             return false;
 
         boolean exists = false;
-        String name = touchedForDownload;
         if (type == 0) {
-            if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
+            if (LNReaderApplication.getInstance().isDownloadExists(id)) {
                 exists = true;
                 Toast.makeText(getActivity(), "Download already on queue.", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getActivity(), "Downloading " + name + ".", Toast.LENGTH_SHORT).show();
-                LNReaderApplication.getInstance().addDownload(id, name);
+                Toast.makeText(getActivity(), "Downloading " + touchedForDownload + ".", Toast.LENGTH_SHORT).show();
+                LNReaderApplication.getInstance().addDownload(id, touchedForDownload);
             }
         } else if (type == 1) {
             Toast.makeText(getActivity(), toastText, Toast.LENGTH_SHORT).show();
         } else if (type == 2) {
-            String message = String.format("%s's download finished!", LNReaderApplication.getInstance().getDownloadDescription(id));
+            String message = String.format("%s's download finished!", LNReaderApplication.getInstance().getDownloadName(id));
             if (hasError)
-                message = String.format("%s's download finished with error(s)!", LNReaderApplication.getInstance().getDownloadDescription(id));
+                message = String.format("%s's download finished with error(s)!", LNReaderApplication.getInstance().getDownloadName(id));
             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
             LNReaderApplication.getInstance().removeDownload(id);
         }

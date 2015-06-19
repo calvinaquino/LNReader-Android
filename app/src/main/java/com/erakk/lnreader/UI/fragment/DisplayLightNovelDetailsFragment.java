@@ -85,13 +85,6 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
         }
         page.setPage(pageTitle);
 
-        try {
-            page = dao.getPageModel(page, null);
-            getActivity().setTitle(page.getTitle());
-        } catch (Exception e) {
-            Log.e(TAG, "Error when getting Page Model for " + page.getPage(), e);
-            getActivity().setTitle(page.getPage());
-        }
     }
 
     @Override
@@ -124,6 +117,14 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
             }
         });
         setHasOptionsMenu(true);
+
+        try {
+            page = dao.getPageModel(page, null);
+            getActivity().setTitle(page.getTitle());
+        } catch (Exception e) {
+            Log.e(TAG, "Error when getting Page Model for " + page.getPage(), e);
+            getActivity().setTitle(page.getPage());
+        }
 
         executeTask(page, false);
 
@@ -210,7 +211,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
             case R.id.download_volume:
 
 			/*
-			 * Implement code to download this volume
+             * Implement code to download this volume
 			 */
                 BookModel book = novelCol.getBookCollections().get(groupPosition);
                 // get the chapter which not downloaded yet
@@ -231,7 +232,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
             case R.id.clear_volume:
 
 			/*
-			 * Implement code to clear this volume cache
+             * Implement code to clear this volume cache
 			 */
                 BookModel bookClear = novelCol.getBookCollections().get(groupPosition);
                 Toast.makeText(getActivity(), String.format(getResources().getString(R.string.toast_clear_volume), bookClear.getTitle()), Toast.LENGTH_SHORT).show();
@@ -278,7 +279,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                 chapter = bookModelAdapter.getChild(groupPosition, childPosition);
                 String bookName = novelCol.getBookCollections().get(groupPosition).getTitle();
                 touchedForDownload = bookName + " " + chapter.getTitle();
-                downloadTask = new DownloadNovelContentTask(new PageModel[]{chapter}, this);
+                downloadTask = new DownloadNovelContentTask(new PageModel[]{chapter}, touchedForDownload, this);
                 downloadTask.execute();
                 return true;
             case R.id.clear_chapter:
@@ -340,19 +341,19 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
             return exists;
 
         if (page != null && !Util.isStringNullOrEmpty(page.getTitle())) {
-            String name = page.getTitle() + " " + touchedForDownload;
             if (type == 0) {
-                if (LNReaderApplication.getInstance().checkIfDownloadExists(name)) {
+                if (LNReaderApplication.getInstance().isDownloadExists(id)) {
                     exists = true;
                     Toast.makeText(getActivity(), getResources().getString(R.string.toast_download_on_queue), Toast.LENGTH_SHORT).show();
                 } else {
+                    String name = page.getTitle() + " " + touchedForDownload;
                     Toast.makeText(getActivity(), getResources().getString(R.string.toast_downloading, name), Toast.LENGTH_SHORT).show();
                     LNReaderApplication.getInstance().addDownload(id, name);
                 }
             } else if (type == 1) {
                 Toast.makeText(getActivity(), "" + toastText, Toast.LENGTH_SHORT).show();
             } else if (type == 2) {
-                String downloadDescription = LNReaderApplication.getInstance().getDownloadDescription(id);
+                String downloadDescription = LNReaderApplication.getInstance().getDownloadName(id);
                 if (downloadDescription != null) {
                     String message = getResources().getString(R.string.toast_download_finish, page.getTitle(), downloadDescription);
                     if (hasError)
@@ -556,11 +557,12 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
     @SuppressLint("NewApi")
     private void executeDownloadTask(ArrayList<PageModel> chapters, boolean isAll) {
         if (page != null) {
-            downloadTask = new DownloadNovelContentTask(chapters.toArray(new PageModel[chapters.size()]), this);
+
             String key = TAG + ":DownloadChapters:" + page.getPage();
             if (isAll) {
                 key = TAG + ":DownloadChaptersAll:" + page.getPage();
             }
+            downloadTask = new DownloadNovelContentTask(chapters.toArray(new PageModel[chapters.size()]), key, this);
             boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
             if (isAdded) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -597,7 +599,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                 intent.putExtra(Constants.EXTRA_PAGE, chapter.getPage());
                 startActivity(intent);
             } else {
-                downloadTask = new DownloadNovelContentTask(new PageModel[]{chapter}, DisplayLightNovelDetailsFragment.this);
+                downloadTask = new DownloadNovelContentTask(new PageModel[]{chapter}, TAG + ":load_chapter:" + chapter.getPage(), DisplayLightNovelDetailsFragment.this);
                 downloadTask.execute();
             }
         }
