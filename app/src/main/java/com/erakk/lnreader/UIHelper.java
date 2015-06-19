@@ -11,17 +11,19 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
@@ -157,67 +159,64 @@ public class UIHelper {
     @SuppressLint("NewApi")
     public static void ToggleFullscreen(final AppCompatActivity activity, boolean fullscreen) {
         if (fullscreen) {
-            // Use Immersive Mode for KitKat
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                // Hide system ui when activity opens
-                hideSystemUi(activity);
-                final Handler mHideHandler = new Handler();
-                final Runnable mHideRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        hideSystemUi(activity);
-                    }
-                };
-                // Hide system ui bars when not used after 2 seconds
-                activity.getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(
-                        new OnSystemUiVisibilityChangeListener() {
-                            @Override
-                            public void onSystemUiVisibilityChange(int visibility) {
-                                if (visibility == 0) {
-                                    // the navigation bar re-appears, lets hide it after 2 seconds
-                                    mHideHandler.postDelayed(mHideRunnable, 2000);
-                                }
-                            }
-                        });
-            }
-            // Hide action bar for supported versions
-            else { //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                ActionBar actionBar = activity.getSupportActionBar();
-                if (actionBar != null)
-                    actionBar.hide();
-                activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-//            } else {
-//                activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//                activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-//                activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-            }
+            ToggleFullscreenKitKat(activity);
+
+            ActionBar actionBar = activity.getSupportActionBar();
+            if (actionBar != null)
+                actionBar.hide();
+
+            //activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+
         } else {
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
             activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
     }
 
-    @SuppressLint("NewApi")
-    public static void hideSystemUi(Activity activity) {
-        activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE);
+    private static void ToggleFullscreenKitKat(final AppCompatActivity activity) {
+        // Hide system ui when activity opens
+        hideSystemUi(activity);
+        final Animation mSlideUp = AnimationUtils.loadAnimation(activity, R.anim.abc_slide_out_top);
+        final Animation mSlideDown = AnimationUtils.loadAnimation(activity, R.anim.abc_slide_in_top);
+        final Toolbar mToolBar = (Toolbar) activity.findViewById(R.id.toolbar);
+
+//        final Handler mHideHandler = new Handler();
+//        final Runnable mHideRunnable = new Runnable() {
+//            @Override
+//            public void run() {
+//                hideSystemUi(activity);
+//            }
+//        };
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            // Hide system ui bars when not used after 2 seconds
+            activity.getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(
+                    new OnSystemUiVisibilityChangeListener() {
+                        @Override
+                        public void onSystemUiVisibilityChange(int visibility) {
+                            if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == View.VISIBLE) {
+                                mToolBar.startAnimation(mSlideDown);
+                                activity.getSupportActionBar().show();
+                            } else {
+                                activity.getSupportActionBar().hide();
+                                mToolBar.startAnimation(mSlideUp);
+                            }
+                        }
+                    });
+        }
     }
 
     @SuppressLint("NewApi")
-    public static void ToggleActionBar(AppCompatActivity activity, boolean show) {
-        if (!show) {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            ActionBar actionBar = activity.getSupportActionBar();
-                if (actionBar != null)
-                    actionBar.hide();
-//            } else {
-//                activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//            }
+    public static void hideSystemUi(Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE);
         }
     }
 
@@ -308,7 +307,7 @@ public class UIHelper {
     }
 
     public static void setAlternativeLanguagePreferences(Context activity, String lang, boolean val) {
-		/* Set Alternative Language Novels preferences */
+        /* Set Alternative Language Novels preferences */
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(activity);
 
         // write
@@ -493,7 +492,7 @@ public class UIHelper {
     }
 
     public static void selectAlternativeLanguage(Activity activity) {
-		/* Counts number of selected Alternative Language */
+        /* Counts number of selected Alternative Language */
         int selection = 0;
 
 		/* Checking number of selected languages */

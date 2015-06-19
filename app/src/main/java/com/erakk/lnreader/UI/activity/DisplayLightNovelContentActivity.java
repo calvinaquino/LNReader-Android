@@ -130,11 +130,11 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         restored = false;
+        initLayout(R.layout.activity_display_light_novel_content);
+        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
         isFullscreen = getFullscreenPreferences();
         UIHelper.ToggleFullscreen(this, isFullscreen);
-        initLayout(R.layout.activity_display_light_novel_content);
-        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
         // custom link handler
         NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
@@ -447,14 +447,12 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             case R.id.menu_save_external:
                 // save based on current intent page name.
                 String url = getIntent().getStringExtra(Constants.EXTRA_PAGE);
-                NonLeakingWebView wv = (NonLeakingWebView) findViewById(R.id.webViewContent);
                 if (!url.startsWith("http")) {
                     url = getTitle().toString();
                     Log.w(TAG, "Current page is not started with http, resolve from current webView url: " + url);
                 }
-
-                if (wv != null && !Util.isStringNullOrEmpty(url))
-                    wv.saveMyWebArchive(url);
+                if (webView != null && !Util.isStringNullOrEmpty(url))
+                    webView.saveMyWebArchive(url);
                 return true;
             case R.id.menu_browser_back:
                 if (webView != null && webView.canGoBack()) {

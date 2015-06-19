@@ -30,6 +30,7 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -245,7 +246,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
             case R.id.mark_volume:
 
 			/*
-			 * Implement code to mark entire volume as read
+             * Implement code to mark entire volume as read
 			 */
                 Toast.makeText(getActivity(), getResources().getString(R.string.toast_mark_volume), Toast.LENGTH_SHORT).show();
                 BookModel book2 = novelCol.getBookCollections().get(groupPosition);
@@ -416,9 +417,6 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                 try {
                     // Prepare header
                     if (getArguments().getBoolean("show_list_child")) {
-                        // remove existing header
-                        if (expandList.getHeaderViewsCount() > 0)
-                            expandList.removeHeaderView(expandList.findViewById(R.id.novel_synopsis_screen));
 
                         page = novelCol.getPageModel();
                         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
@@ -491,7 +489,12 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                             }
                         }
 
-                        expandList.addHeaderView(synopsis);
+                        // update the header
+                        ScrollView v = (ScrollView) expandList.findViewById(R.id.novel_synopsis_screen);
+                        if (v != null) {
+                            v.removeAllViews();
+                            v.addView(synopsis);
+                        } else expandList.addHeaderView(synopsis);
                     }
                     bookModelAdapter = new BookModelAdapter(getActivity(), novelCol.getBookCollections());
                     expandList.setAdapter(bookModelAdapter);

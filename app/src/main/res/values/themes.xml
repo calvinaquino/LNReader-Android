@@ -8,10 +8,13 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="drawerArrowStyle">@style/AppTheme.DrawerArrowStyle</item>
+
     </style>
 
     <style name="AppTheme.NoActionBar">
         <!-- Both of these are needed -->
+        <item name="windowActionBarOverlay">false</item>
+
     </style>
 
     <style name="AppTheme.DrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
