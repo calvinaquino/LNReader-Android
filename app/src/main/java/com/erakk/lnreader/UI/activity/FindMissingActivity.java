@@ -40,9 +40,6 @@ public class FindMissingActivity extends BaseActivity implements IExtendedCallba
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		UIHelper.SetTheme(this, R.layout.activity_find_missing);
-		UIHelper.SetActionBarDisplayHomeAsUp(this, true);
-
 		setContentView(R.layout.activity_find_missing);
 
 		mode = getIntent().getStringExtra(Constants.EXTRA_FIND_MISSING_MODE);

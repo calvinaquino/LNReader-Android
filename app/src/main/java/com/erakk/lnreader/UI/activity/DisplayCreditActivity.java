@@ -7,7 +7,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UIHelper;
 
 public class DisplayCreditActivity extends BaseActivity {
 
@@ -15,7 +14,6 @@ public class DisplayCreditActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initLayout(R.layout.activity_display_credit);
-        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
         TextView txtCredit = (TextView) findViewById(R.id.txtCredits);
         txtCredit.setTextSize(20);

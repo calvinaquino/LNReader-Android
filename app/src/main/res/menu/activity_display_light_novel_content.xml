@@ -42,18 +42,6 @@
         android:orderInCategory="97"
         android:title="@string/content_bookmark" />
     <item
-        android:id="@+id/menu_bookmarks"
-        android:orderInCategory="98"
-        android:title="@string/bookmarks" />
-    <item
-        android:id="@+id/menu_downloads_list"
-        android:orderInCategory="99"
-        android:title="@string/download_list" />
-    <item
-        android:id="@+id/menu_settings"
-        android:orderInCategory="100"
-        android:title="@string/menu_settings" />
-    <item
         android:id="@+id/menu_save_external"
         android:title="@string/menu_save_external"
         android:visible="false" />
@@ -62,5 +50,9 @@
         android:title="Browser Back"
         android:visible="false"
         android:enabled="false" />
+    <item
+        android:id="@+id/menu_fullscreen"
+        android:orderInCategory="999"
+        android:title="@string/fullscreen_title" />
 
 </menu>

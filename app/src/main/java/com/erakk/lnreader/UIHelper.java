@@ -63,21 +63,21 @@ public class UIHelper {
         }
     }
 
-    /**
-     * Set action bar behaviour, only for API Level 11 and up.
-     *
-     * @param activity target activity
-     * @param enable   enable up behaviour
-     */
-    @SuppressLint("NewApi")
-    public static void SetActionBarDisplayHomeAsUp(AppCompatActivity activity, boolean enable) {
-        ActionBar actionBar = activity.getSupportActionBar();
-        if (actionBar != null)
-            actionBar.setDisplayHomeAsUpEnabled(enable);
-
-        // CheckScreenRotation(activity);
-        CheckKeepAwake(activity);
-    }
+//    /**
+//     * Set action bar behaviour, only for API Level 11 and up.
+//     *
+//     * @param activity target activity
+//     * @param enable   enable up behaviour
+//     */
+//    @SuppressLint("NewApi")
+//    public static void SetActionBarDisplayHomeAsUp(AppCompatActivity activity, boolean enable) {
+//        ActionBar actionBar = activity.getSupportActionBar();
+//        if (actionBar != null)
+//            actionBar.setDisplayHomeAsUpEnabled(enable);
+//
+//        // CheckScreenRotation(activity);
+//        CheckKeepAwake(activity);
+//    }
 
     /**
      * Recreate the activity
@@ -91,34 +91,29 @@ public class UIHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed())
             return;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-            activity.recreate();
-        else {
             activity.finish();
             activity.startActivity(activity.getIntent());
-        }
-        CheckScreenRotation(activity);
-        CheckKeepAwake(activity);
-    }
-
-    /**
-     * Set up the application theme based on Preferences:Constants.PREF_INVERT_COLOR
-     *
-     * @param activity target activity
-     * @param layoutId layout to use
-     */
-    public static void SetTheme(Activity activity, Integer layoutId) {
-        CheckScreenRotation(activity);
-        //if (PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
-        //    activity.setTheme(R.style.AppTheme2);
-        //} else {
-        //    activity.setTheme(R.style.AppTheme);
-        //}
-        if (layoutId != null) {
-            activity.setContentView(layoutId);
-        }
 
     }
+//
+//    /**
+//     * Set up the application theme based on Preferences:Constants.PREF_INVERT_COLOR
+//     *
+//     * @param activity target activity
+//     * @param layoutId layout to use
+//     */
+//    public static void SetTheme(Activity activity, Integer layoutId) {
+//        CheckScreenRotation(activity);
+//        //if (PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_INVERT_COLOR, true)) {
+//        //    activity.setTheme(R.style.AppTheme2);
+//        //} else {
+//        //    activity.setTheme(R.style.AppTheme);
+//        //}
+//        if (layoutId != null) {
+//            activity.setContentView(layoutId);
+//        }
+//
+//    }
 
     public static boolean CheckKeepAwake(Activity activity) {
         boolean keep = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_KEEP_AWAKE, false);

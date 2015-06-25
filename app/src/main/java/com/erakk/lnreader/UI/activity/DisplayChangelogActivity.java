@@ -16,7 +16,6 @@ public class DisplayChangelogActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         initLayout(R.layout.activity_display_changelog);
-        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
 		TextView txtChangelog = (TextView) findViewById(R.id.txtChangelog);
 		txtChangelog.setText(UIHelper.readRawStringResources(this, R.raw.changelog));

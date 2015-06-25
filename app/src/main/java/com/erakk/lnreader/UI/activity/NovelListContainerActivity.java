@@ -1,6 +1,5 @@
 package com.erakk.lnreader.UI.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -13,7 +12,6 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.UI.fragment.DisplayLightNovelDetailsFragment;
 import com.erakk.lnreader.UI.fragment.DisplayLightNovelListFragment;
 import com.erakk.lnreader.UI.fragment.DisplayNovelTabFragment;
-import com.erakk.lnreader.UI.fragment.DownloadFragment;
 import com.erakk.lnreader.UI.fragment.IFragmentListener;
 import com.erakk.lnreader.UIHelper;
 
@@ -25,7 +23,6 @@ public class NovelListContainerActivity extends BaseActivity implements IFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initLayout(R.layout.fragactivity_framework);
-        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
         // get the intent args
         boolean onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
@@ -69,18 +66,9 @@ public class NovelListContainerActivity extends BaseActivity implements IFragmen
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_settings:
-                Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
-                startActivity(launchNewIntent);
-                return true;
             case R.id.invert_colors:
                 UIHelper.ToggleColorPref(this);
                 UIHelper.Recreate(this);
-                return true;
-            case R.id.menu_downloads_list:
-                Intent downloadsIntent = new Intent(this, MainActivity.class);
-                downloadsIntent.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, DownloadFragment.class.toString());
-                startActivity(downloadsIntent);
                 return true;
             case android.R.id.home:
                 super.onBackPressed();

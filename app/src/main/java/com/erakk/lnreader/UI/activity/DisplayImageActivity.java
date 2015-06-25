@@ -17,7 +17,6 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.fragment.DownloadFragment;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
@@ -44,7 +43,6 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initLayout(R.layout.activity_display_image);
-        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
         setupWebView();
 
@@ -155,20 +153,11 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_settings:
-                Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
-                startActivity(launchNewIntent);
-                return true;
             case R.id.menu_refresh_image:
             /*
              * Implement code to refresh image content
 			 */
                 executeTask(url, true);
-                return true;
-            case R.id.menu_downloads_list:
-                Intent downloadsIntent = new Intent(this, MainActivity.class);
-                downloadsIntent.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, DownloadFragment.class.toString());
-                startActivity(downloadsIntent);
                 return true;
             case R.id.menu_chapter_previous:
                 currentImageIndex--;

@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -43,10 +42,6 @@ public class FindMissingFragment extends ListFragment implements IExtendedCallba
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        UIHelper.SetTheme(getActivity(), R.layout.activity_find_missing);
-        UIHelper.SetActionBarDisplayHomeAsUp((AppCompatActivity) getActivity(), true);
-
         getActivity().setContentView(R.layout.activity_find_missing);
 
         mode = getActivity().getIntent().getStringExtra(Constants.EXTRA_FIND_MISSING_MODE);

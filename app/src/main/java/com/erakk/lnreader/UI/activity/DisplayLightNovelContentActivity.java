@@ -30,7 +30,6 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.fragment.DownloadFragment;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.BookmarkModelAdapter;
 import com.erakk.lnreader.adapter.PageModelAdapter;
@@ -131,7 +130,6 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         super.onCreate(savedInstanceState);
         restored = false;
         initLayout(R.layout.activity_display_light_novel_content);
-        UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
         isFullscreen = getFullscreenPreferences();
         UIHelper.ToggleFullscreen(this, isFullscreen);
@@ -341,10 +339,6 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     public boolean onOptionsItemSelected(MenuItem item) {
         NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
         switch (item.getItemId()) {
-            case R.id.menu_settings:
-                Intent launchNewIntent = new Intent(this, DisplaySettingsActivity.class);
-                startActivity(launchNewIntent);
-                return true;
             case R.id.menu_refresh_chapter_content:
 
 			/*
@@ -432,11 +426,6 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             case R.id.menu_bookmarks_here:
                 if (bookmarkMenu != null)
                     bookmarkMenu.show();
-                return true;
-            case R.id.menu_downloads_list:
-                Intent downloadsIntent = new Intent(this, MainActivity.class);
-                downloadsIntent.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, DownloadFragment.class.toString());
-                startActivity(downloadsIntent);
                 return true;
             case R.id.menu_speak:
                 _tts.start(webView, contentUserData.getLastYScroll());

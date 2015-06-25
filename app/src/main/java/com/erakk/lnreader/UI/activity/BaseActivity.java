@@ -55,7 +55,8 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-
+        UIHelper.CheckScreenRotation(this);
+        UIHelper.CheckKeepAwake(this);
     }
 
     @Override

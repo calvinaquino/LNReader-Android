@@ -153,7 +153,6 @@ public class DisplaySettingsActivity extends PreferenceActivity implements IExte
 	@SuppressLint("SdCardPath")
 	@SuppressWarnings("deprecation")
 	public void onCreate(Bundle savedInstanceState) {
-		UIHelper.SetTheme(this, null);
 		super.onCreate(savedInstanceState);
 		//UIHelper.SetActionBarDisplayHomeAsUp(this, true);
 
@@ -1185,9 +1184,8 @@ public class DisplaySettingsActivity extends PreferenceActivity implements IExte
 	}
 
 	private void setOrientation() {
-		UIHelper.CheckScreenRotation(this);
-		UIHelper.Recreate(this);
-	}
+        UIHelper.Recreate(this);
+    }
 
 	private void clearImages() {
 		final String imageRoot = UIHelper.getImageRoot(this);
@@ -1273,7 +1271,9 @@ public class DisplaySettingsActivity extends PreferenceActivity implements IExte
 		if (restoreDbTask != null)
 			restoreDbTask.setCallbackNotifier(this);
 
-	}
+        UIHelper.CheckScreenRotation(this);
+        UIHelper.CheckKeepAwake(this);
+    }
 
 	@Override
 	protected void onStop() {
