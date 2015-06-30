@@ -452,6 +452,10 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.menu_fullscreen:
+                UIHelper.ToggleFullscreen(this, !isFullscreen);
+                isFullscreen = !isFullscreen;
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -741,7 +745,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             if (contentUserData.getLastZoom() > 0) {
                 wv.setInitialScale((int) (contentUserData.getLastZoom() * 100));
             } else {
-                wv.setInitialScale(100);
+                wv.setInitialScale(200);
             }
 
             StringBuilder html = new StringBuilder();

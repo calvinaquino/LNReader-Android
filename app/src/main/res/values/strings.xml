@@ -134,7 +134,7 @@
     <string name="invert_scroll_summary">Invert scrolling direction for volumer rocker.</string>
     <string name="invert_scroll_title">Invert Scroll Direction</string>
     <string name="fullscreen_summary">Use fullscreen when reading.</string>
-    <string name="fullscreen_title">Use Fullscreen</string>
+    <string name="fullscreen_title">Toggle Fullscreen</string>
     <string name="enable_bookmark_summary">Enable bookmark feature when reading.</string>
     <string name="enable_bookmark_title">Enable Bookmark</string>
     <string name="css_layout_title">CSS Layouts</string>
