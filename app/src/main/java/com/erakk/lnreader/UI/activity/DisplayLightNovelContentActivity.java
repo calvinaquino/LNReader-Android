@@ -745,7 +745,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             if (contentUserData.getLastZoom() > 0) {
                 wv.setInitialScale((int) (contentUserData.getLastZoom() * 100));
             } else {
-                wv.setInitialScale(200);
+                wv.setInitialScale(this.getResources().getInteger(R.integer.default_zoom));
             }
 
             StringBuilder html = new StringBuilder();
