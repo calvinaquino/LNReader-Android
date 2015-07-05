@@ -129,7 +129,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         restored = false;
-        initLayout(R.layout.activity_display_light_novel_content);
+        setContentView(R.layout.activity_display_light_novel_content);
 
         isFullscreen = getFullscreenPreferences();
         UIHelper.ToggleFullscreen(this, isFullscreen);

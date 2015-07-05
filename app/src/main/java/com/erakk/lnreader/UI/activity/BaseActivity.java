@@ -33,7 +33,7 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         UIHelper.setLanguage(this);
-        //initLayout(R.layout.fragactivity_framework);
+        //setContentView(R.layout.fragactivity_framework);
     }
 
     @Override
@@ -184,8 +184,9 @@ public class BaseActivity extends AppCompatActivity {
         else return R.id.mainFrame;
     }
 
-    protected void initLayout(@LayoutRes int layout) {
-        setContentView(layout);
+    @Override
+    public void setContentView(@LayoutRes int layout) {
+        super.setContentView(layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {

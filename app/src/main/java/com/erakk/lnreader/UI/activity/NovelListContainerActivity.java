@@ -22,7 +22,7 @@ public class NovelListContainerActivity extends BaseActivity implements IFragmen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initLayout(R.layout.fragactivity_framework);
+        setContentView(R.layout.fragactivity_framework);
 
         // get the intent args
         boolean onlyWatched = getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);

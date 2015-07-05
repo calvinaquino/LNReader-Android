@@ -176,7 +176,6 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
 	@SuppressWarnings("deprecation")
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//UIHelper.SetActionBarDisplayHomeAsUp(this, true);
         setupActionBar();
 
 		// This man is deprecated but but we may want to be able to run on older API

@@ -37,7 +37,7 @@ public class MainActivity extends BaseActivity implements IExtendedCallbackNotif
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initLayout(R.layout.fragactivity_framework);
+        setContentView(R.layout.fragactivity_framework);
     }
 
     @Override

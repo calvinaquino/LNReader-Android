@@ -13,7 +13,7 @@ public class DisplayCreditActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initLayout(R.layout.activity_display_credit);
+        setContentView(R.layout.activity_display_credit);
 
         TextView txtCredit = (TextView) findViewById(R.id.txtCredits);
         txtCredit.setTextSize(20);

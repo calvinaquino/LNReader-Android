@@ -42,7 +42,7 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initLayout(R.layout.activity_display_image);
+        setContentView(R.layout.activity_display_image);
 
         setupWebView();
 
