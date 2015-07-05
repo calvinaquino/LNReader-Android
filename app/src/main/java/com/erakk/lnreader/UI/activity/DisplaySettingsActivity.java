@@ -17,20 +17,22 @@ import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.erakk.lnreader.AlternativeLanguageInfo;
@@ -53,6 +55,7 @@ import com.erakk.lnreader.task.DeleteFilesTask;
 import com.erakk.lnreader.task.RelinkImagesTask;
 import com.erakk.lnreader.task.UnZipFilesTask;
 import com.erakk.lnreader.task.ZipFilesTask;
+import com.example.android.supportv7.app.AppCompatPreferenceActivity;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -61,8 +64,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class DisplaySettingsActivity extends PreferenceActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
-	private static final String TAG = DisplaySettingsActivity.class.toString();
+//public class DisplaySettingsActivity extends PreferenceActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
+public class DisplaySettingsActivity extends AppCompatPreferenceActivity implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
+    private static final String TAG = DisplaySettingsActivity.class.toString();
 
 	private DeleteFilesTask deleteTask;
 	private ZipFilesTask zipTask;
@@ -82,72 +86,90 @@ public class DisplaySettingsActivity extends PreferenceActivity implements IExte
 	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
 		super.onPreferenceTreeClick(preferenceScreen, preference);
 		if (preference != null)
-			if (preference instanceof PreferenceScreen)
-				if (((PreferenceScreen) preference).getDialog() != null) {
-					/* If API Version >= 11 */
-					try {
-						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-							initializeActionBar((PreferenceScreen) preference);
-						} else
-							((PreferenceScreen) preference).getDialog().getWindow().getDecorView().setBackgroundDrawable(this.getWindow().getDecorView().getBackground().getConstantState().newDrawable());
-					} catch (NullPointerException e) {
-						Log.e(TAG, "Null Pointer Exception in PreferenceScreen Child.");
-					}
-				}
-
-		return false;
+            if (preference instanceof PreferenceScreen) {
+                setUpNestedScreen((PreferenceScreen) preference);
+            }
+        return false;
 
 	}
 
-	/*
-	 * Action Bar doesn't inherit parent (on nested Preference Tree)
-	 * Reference :
-	 * http://stackoverflow.com/questions/16374820/action-bar-home-button-not-functional-with-nested-preferencescreen
-	 * Because of DialogInterface and View have OnClickListener, I've changed manually it to android.view.View
-	 * (@freedomofkeima)
-	 */
-	/** Sets up the action bar for an {@link PreferenceScreen} */
-	@SuppressLint("NewApi")
-	public static void initializeActionBar(PreferenceScreen preferenceScreen) {
-		final Dialog dialog = preferenceScreen.getDialog();
+    /**
+     * Enable toolbar on child screen
+     * http://stackoverflow.com/a/27455330
+     *
+     * @param preferenceScreen
+     */
+    public void setUpNestedScreen(PreferenceScreen preferenceScreen) {
+        final Dialog dialog = preferenceScreen.getDialog();
 
-		if (dialog != null) {
-			// Initialize the action bar
-			dialog.getActionBar().setDisplayHomeAsUpEnabled(true);
+        Toolbar bar;
 
-			// Apply custom home button area click listener to close the PreferenceScreen because PreferenceScreens are
-			// dialogs which swallow events instead of passing to the activity
-			// Related Issue: https://code.google.com/p/android/issues/detail?id=4611
-			android.view.View homeBtn = dialog.findViewById(android.R.id.home);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            LinearLayout root = (LinearLayout) dialog.findViewById(android.R.id.list).getParent();
+            bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
+            root.addView(bar, 0); // insert at top
+        } else {
+            ViewGroup root = (ViewGroup) dialog.findViewById(android.R.id.content);
+            ListView content = (ListView) root.getChildAt(0);
 
-			if (homeBtn != null) {
-				android.view.View.OnClickListener dismissDialogClickListener = new android.view.View.OnClickListener() {
-					@Override
-					public void onClick(android.view.View v) {
-						dialog.dismiss();
-					}
-				};
+            root.removeAllViews();
 
-				// Prepare yourselves for some hacky programming
-				ViewParent homeBtnContainer = homeBtn.getParent();
+            bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
 
-				// The home button is an ImageView inside a FrameLayout
-				if (homeBtnContainer instanceof FrameLayout) {
-					ViewGroup containerParent = (ViewGroup) homeBtnContainer.getParent();
-					if (containerParent instanceof LinearLayout) {
-						// This view also contains the title text, set the whole view as clickable
-						containerParent.setOnClickListener(dismissDialogClickListener);
-					} else {
-						// Just set it on the home button
-						((FrameLayout) homeBtnContainer).setOnClickListener(dismissDialogClickListener);
-					}
-				} else {
-					// The 'If all else fails' default case
-					homeBtn.setOnClickListener(dismissDialogClickListener);
-				}
-			}
-		}
-	}
+            int height;
+            TypedValue tv = new TypedValue();
+            if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+                height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+            } else {
+                height = bar.getHeight();
+            }
+
+            content.setPadding(0, height, 0, 0);
+
+            root.addView(content);
+            root.addView(bar);
+        }
+
+        bar.setTitle(preferenceScreen.getTitle());
+
+        bar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+    }
+
+    /**
+     * Enable toolbar on pref screen
+     * http://stackoverflow.com/a/30281205
+     */
+    private void setupActionBar() {
+        Toolbar toolbar;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            ViewGroup root = (ViewGroup) findViewById(android.R.id.list).getParent().getParent().getParent();
+            toolbar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
+            root.addView(toolbar, 0);
+        } else {
+            ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+            ListView content = (ListView) root.getChildAt(0);
+            root.removeAllViews();
+            toolbar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
+            int height;
+            TypedValue tv = new TypedValue();
+            if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+                height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+            } else {
+                height = toolbar.getHeight();
+            }
+            content.setPadding(0, height, 0, 0);
+            root.addView(content);
+            root.addView(toolbar);
+        }
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
 	@Override
 	@SuppressLint("SdCardPath")
@@ -155,6 +177,7 @@ public class DisplaySettingsActivity extends PreferenceActivity implements IExte
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//UIHelper.SetActionBarDisplayHomeAsUp(this, true);
+        setupActionBar();
 
 		// This man is deprecated but but we may want to be able to run on older API
 		addPreferencesFromResource(R.xml.preferences);
