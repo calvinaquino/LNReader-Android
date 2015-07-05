@@ -84,6 +84,11 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
             Log.w(TAG, "Page is empty!");
         }
         page.setPage(pageStr);
+        try {
+            page = dao.getPageModel(page, null);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to get pagemodel for: " + pageStr, e);
+        }
         getActivity().setTitle(title);
     }
 

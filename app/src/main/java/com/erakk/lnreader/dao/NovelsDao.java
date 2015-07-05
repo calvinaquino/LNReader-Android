@@ -454,7 +454,11 @@ public class NovelsDao {
 				Document doc = response.parse();
 
 				list = BakaTsukiParser.parseGenericNovelList(doc, parent, status);
-				Log.d(TAG, "Found from internet: " + list.size() + " for " + parent);
+                for (PageModel pageModel : list) {
+                    pageModel.setParent(parent);
+                    pageModel.setParentPageModel(parentPage);
+                }
+                Log.d(TAG, "Found from internet: " + list.size() + " for " + parent);
 
 				list = getUpdateInfo(list, notifier);
 				for (PageModel pageModel : list) {
