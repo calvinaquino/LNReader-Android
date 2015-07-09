@@ -7,8 +7,6 @@ import android.util.Log;
 
 import com.erakk.lnreader.AlternativeLanguageInfo;
 import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.LNReaderApplication;
-import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.ImageModel;
@@ -491,7 +489,7 @@ public class BakaTsukiParserAlternative {
 
         // get valid image list
         Document imgDoc = Jsoup.parse(text);
-        ArrayList<ImageModel> images = CommonParser.getAllImagesFromContent(imgDoc, UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext()));
+        ArrayList<ImageModel> images = CommonParser.processImagesFromContent(imgDoc);
         content.setImages(images);
         content.setContent(CommonParser.replaceImagePath(text));
 

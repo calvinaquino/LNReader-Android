@@ -40,25 +40,34 @@ public class CommonParser {
      * @return
      */
     public static String replaceImagePath(String content) {
-        String imagePath = "src=\"file://" + UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + "/project/images/";
+        String root = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext());
+
+        // standard image
+        String imagePath = "src=\"file://" + root + "/project/images/";
         content = content.replace("src=\"/project/images/", imagePath);
+
+        // /project/thumb.php?f=Biblia1_011.png&width=300
+        // thumb.ph]
+        String thumbPath = "src=\"file://" + root + "/project/thumb.php_";
+        content = content.replace("src=\"/project/thumb.php?", thumbPath);
+
         return content;
     }
 
     /**
-     * Get all img element and update the src from /project/ to rootImagePath/project/
+     * Get all img element
      *
      * @param doc
-     * @param rootImagePath
      * @return
      */
-    public static ArrayList<ImageModel> getAllImagesFromContent(Document doc, String rootImagePath) {
+    public static ArrayList<ImageModel> processImagesFromContent(Document doc) {
+        String baseUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance().getApplicationContext());
         Elements imageElements = doc.select("img");
         ArrayList<ImageModel> images = new ArrayList<ImageModel>();
+
         for (Element imageElement : imageElements) {
             ImageModel image = new ImageModel();
-            String urlStr = imageElement.attr("src").replace("/project/", rootImagePath + "/project/");
-            // imageElement.attr("src", urlStr);
+            String urlStr = imageElement.attr("src").replace("/project/", baseUrl + "/project/");
             String name = urlStr.substring(urlStr.lastIndexOf("/"));
             image.setName(name);
             try {
