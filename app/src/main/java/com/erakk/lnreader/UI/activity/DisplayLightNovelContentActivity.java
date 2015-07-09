@@ -177,10 +177,10 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
     protected void onRestart() {
         super.onRestart();
 
-        // re-enter immersive mode on restart
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && getFullscreenPreferences()) {
-            UIHelper.Recreate(this);
-        }
+//        // re-enter immersive mode on restart
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && getFullscreenPreferences()) {
+//            UIHelper.Recreate(this);
+//        }
 
         restored = true;
         Log.d(TAG, "onRestart Completed");
