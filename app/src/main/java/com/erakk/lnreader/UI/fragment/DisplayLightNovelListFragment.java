@@ -440,20 +440,23 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
     }
 
     private void toggleProgressBar(boolean show) {
-        ListView listView = getListView();
+        View root = getView();
+        if (root != null) {
+            ListView listView = getListView();
 
-        if (listView == null || loadingText == null || loadingBar == null)
-            return;
+            if (listView == null || loadingText == null || loadingBar == null)
+                return;
 
-        if (show) {
-            loadingText.setText("Loading List, please wait...");
-            loadingText.setVisibility(TextView.VISIBLE);
-            loadingBar.setVisibility(ProgressBar.VISIBLE);
-            listView.setVisibility(ListView.GONE);
-        } else {
-            loadingText.setVisibility(TextView.GONE);
-            loadingBar.setVisibility(ProgressBar.GONE);
-            listView.setVisibility(ListView.VISIBLE);
+            if (show) {
+                loadingText.setText("Loading List, please wait...");
+                loadingText.setVisibility(TextView.VISIBLE);
+                loadingBar.setVisibility(ProgressBar.VISIBLE);
+                listView.setVisibility(ListView.GONE);
+            } else {
+                loadingText.setVisibility(TextView.GONE);
+                loadingBar.setVisibility(ProgressBar.GONE);
+                listView.setVisibility(ListView.VISIBLE);
+            }
         }
     }
     // endregion
