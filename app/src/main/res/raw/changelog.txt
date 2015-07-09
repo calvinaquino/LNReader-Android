@@ -1,4 +1,4 @@
-1.1.32-beta3
+1.1.32
 - Enable toolbar for Settings Activity.
 - Fix Issue #202: Default Zoom based on screen density.
 - Fix null pointer exception when loading novel details.
@@ -6,6 +6,9 @@
 - Fix Issue #197: Download List cleanup.
 - Fix Novel List & Details title update.
 - Fix Issue #194: Item list color.
+- Fix unhandled exception on novel list.
+- Update thumb.php handling.
+- Fix page reload when resuming activity in fullscreen mode.
 
 1.1.31
 - Update UI to use material design.
