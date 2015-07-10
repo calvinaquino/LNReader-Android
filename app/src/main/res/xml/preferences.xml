@@ -229,6 +229,10 @@
                     android:key="webview_kitkat_fix_delay"
                     android:summary="@string/pref_webview_kitkat_fix_delay_sum"
                     android:title="@string/pref_webview_kitkat_fix_delay_title" />
+                <Preference
+                    android:key="reset_zoom"
+                    android:title="@string/reset_zoom_title"
+                    android:summary="@string/reset_zoom_summary" />
             </PreferenceCategory>
             <PreferenceCategory android:title="@string/pref_scrolling">
                 <CheckBoxPreference

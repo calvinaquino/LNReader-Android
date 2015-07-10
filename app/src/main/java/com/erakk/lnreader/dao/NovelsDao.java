@@ -1542,4 +1542,21 @@ public class NovelsDao {
 		}
 		return page;
 	}
+
+    public void resetZoomLevel(ICallbackNotifier notifier) throws Exception {
+        if (notifier != null) {
+            String message = "Resetting default zoom level";
+            notifier.onProgressCallback(new CallbackEventData(message, TAG));
+        }
+        // save the changes
+        synchronized (dbh) {
+            SQLiteDatabase db = dbh.getWritableDatabase();
+            try {
+                int result = NovelContentUserHelperModel.resetZoomLevel(db);
+                Log.d(TAG, "Affected: " + result);
+            } finally {
+                db.close();
+            }
+        }
+    }
 }

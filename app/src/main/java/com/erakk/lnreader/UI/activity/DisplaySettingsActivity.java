@@ -426,17 +426,32 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
 
 		// Scrolling Size
 		final Preference scrollingSize = findPreference(Constants.PREF_SCROLL_SIZE);
-		int scrollingSizeValue = UIHelper.getIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5);
-		scrollingSize.setSummary(String.format(getResources().getString(R.string.scroll_size_summary2), scrollingSizeValue));
-		scrollingSize.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+        int scrollingSizeValue = UIHelper.getIntFromPreferences(Constants.PREF_SCROLL_SIZE, 5);
+        scrollingSize.setSummary(String.format(getResources().getString(R.string.scroll_size_summary2), scrollingSizeValue));
+        scrollingSize.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
 
-			@Override
-			public boolean onPreferenceChange(Preference preference, Object newValue) {
-				int scrollingSizeValue = Util.tryParseInt(newValue.toString(), 5);
-				scrollingSize.setSummary(String.format(getResources().getString(R.string.scroll_size_summary2), scrollingSizeValue));
-				return true;
-			}
-		});
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                int scrollingSizeValue = Util.tryParseInt(newValue.toString(), 5);
+                scrollingSize.setSummary(String.format(getResources().getString(R.string.scroll_size_summary2), scrollingSizeValue));
+                return true;
+            }
+        });
+
+        // reset zoom
+        final Preference resetZoom = findPreference(Constants.PREF_RESET_ZOOM);
+        resetZoom.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                try {
+                    NovelsDao.getInstance().resetZoomLevel(null);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed when resetting zoom level", e);
+                }
+                return true;
+            }
+        });
+
 
 		setCssPreferences();
 
