@@ -12,19 +12,13 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
@@ -152,84 +146,6 @@ public class UIHelper {
         return display.getWidth();
     }
 
-    @SuppressLint("NewApi")
-    public static void ToggleFullscreen(final AppCompatActivity activity, final boolean fullscreen) {
-        final View root = activity.findViewById(R.id.root);
-        final View decorView = activity.getWindow().getDecorView();
-        final ActionBar actionBar = activity.getSupportActionBar();
-        final Animation mSlideUp = AnimationUtils.loadAnimation(activity, R.anim.abc_slide_out_top);
-        final Animation mSlideDown = AnimationUtils.loadAnimation(activity, R.anim.abc_slide_in_top);
-        final Toolbar mToolBar = (Toolbar) activity.findViewById(R.id.toolbar);
-
-        if (root == null) return;
-        Log.d(TAG, "Fullscreen: " + fullscreen);
-
-        if (fullscreen) {
-            hideToolbar(activity, root, decorView, actionBar);
-//
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-//                // Hide system ui bars when not used after 3 seconds
-//                activity.getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(
-//                        new OnSystemUiVisibilityChangeListener() {
-//                            @Override
-//                            public void onSystemUiVisibilityChange(int visibility) {
-//                                if ( (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == View.VISIBLE) {
-//                                    showToolbar(activity, root, decorView, actionBar);
-//                                    activity.getWindow().getDecorView().getHandler().postDelayed(new Runnable() {
-//                                        @Override
-//                                        public void run() {
-//                                            hideToolbar(activity, root, decorView, actionBar);
-//                                        }
-//                                    }, 3000);
-//
-//                                } else {
-//                                    hideToolbar(activity, root, decorView, actionBar);
-//                                }
-//                            }
-//                        });
-//            }
-
-        } else {
-            activity.getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(null);
-            showToolbar(activity, root, decorView, actionBar);
-        }
-    }
-
-    private static void hideToolbar(AppCompatActivity activity, View root, View decorView, ActionBar actionBar) {
-        if (actionBar != null)
-            actionBar.hide();
-
-        final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) root.getLayoutParams();
-        lp.topMargin = 0;
-        root.setLayoutParams(lp);
-
-        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if (Build.VERSION.SDK_INT >= 19) {
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_FULLSCREEN |        // API 16
-                            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |   // API 14
-                            View.SYSTEM_UI_FLAG_IMMERSIVE           // API 19
-            );
-        }
-    }
-
-    private static void showToolbar(AppCompatActivity activity, View root, View decorView, ActionBar actionBar) {
-        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if (actionBar != null)
-            actionBar.show();
-
-        final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) root.getLayoutParams();
-        final TypedValue tv = new TypedValue();
-        activity.getTheme().resolveAttribute(R.attr.actionBarSize, tv, true);
-        lp.topMargin = TypedValue.complexToDimensionPixelSize(tv.data, activity.getResources().getDisplayMetrics());
-        root.setLayoutParams(lp);
-
-        if (Build.VERSION.SDK_INT >= 19) {
-            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-        }
-    }
-
-
     private static void ToggleFullscreenKitKat(final AppCompatActivity activity) {
         // Hide system ui when activity opens
         hideSystemUi(activity);
@@ -241,8 +157,6 @@ public class UIHelper {
 //                hideSystemUi(activity);
 //            }
 //        };
-
-
     }
 
     @SuppressLint("NewApi")

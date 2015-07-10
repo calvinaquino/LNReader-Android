@@ -131,9 +131,6 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         restored = false;
         setContentView(R.layout.activity_display_light_novel_content);
 
-        isFullscreen = getFullscreenPreferences();
-        UIHelper.ToggleFullscreen(this, isFullscreen);
-
         // custom link handler
         NonLeakingWebView webView = (NonLeakingWebView) findViewById(R.id.webViewContent);
         BakaTsukiWebViewClient client = new BakaTsukiWebViewClient(this);
@@ -145,6 +142,10 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         _uih = new DisplayNovelContentUIHelper(this);
         _uih.prepareCompatSearchBox(webView);
         _uih.prepareTopDownButton();
+        _uih.prepareFullscreenHandler(webView);
+
+        isFullscreen = getFullscreenPreferences();
+        _uih.ToggleFullscreen(isFullscreen);
 
 
         _tts = new DisplayNovelContentTTSHelper(this);
@@ -453,7 +454,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 finish();
                 return true;
             case R.id.menu_fullscreen:
-                UIHelper.ToggleFullscreen(this, !isFullscreen);
+                _uih.ToggleFullscreen(!isFullscreen);
                 isFullscreen = !isFullscreen;
                 return true;
             default:
@@ -922,7 +923,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_SHOW_IMAGE, true);
     }
 
-    private boolean getFullscreenPreferences() {
+    public boolean getFullscreenPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_FULSCREEN, false);
     }
 

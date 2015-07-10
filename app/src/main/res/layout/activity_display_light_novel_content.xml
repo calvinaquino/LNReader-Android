@@ -6,32 +6,17 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
         android:id="@+id/root">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
-            android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-        <TextView
-            android:id="@+id/txtDebug"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textSize="8sp"
-            android:visibility="gone" />
-
         <RelativeLayout
             android:id="@+id/rootView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_below="@+id/txtDebug">
 
             <TextView
                 android:id="@+id/emptyList"
@@ -152,7 +137,23 @@
 
         </RelativeLayout>
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/txtDebug"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="8sp"
+            android:visibility="gone" />
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    </RelativeLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation_view"
