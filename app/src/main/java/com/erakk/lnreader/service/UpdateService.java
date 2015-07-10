@@ -137,8 +137,11 @@ public class UpdateService extends Service {
                     }
                     novelTitle = novelTitle + pageModel.getTitle() + " (" + pageModel.getBook(true).getTitle() + ")";
                     if (pageModel.isExternal()) {
-                        novelTitle += " - EXTERNAL LINK";
-                        updateInfo.setExternal(true);
+                        // double check
+                        if (pageModel.getPage().startsWith("http://") || pageModel.getPage().startsWith("https://")) {
+                            novelTitle += " - EXTERNAL LINK";
+                            updateInfo.setExternal(true);
+                        }
                     }
                     updateInfo.setUpdateTitle(novelTitle);
                 }
