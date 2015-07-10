@@ -1,3 +1,7 @@
+1.1.33-beta1
+- Update Issue#199: Add touch listener for toolbar when in fullscreen mode.
+- Remove srcset from image parser.
+
 1.1.32
 - Enable toolbar for Settings Activity.
 - Fix Issue #202: Default Zoom based on screen density.

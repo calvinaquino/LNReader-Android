@@ -120,29 +120,33 @@ public class DisplayNovelContentUIHelper {
 
     @SuppressLint("NewApi")
     public void ToggleFullscreen(final boolean fullscreen) {
-        final Animation mSlideUp = AnimationUtils.loadAnimation(parent, R.anim.abc_slide_out_top);
-        final Animation mSlideDown = AnimationUtils.loadAnimation(parent, R.anim.abc_slide_in_top);
-        final Toolbar mToolBar = (Toolbar) parent.findViewById(R.id.toolbar);
-
         Log.d(TAG, "Fullscreen: " + fullscreen);
 
         if (fullscreen) {
+            isToolbarVisible = true;
             hideToolbar();
         } else {
+            isToolbarVisible = false;
             parent.getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(null);
             showToolbar();
         }
     }
 
     private void hideToolbar() {
+        if (!isToolbarVisible) return;
+
+        final Animation mSlideUp = AnimationUtils.loadAnimation(parent, R.anim.abc_slide_out_top);
+        final Toolbar mToolBar = (Toolbar) parent.findViewById(R.id.toolbar);
         final View root = parent.findViewById(R.id.root);
         final View decorView = parent.getWindow().getDecorView();
         final ActionBar actionBar = parent.getSupportActionBar();
 
         if (root == null || decorView == null) return;
 
-        if (actionBar != null)
+        if (actionBar != null) {
+            mToolBar.startAnimation(mSlideUp);
             actionBar.hide();
+        }
 
         final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) root.getLayoutParams();
         lp.topMargin = 0;
@@ -152,15 +156,23 @@ public class DisplayNovelContentUIHelper {
         if (Build.VERSION.SDK_INT >= 19) {
             decorView.setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_FULLSCREEN        // API 16
+                            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION   // API 14
                             | View.SYSTEM_UI_FLAG_IMMERSIVE           // API 19
             );
         }
+
+        isToolbarVisible = false;
     }
 
     private void showToolbar() {
+        if (isToolbarVisible) return;
+
+        final Animation mSlideDown = AnimationUtils.loadAnimation(parent, R.anim.abc_slide_in_top);
+        final Toolbar mToolBar = (Toolbar) parent.findViewById(R.id.toolbar);
+
         final View root = parent.findViewById(R.id.root);
         final View decorView = parent.getWindow().getDecorView();
         final ActionBar actionBar = parent.getSupportActionBar();
@@ -168,8 +180,10 @@ public class DisplayNovelContentUIHelper {
         if (root == null || decorView == null) return;
 
         parent.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if (actionBar != null)
+        if (actionBar != null) {
+            mToolBar.startAnimation(mSlideDown);
             actionBar.show();
+        }
 
         final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) root.getLayoutParams();
         final TypedValue tv = new TypedValue();
@@ -183,7 +197,7 @@ public class DisplayNovelContentUIHelper {
 
         mHandler.removeCallbacks(hideToolbarDelayed);
         mHandler.postDelayed(hideToolbarDelayed, 4000);
-
+        isToolbarVisible = true;
     }
 
     public void prepareFullscreenHandler(NonLeakingWebView webView) {
@@ -214,13 +228,13 @@ public class DisplayNovelContentUIHelper {
                     case MotionEvent.ACTION_CANCEL:
                     case MotionEvent.ACTION_UP:
                         if (isOnClick && parent.getFullscreenPreferences()) {
-                            Log.i(TAG, "onClick ");
+//                            Log.i(TAG, "onClick ");
                             showToolbar();
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
                         if (isOnClick && (Math.abs(mDownX - ev.getX()) > SCROLL_THRESHOLD || Math.abs(mDownY - ev.getY()) > SCROLL_THRESHOLD)) {
-                            Log.i(TAG, "movement detected");
+//                            Log.i(TAG, "movement detected");
                             isOnClick = false;
                         }
                         break;
