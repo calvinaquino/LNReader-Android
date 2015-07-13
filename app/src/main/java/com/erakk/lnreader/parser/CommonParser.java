@@ -51,6 +51,10 @@ public class CommonParser {
         String thumbPath = "src=\"file://" + root + "/project/thumb.php_";
         content = content.replace("src=\"/project/thumb.php?", thumbPath);
 
+        // remove srcset
+        content = content.replace("srcset=", "srcset-disabled=");
+
+        //Log.v(TAG, content);
         return content;
     }
 
@@ -68,8 +72,6 @@ public class CommonParser {
         for (Element imageElement : imageElements) {
             ImageModel image = new ImageModel();
             String urlStr = imageElement.attr("src").replace("/project/", baseUrl + "/project/");
-
-            imageElement.removeAttr("srcset");
 
             String name = urlStr.substring(urlStr.lastIndexOf("/"));
             image.setName(name);
