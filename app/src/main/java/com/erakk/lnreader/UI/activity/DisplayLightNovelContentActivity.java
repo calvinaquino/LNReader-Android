@@ -142,11 +142,10 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         _uih = new DisplayNovelContentUIHelper(this);
         _uih.prepareCompatSearchBox(webView);
         _uih.prepareTopDownButton();
-        _uih.prepareFullscreenHandler(webView);
 
         isFullscreen = getFullscreenPreferences();
-        _uih.ToggleFullscreen(isFullscreen);
-
+        _uih.prepareFullscreenHandler(webView);
+        _uih.toggleFullscreen(isFullscreen);
 
         _tts = new DisplayNovelContentTTSHelper(this);
 
@@ -454,8 +453,12 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 finish();
                 return true;
             case R.id.menu_fullscreen:
-                _uih.ToggleFullscreen(!isFullscreen);
                 isFullscreen = !isFullscreen;
+                SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(this).edit();
+                edit.putBoolean(Constants.PREF_FULSCREEN, isFullscreen);
+                edit.commit();
+                _uih.toggleFullscreen(isFullscreen);
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

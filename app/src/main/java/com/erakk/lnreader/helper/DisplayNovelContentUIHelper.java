@@ -37,8 +37,6 @@ public class DisplayNovelContentUIHelper {
     private Runnable hideTop;
     private Runnable hideToolbarDelayed;
 
-    private boolean isToolbarVisible;
-
     public DisplayNovelContentUIHelper(DisplayLightNovelContentActivity parent) {
         this.parent = parent;
     }
@@ -107,6 +105,11 @@ public class DisplayNovelContentUIHelper {
             mHandler.postDelayed(hideTop, 1500);
         } else
             goTop.setVisibility(ImageButton.GONE);
+
+        if (parent.getFullscreenPreferences()) {
+            mHandler.removeCallbacks(hideToolbarDelayed);
+            mHandler.post(hideToolbarDelayed);
+        }
     }
 
     public void toggleBottomButton(boolean enable) {
@@ -116,88 +119,104 @@ public class DisplayNovelContentUIHelper {
             mHandler.postDelayed(hideBottom, 1500);
         } else
             goBottom.setVisibility(ImageButton.GONE);
+
+        if (parent.getFullscreenPreferences()) {
+            mHandler.removeCallbacks(hideToolbarDelayed);
+            mHandler.post(hideToolbarDelayed);
+        }
     }
 
     @SuppressLint("NewApi")
-    public void ToggleFullscreen(final boolean fullscreen) {
-        Log.d(TAG, "Fullscreen: " + fullscreen);
+    public void toggleFullscreen(boolean hideToolbar) {
+        Log.d(TAG, "Hide Toolbar: " + hideToolbar);
 
-        if (fullscreen) {
-            isToolbarVisible = true;
+        if (hideToolbar) {
             hideToolbar();
         } else {
-            isToolbarVisible = false;
             parent.getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(null);
             showToolbar();
         }
     }
 
     private void hideToolbar() {
-        if (!isToolbarVisible) return;
+        final ActionBar actionBar = parent.getSupportActionBar();
+        if (actionBar == null) return;
+        if (!actionBar.isShowing()) return;
 
         final Animation mSlideUp = AnimationUtils.loadAnimation(parent, R.anim.abc_slide_out_top);
         final Toolbar mToolBar = (Toolbar) parent.findViewById(R.id.toolbar);
-        final View root = parent.findViewById(R.id.root);
+        final View root = parent.findViewById(R.id.txtDebug);
         final View decorView = parent.getWindow().getDecorView();
-        final ActionBar actionBar = parent.getSupportActionBar();
 
         if (root == null || decorView == null) return;
 
-        if (actionBar != null) {
-            mToolBar.startAnimation(mSlideUp);
-            actionBar.hide();
-        }
+        mToolBar.startAnimation(mSlideUp);
+        actionBar.hide();
 
-        final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) root.getLayoutParams();
-        lp.topMargin = 0;
-        root.setLayoutParams(lp);
+        // claim the empty space from toolbar.
+        if (parent.getFullscreenPreferences()) {
+            final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) root.getLayoutParams();
+            lp.topMargin = 0;
+            lp.bottomMargin = 0;
+            root.setLayoutParams(lp);
+        }
 
         parent.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if (Build.VERSION.SDK_INT >= 19) {
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_FULLSCREEN        // API 16
-                            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION   // API 14
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE           // API 19
-            );
-        }
 
-        isToolbarVisible = false;
+        if (Build.VERSION.SDK_INT >= 14) {
+            int uiFlag = decorView.getSystemUiVisibility();
+            uiFlag ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+
+            if (Build.VERSION.SDK_INT >= 16) {
+                uiFlag ^= View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+            }
+            if (Build.VERSION.SDK_INT >= 19) {
+                uiFlag ^= View.SYSTEM_UI_FLAG_IMMERSIVE;
+            }
+            decorView.setSystemUiVisibility(uiFlag);
+        }
     }
 
     private void showToolbar() {
-        if (isToolbarVisible) return;
+        final ActionBar actionBar = parent.getSupportActionBar();
+        if (actionBar == null) return;
+
+        // auto hide only if fullscreen is enabled
+        mHandler.removeCallbacks(hideToolbarDelayed);
+        if (parent.getFullscreenPreferences()) {
+            mHandler.postDelayed(hideToolbarDelayed, 10000);
+        }
+
+        final Toolbar mToolBar = (Toolbar) parent.findViewById(R.id.toolbar);
+        final View root = parent.findViewById(R.id.txtDebug);
+
+        // adjust the layout to provide empty space for the toolbar
+        if (!parent.getFullscreenPreferences()) {
+            final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) root.getLayoutParams();
+            final TypedValue tv = new TypedValue();
+            parent.getTheme().resolveAttribute(R.attr.actionBarSize, tv, true);
+            lp.topMargin = TypedValue.complexToDimensionPixelSize(tv.data, parent.getResources().getDisplayMetrics());
+            root.setLayoutParams(lp);
+
+            // also nav bar?
+            // http://stackoverflow.com/a/29609679
+        }
+
+        if (actionBar.isShowing()) return;
 
         final Animation mSlideDown = AnimationUtils.loadAnimation(parent, R.anim.abc_slide_in_top);
-        final Toolbar mToolBar = (Toolbar) parent.findViewById(R.id.toolbar);
-
-        final View root = parent.findViewById(R.id.root);
         final View decorView = parent.getWindow().getDecorView();
-        final ActionBar actionBar = parent.getSupportActionBar();
 
         if (root == null || decorView == null) return;
 
+        mToolBar.startAnimation(mSlideDown);
+        actionBar.show();
+
+
         parent.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if (actionBar != null) {
-            mToolBar.startAnimation(mSlideDown);
-            actionBar.show();
-        }
-
-        final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) root.getLayoutParams();
-        final TypedValue tv = new TypedValue();
-        parent.getTheme().resolveAttribute(R.attr.actionBarSize, tv, true);
-        lp.topMargin = TypedValue.complexToDimensionPixelSize(tv.data, parent.getResources().getDisplayMetrics());
-        root.setLayoutParams(lp);
-
-        if (Build.VERSION.SDK_INT >= 19) {
+        if (Build.VERSION.SDK_INT >= 14) {
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         }
-
-        mHandler.removeCallbacks(hideToolbarDelayed);
-        mHandler.postDelayed(hideToolbarDelayed, 4000);
-        isToolbarVisible = true;
     }
 
     public void prepareFullscreenHandler(NonLeakingWebView webView) {
@@ -227,7 +246,7 @@ public class DisplayNovelContentUIHelper {
                         break;
                     case MotionEvent.ACTION_CANCEL:
                     case MotionEvent.ACTION_UP:
-                        if (isOnClick && parent.getFullscreenPreferences()) {
+                        if (isOnClick) {
 //                            Log.i(TAG, "onClick ");
                             showToolbar();
                         }
