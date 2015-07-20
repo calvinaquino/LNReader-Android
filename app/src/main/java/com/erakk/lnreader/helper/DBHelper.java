@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -79,7 +81,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String DATABASE_NAME = "pages.db";
 	public static final int DATABASE_VERSION = 28;
 
-	// Use /files/database to standarize with newer android.
+	// Use /files/database to standardize with newer android.
 	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files/databases";
 
 	private final Object lock = new Object();
@@ -88,8 +90,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		super(context, getDbPath(context), null, DATABASE_VERSION);
 	}
 
-	public static String getDbPath(Context context) {
-		String dbPath = null;
+	public static String getDbPath(final Context context) {
+		String dbPath;
 		File path = context.getExternalFilesDir(null);
 		if (path != null)
 			dbPath = path.getAbsolutePath() + "/databases/" + DATABASE_NAME;
@@ -97,7 +99,15 @@ public class DBHelper extends SQLiteOpenHelper {
 			path = new File(DB_ROOT_SD);
 			if (!(path.mkdirs() || path.isDirectory()))
 				Log.e(TAG, "DB Path doesn't exists/failed to create.");
-			Toast.makeText(context, String.format("Failed to create/open db directory %s", DB_ROOT_SD), Toast.LENGTH_LONG).show();
+
+			// create new handler due, because ui might not yet created.
+			Handler h = new Handler(Looper.getMainLooper());
+			h.post(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(context, String.format("Failed to create/open db directory %s", DB_ROOT_SD), Toast.LENGTH_LONG).show();
+				}
+			});
 			dbPath = DB_ROOT_SD + "/" + DATABASE_NAME;
 		}
 		Log.d(TAG, "DB Path : " + dbPath);

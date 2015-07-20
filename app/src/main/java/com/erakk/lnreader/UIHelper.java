@@ -1,6 +1,5 @@
 package com.erakk.lnreader;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,11 +12,9 @@ import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -79,7 +76,6 @@ public class UIHelper {
      *
      * @param activity target activity
      */
-    @SuppressLint("NewApi")
     public static void Recreate(Activity activity) {
         if (activity.isFinishing())
             return;
@@ -88,7 +84,6 @@ public class UIHelper {
 
         activity.finish();
         activity.startActivity(activity.getIntent());
-
     }
 //
 //    /**
@@ -137,39 +132,39 @@ public class UIHelper {
         }
         return false;
     }
-
-    @SuppressWarnings("deprecation")
-    public static int getScreenWidth(Activity activity) {
-        DisplayMetrics metrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        Display display = activity.getWindowManager().getDefaultDisplay();
-        return display.getWidth();
-    }
-
-    private static void ToggleFullscreenKitKat(final AppCompatActivity activity) {
-        // Hide system ui when activity opens
-        hideSystemUi(activity);
-
-//        final Handler mHideHandler = new Handler();
-//        final Runnable mHideRunnable = new Runnable() {
-//            @Override
-//            public void run() {
-//                hideSystemUi(activity);
-//            }
-//        };
-    }
-
-    @SuppressLint("NewApi")
-    public static void hideSystemUi(Activity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE);
-        }
-    }
+//
+//    @SuppressWarnings("deprecation")
+//    public static int getScreenWidth(Activity activity) {
+//        DisplayMetrics metrics = new DisplayMetrics();
+//        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+//        Display display = activity.getWindowManager().getDefaultDisplay();
+//        return display.getWidth();
+//    }
+//
+//    private static void ToggleFullscreenKitKat(final AppCompatActivity activity) {
+//        // Hide system ui when activity opens
+//        hideSystemUi(activity);
+//
+////        final Handler mHideHandler = new Handler();
+////        final Runnable mHideRunnable = new Runnable() {
+////            @Override
+////            public void run() {
+////                hideSystemUi(activity);
+////            }
+////        };
+//    }
+//
+//    @SuppressLint("NewApi")
+//    public static void hideSystemUi(Activity activity) {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//            activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+//                    | View.SYSTEM_UI_FLAG_IMMERSIVE);
+//        }
+//    }
 
     /**
      * Toggle the Preferences:Constants.PREF_INVERT_COLOR

@@ -1,6 +1,5 @@
 package com.erakk.lnreader.helper;
 
-import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
@@ -126,14 +125,14 @@ public class DisplayNovelContentUIHelper {
         }
     }
 
-    @SuppressLint("NewApi")
     public void toggleFullscreen(boolean hideToolbar) {
         Log.d(TAG, "Hide Toolbar: " + hideToolbar);
 
         if (hideToolbar) {
             hideToolbar();
         } else {
-            parent.getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(null);
+            if (Build.VERSION.SDK_INT >= 11)
+                parent.getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(null);
             showToolbar();
         }
     }

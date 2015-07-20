@@ -169,6 +169,8 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
             /*
              * Download all chapters
 			 */
+                if (novelCol == null)
+                    return true;
                 ArrayList<PageModel> availableChapters = novelCol.getFlattedChapterList();
                 ArrayList<PageModel> notDownloadedChapters = new ArrayList<PageModel>();
                 for (PageModel pageModel : availableChapters) {
@@ -543,7 +545,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
 
     @SuppressLint("NewApi")
     private void executeTask(PageModel pageModel, boolean willRefresh) {
-        String key = TAG + ":" + pageModel.getPage();
+        String key = TAG + ":LoadNovelDetailsTask:" + pageModel.getPage();
         task = new LoadNovelDetailsTask(pageModel, willRefresh, this, key);
         boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
         if (isAdded) {

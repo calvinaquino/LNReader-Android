@@ -1,7 +1,9 @@
-1.1.33-beta1
+1.1.33
 - Update Issue#199: Add touch listener for toolbar when in fullscreen mode.
 - Remove srcset from image parser.
 - Add feature#180: Add option to reset Zoom level from Settings -> Reading Layout -> Group 1 -> Reset Zoom Level.
+- Fix toggle fullscreen on older android (Gingerbread).
+- Fix some null pointer exception error.
 
 1.1.32
 - Enable toolbar for Settings Activity.

@@ -266,11 +266,11 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
         task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder, mode);
         String key = null;
         if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
-            key = TAG + ":" + Constants.ROOT_NOVEL_ENGLISH;
+            key = TAG + ":LoadNovelsTask:" + Constants.ROOT_NOVEL_ENGLISH;
         } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
-            key = TAG + ":" + Constants.ROOT_TEASER;
+            key = TAG + ":LoadNovelsTask:" + Constants.ROOT_TEASER;
         } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
-            key = TAG + ":" + Constants.ROOT_ORIGINAL;
+            key = TAG + ":LoadNovelsTask:" + Constants.ROOT_ORIGINAL;
         }
         boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
         if (isAdded) {
@@ -293,7 +293,7 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
         altTask = new LoadAlternativeTask(this, isRefresh, alphOrder, lang);
         String key = null;
         if (lang != null)
-            key = TAG + ":" + AlternativeLanguageInfo.getAlternativeLanguageInfo().get(lang).getCategoryInfo();
+            key = TAG + ":LoadAlternativeTask:" + AlternativeLanguageInfo.getAlternativeLanguageInfo().get(lang).getCategoryInfo();
         boolean isAdded = LNReaderApplication.getInstance().addTask(key, altTask);
         if (isAdded) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
@@ -383,7 +383,7 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
     public void downloadAllNovelInfo() {
         if (onlyWatched) {
             touchedForDownload = "Watched Light Novels information";
-        } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
+        } else if (mode == null || mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
             touchedForDownload = "All Main Light Novels information";
         } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
             touchedForDownload = "All Teaser Light Novels information";
