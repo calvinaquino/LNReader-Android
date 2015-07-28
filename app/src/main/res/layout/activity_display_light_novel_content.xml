@@ -142,7 +142,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textSize="8sp"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"

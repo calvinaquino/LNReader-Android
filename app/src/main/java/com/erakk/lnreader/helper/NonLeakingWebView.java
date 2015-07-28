@@ -99,6 +99,7 @@ public class NonLeakingWebView extends WebView {
 
     @Override
     public void destroy() {
+        Log.d(TAG, "Destroying WebView");
         setDisplayZoomControl(false);
         super.destroy();
         try {

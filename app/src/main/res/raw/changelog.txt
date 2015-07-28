@@ -1,3 +1,7 @@
+1.1.34-beta1
+- Fix Issue #208: ActionBar hide first few lines.
+
+
 1.1.33
 - Update Issue#199: Add touch listener for toolbar when in fullscreen mode.
 - Remove srcset from image parser.

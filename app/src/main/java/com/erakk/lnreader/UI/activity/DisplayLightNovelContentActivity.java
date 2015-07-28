@@ -115,8 +115,8 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                 TextView txtDebug = (TextView) findViewById(R.id.txtDebug);
                 try {
                     PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-                    if (pInfo.versionName.contains("beta"))
-                        txtDebug.setVisibility(View.VISIBLE);
+                    if (!pInfo.versionName.contains("beta"))
+                        txtDebug.setMaxHeight(0);
                     txtDebug.setText(message);
                 } catch (Exception ex) {
                     txtDebug.setVisibility(View.GONE);
