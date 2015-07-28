@@ -587,15 +587,16 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             }
 
             private void checkIsReadComplete() {
-                double isReadThreshold = contentHeight * currentScale;
+                // pixel, round to the nearest
+                double isReadThreshold = (contentHeight * currentScale) - 1;
 
                 try {
-                    PageModel page = currPageModel;
-                    if (isReadThreshold <= lastY && !page.getPage().endsWith("&action=edit&redlink=1")) {
-                        Log.i(TAG, "Complete Read PageModel for Content: " + currPageModel.getPage() + " check value: " + isReadThreshold + " <= " + lastY);
-                        page.setFinishedRead(true);
+
+                    if (isReadThreshold <= lastY && !currPageModel.getPage().endsWith("&action=edit&redlink=1")) {
+                        currPageModel.setFinishedRead(true);
                     }
-                    NovelsDao.getInstance().updatePageModel(page);
+                    Log.i(TAG, "Complete Read PageModel for Content: " + currPageModel.getPage() + " check value: " + isReadThreshold + " <= " + lastY + " ==> " + currPageModel.isFinishedRead());
+                    NovelsDao.getInstance().updatePageModel(currPageModel);
                 } catch (Exception ex) {
                     Log.e(TAG, "Error updating PageModel for Content: " + currPageModel.getPage(), ex);
                 }

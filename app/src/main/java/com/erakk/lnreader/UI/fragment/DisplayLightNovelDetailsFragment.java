@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -131,24 +132,27 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
         super.onResume();
         Log.d(TAG, "OnResume: " + task.getStatus().toString());
         final Activity activity = getActivity();
-        new Thread(new Runnable() {
+        new Handler().post(new Runnable() {
 
             @Override
             public void run() {
                 // try to refresh on different thread
-                if (bookModelAdapter != null)
+                if (bookModelAdapter != null) {
                     bookModelAdapter.refreshData();
 
-                activity.runOnUiThread(new Runnable() {
+                    activity.runOnUiThread(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        if (expandList != null)
-                            expandList.invalidateViews();
-                    }
-                });
+                        @Override
+                        public void run() {
+                            bookModelAdapter.notifyDataSetChanged();
+                            if (expandList != null) {
+                                expandList.invalidateViews();
+                            }
+                        }
+                    });
+                }
             }
-        }).start();
+        });
     }
 
     @Override
@@ -303,7 +307,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
             case R.id.mark_read:
 
 			/*
-			 * Implement code to mark this chapter read >> change to toggle
+             * Implement code to mark this chapter read >> change to toggle
 			 */
                 chapter = bookModelAdapter.getChild(groupPosition, childPosition);
                 chapter.setFinishedRead(!chapter.isFinishedRead());
