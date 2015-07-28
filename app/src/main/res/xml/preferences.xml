@@ -208,11 +208,11 @@
                     android:key="enable_zoom"
                     android:summary="@string/enable_zoom_summary"
                     android:title="@string/enable_zoom_title" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:key="show_zoom_control"
-                    android:summary="@string/show_zoom_control_summary"
-                    android:title="@string/show_zoom_control_title" />
+                <!--<CheckBoxPreference-->
+                    <!--android:defaultValue="true"-->
+                    <!--android:key="show_zoom_control"-->
+                    <!--android:summary="@string/show_zoom_control_summary"-->
+                    <!--android:title="@string/show_zoom_control_title" />-->
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="enable_bookmark"

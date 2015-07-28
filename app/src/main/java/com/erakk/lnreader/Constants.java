@@ -52,7 +52,7 @@ public class Constants {
     public static final String PREF_DOWLOAD_BIG_IMAGE = "download_big_image";
     public static final String PREF_ZOOM_ENABLED = "enable_zoom";
     public static final String PREF_SHOW_IMAGE = "show_images";
-    public static final String PREF_SHOW_ZOOM_CONTROL = "show_zoom_control";
+//    public static final String PREF_SHOW_ZOOM_CONTROL = "show_zoom_control";
     public static final String PREF_UPDATE_RING = "update_use_sound";
     public static final String PREF_UPDATE_VIBRATE = "update_use_vibration";
     public static final String PREF_PERSIST_NOTIFICATION = "persist_notification";

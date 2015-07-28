@@ -339,7 +339,9 @@ public class UIHelper {
     }
 
     public static boolean getZoomControlPreferences(Context ctx) {
-        return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_SHOW_ZOOM_CONTROL, false);
+        // disable showing the zoom control due to Window Leak (see Issue #206)
+        //return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_SHOW_ZOOM_CONTROL, false);
+        return false;
     }
 
     public static boolean getDynamicButtonsPreferences(Context ctx) {
