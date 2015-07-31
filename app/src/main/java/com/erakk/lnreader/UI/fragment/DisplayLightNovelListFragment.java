@@ -80,6 +80,8 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
         }
 
         mode = getArguments().getString(Constants.EXTRA_NOVEL_LIST_MODE);
+        if(mode == null) mode = Constants.EXTRA_NOVEL_LIST_MODE_MAIN;
+
         onlyWatched = getArguments().getBoolean(Constants.EXTRA_ONLY_WATCHED, false);
         lang = getArguments().getString(Constants.EXTRA_NOVEL_LANG);
         Log.i(TAG, "IsWatched: " + onlyWatched + " Mode: " + mode + " lang: " + lang);
@@ -260,9 +262,6 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
 
     @SuppressLint("NewApi")
     private void executeTask(boolean isRefresh, boolean onlyWatched, boolean alphOrder) {
-        if (mode == null)
-            mode = Constants.EXTRA_NOVEL_LIST_MODE_MAIN;
-
         task = new LoadNovelsTask(this, isRefresh, onlyWatched, alphOrder, mode);
         String key = null;
         if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {

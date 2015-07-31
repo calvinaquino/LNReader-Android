@@ -223,24 +223,25 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
         switch (item.getItemId()) {
             // Volume cases
             case R.id.download_volume:
-
 			/*
              * Implement code to download this volume
 			 */
-                BookModel book = novelCol.getBookCollections().get(groupPosition);
-                // get the chapter which not downloaded yet
-                ArrayList<PageModel> downloadingChapters = new ArrayList<PageModel>();
-                for (PageModel temp : book.getChapterCollection()) {
-                    if (temp.isDownloaded()) {
-                        if (dao.isContentUpdated(temp)) {
+                if(novelCol != null) {
+                    BookModel book = novelCol.getBookCollections().get(groupPosition);
+                    // get the chapter which not downloaded yet
+                    ArrayList<PageModel> downloadingChapters = new ArrayList<PageModel>();
+                    for (PageModel temp : book.getChapterCollection()) {
+                        if (temp.isDownloaded()) {
+                            if (dao.isContentUpdated(temp)) {
+                                downloadingChapters.add(temp);
+                            }
+                        } else {
                             downloadingChapters.add(temp);
                         }
-                    } else {
-                        downloadingChapters.add(temp);
                     }
+                    touchedForDownload = book.getTitle();
+                    executeDownloadTask(downloadingChapters, false);
                 }
-                touchedForDownload = book.getTitle();
-                executeDownloadTask(downloadingChapters, false);
                 return true;
             case R.id.clear_volume:
 
