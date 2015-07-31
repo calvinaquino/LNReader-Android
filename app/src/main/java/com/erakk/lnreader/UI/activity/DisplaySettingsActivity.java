@@ -31,6 +31,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -103,43 +104,51 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
      */
     public void setUpNestedScreen(PreferenceScreen preferenceScreen) {
         final Dialog dialog = preferenceScreen.getDialog();
-
-        Toolbar bar;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            LinearLayout root = (LinearLayout) dialog.findViewById(android.R.id.list).getParent();
-            bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
-            root.addView(bar, 0); // insert at top
-        } else {
-            ViewGroup root = (ViewGroup) dialog.findViewById(android.R.id.content);
-            ListView content = (ListView) root.getChildAt(0);
-
-            root.removeAllViews();
-
-            bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
-
-            int height;
-            TypedValue tv = new TypedValue();
-            if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
-                height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+        Toolbar bar = null;
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                View tempView = dialog.findViewById(android.R.id.list);
+                ViewParent viewParent = tempView.getParent();
+                if (viewParent != null && viewParent instanceof LinearLayout) {
+                    LinearLayout root = (LinearLayout) viewParent;
+                    bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
+                    root.addView(bar, 0); // insert at top
+                } else
+                    Log.i(TAG, "setUpNestedScreen() using unknown Layout: " + viewParent.getClass().toString());
             } else {
-                height = bar.getHeight();
+                ViewGroup root = (ViewGroup) dialog.findViewById(android.R.id.content);
+                ListView content = (ListView) root.getChildAt(0);
+
+                root.removeAllViews();
+
+                bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
+
+                int height;
+                TypedValue tv = new TypedValue();
+                if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+                    height = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+                } else {
+                    height = bar.getHeight();
+                }
+
+                content.setPadding(0, height, 0, 0);
+
+                root.addView(content);
+                root.addView(bar);
             }
-
-            content.setPadding(0, height, 0, 0);
-
-            root.addView(content);
-            root.addView(bar);
+        } catch (Exception ex) {
+            Log.w(TAG, "Failed to get Toolbar on Settings Page", ex);
         }
 
-        bar.setTitle(preferenceScreen.getTitle());
-
-        bar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
+        if (bar != null) {
+            bar.setTitle(preferenceScreen.getTitle());
+            bar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+        }
     }
 
     /**
@@ -149,7 +158,7 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
     private void setupActionBar() {
         Toolbar toolbar = null;
         try {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 ViewGroup root = (ViewGroup) findViewById(android.R.id.list).getParent().getParent().getParent();
                 toolbar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
                 root.addView(toolbar, 0);
@@ -172,7 +181,7 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
                 }
             }
         } catch (Exception ex) {
-			Log.w(TAG, "Failed to get Toolbar on Settings Page", ex);
+            Log.w(TAG, "Failed to get Toolbar on Settings Page", ex);
         }
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -916,12 +925,12 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
     @SuppressWarnings("deprecation")
     private void setAlternateLanguageList() {
         /*
-		 * A section to change Alternative Languages list
+         * A section to change Alternative Languages list
 		 *
 		 * @freedomofkeima
 		 */
         Preference selectAlternativeLanguage = findPreference("select_alternative_language");
-		/* List of languages */
+        /* List of languages */
         final boolean[] languageStatus = new boolean[AlternativeLanguageInfo.getAlternativeLanguageInfo().size()];
         Iterator<Map.Entry<String, AlternativeLanguageInfo>> it = AlternativeLanguageInfo.getAlternativeLanguageInfo().entrySet().iterator();
         int j = 0;
