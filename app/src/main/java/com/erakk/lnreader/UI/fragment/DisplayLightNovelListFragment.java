@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.internal.widget.AdapterViewCompat;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -17,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -176,10 +176,10 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
 
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
-        if (!(item.getMenuInfo() instanceof AdapterViewCompat.AdapterContextMenuInfo))
+        if (!(item.getMenuInfo() instanceof AdapterView.AdapterContextMenuInfo))
             return super.onContextItemSelected(item);
         Log.d(TAG, "Context menu called");
-        AdapterViewCompat.AdapterContextMenuInfo info = (AdapterViewCompat.AdapterContextMenuInfo) item.getMenuInfo();
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
             case R.id.add_to_watch:
             /*

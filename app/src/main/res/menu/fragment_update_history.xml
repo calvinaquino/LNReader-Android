@@ -29,7 +29,8 @@
         android:title="@string/menu_show_external" />
     <item
         android:id="@+id/menu_run_update"
-        app:showAsAction="ifRoom|withText"
+        android:icon="@drawable/ic_main_updates"
+        app:showAsAction="ifRoom"
         android:title="@string/run_update_text" />
 
 </menu>

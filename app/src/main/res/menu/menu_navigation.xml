@@ -3,13 +3,16 @@
         <item
             android:id="@+id/itemLightNovel"
             android:onClick="openNovelList"
+            android:icon="@drawable/tab_novels"
             android:title="@string/light_novels" />
         <item
             android:id="@+id/itemWatchList"
+            android:icon="@android:drawable/ic_menu_agenda"
             android:onClick="openWatchList"
             android:title="@string/watch_list" />
         <item
             android:id="@+id/itemResumeNovel"
+            android:icon="@android:drawable/ic_media_play"
             android:onClick="openLastRead"
             android:title="@string/jump_last_read" />
         <item

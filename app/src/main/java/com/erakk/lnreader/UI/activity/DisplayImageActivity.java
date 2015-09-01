@@ -225,7 +225,7 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
 
                     String title = imageModel.getName();
                     setTitle(title.substring(title.lastIndexOf("/")));
-                    Toast.makeText(this, String.format("Loaded: %s", imageUrl), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(this, String.format("Loaded: %s", imageUrl), Toast.LENGTH_SHORT).show();
                     Log.d("LoadImageTask", "Loaded: " + imageUrl);
                 } else {
                     Log.e(TAG, "Cannot get the image path.");
