@@ -2,6 +2,8 @@ package com.erakk.lnreader.UI.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -17,17 +19,22 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.BookmarkModelAdapter;
+import com.erakk.lnreader.callback.ICallbackEventData;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookmarkModel;
+import com.erakk.lnreader.task.AsyncTaskResult;
+import com.erakk.lnreader.task.LoadBookmarkTask;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A fragment representing a list of Items.
  * <p/>
  * <p/>
  */
-public class BookmarkFragment extends ListFragment {
+public class BookmarkFragment extends ListFragment implements IExtendedCallbackNotifier<AsyncTaskResult<BookmarkModel[]>> {
 
     private BookmarkModelAdapter adapter = null;
     private ArrayList<BookmarkModel> bookmarks = null;
@@ -94,15 +101,11 @@ public class BookmarkFragment extends ListFragment {
     // region private methods
 
     private void getBookmarks() {
-        int resourceId = R.layout.item_bookmark;
-        if (UIHelper.isSmallScreen(getActivity())) {
-            resourceId = R.layout.item_bookmark;
-        }
-        bookmarks = NovelsDao.getInstance().getAllBookmarks(UIHelper.getAllBookmarkOrder(getActivity()));
-        adapter = new BookmarkModelAdapter(getActivity(), resourceId, bookmarks, null);
-        adapter.showPage = true;
-        adapter.showCheckBox = true;
-        setListAdapter(adapter);
+        LoadBookmarkTask task = new LoadBookmarkTask(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        else
+            task.execute();
     }
 
     public void handleDeleteBookmark() {
@@ -112,6 +115,32 @@ public class BookmarkFragment extends ListFragment {
             }
             if (adapter != null) adapter.refreshData();
         }
+    }
+
+    @Override
+    public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<BookmarkModel[]> result) {
+
+        int resourceId = R.layout.item_bookmark;
+        if (UIHelper.isSmallScreen(getActivity())) {
+            resourceId = R.layout.item_bookmark;
+        }
+        BookmarkModel[] temp = result.getResult();
+        bookmarks = new ArrayList<BookmarkModel>(Arrays.asList(temp));
+
+        adapter = new BookmarkModelAdapter(getActivity(), resourceId, bookmarks, null);
+        adapter.showPage = true;
+        adapter.showCheckBox = true;
+        setListAdapter(adapter);
+    }
+
+    @Override
+    public void onProgressCallback(ICallbackEventData message) {
+
+    }
+
+    @Override
+    public boolean downloadListSetup(String taskId, String message, int setupType, boolean hasError) {
+        return false;
     }
     // endregion
 

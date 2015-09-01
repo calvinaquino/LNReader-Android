@@ -1,4 +1,7 @@
-1.1.34-beta1
+1.1.35-beta1
+- blablabla
+
+1.1.34
 - Fix Issue #208: ActionBar hide first few lines.
 - Fix Issue #206: Always hide the ZoomControl button, zooming feature still working using 2 finger pinch
 - Fix Issue #205: Disable ToolBar if not supported on Settings page.
