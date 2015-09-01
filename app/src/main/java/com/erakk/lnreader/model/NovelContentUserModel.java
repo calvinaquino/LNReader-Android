@@ -3,6 +3,14 @@ package com.erakk.lnreader.model;
 import java.util.Date;
 
 public class NovelContentUserModel {
+    private int id = -1;
+    private String page;
+    private int lastXScroll;
+    private int lastYScroll;
+    private double lastZoom;
+    private Date lastUpdate;
+    private Date lastCheck;
+
     public int getId() {
         return id;
     }
@@ -58,14 +66,4 @@ public class NovelContentUserModel {
     public void setLastCheck(Date lastCheck) {
         this.lastCheck = lastCheck;
     }
-
-    private int id = -1;
-    private String page;
-
-    private int lastXScroll;
-    private int lastYScroll;
-    private double lastZoom;
-
-    private Date lastUpdate;
-    private Date lastCheck;
 }

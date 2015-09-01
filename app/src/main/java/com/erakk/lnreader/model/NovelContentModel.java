@@ -26,6 +26,8 @@ public class NovelContentModel {
     private ArrayList<ImageModel> images;
 
     private ArrayList<BookmarkModel> bookmarks;
+    private NovelContentUserModel userData;
+    private ArrayList<String> _bigImages;
 
     public NovelContentUserModel getUserData() {
         return userData;
@@ -34,8 +36,6 @@ public class NovelContentModel {
     public void setUserData(NovelContentUserModel userData) {
         this.userData = userData;
     }
-
-    private NovelContentUserModel userData;
 
     public int getId() {
         return id;
@@ -65,10 +65,7 @@ public class NovelContentModel {
         // try to disable the checking, may hit performance issue?
         // refer to https://github.com/calvinaquino/LNReader-Android/issues/177
         //if(this.pageModel == null) {
-        NovelsDao dao = NovelsDao.getInstance();
-        PageModel tempPage = new PageModel();
-        tempPage.setPage(this.page);
-        this.pageModel = dao.getPageModel(tempPage, null);
+        this.pageModel = PageModel.getPageModelByName(this.page);
         //}
     }
 
@@ -133,9 +130,8 @@ public class NovelContentModel {
         this.bookmarks = bookmarks;
     }
 
-    private ArrayList<String> _bigImages;
     public ArrayList<String> getBigImages() {
-        if(_bigImages ==null) {
+        if (_bigImages == null) {
             Document imageDoc = Jsoup.parse(getContent());
             _bigImages = CommonParser.parseImagesFromContentPage(imageDoc);
         }
