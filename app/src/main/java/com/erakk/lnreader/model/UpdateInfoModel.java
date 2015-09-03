@@ -5,15 +5,12 @@ import java.util.Date;
 public class UpdateInfoModel {
 
     private int id = -1;
-    private UpdateType updateType;
+    private UpdateTypeEnum updateType;
     private String updateTitle;
     private Date updateDate;
-
     private String updatePage;
     private PageModel updatePageModel;
-
     private boolean isSelected;
-
     private boolean isExternal;
 
     public int getId() {
@@ -24,11 +21,11 @@ public class UpdateInfoModel {
         this.id = id;
     }
 
-    public UpdateType getUpdateType() {
+    public UpdateTypeEnum getUpdateType() {
         return updateType;
     }
 
-    public void setUpdateType(UpdateType updateType) {
+    public void setUpdateType(UpdateTypeEnum updateType) {
         this.updateType = updateType;
     }
 

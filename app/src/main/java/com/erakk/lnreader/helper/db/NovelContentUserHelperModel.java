@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.DBHelper;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.NovelContentUserModel;
@@ -16,10 +15,6 @@ import com.erakk.lnreader.model.PageModel;
 import java.util.Date;
 
 public class NovelContentUserHelperModel {
-
-    private static final String TAG = NovelContentUserHelperModel.class.toString();
-    private static DBHelper helper = NovelsDao.getInstance().getDBHelper();
-
     // New column should be appended as the last column
     public static final String DATABASE_CREATE_NOVEL_CONTENT_USER = "create table if not exists " + DBHelper.TABLE_NOVEL_CONTENT_USER + "("
             + DBHelper.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " // 0
@@ -29,6 +24,7 @@ public class NovelContentUserHelperModel {
             + DBHelper.COLUMN_ZOOM + " double, " // 4
             + DBHelper.COLUMN_LAST_UPDATE + " integer, " // 5
             + DBHelper.COLUMN_LAST_CHECK + " integer);"; // 6
+    private static final String TAG = NovelContentUserHelperModel.class.toString();
 
     public static NovelContentUserModel cursorToModel(Cursor cursor) {
         NovelContentUserModel model = new NovelContentUserModel();
@@ -46,7 +42,7 @@ public class NovelContentUserHelperModel {
      * Query Stuff
 	 */
 
-    public static NovelContentUserModel getNovelContentUserModel(SQLiteDatabase db, String page) {
+    public static NovelContentUserModel getNovelContentUserModel(DBHelper helper, SQLiteDatabase db, String page) {
         NovelContentUserModel content = null;
 
         Cursor cursor = helper.rawQuery(db, "select * from " + DBHelper.TABLE_NOVEL_CONTENT_USER + " where " + DBHelper.COLUMN_PAGE + " = ? ", new String[]{page});
@@ -71,13 +67,13 @@ public class NovelContentUserHelperModel {
      * Insert Stuff
 	 */
 
-    public static NovelContentUserModel insertModel(SQLiteDatabase db, NovelContentUserModel content) throws Exception {
+    public static NovelContentUserModel insertModel(DBHelper helper, SQLiteDatabase db, NovelContentUserModel content) throws Exception {
         ContentValues cv = new ContentValues();
         cv.put(DBHelper.COLUMN_PAGE, content.getPage());
         cv.put(DBHelper.COLUMN_ZOOM, "" + content.getLastZoom());
         cv.put(DBHelper.COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));
 
-        NovelContentUserModel temp = getNovelContentUserModel(db, content.getPage());
+        NovelContentUserModel temp = getNovelContentUserModel(helper, db, content.getPage());
         if (temp == null) {
             cv.put(DBHelper.COLUMN_LAST_X, "" + content.getLastXScroll());
             cv.put(DBHelper.COLUMN_LAST_Y, "" + content.getLastYScroll());
@@ -100,7 +96,7 @@ public class NovelContentUserHelperModel {
             Log.i(TAG, "Novel Content:" + content.getPage() + " Updated, Affected Row: " + result);
         }
 
-        content = getNovelContentUserModel(db, content.getPage());
+        content = getNovelContentUserModel(helper, db, content.getPage());
         return content;
     }
 
@@ -108,7 +104,7 @@ public class NovelContentUserHelperModel {
      * Delete Stuff
 	 */
 
-    public static boolean deleteNovelContentUser(SQLiteDatabase db, String page) {
+    public static boolean deleteNovelContentUser(DBHelper helper, SQLiteDatabase db, String page) {
         if (page != null) {
             int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT_USER, DBHelper.COLUMN_PAGE + " = ?", new String[]{"" + page});
             Log.w(TAG, "NovelContentUser Deleted: " + result);
@@ -117,7 +113,7 @@ public class NovelContentUserHelperModel {
         return false;
     }
 
-    public static int deleteNovelContentUser(SQLiteDatabase db, PageModel ref) {
+    public static int deleteNovelContentUser(DBHelper helper, SQLiteDatabase db, PageModel ref) {
         if (ref != null && !Util.isStringNullOrEmpty(ref.getPage())) {
             int result = helper.delete(db, DBHelper.TABLE_NOVEL_CONTENT_USER, DBHelper.COLUMN_PAGE + " = ?", new String[]{"" + ref.getPage()});
             Log.w(TAG, "NovelContentUser Deleted: " + result);
@@ -126,7 +122,7 @@ public class NovelContentUserHelperModel {
         return 0;
     }
 
-    public static int resetZoomLevel(SQLiteDatabase db) {
+    public static int resetZoomLevel(DBHelper helper, SQLiteDatabase db) {
         ContentValues cv = new ContentValues();
         cv.put(DBHelper.COLUMN_ZOOM, LNReaderApplication.getInstance().getResources().getInteger(R.integer.default_zoom) / 100);
         int result = helper.update(db, DBHelper.TABLE_NOVEL_CONTENT_USER, cv, null, null);

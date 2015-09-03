@@ -31,7 +31,7 @@ import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.UpdateInfoModel;
-import com.erakk.lnreader.model.UpdateType;
+import com.erakk.lnreader.model.UpdateTypeEnum;
 import com.erakk.lnreader.service.UpdateService;
 import com.erakk.lnreader.task.AsyncTaskResult;
 

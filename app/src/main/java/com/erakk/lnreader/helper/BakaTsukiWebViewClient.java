@@ -137,7 +137,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
                             Log.d(TAG, "Got different page name: " + titles2[0]);
                             PageModel tempPage = new PageModel();
                             tempPage.setPage(titles2[0]);
-                            PageModel pageModel = NovelsDao.getInstance().getPageModel(tempPage, null, false);
+                            PageModel pageModel = NovelsDao.getInstance().getExistingPageModel(tempPage, null);
                             if (pageModel != null) {
                                 caller.jumpTo(pageModel);
                                 Log.d(TAG, "Loading : " + pageModel.getPage());

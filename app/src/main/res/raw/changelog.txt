@@ -1,5 +1,10 @@
-1.1.35-beta1
-- blablabla
+1.1.35-beta2
+- Update bookmark loading logic.
+- Update update history loading logic.
+- Update menu icon.
+- Fix context menu for Novel List.
+- Refactor DB model.
+- Update android sdk and android studio.
 
 1.1.34
 - Fix Issue #208: ActionBar hide first few lines.

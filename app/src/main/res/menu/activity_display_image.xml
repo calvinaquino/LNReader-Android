@@ -4,15 +4,18 @@
         android:id="@+id/menu_chapter_previous"
         android:orderInCategory="1"
         app:showAsAction="ifRoom"
+        android:icon="@android:drawable/ic_media_rew"
         android:title="@string/content_previous" />
     <item
         android:id="@+id/menu_chapter_next"
         android:orderInCategory="2"
         app:showAsAction="ifRoom"
+        android:icon="@android:drawable/ic_media_ff"
         android:title="@string/content_next" />
     <item
         android:id="@+id/menu_refresh_image"
-        android:orderInCategory="98"
+        android:orderInCategory="3"
         app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_main_updates"
         android:title="@string/refresh_image" />
 </menu>

@@ -43,7 +43,6 @@ public class PageModel {
 
     // not saved to db
     private boolean isUpdated = false;
-    private String bookTitle = null;
 
     public PageModel() {
     }
@@ -76,7 +75,7 @@ public class PageModel {
     public static PageModel getExistingPageModelByName(String page) throws Exception {
         PageModel tempPage = new PageModel();
         tempPage.setPage(page);
-        tempPage = NovelsDao.getInstance().getPageModel(tempPage, null, false);
+        tempPage = NovelsDao.getInstance().getExistingPageModel(tempPage, null);
         return tempPage;
     }
 
@@ -172,16 +171,13 @@ public class PageModel {
 
     public PageModel getParentPageModel() throws Exception {
         if (this.parentPageModel == null) {
-            NovelsDao dao = NovelsDao.getInstance();
-            PageModel tempPage = new PageModel();
+            // get the page for parent
+            String tempParent = this.parent;
             int divIndex = parent.indexOf(Constants.NOVEL_BOOK_DIVIDER);
             if (this.type.contentEquals(TYPE_CONTENT) && divIndex > 0) {
-                String tempParent = parent.substring(0, divIndex);
-                tempPage.setPage(tempParent);
-            } else {
-                tempPage.setPage(this.parent);
+                tempParent = parent.substring(0, divIndex);
             }
-            this.parentPageModel = dao.getPageModel(tempPage, null);
+            this.parentPageModel = PageModel.getPageModelByName(tempParent);
         }
         return parentPageModel;
     }
@@ -192,10 +188,7 @@ public class PageModel {
 
     public PageModel getPageModel() throws Exception {
         if (this.pageModel == null) {
-            NovelsDao dao = NovelsDao.getInstance();
-            PageModel tempPage = new PageModel();
-            tempPage.setPage(this.page);
-            this.pageModel = dao.getPageModel(tempPage, null);
+            this.pageModel = PageModel.getPageModelByName(this.page);
         }
         return pageModel;
     }
@@ -216,8 +209,7 @@ public class PageModel {
         if (parent == null)
             return "";
 
-        bookTitle = parent.substring(parent.indexOf(Constants.NOVEL_BOOK_DIVIDER) + Constants.NOVEL_BOOK_DIVIDER.length());
-        return bookTitle;
+        return parent.substring(parent.indexOf(Constants.NOVEL_BOOK_DIVIDER) + Constants.NOVEL_BOOK_DIVIDER.length());
     }
 
     public BookModel getBook(boolean autoDownload) {

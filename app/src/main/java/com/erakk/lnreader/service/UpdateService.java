@@ -29,7 +29,7 @@ import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.model.UpdateInfoModel;
-import com.erakk.lnreader.model.UpdateType;
+import com.erakk.lnreader.model.UpdateTypeEnum;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.GetUpdatedChaptersTask;
 
@@ -116,16 +116,16 @@ public class UpdateService extends Service {
                 if (pageModel.getType().equalsIgnoreCase(PageModel.TYPE_NOVEL)) {
                     ++newNovel;
                     updateInfo.setUpdateTitle("New Novel: " + pageModel.getTitle());
-                    updateInfo.setUpdateType(UpdateType.NewNovel);
+                    updateInfo.setUpdateType(UpdateTypeEnum.NewNovel);
                 } else if (pageModel.getType().equalsIgnoreCase(PageModel.TYPE_TOS)) {
                     updateInfo.setUpdateTitle("Updated TOS");
-                    updateInfo.setUpdateType(UpdateType.UpdateTos);
+                    updateInfo.setUpdateType(UpdateTypeEnum.UpdateTos);
                 } else {
                     if (pageModel.isUpdated()) {
-                        updateInfo.setUpdateType(UpdateType.Updated);
+                        updateInfo.setUpdateType(UpdateTypeEnum.Updated);
                         ++updateCount;
                     } else {
-                        updateInfo.setUpdateType(UpdateType.New);
+                        updateInfo.setUpdateType(UpdateTypeEnum.New);
                         ++newCount;
                     }
 

@@ -3,6 +3,8 @@
     <item
         android:id="@+id/menu_refresh_novel_list"
         android:orderInCategory="3"
+        android:icon="@drawable/ic_main_updates"
+        app:showAsAction="ifRoom"
         android:title="@string/novel_list_refresh" />
     <item
         android:id="@+id/menu_manual_add"

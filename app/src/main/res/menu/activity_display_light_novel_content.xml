@@ -4,11 +4,13 @@
     <item
         android:id="@+id/menu_chapter_previous"
         android:orderInCategory="1"
+        android:icon="@android:drawable/ic_media_rew"
         app:showAsAction="ifRoom"
         android:title="@string/content_previous" />
     <item
         android:id="@+id/menu_chapter_next"
         android:orderInCategory="2"
+        android:icon="@android:drawable/ic_media_ff"
         app:showAsAction="ifRoom"
         android:title="@string/content_next" />
     <item
@@ -18,15 +20,18 @@
     <item
         android:id="@+id/menu_search"
         android:orderInCategory="4"
+        android:icon="@android:drawable/ic_menu_search"
         android:title="@string/content_search" />
     <item
         android:id="@+id/menu_speak"
         android:orderInCategory="5"
+        android:icon="@android:drawable/ic_media_play"
         android:title="Start Text-To-Speech"
         android:enabled="false" />
     <item
         android:id="@+id/menu_pause_tts"
         android:orderInCategory="6"
+        android:icon="@android:drawable/ic_media_pause"
         android:title="Pause Text-To-Speech"
         android:enabled="false" />
     <item
@@ -35,6 +40,7 @@
         android:title="@string/invert_colors" />
     <item
         android:id="@+id/menu_refresh_chapter_content"
+        android:icon="@drawable/ic_main_updates"
         android:orderInCategory="96"
         android:title="@string/content_refresh" />
     <item

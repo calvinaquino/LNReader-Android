@@ -284,8 +284,8 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
                 task = tempTask;
                 task.owner = this;
             }
-            toggleProgressBar(true);
         }
+        toggleProgressBar(true);
     }
 
     private void executeAltTask(boolean isRefresh, boolean alphOrder, String lang) {
@@ -306,8 +306,8 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
                 altTask = tempTask;
                 altTask.owner = this;
             }
-            toggleProgressBar(true);
         }
+        toggleProgressBar(true);
     }
 
     @SuppressLint("NewApi")
@@ -360,8 +360,8 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
                 addTask = tempTask;
                 addTask.owner = this;
             }
-            toggleProgressBar(true);
         }
+        toggleProgressBar(true);
     }
 
     private void loadNovel(String page, String novelTitleHint) {

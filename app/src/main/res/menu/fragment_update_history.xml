@@ -2,7 +2,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_run_update"
+        android:icon="@drawable/ic_main_updates"
+        android:orderInCategory="1"
+        app:showAsAction="ifRoom"
+        android:title="@string/run_update_text" />
+    <item
         android:id="@+id/menu_clear_all"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:orderInCategory="2"
+        app:showAsAction="ifRoom"
         android:title="@string/menu_show_clear_all" />
     <item
         android:id="@+id/menu_clear_selected"
@@ -27,10 +36,5 @@
         android:checkable="true"
         android:checked="true"
         android:title="@string/menu_show_external" />
-    <item
-        android:id="@+id/menu_run_update"
-        android:icon="@drawable/ic_main_updates"
-        app:showAsAction="ifRoom"
-        android:title="@string/run_update_text" />
 
 </menu>

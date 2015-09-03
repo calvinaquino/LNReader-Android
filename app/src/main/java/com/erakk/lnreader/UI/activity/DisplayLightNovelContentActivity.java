@@ -214,7 +214,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             String page = getIntent().getStringExtra(Constants.EXTRA_PAGE);
             PageModel pageModel = new PageModel(page);
             try {
-                pageModel = NovelsDao.getInstance().getPageModel(pageModel, null, false);
+                pageModel = NovelsDao.getInstance().getExistingPageModel(pageModel, null);
                 if (pageModel == null) {
                     Toast.makeText(this, getResources().getString(R.string.bookmark_content_load_error), Toast.LENGTH_LONG).show();
                     Log.w(TAG, "Missing page: " + page);

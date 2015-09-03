@@ -8,20 +8,22 @@
     <LinearLayout 
         android:id="@+id/menu_main"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:gravity="center"
-        android:orientation="horizontal">
-	    <LinearLayout
+        android:orientation="vertical">
+
+
+        <LinearLayout
 	        android:id="@+id/menu_left"
             android:layout_weight="14"
             android:layout_gravity="center_vertical"
-	        android:layout_width="0dp"
+            android:layout_width="fill_parent"
 	      	android:layout_marginLeft="25dp"
 	      	android:layout_marginTop="50dp"
 	      	android:layout_marginBottom="50dp"
 	        android:layout_height="wrap_content"
 	        android:orientation="vertical" >
-	        
+
 	        <Button
 	            android:id="@+id/btnLightNovel"
 	            android:layout_width="wrap_content"
@@ -81,7 +83,10 @@
 	            android:textSize="20sp"
 	            android:clickable="true"
 	            android:focusable="true"
-   	            android:text="@string/alternative_language" />		        
-	    </LinearLayout>
+                android:text="@string/alternative_language" />
+
+        </LinearLayout>
+
     </LinearLayout>
+
 </ScrollView>

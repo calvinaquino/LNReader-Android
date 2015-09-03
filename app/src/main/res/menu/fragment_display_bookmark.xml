@@ -3,6 +3,7 @@
 
     <item
         android:id="@+id/menu_bookmark_delete_selected"
+        android:icon="@android:drawable/ic_menu_delete"
         android:title="@string/menu_bookmark_delete_selected"
         app:showAsAction="ifRoom" />
 

@@ -1,5 +1,5 @@
 package com.erakk.lnreader.model;
 
-public enum UpdateType {
+public enum UpdateTypeEnum {
     New, Updated, Deleted, NewNovel, UpdateTos
 }

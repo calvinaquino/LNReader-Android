@@ -3,6 +3,8 @@ package com.erakk.lnreader.UI.fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -31,10 +33,12 @@ import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.UpdateInfoModel;
-import com.erakk.lnreader.model.UpdateType;
+import com.erakk.lnreader.model.UpdateTypeEnum;
 import com.erakk.lnreader.task.AsyncTaskResult;
+import com.erakk.lnreader.task.LoadUpdatesTask;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNotifier<AsyncTaskResult<?>> {
@@ -101,7 +105,7 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
         inflater.inflate(R.menu.context_menu_update_history, menu);
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
         UpdateInfoModel chapter = updateList.get(info.position);
-        if (chapter.getUpdateType() == UpdateType.NewNovel) {
+        if (chapter.getUpdateType() == UpdateTypeEnum.NewNovel) {
             menu.findItem(R.id.menu_open_chapter).setVisible(false);
         } else {
             menu.findItem(R.id.menu_open_chapter).setVisible(true);
@@ -212,7 +216,23 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
 
     @Override
     public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<?> result) {
-        onProgressCallback(message);
+        if (result.getResultType() == UpdateInfoModel[].class) {
+            try {
+                UpdateInfoModel[] temp = (UpdateInfoModel[]) result.getResult();
+                updateList = new ArrayList<UpdateInfoModel>(Arrays.asList(temp));
+
+                int resourceId = R.layout.item_update;
+                adapter = new UpdateInfoModelAdapter(getActivity(), resourceId, updateList);
+                updateListView.setAdapter(adapter);
+
+            } catch (Exception e) {
+                Log.e(TAG, e.getMessage(), e);
+                Toast.makeText(getActivity(), getResources().getString(R.string.error_update) + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        } else {
+            // from run update
+            onProgressCallback(message);
+        }
     }
 
     @Override
@@ -228,13 +248,13 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
     private void openChapter(UpdateInfoModel item) {
         // TODO: change to fragment
         Intent intent = null;
-        if (item.getUpdateType() == UpdateType.NewNovel) {
+        if (item.getUpdateType() == UpdateTypeEnum.NewNovel) {
             intent = new Intent(getActivity(), NovelListContainerActivity.class);
             intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
             intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
-        } else if (item.getUpdateType() == UpdateType.New ||
-                item.getUpdateType() == UpdateType.Updated ||
-                item.getUpdateType() == UpdateType.UpdateTos) {
+        } else if (item.getUpdateType() == UpdateTypeEnum.New ||
+                item.getUpdateType() == UpdateTypeEnum.Updated ||
+                item.getUpdateType() == UpdateTypeEnum.UpdateTos) {
 
             if (item.isExternal() && !UIHelper.isUseInternalWebView(getActivity())) {
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getUpdatePage()));
@@ -251,11 +271,11 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
     private void openDetails(UpdateInfoModel item) {
         Intent intent = new Intent(getActivity(), NovelListContainerActivity.class);
         intent.putExtra(Constants.EXTRA_ONLY_WATCHED, false);
-        if (item.getUpdateType() == UpdateType.NewNovel) {
+        if (item.getUpdateType() == UpdateTypeEnum.NewNovel) {
             intent.putExtra(Constants.EXTRA_PAGE, item.getUpdatePage());
-        } else if (item.getUpdateType() == UpdateType.New ||
-                item.getUpdateType() == UpdateType.Updated ||
-                item.getUpdateType() == UpdateType.Deleted) {
+        } else if (item.getUpdateType() == UpdateTypeEnum.New ||
+                item.getUpdateType() == UpdateTypeEnum.Updated ||
+                item.getUpdateType() == UpdateTypeEnum.Deleted) {
             try {
                 String parent = item.getUpdatePageModel().getParent();
                 String details = parent.split(Constants.NOVEL_BOOK_DIVIDER)[0];
@@ -283,16 +303,11 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
     }
 
     public void updateContent() {
-        try {
-            updateList = NovelsDao.getInstance().getAllUpdateHistory();
-            int resourceId = R.layout.item_update;
-            adapter = new UpdateInfoModelAdapter(getActivity(), resourceId, updateList);
-            updateListView.setAdapter(adapter);
-
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage(), e);
-            Toast.makeText(getActivity(), getResources().getString(R.string.error_update) + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
+        LoadUpdatesTask task = new LoadUpdatesTask(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        else
+            task.execute();
     }
     // endregion
 }

@@ -1,9 +1,5 @@
 package com.erakk.lnreader.service;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
@@ -22,6 +18,10 @@ import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.CopyDBTask;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
 
 public class AutoBackupService extends Service {
 	public static final String TAG = AutoBackupService.class.toString();
