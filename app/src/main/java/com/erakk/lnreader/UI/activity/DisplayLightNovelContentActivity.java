@@ -529,6 +529,11 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
         final int lastY = wv.getScrollY() + wv.getBottom();
         final int contentHeight = wv.getContentHeight();
 
+        // bug handling for Issue#213
+        // for some reason, the setLastReadState is called twice in landscape mode.
+        if (contentHeight == 0)
+            return;
+
         new Thread(new Runnable() {
 
             @Override
@@ -595,7 +600,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
                     if (isReadThreshold <= lastY && !currPageModel.getPage().endsWith("&action=edit&redlink=1")) {
                         currPageModel.setFinishedRead(true);
                     }
-                    Log.i(TAG, "Complete Read PageModel for Content: " + currPageModel.getPage() + " check value: " + isReadThreshold + " <= " + lastY + " ==> " + currPageModel.isFinishedRead());
+                    Log.i(TAG, "Complete Read PageModel for Content: " + currPageModel.getPage() + " check value=" + isReadThreshold + " <= YPix=" + lastY + " ==> " + currPageModel.isFinishedRead());
                     NovelsDao.getInstance().updatePageModel(currPageModel);
                 } catch (Exception ex) {
                     Log.e(TAG, "Error updating PageModel for Content: " + currPageModel.getPage(), ex);
@@ -764,7 +769,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
 
             wv.loadDataWithBaseURL(UIHelper.getBaseUrl(this), html.toString(), "text/html", "utf-8", NonLeakingWebView.PREFIX_PAGEMODEL + content.getPage());
             setChapterTitle(pageModel);
-            Log.d(TAG, "Load Content: " + contentUserData.getLastXScroll() + " " + contentUserData.getLastYScroll() + " " + contentUserData.getLastZoom());
+            Log.d(TAG, "Load Content:X=" + contentUserData.getLastXScroll() + ":Y=" + contentUserData.getLastYScroll() + ":Z=" + contentUserData.getLastZoom());
 
             buildTOCMenu(pageModel);
             buildBookmarkMenu();
