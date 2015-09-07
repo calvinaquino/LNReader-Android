@@ -77,7 +77,7 @@
             android:paddingBottom="25dp" />
 
         <TextView
-            android:id="@+id/synopsys"
+            android:id="@+id/synopsis"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -85,14 +85,24 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="20dp"
-            android:text="@string/novel_synopsys"
-            tools:context=".LightNovelChaptersActivity" />
+            android:text="@string/novel_synopsys" />
+
+        <TextView
+            android:id="@+id/categories"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/synopsis"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="5dp"
+            android:text="categories" />
 
         <View
             android:id="@+id/divider_bottom3"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@+id/synopsys"
+            android:layout_below="@+id/categories"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:background="@color/divider"

@@ -17,7 +17,7 @@
     <string name="title_activity_display_alternative_novel_pager">Alternative Language Lists</string>
     <string name="novel_title">title</string>
     <string name="novel_cover">cover</string>
-    <string name="novel_synopsys"></string>
+    <string name="novel_synopsys">dummy synopsis</string>
     <string name="title_activity_display_synopsys">Novel Synopsis</string>
     <string name="title_activity_display_novel_content">Novel Content</string>
     <string name="invert_colors">Invert Colors</string>

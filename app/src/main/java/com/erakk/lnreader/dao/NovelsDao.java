@@ -965,6 +965,7 @@ public class NovelsDao {
         }
         PageModel novelPageTemp = getPageModelFromInternet(page, notifier);
         if (novelPageTemp != null) {
+            page = getUpdateInfo(page, notifier);
             page.setLastUpdate(novelPageTemp.getLastUpdate());
             page.setLastCheck(new Date());
             novel.setLastUpdate(novelPageTemp.getLastUpdate());

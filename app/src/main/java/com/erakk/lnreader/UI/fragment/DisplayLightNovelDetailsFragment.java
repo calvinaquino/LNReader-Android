@@ -433,7 +433,8 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
                         View synopsis = layoutInflater.inflate(R.layout.fragment_display_synopsis, null);
                         TextView textViewTitle = (TextView) synopsis.findViewById(R.id.title);
-                        TextView textViewSynopsis = (TextView) synopsis.findViewById(R.id.synopsys);
+                        TextView textViewSynopsis = (TextView) synopsis.findViewById(R.id.synopsis);
+                        TextView textViewCategories = (TextView) synopsis.findViewById(R.id.categories);
                         textViewTitle.setTextSize(20);
                         textViewSynopsis.setTextSize(16);
                         String title = page.getTitle();
@@ -453,6 +454,9 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
 
                         textViewTitle.setText(title);
                         textViewSynopsis.setText(novelCol.getSynopsis());
+                        String tempCatList = Util.join(novelCol.getPageModel().getCategories(), ", ");
+                        tempCatList = tempCatList.replace("Category:", "");
+                        textViewCategories.setText(tempCatList);
 
                         CheckBox isWatched = (CheckBox) synopsis.findViewById(R.id.isWatched);
                         isWatched.setChecked(page.isWatched());

@@ -14,7 +14,7 @@ public class PageCategoriesHelper {
 
     public static final String DATABASE_CREATE_PAGE_CATEGORY =
             "create table if not exists " + DBHelper.TABLE_PAGE_CATEGORIES + "("
-                    + DBHelper.COLUMN_PAGE + " text unique not null, " // 0
+                    + DBHelper.COLUMN_PAGE + " text not null, " // 0
                     + DBHelper.COLUMN_CATEGORY + " text not null );"; // 1
     private static final String TAG = PageCategoriesHelper.class.toString();
 
@@ -26,7 +26,7 @@ public class PageCategoriesHelper {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 temp.add(cursor.getString(1));
-                break;
+                cursor.moveToNext();
             }
         } finally {
             if (cursor != null)
@@ -40,6 +40,7 @@ public class PageCategoriesHelper {
         int result = 0;
 
         db.beginTransaction();
+        // replace existing category with the new one
         deleteCategoriesByPage(helper, db, page);
         for (String category : categories) {
             ContentValues cv = new ContentValues();
@@ -47,6 +48,7 @@ public class PageCategoriesHelper {
             cv.put(DBHelper.COLUMN_CATEGORY, category);
             result += helper.insertOrThrow(db, DBHelper.TABLE_PAGE_CATEGORIES, "null", cv);
         }
+        db.setTransactionSuccessful();
         db.endTransaction();
 
         Log.w(TAG, "Categories Inserted: " + result);

@@ -51,7 +51,8 @@ public class NovelCollectionModelHelper {
         NovelCollectionModel novelDetails = getNovelDetailsOnly(helper, db, page);
 
         if (novelDetails != null) {
-            novelDetails.setPageModel(PageModelHelper.getPageModel(helper, db, page));
+            PageModel tempPageModel = PageModelHelper.getPageModel(helper, db, page);
+            novelDetails.setPageModel(tempPageModel);
 
             // get the books
             ArrayList<BookModel> bookCollection = BookModelHelper.getBookCollectionOnly(helper, db, page, novelDetails);
@@ -63,6 +64,10 @@ public class NovelCollectionModelHelper {
                 book.setChapterCollection(chapters);
             }
             novelDetails.setBookCollections(bookCollection);
+
+            // get the novel categories
+            tempPageModel.setCategories(PageCategoriesHelper.getCategoriesByPage(helper, db, page));
+
         } else {
             Log.w(TAG, "No Data for Novel Details: " + page);
         }
