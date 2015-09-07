@@ -85,13 +85,14 @@ public class DownloadFileTask extends AsyncTask<Void, Integer, AsyncTaskResult<I
 
         HttpURLConnection connection = null;
         if (imageUrl.getProtocol().toLowerCase().equals("https")) {
-            if (UIHelper.getUseAppKeystore(LNReaderApplication.getInstance().getApplicationContext())) {
+            boolean useKeyStore = UIHelper.getUseAppKeystore(LNReaderApplication.getInstance().getApplicationContext());
+            if (useKeyStore) {
                 HttpsURLConnection.setDefaultSSLSocketFactory(Util.initMySecureSSL());
                 Log.w(TAG, "Using my https cert key store");
-
             }
             HttpsURLConnection https = (HttpsURLConnection) url.openConnection();
-            https.setHostnameVerifier(Util.DO_NOT_VERIFY);
+
+            if (useKeyStore) https.setHostnameVerifier(Util.DO_NOT_VERIFY);
             connection = https;
         } else {
             connection = (HttpURLConnection) imageUrl.openConnection();

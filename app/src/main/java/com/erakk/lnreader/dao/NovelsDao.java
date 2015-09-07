@@ -1578,6 +1578,7 @@ public class NovelsDao {
     }
 
     private Response connect(String url, int retry) throws IOException {
+        // allow to use its keystore.
         return Jsoup.connect(url).setSecure(!getUseAppKeystore()).timeout(getTimeout(retry)).execute();
     }
 
