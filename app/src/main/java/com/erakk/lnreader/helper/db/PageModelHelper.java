@@ -18,7 +18,8 @@ import java.util.Iterator;
 public class PageModelHelper {
 
     // New column should be appended as the last column
-    public static final String DATABASE_CREATE_PAGES = "create table if not exists " + DBHelper.TABLE_PAGE + "(" + DBHelper.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " // 0
+    public static final String DATABASE_CREATE_PAGES = "create table if not exists " + DBHelper.TABLE_PAGE + "("
+            + DBHelper.COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " // 0
             + DBHelper.COLUMN_PAGE + " text unique not null, " // 1
             + DBHelper.COLUMN_TITLE + " text not null, " // 2
             + DBHelper.COLUMN_TYPE + " text, " // 3

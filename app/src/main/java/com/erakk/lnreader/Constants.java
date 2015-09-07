@@ -174,8 +174,11 @@ public class Constants {
 
     /**
      * URL used for wiki API to get the page info
+     * - title
+     * - rev id
+     * - categories
      */
-    public static final String API_URL_INFO = "%s/project/api.php?action=query&prop=info|revisions&format=xml&redirects=yes&titles=%s";
+    public static final String API_URL_INFO = "%s/project/api.php?action=query&prop=info|revisions|categories&cllimit=max&format=xml&redirects=yes&titles=%s";
 
 
     public static final String EXTRA_NOVEL_LANG = "lang";

@@ -7,6 +7,7 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class PageModel {
@@ -36,6 +37,7 @@ public class PageModel {
     private boolean isMissing = false;
     private boolean isExternal = false;
     private int wikiId = -1;
+    private ArrayList<String> categories;
 
     private String redirectedTo;
 
@@ -335,5 +337,13 @@ public class PageModel {
 
     public void setWikiId(int wikiId) {
         this.wikiId = wikiId;
+    }
+
+    public ArrayList<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(ArrayList<String> categories) {
+        this.categories = categories;
     }
 }

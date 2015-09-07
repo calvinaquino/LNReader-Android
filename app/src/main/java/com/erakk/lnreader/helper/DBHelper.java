@@ -23,6 +23,7 @@ import com.erakk.lnreader.helper.db.ImageModelHelper;
 import com.erakk.lnreader.helper.db.NovelCollectionModelHelper;
 import com.erakk.lnreader.helper.db.NovelContentModelHelper;
 import com.erakk.lnreader.helper.db.NovelContentUserHelperModel;
+import com.erakk.lnreader.helper.db.PageCategoriesHelper;
 import com.erakk.lnreader.helper.db.PageModelHelper;
 import com.erakk.lnreader.helper.db.UpdateInfoModelHelper;
 import com.erakk.lnreader.model.PageModel;
@@ -78,8 +79,11 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_UPDATE_TITLE = "update_title";
 	public static final String COLUMN_UPDATE_TYPE = "update_type";
 
+    public static final String TABLE_PAGE_CATEGORIES = "page_categories";
+    public static final String COLUMN_CATEGORY = "category";
+
 	public static final String DATABASE_NAME = "pages.db";
-	public static final int DATABASE_VERSION = 28;
+    public static final int DATABASE_VERSION = 29;
 
 	// Use /files/database to standardize with newer android.
 	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files/databases";
@@ -125,7 +129,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(UpdateInfoModelHelper.DATABASE_CREATE_UPDATE_HISTORY);
 		// new table @ v28
 		db.execSQL(NovelContentUserHelperModel.DATABASE_CREATE_NOVEL_CONTENT_USER);
-	}
+        // new table @ v29
+        db.execSQL(PageCategoriesHelper.DATABASE_CREATE_PAGE_CATEGORY);
+    }
 
 	@Override
 	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -200,7 +206,10 @@ public class DBHelper extends SQLiteOpenHelper {
 					" from " + TABLE_NOVEL_CONTENT + " o ");
 
 		}
-		Log.i(TAG, "Upgrade DB Complete: " + oldVersion + " to " + newVersion);
+        if (oldVersion == 28) {
+            db.execSQL(PageCategoriesHelper.DATABASE_CREATE_PAGE_CATEGORY);
+        }
+        Log.i(TAG, "Upgrade DB Complete: " + oldVersion + " to " + newVersion);
 	}
 
 	public void deletePagesDB(SQLiteDatabase db) {
@@ -217,7 +226,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		Log.d(TAG, TABLE_NOVEL_CONTENT + " deleted");
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_UPDATE_HISTORY);
 		Log.d(TAG, TABLE_UPDATE_HISTORY + " deleted");
-		onCreate(db);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PAGE_CATEGORIES);
+        Log.d(TAG, TABLE_PAGE_CATEGORIES + " deleted");
+        onCreate(db);
 		Log.w(TAG, "Database Deleted.");
 	}
 

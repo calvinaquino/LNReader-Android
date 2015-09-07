@@ -25,6 +25,7 @@ import com.erakk.lnreader.helper.db.ImageModelHelper;
 import com.erakk.lnreader.helper.db.NovelCollectionModelHelper;
 import com.erakk.lnreader.helper.db.NovelContentModelHelper;
 import com.erakk.lnreader.helper.db.NovelContentUserHelperModel;
+import com.erakk.lnreader.helper.db.PageCategoriesHelper;
 import com.erakk.lnreader.helper.db.PageModelHelper;
 import com.erakk.lnreader.helper.db.UpdateInfoModelHelper;
 import com.erakk.lnreader.model.BookModel;
@@ -727,6 +728,14 @@ public class NovelsDao {
                     Response response = connect(url, retry);
                     Document doc = response.parse();
                     ArrayList<PageModel> updatedPageModels = CommonParser.parsePageAPI(checkedPageModel, doc, url);
+
+                    SQLiteDatabase db = dbh.getWritableDatabase();
+                    for (PageModel updatedPageModel : updatedPageModels) {
+                        if (updatedPageModel.getCategories() != null && updatedPageModel.getCategories().size() > 0) {
+                            PageCategoriesHelper.insertCategoryByPage(dbh, db, updatedPageModel.getPage(), updatedPageModel.getCategories());
+                        }
+                    }
+
                     resultPageModel.addAll(updatedPageModels);
 
                     if (notifier != null) {

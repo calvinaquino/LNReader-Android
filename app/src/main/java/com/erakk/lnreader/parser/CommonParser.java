@@ -265,6 +265,7 @@ public class CommonParser {
                     Log.v(TAG, "Using timestamp from revision");
                 }
 
+                // parse wiki id
                 int wikiId = -1;
                 try {
                     wikiId = Integer.parseInt(pElement.attr("pageid"));
@@ -272,11 +273,31 @@ public class CommonParser {
                     Log.e(TAG, String.format("Invalid pageid: '%s' for %s", pElement.attr("pageid"), temp.getPage()));
                 }
 
+                // parse categories
+                ArrayList<String> tempCat = new ArrayList<>();
+                try {
+                    Element eCategoryRoot = pElement.select("categories").first();
+                    if (eCategoryRoot != null) {
+                        Elements eCategories = eCategoryRoot.select("cl");
+                        if (eCategories != null) {
+                            for (Element eCategory : eCategories) {
+                                String category = eCategory.attr("title");
+                                Log.d(TAG, "Found category: " + category);
+                                tempCat.add(category);
+                            }
+                        }
+                    }
+                } catch (Exception ex) {
+                    Log.e(TAG, "Cannot get categories for: " + temp.getPage(), ex);
+                }
+
+                // update data
                 if (!Util.isStringNullOrEmpty(tempDate)) {
                     Date lastUpdate = formatter.parse(tempDate);
                     temp.setLastUpdate(lastUpdate);
                     temp.setMissing(false);
                     temp.setWikiId(wikiId);
+                    temp.setCategories(tempCat);
                     if (Util.isStringNullOrEmpty(temp.getTitle()))
                         temp.setTitle(to);
                     Log.d(TAG, String.format("parsePageAPI [%s]%s Last Update: %s ", temp.getPage(), temp.getWikiId(), temp.getLastUpdate()));
