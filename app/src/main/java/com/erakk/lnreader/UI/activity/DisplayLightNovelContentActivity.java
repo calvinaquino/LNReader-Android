@@ -593,7 +593,7 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
 
             private void checkIsReadComplete() {
                 // pixel, round to the nearest
-                double isReadThreshold = (contentHeight * currentScale) - 1;
+                double isReadThreshold = (contentHeight * currentScale) - currentScale;
 
                 try {
 
