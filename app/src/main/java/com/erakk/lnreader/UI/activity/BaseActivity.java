@@ -23,6 +23,15 @@ import com.erakk.lnreader.UI.fragment.SearchFragment;
 import com.erakk.lnreader.UI.fragment.UpdateInfoFragment;
 import com.erakk.lnreader.UIHelper;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 
 public class BaseActivity extends AppCompatActivity {
     private static final String TAG = BaseActivity.class.toString();
@@ -32,6 +41,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setupExceptionHandler();
         UIHelper.setLanguage(this);
         //setContentView(R.layout.fragactivity_framework);
     }
@@ -218,6 +228,74 @@ public class BaseActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         } else {
             Log.w(TAG, "No toolbar detected!");
+        }
+    }
+
+    /**
+     * http://stackoverflow.com/a/26560727
+     */
+    private void setupExceptionHandler() {
+        final Thread.UncaughtExceptionHandler oldHandler =
+                Thread.getDefaultUncaughtExceptionHandler();
+
+        Thread.setDefaultUncaughtExceptionHandler(
+                new Thread.UncaughtExceptionHandler() {
+                    @Override
+                    public void uncaughtException(Thread paramThread, Throwable paramThrowable) {
+                        //Do your own error handling here
+
+                        // try to write log file to the image path.
+                        writeException(paramThread, paramThrowable);
+
+                        if (oldHandler != null)
+                            oldHandler.uncaughtException(
+                                    paramThread,
+                                    paramThrowable
+                            ); //Delegates to Android's error handling
+                        else
+                            System.exit(2); //Prevents the service/app from freezing
+                    }
+                });
+    }
+
+    private void writeException(Thread paramThread, Throwable paramThrowable) {
+        BufferedWriter writer = null;
+        String rootPath = UIHelper.getImageRoot(this);
+        try {
+            // create a temporary file
+            String timeLog = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+            File logFile = new File(rootPath + "/Error_" + timeLog + ".log");
+
+            // This will output the full path where the file will be written to...
+            Log.d(TAG, "Writing to: " + logFile.getCanonicalPath());
+
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(logFile), "UTF-8"));
+
+            writer.write("Thread Name: " + paramThread.getName());
+            writer.newLine();
+
+            writer.write(paramThrowable.getMessage());
+            writer.newLine();
+
+            StringWriter sw = new StringWriter();
+            paramThrowable.printStackTrace(new PrintWriter(sw));
+            String exceptionAsString = sw.toString();
+            writer.write(exceptionAsString);
+            writer.newLine();
+
+            writer.flush();
+
+            writer.write("-=EOL=-");
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to write log file.", e);
+        } finally {
+            try {
+                // Close the writer regardless of what happens...
+                if (writer != null)
+                    writer.close();
+            } catch (Exception e) {
+                Log.e(TAG, "Failed when closing writer.", e);
+            }
         }
     }
 }

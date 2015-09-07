@@ -9,6 +9,7 @@
 - Try to fix Issue #210: Reaching End of Chapter Doesn't Mark as Read
 - Update logic for relink images.
 - Update keystore.
+- Add log file for unhandled exception to image folder.
 
 1.1.34
 - Fix Issue #208: ActionBar hide first few lines.
