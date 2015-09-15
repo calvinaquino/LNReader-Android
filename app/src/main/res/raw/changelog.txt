@@ -1,3 +1,8 @@
+1.1.36-beta1
+- Update android build tool to v22.
+- Update JSoup to 1.8.3.
+- Fix index-out-of-bound when searching.
+
 1.1.35
 - Update bookmark loading logic.
 - Update update history loading logic.

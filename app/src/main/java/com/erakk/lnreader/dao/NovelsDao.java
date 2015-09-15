@@ -1500,6 +1500,11 @@ public class NovelsDao {
         return timeout;
     }
 
+    /**
+     * Get if need to use internal app keystore.
+     *
+     * @return
+     */
     private boolean getUseAppKeystore() {
         boolean result = UIHelper.getUseAppKeystore(LNReaderApplication.getInstance().getApplicationContext());
         if (result) {
@@ -1579,7 +1584,7 @@ public class NovelsDao {
 
     private Response connect(String url, int retry) throws IOException {
         // allow to use its keystore.
-        return Jsoup.connect(url).setSecure(!getUseAppKeystore()).timeout(getTimeout(retry)).execute();
+        return Jsoup.connect(url).validateTLSCertificates(!getUseAppKeystore()).timeout(getTimeout(retry)).execute();
     }
 
     // endregion

@@ -211,7 +211,11 @@ public class PageModel {
         if (parent == null)
             return "";
 
-        return parent.substring(parent.indexOf(Constants.NOVEL_BOOK_DIVIDER) + Constants.NOVEL_BOOK_DIVIDER.length());
+        int idx = parent.indexOf(Constants.NOVEL_BOOK_DIVIDER);
+        if (-1 == idx)
+            return parent;
+
+        return parent.substring(idx + Constants.NOVEL_BOOK_DIVIDER.length());
     }
 
     public BookModel getBook(boolean autoDownload) {
