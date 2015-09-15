@@ -1,4 +1,4 @@
-1.1.35-beta3
+1.1.35
 - Update bookmark loading logic.
 - Update update history loading logic.
 - Update menu icon.
