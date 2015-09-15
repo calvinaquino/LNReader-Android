@@ -196,15 +196,28 @@ public class Util {
 
     public static List<File> getListFiles(File parentDir, Long[] totalSize, ICallbackNotifier callback) {
         ArrayList<File> inFiles = new ArrayList<File>();
-        File[] files = parentDir.listFiles();
-        for (File file : files) {
-            if (file.isDirectory()) {
-                inFiles.addAll(getListFiles(file, totalSize, callback));
-            } else {
-                inFiles.add(file);
-                totalSize[0] += file.length();
+
+        if (parentDir != null) {
+            try {
+                File[] files = parentDir.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.isDirectory()) {
+                            inFiles.addAll(getListFiles(file, totalSize, callback));
+                        } else {
+                            inFiles.add(file);
+                            totalSize[0] += file.length();
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                Log.e(TAG, "Failed to get files at " + parentDir.getAbsolutePath(), ex);
+                if (callback != null)
+                    callback.onProgressCallback(new CallbackEventData("Failed to get files: " + ex.getMessage(), parentDir.getAbsolutePath()));
+
             }
         }
+
         return inFiles;
     }
 
