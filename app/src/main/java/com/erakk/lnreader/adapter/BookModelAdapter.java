@@ -333,7 +333,8 @@ public class BookModelAdapter extends BaseExpandableListAdapter {
                 currParent.removeView(ivHasUpdates);
             container.addView(ivHasUpdates);
 
-            if (NovelsDao.getInstance().isContentUpdated(pageModel)) {
+            //if (NovelsDao.getInstance().isContentUpdated(pageModel)) {
+            if (pageModel.isUpdated()) {
                 ivHasUpdates.setVisibility(View.VISIBLE);
                 //UIHelper.setColorFilter(ivHasUpdates);
                 break;

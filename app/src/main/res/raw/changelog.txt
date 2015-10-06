@@ -1,7 +1,8 @@
-1.1.36-beta1
+1.1.36-beta2
 - Update android build tool to v22.
 - Update JSoup to 1.8.3.
 - Fix index-out-of-bound when searching.
+- Trying to fix Issue #214: improve loading time for novel chapter list.
 
 1.1.35
 - Update bookmark loading logic.

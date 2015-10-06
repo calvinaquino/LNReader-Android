@@ -845,6 +845,15 @@ public class NovelsDao {
         if (novel == null && autoDownload) {
             novel = getNovelDetailsFromInternet(page, notifier);
         }
+
+        // get the book chapters
+        for (BookModel book : novel.getBookCollections()) {
+            ArrayList<PageModel> chapters = book.getChapterCollection();
+            // check if chapter have updates
+            for (PageModel chapter : chapters) {
+                chapter.setUpdated(NovelsDao.getInstance().isContentUpdated(chapter));
+            }
+        }
         return novel;
     }
 
