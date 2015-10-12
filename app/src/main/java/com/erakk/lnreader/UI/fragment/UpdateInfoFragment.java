@@ -148,6 +148,8 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
                 updateContent();
                 return true;
             case R.id.menu_clear_selected:
+                if (updateList == null) return false;
+
                 for (UpdateInfoModel updateInfo : updateList) {
                     if (updateInfo.isSelected())
                         NovelsDao.getInstance().deleteUpdateHistory(updateInfo);
