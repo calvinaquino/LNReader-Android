@@ -227,7 +227,7 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
 
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage(), e);
-                Toast.makeText(getActivity(), getResources().getString(R.string.error_update) + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(LNReaderApplication.getInstance(), getResources().getString(R.string.error_update) + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         } else {
             // from run update
