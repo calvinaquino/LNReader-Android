@@ -218,6 +218,8 @@ public class UpdateInfoFragment extends Fragment implements IExtendedCallbackNot
 
     @Override
     public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<?> result) {
+        if (!this.isAdded() || this.isDetached() || this.isRemoving()) return;
+
         if (result.getResultType() == UpdateInfoModel[].class) {
             try {
                 UpdateInfoModel[] temp = (UpdateInfoModel[]) result.getResult();

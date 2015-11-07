@@ -220,6 +220,9 @@ public class DBHelper extends SQLiteOpenHelper {
             oldVersion = 30;
         }
 
+        // ensure all table are created
+        // ensure the sql use 'if not exists' clause
+        onCreate(db);
 
         Log.i(TAG, "Upgrade DB Complete: " + oldVersion + " to " + newVersion);
 	}
