@@ -36,6 +36,9 @@ public class PageModelHelper {
             + DBHelper.COLUMN_LANGUAGE + " text not null default '" + Constants.LANG_ENGLISH + "');"; // 14
     private static final String TAG = PageModelHelper.class.toString();
 
+    public static final String TABLE_PAGES_CREATE_INDEX_BY_PARENT = "create index if not exists INDEX_PAGE_PARENT on " + DBHelper.TABLE_PAGE + " ("
+            + DBHelper.COLUMN_PARENT + " );";
+
     public static PageModel cursorToPageModel(Cursor cursor) {
         PageModel page = new PageModel();
         page.setId(cursor.getInt(0));

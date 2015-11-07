@@ -83,7 +83,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CATEGORY = "category";
 
 	public static final String DATABASE_NAME = "pages.db";
-    public static final int DATABASE_VERSION = 29;
+    public static final int DATABASE_VERSION = 30;
 
 	// Use /files/database to standardize with newer android.
 	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files/databases";
@@ -91,8 +91,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	private final Object lock = new Object();
 
 	public DBHelper(Context context) {
-		super(context, getDbPath(context), null, DATABASE_VERSION);
-	}
+        super(context, getDbPath(context), null, DATABASE_VERSION);
+    }
 
 	public static String getDbPath(final Context context) {
 		String dbPath;
@@ -131,6 +131,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(NovelContentUserHelperModel.DATABASE_CREATE_NOVEL_CONTENT_USER);
         // new table @ v29
         db.execSQL(PageCategoriesHelper.DATABASE_CREATE_PAGE_CATEGORY);
+        // new index @ v30
+        db.execSQL(PageModelHelper.TABLE_PAGES_CREATE_INDEX_BY_PARENT);
     }
 
 	@Override
@@ -140,14 +142,16 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		try {
-			Context ctx = LNReaderApplication.getInstance().getApplicationContext();
-			String filename = UIHelper.getBackupRoot(ctx) + "/backup_" + oldVersion + "_to_" + newVersion + ".db";
-			Toast.makeText(ctx, ctx.getResources().getString(R.string.db_upgrade_backup_notification, filename), Toast.LENGTH_SHORT).show();
-			copyDB(ctx, true, filename);
+        Context ctx = LNReaderApplication.getInstance().getApplicationContext();
+        String filename = UIHelper.getBackupRoot(ctx) + "/backup_" + oldVersion + "_to_" + newVersion + ".db";
+        String str = ctx.getResources().getString(R.string.db_upgrade_backup_notification, filename);
+        try {
+            ctx.getMainLooper().prepare();
+            Toast.makeText(ctx, str, Toast.LENGTH_SHORT).show();
+            copyDB(ctx, true, filename);
 		} catch (Exception ex) {
-			Log.e(TAG, "Failed to show toast for backup db", ex);
-		}
+            Log.i(TAG, str);
+        }
 		Log.w(TAG, "Upgrading db from version " + oldVersion + " to " + newVersion);
 		if (oldVersion < 18) {
 			Log.w(TAG, "DB version is less than 18, recreate DB");
@@ -196,7 +200,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		if (oldVersion == 26) {
 			db.execSQL("UPDATE " + TABLE_PAGE + " SET " + COLUMN_PARENT + " = 'Category:Original_novel' WHERE " + COLUMN_PARENT + " = 'Category:Original'");
 			db.execSQL("UPDATE " + TABLE_PAGE + " SET " + COLUMN_PARENT + " = 'Category:Light_novel_(English)' WHERE " + COLUMN_PARENT + " = 'Main_Page'");
-		}
+            oldVersion = 27;
+        }
 		if (oldVersion == 27) {
 			db.execSQL(NovelContentUserHelperModel.DATABASE_CREATE_NOVEL_CONTENT_USER);
 
@@ -204,11 +209,18 @@ public class DBHelper extends SQLiteOpenHelper {
 			db.execSQL("insert into " + TABLE_NOVEL_CONTENT_USER +
 					" select rowid, o." + COLUMN_PAGE + ", o." + COLUMN_LAST_X + ", o." + COLUMN_LAST_Y + ", o." + COLUMN_ZOOM + ", o." + COLUMN_LAST_UPDATE + ", o." + COLUMN_LAST_CHECK +
 					" from " + TABLE_NOVEL_CONTENT + " o ");
-
-		}
+            oldVersion = 28;
+        }
         if (oldVersion == 28) {
             db.execSQL(PageCategoriesHelper.DATABASE_CREATE_PAGE_CATEGORY);
+            oldVersion = 29;
         }
+        if (oldVersion == 29) {
+            db.execSQL(PageModelHelper.TABLE_PAGES_CREATE_INDEX_BY_PARENT);
+            oldVersion = 30;
+        }
+
+
         Log.i(TAG, "Upgrade DB Complete: " + oldVersion + " to " + newVersion);
 	}
 
@@ -511,6 +523,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		try {
 			String sqlQuery = "pragma integrity_check";
 			db.rawQuery(sqlQuery, null);
+
+            // ensure all table are there
+            onCreate(db);
+
 			return "DB OK";
 		} catch (Exception ex) {
 			Log.e(TAG, "DB Check failed.", ex);
