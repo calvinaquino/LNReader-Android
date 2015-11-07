@@ -1,3 +1,10 @@
+1.1.37
+- Fix Issue #215: closed DB when updating info.
+- Fix Issue #217: crash when loading updates.
+- Fix Issue #216: ensure table created.
+- Add index on pages table to improve loading time.
+- Add toast message if application failed to load due to device is not supported.
+
 1.1.36
 - Update android build tool to v22.
 - Update JSoup to 1.8.3.

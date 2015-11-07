@@ -12,8 +12,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.InflateException;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
@@ -196,38 +198,54 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     public void setContentView(@LayoutRes int layout) {
-        super.setContentView(layout);
+        try {
+            super.setContentView(layout);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            toolbar.setTitle(R.string.app_name);
-            setSupportActionBar(toolbar);
 
-            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open_chapter_title, R.string.open_chapter_title) {
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            if (toolbar != null) {
+                toolbar.setTitle(R.string.app_name);
+                setSupportActionBar(toolbar);
 
-                /** Called when a drawer has settled in a completely closed state. */
-                public void onDrawerClosed(View view) {
-                    super.onDrawerClosed(view);
-                    //getActionBar().setTitle(mTitle);
-                    //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                    getSupportActionBar().setDisplayShowHomeEnabled(true);
+                mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+                mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.open_chapter_title, R.string.open_chapter_title) {
+
+                    /**
+                     * Called when a drawer has settled in a completely closed state.
+                     */
+                    public void onDrawerClosed(View view) {
+                        super.onDrawerClosed(view);
+                        //getActionBar().setTitle(mTitle);
+                        //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+
+                        ActionBar bar = getSupportActionBar();
+                        if (bar != null) {
+                            bar.setDisplayHomeAsUpEnabled(true);
+                            bar.setDisplayShowHomeEnabled(true);
+                        }
+                    }
+
+                    /**
+                     * Called when a drawer has settled in a completely open state.
+                     */
+                    public void onDrawerOpened(View drawerView) {
+                        super.onDrawerOpened(drawerView);
+                        //getActionBar().setTitle(mDrawerTitle);
+                        //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                    }
+
+                };
+                ActionBar bar = getSupportActionBar();
+                if (bar != null) {
+                    bar.setDisplayHomeAsUpEnabled(true);
+                    bar.setDisplayShowHomeEnabled(true);
                 }
-
-                /** Called when a drawer has settled in a completely open state. */
-                public void onDrawerOpened(View drawerView) {
-                    super.onDrawerOpened(drawerView);
-                    //getActionBar().setTitle(mDrawerTitle);
-                    //invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-                }
-
-            };
-
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        } else {
-            Log.w(TAG, "No toolbar detected!");
+            } else {
+                Log.w(TAG, "No toolbar detected!");
+            }
+        } catch (InflateException ex) {
+            Toast.makeText(this, "Unable to load application, looks like your device is not supported: " + ex.getMessage(), Toast.LENGTH_LONG).show();
+            Log.e(TAG, ex.getMessage(), ex);
         }
     }
 
