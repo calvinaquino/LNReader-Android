@@ -729,9 +729,9 @@ public class NovelsDao {
                     Document doc = response.parse();
                     ArrayList<PageModel> updatedPageModels = CommonParser.parsePageAPI(checkedPageModel, doc, url);
 
-                    SQLiteDatabase db = dbh.getWritableDatabase();
                     for (PageModel updatedPageModel : updatedPageModels) {
                         if (updatedPageModel.getCategories() != null && updatedPageModel.getCategories().size() > 0) {
+                            SQLiteDatabase db = dbh.getWritableDatabase();
                             PageCategoriesHelper.insertCategoryByPage(dbh, db, updatedPageModel.getPage(), updatedPageModel.getCategories());
                         }
                     }
