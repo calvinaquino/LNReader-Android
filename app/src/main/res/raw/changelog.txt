@@ -1,3 +1,7 @@
+1.1.38
+- Add Web Novel (English) support.
+- Update compatibility for Samsung devices.
+
 1.1.37
 - Fix Issue #215: closed DB when updating info.
 - Fix Issue #217: crash when loading updates.

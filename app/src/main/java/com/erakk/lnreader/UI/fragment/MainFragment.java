@@ -1,11 +1,14 @@
 package com.erakk.lnreader.UI.fragment;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
@@ -32,6 +35,8 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
         btnResumeNovel.setOnClickListener(this);
         Button btnAltLanguage = (Button) view.findViewById(R.id.btnAltLanguage);
         btnAltLanguage.setOnClickListener(this);
+        TextView txtReportIssue = (TextView) view.findViewById(R.id.report_issue);
+        txtReportIssue.setOnClickListener(this);
 
         getActivity().setTitle(getActivity().getApplicationInfo().labelRes);
 
@@ -51,6 +56,12 @@ public class MainFragment extends BaseFragment implements View.OnClickListener {
                 break;
             case R.id.btnAltLanguage:
                 UIHelper.selectAlternativeLanguage(getActivity());
+                break;
+            case R.id.report_issue:
+                String url = "https://github.com/calvinaquino/LNReader-Android/issues";
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
                 break;
             default:
                 Log.w(TAG, "Missing id: " + v.getId());
