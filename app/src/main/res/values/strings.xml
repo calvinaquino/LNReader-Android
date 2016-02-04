@@ -285,6 +285,9 @@
     <string name="load_teaser_task_refreshing">Refreshing Teaser List.</string>
     <string name="load_teaser_task_loading">Loading Teaser List.</string>
     <string name="load_teaser_task_complete">Teaser List loaded.</string>
+    <string name="load_web_task_refreshing">Refreshing Web Novel List.</string>
+    <string name="load_web_task_loading">Loading Web Novel List.</string>
+    <string name="load_web_task_complete">Web Novel List loaded.</string>
     <string name="load_teaser_task_error">Error when getting Teaser List: %1$s.</string>
     <string name="load_original_task_refreshing">Refreshing Original List.</string>
     <string name="load_original_task_loading">Loading Original List.</string>

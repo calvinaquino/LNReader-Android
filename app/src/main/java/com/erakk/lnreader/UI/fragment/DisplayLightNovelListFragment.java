@@ -270,6 +270,8 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
             key = TAG + ":LoadNovelsTask:" + Constants.ROOT_TEASER;
         } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
             key = TAG + ":LoadNovelsTask:" + Constants.ROOT_ORIGINAL;
+        } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_WEB)) {
+            key = TAG + ":LoadNovelsTask:" + Constants.ROOT_WEB;
         }
         boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
         if (isAdded) {
@@ -492,7 +494,7 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
                     toggleProgressBar(false);
                     if (loadingText != null) {
                         loadingText.setVisibility(TextView.VISIBLE);
-                        loadingText.setText("List is empty.");
+                        loadingText.setText(getResources().getString(R.string.list_empty));
                     }
                     Log.w(TAG, "Empty ArrayList!");
                 }

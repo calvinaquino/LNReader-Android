@@ -170,6 +170,20 @@ public class NovelsDao {
         return getNovelsHelperFromInternet(notifier, Constants.ROOT_TEASER, Constants.STATUS_TEASER);
     }
 
+    public ArrayList<PageModel> getWebNovel(ICallbackNotifier notifier, boolean alphOrder) throws Exception {
+        return getNovelHelper(notifier, Constants.ROOT_WEB, Constants.STATUS_WEB, alphOrder);
+    }
+
+    public ArrayList<PageModel> getWebNovelFromInternet(ICallbackNotifier notifier) throws Exception {
+        checkInternetConnection();
+        if (notifier != null) {
+            String message = context.getResources().getString(R.string.load_novel_list_download);
+            notifier.onProgressCallback(new CallbackEventData(message, TAG));
+        }
+
+        return getNovelsHelperFromInternet(notifier, Constants.ROOT_WEB, Constants.STATUS_WEB);
+    }
+
     public ArrayList<PageModel> getOriginal(ICallbackNotifier notifier, boolean alphOrder) throws Exception {
         return getNovelHelper(notifier, Constants.ROOT_ORIGINAL, Constants.STATUS_ORIGINAL, alphOrder);
     }

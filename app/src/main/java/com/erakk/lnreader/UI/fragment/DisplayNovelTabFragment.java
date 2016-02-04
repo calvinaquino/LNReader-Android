@@ -25,6 +25,7 @@ public class DisplayNovelTabFragment extends Fragment {
     private static final String MAIN_SPEC = "Main";
     private static final String TEASER_SPEC = "Teaser";
     private static final String ORIGINAL_SPEC = "Original";
+    private static final String WEB_SPEC = "Web";
     private static final String TAG = DisplayNovelTabFragment.class.toString();
 
     @Override
@@ -62,6 +63,12 @@ public class DisplayNovelTabFragment extends Fragment {
             oriBundle.putString(Constants.EXTRA_NOVEL_LIST_MODE, Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL);
             mTabHost.addTab(mTabHost.newTabSpec(ORIGINAL_SPEC).setIndicator(ORIGINAL_SPEC),
                     DisplayLightNovelListFragment.class, oriBundle);
+
+            Bundle webBundle = new Bundle();
+            webBundle.putString(Constants.EXTRA_NOVEL_LIST_MODE, Constants.EXTRA_NOVEL_LIST_MODE_WEB);
+            mTabHost.addTab(mTabHost.newTabSpec(WEB_SPEC).setIndicator(WEB_SPEC),
+                    DisplayLightNovelListFragment.class, webBundle);
+
         } else {
             Hashtable<String, AlternativeLanguageInfo> x = AlternativeLanguageInfo.getAlternativeLanguageInfo();
             for (String key : x.keySet()) {

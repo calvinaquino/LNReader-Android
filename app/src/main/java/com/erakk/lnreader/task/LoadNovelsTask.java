@@ -79,6 +79,14 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
                     publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_teaser_task_loading), source));
                     novels = NovelsDao.getInstance().getTeaser(this, alphOrder);
                 }
+            } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_WEB)) {
+                if (refreshOnly) {
+                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_web_task_refreshing), source));
+                    novels = NovelsDao.getInstance().getWebNovelFromInternet(this);
+                } else {
+                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_web_task_loading), source));
+                    novels = NovelsDao.getInstance().getWebNovel(this, alphOrder);
+                }
             }
 
             return new AsyncTaskResult<PageModel[]>(novels.toArray(new PageModel[novels.size()]), PageModel[].class);
@@ -109,6 +117,8 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
             message = new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_complete), source);
         } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
             message = new CallbackEventData(ctx.getResources().getString(R.string.load_teaser_task_complete), source);
+        } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_WEB)) {
+            message = new CallbackEventData(ctx.getResources().getString(R.string.load_web_task_complete), source);
         }
 
         owner.onCompleteCallback(message, result);

@@ -35,6 +35,7 @@ public class Constants {
     public static final String EXTRA_NOVEL_LIST_MODE_ORIGINAL = "Original";
     public static final String EXTRA_NOVEL_LIST_MODE_TEASER = "Teaser";
     public static final String EXTRA_NOVEL_LIST_ALT = "alternate";
+    public static final String EXTRA_NOVEL_LIST_MODE_WEB = "Web";
 
     public static final String NOVEL_BOOK_DIVIDER = "%NOVEL_BOOK_DIVIDER%";
     public static final long CHECK_INTERVAL = 7 * 24 * 3600 * 1000;
@@ -131,6 +132,7 @@ public class Constants {
     public static final int CONSOLIDATED_NOTIFIER_ID = 20130210;
 
     public static final String STATUS_TEASER = "teaser";
+    public static final String STATUS_WEB = "web_novel";
     public static final String STATUS_STALLED = "stalled";
     public static final String STATUS_ABANDONED = "abandoned";
     public static final String STATUS_PENDING = "pending";
@@ -147,6 +149,7 @@ public class Constants {
     public static final String ROOT_NOVEL_ENGLISH = "Category:Light_novel_(English)";
     public static final String ROOT_ORIGINAL = "Category:Original_novel";
     public static final String ROOT_TEASER = "Category:Teaser_(English)";
+    public static final String ROOT_WEB = "Category:Web_novel_(English)";
 
     /* Section of Task Key */
     public static final String KEY_LOAD_CHAPTER = ":LoadChapter:";
