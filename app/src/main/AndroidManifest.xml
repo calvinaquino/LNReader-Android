@@ -31,12 +31,11 @@
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.erakk.lnreader.UI.activity.NovelListContainerActivity"
+            android:name=".UI.activity.NovelListContainerActivity"
             android:label="@string/title_activity_display_light_novels">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

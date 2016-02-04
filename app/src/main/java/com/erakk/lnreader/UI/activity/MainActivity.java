@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
@@ -33,6 +34,7 @@ public class MainActivity extends BaseActivity implements IExtendedCallbackNotif
 
     private AlertDialog dialog;
     private CheckDBReadyTask task = null;
+    private boolean isFragmentLoaded = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,25 +56,12 @@ public class MainActivity extends BaseActivity implements IExtendedCallbackNotif
     // region private method
 
     private void init() {
-        String initialFragment = getIntent().getStringExtra(Constants.EXTRA_INITIAL_FRAGMENT);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-        if (initialFragment == null) {
-            transaction.replace(R.id.mainFrame, new MainFragment());
-        } else if (initialFragment.equalsIgnoreCase(UpdateInfoFragment.class.toString())) {
-            transaction.replace(R.id.mainFrame, new UpdateInfoFragment());
-        } else if (initialFragment.equalsIgnoreCase(DownloadFragment.class.toString())) {
-            transaction.replace(R.id.mainFrame, new DownloadFragment());
-        } else if (initialFragment.equalsIgnoreCase(BookmarkFragment.class.toString())) {
-            transaction.replace(R.id.mainFrame, new BookmarkFragment());
-        } else if (initialFragment.equalsIgnoreCase(SearchFragment.class.toString())) {
-            transaction.replace(R.id.mainFrame, new SearchFragment());
-        } else {
-            Toast.makeText(this, "Nothing!!", Toast.LENGTH_LONG).show();
+        // check if view exists
+        View mainView = findViewById(R.id.mainFrame);
+        if (mainView != null) {
+            updateFragment();
+            isFragmentLoaded = true;
         }
-        if (initialFragment != null)
-            transaction.addToBackStack(initialFragment);
-        transaction.commit();
 
         if (isFirstRun()) {
             // Show copyrights
@@ -95,6 +84,41 @@ public class MainActivity extends BaseActivity implements IExtendedCallbackNotif
             checkDBAccess();
         }
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!isFragmentLoaded) {
+            View mainView = findViewById(R.id.mainFrame);
+
+            if (mainView != null) {
+                updateFragment();
+                isFragmentLoaded = true;
+            }
+        }
+    }
+
+    private void updateFragment() {
+        String initialFragment = getIntent().getStringExtra(Constants.EXTRA_INITIAL_FRAGMENT);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        if (initialFragment == null) {
+            transaction.replace(R.id.mainFrame, new MainFragment());
+        } else if (initialFragment.equalsIgnoreCase(UpdateInfoFragment.class.toString())) {
+            transaction.replace(R.id.mainFrame, new UpdateInfoFragment());
+        } else if (initialFragment.equalsIgnoreCase(DownloadFragment.class.toString())) {
+            transaction.replace(R.id.mainFrame, new DownloadFragment());
+        } else if (initialFragment.equalsIgnoreCase(BookmarkFragment.class.toString())) {
+            transaction.replace(R.id.mainFrame, new BookmarkFragment());
+        } else if (initialFragment.equalsIgnoreCase(SearchFragment.class.toString())) {
+            transaction.replace(R.id.mainFrame, new SearchFragment());
+        } else {
+            Toast.makeText(this, "Nothing!!", Toast.LENGTH_LONG).show();
+        }
+        if (initialFragment != null)
+            transaction.addToBackStack(initialFragment);
+        transaction.commit();
         Log.d(TAG, "Initial Fragment:" + initialFragment);
     }
 
