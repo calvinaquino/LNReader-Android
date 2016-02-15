@@ -183,6 +183,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                         // and not yet downloaded or got updates.
                         if (!pageModel.isDownloaded() || dao.isContentUpdated(pageModel)) {
                             notDownloadedChapters.add(pageModel);
+                            Log.d(TAG, "Added: " + pageModel.getPage());
                         }
                 }
                 touchedForDownload = "Volumes";
@@ -231,12 +232,14 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                     // get the chapter which not downloaded yet
                     ArrayList<PageModel> downloadingChapters = new ArrayList<PageModel>();
                     for (PageModel temp : book.getChapterCollection()) {
-                        if (temp.isDownloaded()) {
-                            if (dao.isContentUpdated(temp)) {
+                        if (!temp.isExternal()) {
+                            if (temp.isDownloaded()) {
+                                if (dao.isContentUpdated(temp)) {
+                                    downloadingChapters.add(temp);
+                                }
+                            } else {
                                 downloadingChapters.add(temp);
                             }
-                        } else {
-                            downloadingChapters.add(temp);
                         }
                     }
                     touchedForDownload = book.getTitle();
@@ -413,6 +416,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                         for (PageModel temp : book.getChapterCollection()) {
                             for (int i = 0; i < content.length; ++i) {
                                 if (temp.getPage().equalsIgnoreCase(content[i].getPage())) {
+                                    Log.d(TAG, "Page: " + content[i].getPage());
                                     temp.setDownloaded(true);
                                 }
                             }
