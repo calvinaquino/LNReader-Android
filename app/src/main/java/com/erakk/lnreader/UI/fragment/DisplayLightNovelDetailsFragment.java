@@ -401,7 +401,6 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
     }
 
     @Override
-    @SuppressLint("NewApi")
     public void onCompleteCallback(ICallbackEventData message, AsyncTaskResult<?> result) {
         if (!isAdded())
             return;
@@ -478,36 +477,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                                 dao.updatePageModel(page);
                             }
                         });
-
-                        // cover
-                        ImageView ImageViewCover = (ImageView) synopsis.findViewById(R.id.cover);
-                        if (novelCol.getCoverBitmap() == null) {
-                            // IN app test, is returning empty bitmap
-                            Toast.makeText(getActivity(), getResources().getString(R.string.toast_err_bitmap_empty), Toast.LENGTH_LONG).show();
-                        } else {
-                            ImageViewCover.setOnClickListener(new OnClickListener() {
-
-                                @Override
-                                public void onClick(View v) {
-                                    handleCoverClick(novelCol.getCoverUrl());
-                                }
-                            });
-                            if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && UIHelper.getStrechCoverPreference(getActivity())) {
-                                Drawable coverDrawable = new BitmapDrawable(getResources(), novelCol.getCoverBitmap());
-                                int coverHeight = novelCol.getCoverBitmap().getHeight();
-                                int coverWidth = novelCol.getCoverBitmap().getWidth();
-                                double screenWidth = this.getView().getWidth() * 0.9; //UIHelper.getScreenWidth(getActivity()) * 0.9;
-                                double ratio = screenWidth / coverWidth;
-                                int finalHeight = (int) (coverHeight * ratio);
-                                ImageViewCover.setBackground(coverDrawable);
-                                ImageViewCover.getLayoutParams().height = finalHeight;
-                                ImageViewCover.getLayoutParams().width = (int) screenWidth;
-                            } else {
-                                ImageViewCover.setImageBitmap(novelCol.getCoverBitmap());
-                                ImageViewCover.getLayoutParams().height = novelCol.getCoverBitmap().getHeight();
-                                ImageViewCover.getLayoutParams().width = novelCol.getCoverBitmap().getWidth();
-                            }
-                        }
+                        setupCoverImage(synopsis);
 
                         // update the header
                         ScrollView v = (ScrollView) expandList.findViewById(R.id.novel_synopsis_screen);
@@ -531,6 +501,39 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
             Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
         }
         toggleProgressBar(false);
+    }
+
+    @SuppressLint("NewApi")
+    private void setupCoverImage(View synopsis) {
+        // cover
+        ImageView ImageViewCover = (ImageView) synopsis.findViewById(R.id.cover);
+        if (novelCol.getCoverBitmap() == null) {
+            // IN app test, is returning empty bitmap
+            Toast.makeText(getActivity(), getResources().getString(R.string.toast_err_bitmap_empty), Toast.LENGTH_LONG).show();
+        } else {
+            ImageViewCover.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    handleCoverClick(novelCol.getCoverUrl());
+                }
+            });
+            if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) && UIHelper.getStrechCoverPreference(getActivity())) {
+                Drawable coverDrawable = new BitmapDrawable(getResources(), novelCol.getCoverBitmap());
+                int coverHeight = novelCol.getCoverBitmap().getHeight();
+                int coverWidth = novelCol.getCoverBitmap().getWidth();
+                double screenWidth = this.getView().getWidth() * 0.9; //UIHelper.getScreenWidth(getActivity()) * 0.9;
+                double ratio = screenWidth / coverWidth;
+                int finalHeight = (int) (coverHeight * ratio);
+                ImageViewCover.setBackground(coverDrawable);
+                ImageViewCover.getLayoutParams().height = finalHeight;
+                ImageViewCover.getLayoutParams().width = (int) screenWidth;
+            } else {
+                ImageViewCover.setImageBitmap(novelCol.getCoverBitmap());
+                //ImageViewCover.getLayoutParams().height = novelCol.getCoverBitmap().getHeight(); //disable to avoid padding
+                ImageViewCover.getLayoutParams().width = novelCol.getCoverBitmap().getWidth();
+            }
+        }
     }
 
     // endregion
