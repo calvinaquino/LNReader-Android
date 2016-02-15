@@ -1,3 +1,9 @@
+1.1.39-beta1
+- Fix Issue #221: Skip external/linked chapter when downloading all chapter from context menu.
+- Fix Issue #223: Avoid padding when using high res cover.
+- Fix Issue #222: Keep fragment states on rotate.
+- Fix small action bar title on landscape mode.
+
 1.1.38
 - Add Web Novel (English) support.
 - Update compatibility for Samsung devices.
