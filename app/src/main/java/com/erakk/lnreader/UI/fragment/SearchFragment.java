@@ -194,10 +194,6 @@ public class SearchFragment extends Fragment {
         return firstTierOption;
     }
 
-    private void recreateUI() {
-        UIHelper.Recreate(getActivity());
-    }
-
 	/* End of Expandable List section */
 
     protected void SetNovelOnly(boolean isChecked) {

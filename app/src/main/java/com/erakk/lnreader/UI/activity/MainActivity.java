@@ -102,17 +102,22 @@ public class MainActivity extends BaseActivity implements IExtendedCallbackNotif
     private void updateFragment() {
         String initialFragment = getIntent().getStringExtra(Constants.EXTRA_INITIAL_FRAGMENT);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        if (mContent == null) {
+            if (initialFragment == null) {
+                mContent = new MainFragment();
+            } else if (initialFragment.equalsIgnoreCase(UpdateInfoFragment.class.toString())) {
+                mContent = new UpdateInfoFragment();
+            } else if (initialFragment.equalsIgnoreCase(DownloadFragment.class.toString())) {
+                mContent = new DownloadFragment();
+            } else if (initialFragment.equalsIgnoreCase(BookmarkFragment.class.toString())) {
+                mContent = new BookmarkFragment();
+            } else if (initialFragment.equalsIgnoreCase(SearchFragment.class.toString())) {
+                mContent = new SearchFragment();
+            }
+        }
 
-        if (initialFragment == null) {
-            transaction.replace(R.id.mainFrame, new MainFragment());
-        } else if (initialFragment.equalsIgnoreCase(UpdateInfoFragment.class.toString())) {
-            transaction.replace(R.id.mainFrame, new UpdateInfoFragment());
-        } else if (initialFragment.equalsIgnoreCase(DownloadFragment.class.toString())) {
-            transaction.replace(R.id.mainFrame, new DownloadFragment());
-        } else if (initialFragment.equalsIgnoreCase(BookmarkFragment.class.toString())) {
-            transaction.replace(R.id.mainFrame, new BookmarkFragment());
-        } else if (initialFragment.equalsIgnoreCase(SearchFragment.class.toString())) {
-            transaction.replace(R.id.mainFrame, new SearchFragment());
+        if (mContent != null) {
+            transaction.replace(R.id.mainFrame, mContent, initialFragment);
         } else {
             Toast.makeText(this, "Nothing!!", Toast.LENGTH_LONG).show();
         }

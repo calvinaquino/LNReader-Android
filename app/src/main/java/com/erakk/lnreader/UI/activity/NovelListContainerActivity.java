@@ -1,7 +1,6 @@
 package com.erakk.lnreader.UI.activity;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Menu;
@@ -31,27 +30,32 @@ public class NovelListContainerActivity extends BaseActivity implements IFragmen
         String loadedNovel = getIntent().getStringExtra(Constants.EXTRA_PAGE);
         Log.i(TAG, "IsWatched: " + onlyWatched + " Mode: " + mode + " lang: " + lang);
 
-        // Fragment setup
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        Bundle b = new Bundle();
-        b.putString(Constants.EXTRA_NOVEL_LIST_MODE, mode);
-        b.putBoolean(Constants.EXTRA_ONLY_WATCHED, onlyWatched);
-        b.putString(Constants.EXTRA_NOVEL_LANG, lang);
-        b.putString(Constants.EXTRA_PAGE, loadedNovel);
+        init(onlyWatched, mode, lang, loadedNovel);
+    }
 
-        Fragment f;
-        if (onlyWatched) {
-            f = new DisplayLightNovelListFragment();
-        } else {
-            f = new DisplayNovelTabFragment();
+    private void init(boolean onlyWatched, String mode, String lang, String loadedNovel) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        if (mContent == null) {
+            // Fragment setup
+            Bundle b = new Bundle();
+            b.putString(Constants.EXTRA_NOVEL_LIST_MODE, mode);
+            b.putBoolean(Constants.EXTRA_ONLY_WATCHED, onlyWatched);
+            b.putString(Constants.EXTRA_NOVEL_LANG, lang);
+            b.putString(Constants.EXTRA_PAGE, loadedNovel);
+
+            if (onlyWatched) {
+                mContent = new DisplayLightNovelListFragment();
+            } else {
+                mContent = new DisplayNovelTabFragment();
+            }
+            mContent.setArguments(b);
+
         }
-        f.setArguments(b);
-        transaction.replace(R.id.mainFrame, f).commit();
+        transaction.replace(R.id.mainFrame, mContent).commit();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //getMenuInflater().inflate(R.menu.fragactivity_display_novel_list, menu);
         super.onCreateOptionsMenu(menu);
         return true;
     }
@@ -79,14 +83,19 @@ public class NovelListContainerActivity extends BaseActivity implements IFragmen
 
     @Override
     public void changeNextFragment(Bundle bundle) {
-        Fragment novelDetailFrag = new DisplayLightNovelDetailsFragment();
+        mContent = new DisplayLightNovelDetailsFragment();
         bundle.putBoolean("show_list_child", true);
-        novelDetailFrag.setArguments(bundle);
+        mContent.setArguments(bundle);
 
         if (findViewById(R.id.rightFragment) != null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.rightFragment, novelDetailFrag).commit();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.rightFragment, mContent, DisplayLightNovelDetailsFragment.class.toString())
+                    .commit();
         } else {
-            getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame, novelDetailFrag).addToBackStack(null).commit();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.mainFrame, mContent, DisplayLightNovelDetailsFragment.class.toString())
+                    .addToBackStack(null)
+                    .commit();
         }
 
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);

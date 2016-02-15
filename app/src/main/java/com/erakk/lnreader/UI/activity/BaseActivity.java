@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -39,13 +40,19 @@ public class BaseActivity extends AppCompatActivity {
     private static final String TAG = BaseActivity.class.toString();
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
+    protected Fragment mContent = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Restore the fragment's instance
+        if (savedInstanceState != null) {
+            mContent = getSupportFragmentManager().getFragment(savedInstanceState, "mContent");
+        }
+
         setupExceptionHandler();
         UIHelper.setLanguage(this);
-        //setContentView(R.layout.fragactivity_framework);
     }
 
     @Override
@@ -80,6 +87,19 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //Save the fragment's instance
+        if (mContent != null)
+            try {
+                getSupportFragmentManager().putFragment(outState, "mContent", mContent);
+            } catch (Exception ex) {
+                // TODO: Proper handling required
+                Log.e(TAG, ex.getMessage());
+            }
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggle
@@ -92,21 +112,25 @@ public class BaseActivity extends AppCompatActivity {
 
     public void openNovelList(MenuItem view) {
         mDrawerLayout.closeDrawers();
+        mContent = null;
         UIHelper.openNovelList(this);
     }
 
     public void openWatchList(MenuItem item) {
         mDrawerLayout.closeDrawers();
+        mContent = null;
         UIHelper.openWatchList(this);
     }
 
     public void openLastRead(MenuItem item) {
         mDrawerLayout.closeDrawers();
+        mContent = null;
         UIHelper.openLastRead(this);
     }
 
     public void openAltNovelList(MenuItem item) {
         mDrawerLayout.closeDrawers();
+        mContent = null;
         UIHelper.selectAlternativeLanguage(this);
     }
 
@@ -124,7 +148,8 @@ public class BaseActivity extends AppCompatActivity {
         View f = findViewById(R.id.mainFrame);
         if (f != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(getLeftFrame(), new DownloadFragment())
+            mContent = new DownloadFragment();
+            transaction.replace(getLeftFrame(), mContent, DownloadFragment.class.toString())
                     .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left)
                     .addToBackStack(DownloadFragment.class.toString())
                     .commit();
@@ -141,7 +166,8 @@ public class BaseActivity extends AppCompatActivity {
         View f = findViewById(R.id.mainFrame);
         if (f != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(getLeftFrame(), new UpdateInfoFragment())
+            mContent = new UpdateInfoFragment();
+            transaction.replace(getLeftFrame(), mContent, UpdateInfoFragment.class.toString())
                     .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left)
                     .addToBackStack(UpdateInfoFragment.class.toString())
                     .commit();
@@ -158,7 +184,8 @@ public class BaseActivity extends AppCompatActivity {
         View f = findViewById(R.id.mainFrame);
         if (f != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(getLeftFrame(), new BookmarkFragment())
+            mContent = new BookmarkFragment();
+            transaction.replace(getLeftFrame(), mContent, BookmarkFragment.class.toString())
                     .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_left)
                     .addToBackStack(BookmarkFragment.class.toString())
                     .commit();
@@ -175,7 +202,8 @@ public class BaseActivity extends AppCompatActivity {
         View f = findViewById(R.id.mainFrame);
         if (f != null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(getLeftFrame(), new SearchFragment())
+            mContent = new SearchFragment();
+            transaction.replace(getLeftFrame(), mContent, SearchFragment.class.toString())
                     .setCustomAnimations(R.anim.abc_fade_in, R.anim.slide_out_left, R.anim.abc_fade_in, R.anim.slide_out_left)
                     .addToBackStack(SearchFragment.class.toString())
                     .commit();
