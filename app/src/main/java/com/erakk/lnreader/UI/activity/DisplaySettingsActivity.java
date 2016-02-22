@@ -19,6 +19,7 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
@@ -94,6 +95,16 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
             }
         return false;
 
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        // HACK: Try to handle android.os.BadParcelableException: ClassNotFoundException when unmarshalling: android.support.v7.widget.Toolbar$SavedState
+        try {
+            super.onRestoreInstanceState(savedInstanceState);
+        } catch (Exception ex) {
+            Log.e(TAG, "Failed to restore instance state.");
+        }
     }
 
     /**
@@ -402,7 +413,7 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
         // Run Updates
         Preference runUpdates = findPreference(Constants.PREF_RUN_UPDATES);
         runUpdates.setSummary(String.format(getResources().getString(R.string.last_run), runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES, getResources().getString(R.string.none)), runUpdates.getSharedPreferences().getString(Constants.PREF_RUN_UPDATES_STATUS, getResources().getString(R.string.unknown))));
-        runUpdates.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        runUpdates.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
             @Override
             public boolean onPreferenceClick(Preference p) {
@@ -542,12 +553,12 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
 
     private void loadTTSEngineSettings() {
         try {
-            Intent intent = new Intent(android.provider.Settings.ACTION_SETTINGS);
+            Intent intent = new Intent(Settings.ACTION_SETTINGS);
             intent.putExtra(EXTRA_SHOW_FRAGMENT, "com.android.settings.tts.TextToSpeechSettings");
             intent.putExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, intent.getExtras());
             startActivityForResult(intent, 0);
         } catch (Exception ex) {
-            startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
+            startActivityForResult(new Intent(Settings.ACTION_SETTINGS), 0);
         }
     }
 
@@ -556,7 +567,7 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
         final DisplaySettingsActivity dsa = this;
         // Clear DB
         Preference clearDatabase = findPreference("clear_database");
-        clearDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        clearDatabase.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
             @Override
             public boolean onPreferenceClick(Preference p) {
@@ -579,7 +590,7 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
 
         // Restore DB
         Preference restoreDatabase = findPreference(Constants.PREF_RESTORE_DB);
-        restoreDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        restoreDatabase.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
             @Override
             public boolean onPreferenceClick(Preference p) {
@@ -604,7 +615,7 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
 
         // Backup DB
         Preference backupDatabase = findPreference(Constants.PREF_BACKUP_DB);
-        backupDatabase.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        backupDatabase.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
             @Override
             public boolean onPreferenceClick(Preference p) {
@@ -673,7 +684,7 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
 
         // Clear Image
         Preference clearImages = findPreference("clear_image_cache");
-        clearImages.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        clearImages.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
             @Override
             public boolean onPreferenceClick(Preference p) {
@@ -936,13 +947,13 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
         int j = 0;
         while (it.hasNext()) {
             AlternativeLanguageInfo info = it.next().getValue();
-			/* Default value of unregistered Alternative language = false (preventing too much tabs) */
+            /* Default value of unregistered Alternative language = false (preventing too much tabs) */
             languageStatus[j] = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(info.getLanguage(), false);
             j++;
             it.remove();
         }
 		/* End of list of languages */
-        selectAlternativeLanguage.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        selectAlternativeLanguage.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 
             @Override
             public boolean onPreferenceClick(Preference p) {
@@ -972,14 +983,14 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
             public void onClick(DialogInterface dialogInterface, int item, boolean state) {
             }
         });
-        builder.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("Ok", new OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 setLanguageSelectionOKDialog(dialog);
             }
         });
-        builder.setPositiveButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.cancel), new OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int id) {
@@ -1402,5 +1413,10 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
     public boolean downloadListSetup(String taskId, String message, int setupType, boolean hasError) {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 }
