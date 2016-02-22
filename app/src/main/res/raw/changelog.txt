@@ -1,8 +1,9 @@
-1.1.39-beta1
+1.1.39-beta2
 - Fix Issue #221: Skip external/linked chapter when downloading all chapter from context menu.
 - Fix Issue #223: Avoid padding when using high res cover.
 - Fix Issue #222: Keep fragment states on rotate.
 - Fix small action bar title on landscape mode.
+- Implement #224: Enable custom color for <div> without class.
 
 1.1.38
 - Add Web Novel (English) support.

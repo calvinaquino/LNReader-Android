@@ -493,4 +493,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="reset_zoom_title">Reset Zoom Level</string>
     <string name="reset_zoom_summary">Reset the zoom level to default value based on screen density.</string>
+    <string name="css_use_custom_colors_summary">May need to reload the chapter.</string>
 </resources>

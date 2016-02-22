@@ -330,6 +330,16 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             }
         }
 
+        // disable invert option if using custom color or css
+        MenuItem invertColor = menu.findItem(R.id.invert_colors);
+        if (invertColor != null) {
+            if (DisplayNovelContentHtmlHelper.getUseCustomCSS(this) || UIHelper.getCssUseCustomColorPreferences(this)) {
+                invertColor.setEnabled(false);
+            } else {
+                invertColor.setEnabled(true);
+            }
+        }
+
         _tts.setupTTSMenu(menu);
         _menu = menu;
         return true;

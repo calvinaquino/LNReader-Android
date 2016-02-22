@@ -151,7 +151,7 @@ public class DisplayNovelContentHtmlHelper {
         return null;
     }
 
-    private static boolean getUseCustomCSS(Context ctx) {
+    public static boolean getUseCustomCSS(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_USE_CUSTOM_CSS, false);
     }
 

@@ -179,9 +179,10 @@ td {
 	vertical-align: top;
 }
 
-table:not([class]) ,table:not([class])> tbody >tr >td {
+/* all table without class defined. */
+div:not([class]), table:not([class]), table:not([class])> tbody >tr >td {
 	background-color: @thumb-back@ !important;
-	border: solid 1px black;
+	border: solid 1px @thumb-border@;
 	border-spacing: 0px;
 }
 
@@ -197,7 +198,7 @@ table.wikitable {
 }
 
 table.wikitable>tr>th, table.wikitable>tr>td,table.wikitable>*>tr>th,table.wikitable>*>tr>td {
-	border: 1px #555 solid;
+	border: 1px @thumb-border@ solid !important;
 	padding: 0.2em;
 }
 
