@@ -7,6 +7,7 @@
 - Implement #220: Save image to download folder.
 - Implement #226: Remove redlink=1 chapter if already updated.
 - Fix Issue #227: Update image deletion handler.
+- Increase to Minimum API to 9 (GingerBread).
 
 1.1.38
 - Add Web Novel (English) support.
