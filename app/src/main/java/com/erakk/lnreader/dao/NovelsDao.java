@@ -968,9 +968,8 @@ public class NovelsDao {
                         String message = context.getResources().getString(R.string.load_novel_cover_image);
                         notifier.onProgressCallback(new CallbackEventData(message, TAG));
                     }
-                    DownloadFileTask task = new DownloadFileTask(novel.getCoverUrl(), notifier);
+                    DownloadFileTask task = new DownloadFileTask(novel.getCoverUrl(), page.getPage(), notifier);
                     ImageModel image = task.downloadImage();
-                    // TODO: need to save to db?
                     Log.d(TAG, "Cover Image: " + image.toString());
                 }
 
@@ -1143,9 +1142,8 @@ public class NovelsDao {
                     String message = context.getResources().getString(R.string.load_novel_image_download, image.getUrl());
                     notifier.onProgressCallback(new CallbackEventData(message, TAG));
                 }
-                DownloadFileTask task = new DownloadFileTask(image.getUrl(), notifier);
+                DownloadFileTask task = new DownloadFileTask(image.getUrl(), page.getPage(), notifier);
                 image = task.downloadImage();
-                // TODO: need to save image to db? mostly thumbnail only
             }
 
             // download linked big images
@@ -1158,7 +1156,11 @@ public class NovelsDao {
                     bigImage.setBigImage(true);
                     bigImage.setName(imageUrl);
                     bigImage.setReferer(imageUrl);
-                    bigImage = getImageModel(bigImage, notifier);
+                    bigImage = getImageModel(bigImage, page.getPage(), notifier);
+
+                    // Save image to DB with it page as parent.
+                    bigImage.setParent(page.getPage());
+                    this.insertImage(bigImage);
                 }
             }
 
@@ -1269,7 +1271,7 @@ public class NovelsDao {
      * @return
      * @throws Exception
      */
-    public ImageModel getImageModel(ImageModel image, ICallbackNotifier notifier) throws Exception {
+    public ImageModel getImageModel(ImageModel image, String parent, ICallbackNotifier notifier) throws Exception {
         if (image == null || image.getName() == null)
             throw new BakaReaderException("Empty Image!", BakaReaderException.EMPTY_IMAGE);
         ImageModel imageTemp = null;
@@ -1311,7 +1313,7 @@ public class NovelsDao {
         }
         if (downloadBigImage) {
             Log.d(TAG, "Downloading big image from internet: " + image.getName());
-            imageTemp = getImageModelFromInternet(image, notifier);
+            imageTemp = getImageModelFromInternet(image, parent, notifier);
         }
 
         return imageTemp;
@@ -1325,7 +1327,7 @@ public class NovelsDao {
      * @return
      * @throws Exception
      */
-    public ImageModel getImageModelFromInternet(ImageModel image, ICallbackNotifier notifier) throws Exception {
+    public ImageModel getImageModelFromInternet(ImageModel image, String parent, ICallbackNotifier notifier) throws Exception {
         checkInternetConnection();
         String url = image.getName();
         if (!url.startsWith("http"))
@@ -1345,10 +1347,9 @@ public class NovelsDao {
                 // only return the full image url
                 image = CommonParser.parseImagePage(doc);
 
-                DownloadFileTask downloader = new DownloadFileTask(image.getUrl(), notifier);
+                DownloadFileTask downloader = new DownloadFileTask(image.getUrl(), parent, notifier);
                 image = downloader.downloadImage();
                 image.setReferer(url);
-
                 image = insertImage(image);
                 break;
             } catch (EOFException eof) {

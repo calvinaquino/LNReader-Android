@@ -11,6 +11,7 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.DownloadCallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.ImageModel;
 
@@ -31,10 +32,12 @@ public class DownloadFileTask extends AsyncTask<Void, Integer, AsyncTaskResult<I
     private ICallbackNotifier notifier = null;
     private String source;
     private final URL url;
+    private final String parent;
 
-    public DownloadFileTask(URL url, ICallbackNotifier notifier) {
+    public DownloadFileTask(URL url, String parent, ICallbackNotifier notifier) {
         this.notifier = notifier;
         this.url = url;
+        this.parent = parent;
     }
 
     @Override
@@ -46,12 +49,17 @@ public class DownloadFileTask extends AsyncTask<Void, Integer, AsyncTaskResult<I
         }
     }
 
+    /**
+     * Download image and save it to DB.
+     * @return
+     * @throws Exception
+     */
     public ImageModel downloadImage() throws Exception {
-        return downloadImage(this.url);
+        return downloadImage(this.url, this.parent);
     }
 
     @SuppressLint("DefaultLocale")
-    public ImageModel downloadImage(URL imageUrl) throws Exception {
+    public ImageModel downloadImage(URL imageUrl, String parent) throws Exception {
         if (imageUrl.getProtocol().equalsIgnoreCase("file"))
             return null;
 
@@ -186,6 +194,8 @@ public class DownloadFileTask extends AsyncTask<Void, Integer, AsyncTaskResult<I
         image.setPath(filepath);
         image.setLastCheck(new Date());
         image.setLastUpdate(new Date());
+        image.setParent(parent);
+        image = NovelsDao.getInstance().insertImage(image);
         Log.d(TAG, "Complete Downloading: " + imageUrl);
         return image;
     }

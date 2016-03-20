@@ -171,6 +171,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
         Intent intent = new Intent(caller, DisplayImageActivity.class);
         intent.putExtra(Constants.EXTRA_IMAGE_URL, url);
         intent.putExtra("image_list", caller.content.getBigImages());
+        intent.putExtra(Constants.EXTRA_PAGE, caller.content.getPage());
         caller.startActivity(intent);
     }
 

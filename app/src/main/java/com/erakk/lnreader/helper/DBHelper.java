@@ -83,7 +83,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CATEGORY = "category";
 
 	public static final String DATABASE_NAME = "pages.db";
-    public static final int DATABASE_VERSION = 30;
+    public static final int DATABASE_VERSION = 31;
 
 	// Use /files/database to standardize with newer android.
 	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files/databases";
@@ -219,6 +219,10 @@ public class DBHelper extends SQLiteOpenHelper {
             db.execSQL(PageModelHelper.TABLE_PAGES_CREATE_INDEX_BY_PARENT);
             oldVersion = 30;
         }
+		if (oldVersion == 30) {
+            db.execSQL("ALTER TABLE " + TABLE_IMAGE + " ADD COLUMN " + COLUMN_PARENT + " text");
+			oldVersion = 31;
+		}
 
         // ensure all table are created
         // ensure the sql use 'if not exists' clause

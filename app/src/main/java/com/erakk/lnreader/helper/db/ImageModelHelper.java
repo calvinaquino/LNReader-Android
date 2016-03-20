@@ -22,7 +22,8 @@ public class ImageModelHelper {
             + DBHelper.COLUMN_REFERER + " text, " // 4
             + DBHelper.COLUMN_LAST_UPDATE + " integer, " // 5
             + DBHelper.COLUMN_LAST_CHECK + " integer, " // 6
-            + DBHelper.COLUMN_IS_BIG_IMAGE + " boolean);"; // 7
+            + DBHelper.COLUMN_IS_BIG_IMAGE + " boolean, " // 7
+            + DBHelper.COLUMN_PARENT + " text);"; // 8
     private static final String TAG = ImageModelHelper.class.toString();
 
     public static ImageModel cursorToImage(Cursor cursor) {
@@ -40,6 +41,7 @@ public class ImageModelHelper {
         image.setLastCheck(new Date(cursor.getInt(6) * 1000));
 
         image.setBigImage(cursor.getInt(7) == 1);
+        image.setParent(cursor.getString(8));
         return image;
     }
 
@@ -128,6 +130,7 @@ public class ImageModelHelper {
         cv.put(DBHelper.COLUMN_URL, image.getUrl().toString());
         cv.put(DBHelper.COLUMN_REFERER, image.getReferer());
         cv.put(DBHelper.COLUMN_IS_BIG_IMAGE, image.isBigImage());
+        cv.put(DBHelper.COLUMN_PARENT, image.getParent());
         if (temp == null) {
             cv.put(DBHelper.COLUMN_LAST_UPDATE, "" + (int) (new Date().getTime() / 1000));
             cv.put(DBHelper.COLUMN_LAST_CHECK, "" + (int) (new Date().getTime() / 1000));

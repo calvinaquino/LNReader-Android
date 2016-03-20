@@ -586,7 +586,7 @@ public class CommonParser {
                     ImageModel image = new ImageModel();
                     image.setName(filePage);
                     try {
-                        image = NovelsDao.getInstance().getImageModelFromInternet(image, null);
+                        image = NovelsDao.getInstance().getImageModelFromInternet(image, novel.getPage(), null);
                         imageUrl = image.getUrl().toString();
                     } catch (Exception ex) {
                         Log.e(TAG, "Failed parsing big cover: " + filePage, ex);

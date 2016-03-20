@@ -13,6 +13,7 @@ public class ImageModel {
 
     private String referer;
     private boolean isBigImage;
+    private String parent;
 
     public int getId() {
         return id;
@@ -81,5 +82,13 @@ public class ImageModel {
     @Override
     public String toString() {
         return name;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 }

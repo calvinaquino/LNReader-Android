@@ -38,6 +38,7 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
     private LoadImageTask task;
     private String url;
     private String imageUrl;
+    private String parent;
 
     private ArrayList<String> images;
     private int currentImageIndex = 0;
@@ -52,6 +53,7 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
 
         Intent intent = getIntent();
         url = intent.getStringExtra(Constants.EXTRA_IMAGE_URL);
+        parent = intent.getStringExtra(Constants.EXTRA_PAGE);
 
         images = intent.getStringArrayListExtra("image_list");
         if (images != null) {
@@ -109,7 +111,7 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
     @SuppressLint("NewApi")
     private void executeTask(String url, boolean refresh) {
         NonLeakingWebView imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
-        task = new LoadImageTask(url, refresh, this);
+        task = new LoadImageTask(url, parent, refresh, this);
         String key = TAG + ":" + url;
         boolean isAdded = LNReaderApplication.getInstance().addTask(key, task);
         if (isAdded) {

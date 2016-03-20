@@ -543,6 +543,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
         String bigCoverUrl = CommonParser.getImageFilePageFromImageUrl(coverUrl.toString());
         Intent intent = new Intent(getActivity(), DisplayImageActivity.class);
         intent.putExtra(Constants.EXTRA_IMAGE_URL, bigCoverUrl);
+        intent.putExtra(Constants.EXTRA_PAGE, this.page.getPage());
         startActivity(intent);
     }
 

@@ -19,12 +19,14 @@ public class LoadImageTask extends AsyncTask<Void, ICallbackEventData, AsyncTask
 	private String url = "";
 	private final boolean refresh;
 	private final String taskId;
+	private final String parent;
 
-	public LoadImageTask(String url, boolean refresh, IExtendedCallbackNotifier<AsyncTaskResult<ImageModel>> callback) {
+	public LoadImageTask(String url, String parent, boolean refresh, IExtendedCallbackNotifier<AsyncTaskResult<ImageModel>> callback) {
 		this.callback = callback;
 		this.refresh = refresh;
 		this.taskId = this.toString();
 		this.url = url;
+		this.parent = parent;
 	}
 
 	@Override
@@ -46,11 +48,11 @@ public class LoadImageTask extends AsyncTask<Void, ICallbackEventData, AsyncTask
 		try {
 			if (refresh) {
 				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_image_task_refreshing), this.taskId));
-				return new AsyncTaskResult<ImageModel>(NovelsDao.getInstance().getImageModelFromInternet(image, this), ImageModel.class);
+				return new AsyncTaskResult<ImageModel>(NovelsDao.getInstance().getImageModelFromInternet(image, this.parent, this), ImageModel.class);
 			}
 			else {
 				publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_image_task_loading), this.taskId));
-				return new AsyncTaskResult<ImageModel>(NovelsDao.getInstance().getImageModel(image, this), ImageModel.class);
+				return new AsyncTaskResult<ImageModel>(NovelsDao.getInstance().getImageModel(image, this.parent, this), ImageModel.class);
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "Error when getting image: " + e.getMessage(), e);
