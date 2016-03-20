@@ -1,10 +1,13 @@
 package com.erakk.lnreader.UI.activity;
 
 import android.annotation.SuppressLint;
+import android.app.DownloadManager;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +37,7 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
 
     private LoadImageTask task;
     private String url;
+    private String imageUrl;
 
     private ArrayList<String> images;
     private int currentImageIndex = 0;
@@ -169,6 +173,31 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
                 url = images.get(currentImageIndex);
                 executeTask(url, false);
                 return true;
+            case R.id.menu_download_image:
+                if( !Util.isStringNullOrEmpty(imageUrl)) {
+                    String temp[] = url.split("/");
+                    String filename = temp[temp.length - 1];
+                    filename = filename.replace("index.php?title=File:", "");
+
+                    if(imageUrl.startsWith("file://")) {
+                        String dest = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + filename;
+                        try{
+                            Util.copyFile(imageUrl.toString().replace("file://", ""), dest);
+                            Toast.makeText(this, "Image saved to: " + dest, Toast.LENGTH_SHORT).show();
+                        }
+                        catch (Exception ex) {
+                            Log.e(TAG, ex.getMessage(), ex);
+                            Toast.makeText(this, "Failed to save image to: " + dest, Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    else {
+                        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(imageUrl));
+                        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename);
+                        DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+                        dm.enqueue(request);
+                    }
+                }
+                return true;
             case android.R.id.home:
                 super.onBackPressed();
                 return true;
@@ -209,7 +238,7 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
             if (result.getResultType() == ImageModel.class) {
                 ImageModel imageModel = result.getResult();
                 if (!Util.isStringNullOrEmpty(imageModel.getPath())) {
-                    String imageUrl = "file:///" + Util.sanitizeFilename(imageModel.getPath());
+                    imageUrl = "file:///" + Util.sanitizeFilename(imageModel.getPath());
                     imageUrl = imageUrl.replace("file:////", "file:///");
                     NonLeakingWebView imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
                     if (imgWebView != null) {

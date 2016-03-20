@@ -18,4 +18,10 @@
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_main_updates"
         android:title="@string/refresh_image" />
+    <item
+    android:id="@+id/menu_download_image"
+    android:orderInCategory="4"
+    app:showAsAction="ifRoom"
+    android:icon="@drawable/ic_downloaded"
+    android:title="Download" />
 </menu>

@@ -98,6 +98,11 @@ public class Util {
         return context.getResources().getQuantityString(R.plurals.timespan_years, (int) dif, (int) dif);
     }
 
+
+    public static void copyFile(String src, String dst) throws IOException {
+        copyFile(new File(src), new File(dst));
+    }
+
     /**
      * Copy file
      *
