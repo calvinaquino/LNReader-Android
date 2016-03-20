@@ -181,6 +181,7 @@ public class NovelCollectionModelHelper {
                     BookModelHelper.deleteBookModel(helper, db, bookModel);
                 }
                 deleteNovelDetails(helper, db, details);
+                ImageModelHelper.deleteImageByParent(helper, db, details.getPage());
             }
             // delete page model;
             return PageModelHelper.deletePageModel(helper, db, novel);

@@ -6,8 +6,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.erakk.lnreader.helper.DBHelper;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.ImageModel;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -167,8 +170,59 @@ public class ImageModelHelper {
         return result;
     }
 
+    public static ArrayList<ImageModel> getAllImagesByParent(DBHelper helper, SQLiteDatabase db, String parent) {
+        ArrayList<ImageModel> result = new ArrayList<ImageModel>();
+        Cursor cursor = helper.rawQuery(db, "select * from " + DBHelper.TABLE_IMAGE + " where " + DBHelper.COLUMN_PARENT + " = ? " , new String[] {parent} );
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                ImageModel image = cursorToImage(cursor);
+                result.add(image);
+                cursor.moveToNext();
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return result;
+    }
 	/*
 	 * Delete Stuff
 	 */
-    // TODO: only have bulk delete by dropping the table...
+
+    public static int deleteImageByParent(DBHelper helper, SQLiteDatabase db, String parent) {
+        Log.d(TAG, "Start deleting images for parent: " + parent);
+        int result = 0;
+        if (!Util.isStringNullOrEmpty(parent)) {
+            // get the files to delete
+            ArrayList<ImageModel> imagesToDelete = getAllImagesByParent(helper, db, parent);
+            for( ImageModel image : imagesToDelete) {
+                String path = image.getPath().replace("?", "_");
+                File f = new File(path);
+                try {
+                    if(f.exists()) {
+                        boolean del = f.delete();
+                        if (!del)
+                            del = f.getCanonicalFile().delete();
+                        if (!del) {
+                            Log.w(TAG, "Failed to delete image file: " + path);
+                        } else {
+                            Log.i(TAG, "Deleted: " + path);
+                        }
+                    }
+                    else {
+                        Log.w(TAG, "File doesn't exists: " + path);
+                    }
+                }catch (IOException ex) {
+                    Log.e(TAG, ex.getMessage(), ex);
+                }
+            }
+
+            // delete from DB
+            result = helper.delete(db, DBHelper.TABLE_IMAGE, DBHelper.COLUMN_PARENT + " = ?", new String[]{parent});
+        }
+        Log.w(TAG, "Images Deleted: " + result);
+        return result;
+    }
+
 }

@@ -1245,6 +1245,7 @@ public class NovelsDao {
             SQLiteDatabase db = dbh.getWritableDatabase();
             try {
                 result = NovelContentModelHelper.deleteNovelContent(dbh, db, ref);
+                deleteImageByParent(ref.getPage());
             } finally {
                 db.close();
             }
@@ -1254,7 +1255,7 @@ public class NovelsDao {
 
     public void deleteChapterCache(PageModel chapter) {
         deleteNovelContent(chapter);
-
+        deleteImageByParent(chapter.getPage());
         // Set isDownloaded to false
         chapter.setDownloaded(false);
         updatePageModel(chapter);
@@ -1387,6 +1388,18 @@ public class NovelsDao {
         return result;
     }
 
+    public int deleteImageByParent(String parent) {
+        int total = 0;
+        synchronized (dbh) {
+            SQLiteDatabase db = dbh.getWritableDatabase();
+            try {
+                total = ImageModelHelper.deleteImageByParent(dbh, db, parent);
+            } finally {
+                db.close();
+            }
+        }
+        return total;
+    }
     // endregion
 
     // region bookmarks

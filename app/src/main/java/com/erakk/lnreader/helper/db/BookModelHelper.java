@@ -156,6 +156,7 @@ public class BookModelHelper {
 
             for (PageModel chapter : chapters) {
                 chaptersCount += helper.delete(db, DBHelper.TABLE_PAGE, DBHelper.COLUMN_ID + " = ? ", new String[]{"" + chapter.getId()});
+                ImageModelHelper.deleteImageByParent(helper, db, chapter.getPage());
             }
             Log.w(TAG, "Deleted PageModel: " + chaptersCount);
         }
