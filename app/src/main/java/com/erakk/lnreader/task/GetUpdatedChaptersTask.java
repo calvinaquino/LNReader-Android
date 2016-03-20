@@ -139,6 +139,17 @@ public class GetUpdatedChaptersTask extends AsyncTask<Void, String, AsyncTaskRes
 			}
 			if (!chapter.isMissing() && !chapter.isExternal()) {
 				dao.getNovelContentFromInternet(chapter, callback);
+
+				// try to remove the redlink page
+                if(!chapter.getPage().endsWith("redlink=1")) {
+                    PageModel redChapter = new PageModel();
+                    redChapter.setPage(chapter.getPage() + "&action=edit&redlink=1");
+                    redChapter = dao.getExistingPageModel(redChapter, callback);
+                    if(redChapter != null) {
+                        dao.deletePage(redChapter);
+                        Log.i(TAG, "Remove redlink chapter for: " + chapter.getPage());
+                    }
+                }
 			}
 		} catch (Exception ex) {
 			String msg = "Failed to update chapter: " + chapter.getPage();
