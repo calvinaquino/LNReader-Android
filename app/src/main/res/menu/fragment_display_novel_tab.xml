@@ -1,5 +1,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:appCompat="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/search_item"
+        android:orderInCategory="1"
+        android:title="@string/search"
+        android:icon="@android:drawable/ic_menu_search"
+        appCompat:showAsAction="always"
+        appCompat:actionViewClass="android.support.v7.widget.SearchView" />
     <item
         android:id="@+id/menu_refresh_novel_list"
         android:orderInCategory="3"

@@ -164,6 +164,34 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
         return row;
     }
 
+    public List<PageModel> allData;
+    public void filterData(String query) {
+
+        // keep the original data
+        if(allData == null || allData.size() < data.size()) {
+            allData = new ArrayList<PageModel>();
+            allData.addAll(data);
+        }
+        if(Util.isStringNullOrEmpty(query)) {
+            // restore data
+            data.clear();
+            if(allData.size() > data.size()) {
+                data.addAll(allData);
+            }
+        }
+        else {
+            query = query.toLowerCase();
+            this.clear();
+            data.clear();
+            for(PageModel item : allData) {
+                if(item.getTitle().toLowerCase().contains(query)) data.add(item);
+            }
+        }
+
+        super.notifyDataSetChanged();
+        Log.d(TAG, "Filtered result : " + data.size());
+    }
+
     public void filterData() {
         this.clear();
         data.clear();
