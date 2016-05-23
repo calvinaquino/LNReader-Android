@@ -1,3 +1,6 @@
+1.1.40
+- Fix Issue #232: Always use HTTPS for network and remove www. from root url due to BakaTsuki site changes.
+
 1.1.39
 - Fix Issue #221: Skip external/linked chapter when downloading all chapter from context menu.
 - Fix Issue #223: Avoid padding when using high res cover.

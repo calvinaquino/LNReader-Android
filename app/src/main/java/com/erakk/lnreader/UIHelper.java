@@ -281,16 +281,17 @@ public class UIHelper {
 
     /**
      * Return HTTP or HTTPS based on pref.
+     * Issue #232: always force to use HTTPS, remove www. from root url
      *
      * @param activity
      * @return
      */
     public static String getBaseUrl(Context activity) {
-        boolean useHttps = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_USE_HTTPS, false);
-        if (useHttps)
+        //boolean useHttps = PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Constants.PREF_USE_HTTPS, false);
+        //if (useHttps)
             return Constants.ROOT_HTTPS + Constants.ROOT_URL;
-        else
-            return Constants.ROOT_HTTP + Constants.ROOT_URL;
+        //else
+        //    return Constants.ROOT_HTTP + Constants.ROOT_URL;
     }
 
     /**
