@@ -157,13 +157,7 @@
             </PreferenceCategory>
             <PreferenceCategory android:title="@string/pref_network">
                 <CheckBoxPreference
-                    android:defaultValue="false"
-                    android:key="use_https"
-                    android:summary="@string/use_https_summary"
-                    android:title="@string/use_https_title" />
-                <CheckBoxPreference
                     android:defaultValue="true"
-                    android:dependency="use_https"
                     android:key="https_use_my_cert"
                     android:summary="@string/https_use_my_cert_summary"
                     android:title="@string/https_use_my_cert_title" />
