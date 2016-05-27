@@ -44,6 +44,8 @@ import com.erakk.lnreader.task.DownloadNovelDetailsTask;
 import com.erakk.lnreader.task.LoadAlternativeTask;
 import com.erakk.lnreader.task.LoadNovelsTask;
 
+import org.jsoup.HttpStatusException;
+
 import java.util.ArrayList;
 
 /*
@@ -425,7 +427,7 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
     public void refreshList() {
         boolean onlyWatched = getActivity().getIntent().getBooleanExtra(Constants.EXTRA_ONLY_WATCHED, false);
         updateContent(true, onlyWatched);
-        Toast.makeText(getActivity(), "Refreshing Main Novel...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Refreshing " + mode + " Novel...", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -574,8 +576,13 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
                 Log.e(TAG, "Unknown ResultType: " + t.getName());
             }
         } else {
-            Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
-            Toast.makeText(getActivity(), e.getClass().toString() + ": " + e.getMessage(), Toast.LENGTH_LONG).show();
+            String msg = e.getMessage();
+            Log.e(TAG, e.getClass().toString() + ": " + message, e);
+            if (e.getClass() == HttpStatusException.class) {
+                HttpStatusException hes = (HttpStatusException) e;
+                msg += ". Status=" + hes.getStatusCode();
+            }
+            Toast.makeText(getActivity(), e.getClass().toString() + ": " + msg, Toast.LENGTH_LONG).show();
         }
         toggleProgressBar(false);
     }
