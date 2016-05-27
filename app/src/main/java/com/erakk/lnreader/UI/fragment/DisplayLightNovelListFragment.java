@@ -607,6 +607,13 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
         }
     }
 
+    /**
+     * @param id        task id
+     * @param toastText toast text
+     * @param type      0=Add Download 1=Show progress 2=Remove Download
+     * @param hasError  has error?
+     * @return
+     */
     @Override
     public boolean downloadListSetup(String id, String toastText, int type, boolean hasError) {
         if (!this.isAdded() || this.isDetached())
@@ -624,11 +631,14 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
         } else if (type == 1) {
             Toast.makeText(getActivity(), toastText, Toast.LENGTH_SHORT).show();
         } else if (type == 2) {
-            String message = String.format("%s's download finished!", LNReaderApplication.getInstance().getDownloadName(id));
-            if (hasError)
-                message = String.format("%s's download finished with error(s)!", LNReaderApplication.getInstance().getDownloadName(id));
-            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-            LNReaderApplication.getInstance().removeDownload(id);
+            String name = LNReaderApplication.getInstance().getDownloadName(id);
+            if (name != null) {
+                String message = String.format("%s's download finished!", name);
+                if (hasError)
+                    message = String.format("%s's download finished with error(s)!", name);
+                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+                LNReaderApplication.getInstance().removeDownload(id);
+            }
         }
         return exists;
     }

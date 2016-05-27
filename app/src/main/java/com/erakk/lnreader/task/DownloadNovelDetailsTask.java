@@ -83,7 +83,7 @@ public class DownloadNovelDetailsTask extends AsyncTask<PageModel, ICallbackEven
     @Override
     protected void onPostExecute(AsyncTaskResult<NovelCollectionModel[]> result) {
         Context ctx = LNReaderApplication.getInstance();
-        owner.downloadListSetup(this.taskId, null, 2, result.getError() != null ? true : false);
+        owner.downloadListSetup(this.taskId, null, 2, result.getError() != null);
         LNReaderApplication.getInstance().removeDownload(this.taskId);
         owner.onCompleteCallback(new CallbackEventData(ctx.getResources().getString(R.string.download_novel_details_task_complete), this.taskId), result);
     }

@@ -144,7 +144,7 @@ public class LNReaderApplication extends Application {
                 return tempModel.getDownloadName();
             }
         }
-        return "N/A";
+        return null;
     }
 
     public boolean isDownloadExists(String id) {
@@ -179,29 +179,31 @@ public class LNReaderApplication extends Application {
                 if (downloadNotifier != null)
                     downloadNotifier.onCompleteCallback(null, null);
 
-                Integer oldProgress = tempModel.getDownloadProgress();
-                int tempIncrease = (progress - oldProgress);
-                if (tempIncrease < smoothTime / tickTime) {
-                    smoothTime = tickTime * tempIncrease;
-                    tempIncrease = 1;
-                } else
-                    tempIncrease /= (smoothTime / tickTime);
+                if (progress > 0) {
+                    Integer oldProgress = tempModel.getDownloadProgress();
+                    int tempIncrease = (progress - oldProgress);
+                    if (tempIncrease < smoothTime / tickTime) {
+                        smoothTime = tickTime * tempIncrease;
+                        tempIncrease = 1;
+                    } else
+                        tempIncrease /= (smoothTime / tickTime);
 
-                final Integer Increment = tempIncrease;
-                new CountDownTimer(smoothTime, tickTime) {
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-                        if (tempModel != null) {
-                            tempModel.setDownloadProgress(tempModel.getDownloadProgress() + Increment);
+                    final Integer Increment = tempIncrease;
+                    new CountDownTimer(smoothTime, tickTime) {
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+                            if (tempModel != null) {
+                                tempModel.setDownloadProgress(tempModel.getDownloadProgress() + Increment);
+                            }
+                            if (downloadNotifier != null)
+                                downloadNotifier.onCompleteCallback(null, null);
                         }
-                        if (downloadNotifier != null)
-                            downloadNotifier.onCompleteCallback(null, null);
-                    }
 
-                    @Override
-                    public void onFinish() {
-                    }
-                }.start();
+                        @Override
+                        public void onFinish() {
+                        }
+                    }.start();
+                }
                 return;
             }
         }

@@ -23,7 +23,7 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
     private boolean alphOrder = false;
     private final String mode;
     public volatile IExtendedCallbackNotifier<AsyncTaskResult<?>> owner;
-    private String source;
+    private final String taskId;
 
     public LoadNovelsTask(IExtendedCallbackNotifier<AsyncTaskResult<?>> owner, boolean refreshOnly, boolean onlyWatched, boolean alphOrder, String mode) {
         this.refreshOnly = refreshOnly;
@@ -31,6 +31,7 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
         this.alphOrder = alphOrder;
         this.owner = owner;
         this.mode = mode;
+        this.taskId = this.toString();
     }
 
     @Override
@@ -41,7 +42,10 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
     @Override
     protected void onPreExecute() {
         // executed on UI thread.
-        owner.onProgressCallback(new CallbackEventData("Loading novels...", source));
+        owner.onProgressCallback(new CallbackEventData("Loading novels...", this.taskId));
+        if (refreshOnly) {
+            LNReaderApplication.getInstance().addDownload(this.taskId, this.mode);
+        }
     }
 
     @Override
@@ -52,39 +56,39 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
             ArrayList<PageModel> novels = new ArrayList<PageModel>();
             if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
                 if (onlyWatched) {
-                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_watched), source));
+                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_watched), this.taskId));
                     novels = NovelsDao.getInstance().getWatchedNovel();
                 } else {
                     if (refreshOnly) {
-                        publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_refreshing), source));
+                        publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_refreshing), this.taskId));
                         novels = NovelsDao.getInstance().getNovelsFromInternet(this);
                     } else {
-                        publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_loading), source));
+                        publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_loading), this.taskId));
                         novels = NovelsDao.getInstance().getNovels(this, alphOrder);
                     }
                 }
             } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
                 if (refreshOnly) {
-                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_refreshing), source));
+                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_refreshing), this.taskId));
                     novels = NovelsDao.getInstance().getOriginalFromInternet(this);
                 } else {
-                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_loading), source));
+                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_loading), this.taskId));
                     novels = NovelsDao.getInstance().getOriginal(this, alphOrder);
                 }
             } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
                 if (refreshOnly) {
-                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_teaser_task_refreshing), source));
+                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_teaser_task_refreshing), this.taskId));
                     novels = NovelsDao.getInstance().getTeaserFromInternet(this);
                 } else {
-                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_teaser_task_loading), source));
+                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_teaser_task_loading), this.taskId));
                     novels = NovelsDao.getInstance().getTeaser(this, alphOrder);
                 }
             } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_WEB)) {
                 if (refreshOnly) {
-                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_web_task_refreshing), source));
+                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_web_task_refreshing), this.taskId));
                     novels = NovelsDao.getInstance().getWebNovelFromInternet(this);
                 } else {
-                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_web_task_loading), source));
+                    publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_web_task_loading), this.taskId));
                     novels = NovelsDao.getInstance().getWebNovel(this, alphOrder);
                 }
             }
@@ -92,7 +96,7 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
             return new AsyncTaskResult<PageModel[]>(novels.toArray(new PageModel[novels.size()]), PageModel[].class);
         } catch (Exception e) {
             Log.e(TAG, "Error when getting novel list: " + e.getMessage(), e);
-            publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_error, e.getMessage()), source));
+            publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_error, e.getMessage()), this.taskId));
             return new AsyncTaskResult<PageModel[]>(null, PageModel[].class, e);
         }
     }
@@ -100,6 +104,7 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
     @Override
     protected void onProgressUpdate(ICallbackEventData... values) {
         owner.onProgressCallback(values[0]);
+        LNReaderApplication.getInstance().updateDownload(this.taskId, -1, values[0].getMessage());
     }
 
     @Override
@@ -109,17 +114,20 @@ public class LoadNovelsTask extends AsyncTask<Void, ICallbackEventData, AsyncTas
         CallbackEventData message = null;
         if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_MAIN)) {
             if (onlyWatched) {
-                message = new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_watched_complete), source);
+                message = new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_watched_complete), this.taskId);
             } else {
-                message = new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_complete), source);
+                message = new CallbackEventData(ctx.getResources().getString(R.string.load_novels_task_complete), this.taskId);
             }
         } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_ORIGINAL)) {
-            message = new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_complete), source);
+            message = new CallbackEventData(ctx.getResources().getString(R.string.load_original_task_complete), this.taskId);
         } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_TEASER)) {
-            message = new CallbackEventData(ctx.getResources().getString(R.string.load_teaser_task_complete), source);
+            message = new CallbackEventData(ctx.getResources().getString(R.string.load_teaser_task_complete), this.taskId);
         } else if (mode.equalsIgnoreCase(Constants.EXTRA_NOVEL_LIST_MODE_WEB)) {
-            message = new CallbackEventData(ctx.getResources().getString(R.string.load_web_task_complete), source);
+            message = new CallbackEventData(ctx.getResources().getString(R.string.load_web_task_complete), this.taskId);
         }
+
+        owner.downloadListSetup(this.taskId, null, 2, result.getError() != null);
+        LNReaderApplication.getInstance().removeDownload(this.taskId);
 
         owner.onCompleteCallback(message, result);
     }
