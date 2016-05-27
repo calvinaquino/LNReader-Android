@@ -724,7 +724,7 @@ public class NovelsDao {
                     ++i;
                     continue;
                 }
-                if (titles.length() + pageModels.get(i).getPage().length() < 2000) {
+                if (titles.length() + pageModels.get(i).getPage().length() < Constants.URL_LENGTH_LIMIT) {
                     titles += "|" + Util.UrlEncode(pageModels.get(i).getPage().trim());
                     checkedPageModel.add(pageModels.get(i));
                     ++i;
