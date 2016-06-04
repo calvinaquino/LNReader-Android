@@ -1,3 +1,7 @@
+1.1.43
+- Fix Issue #240: Limit api for update to 20 per url.
+- Fix Issue #238: Update cover url to handle https.
+
 1.1.42
 - Fix Issue #237: Change the url length limit to 500
 - Add novel refresh progress to the download list.

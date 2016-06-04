@@ -711,7 +711,7 @@ public class NovelsDao {
             ArrayList<PageModel> checkedPageModel = new ArrayList<PageModel>();
             String titles = "";
 
-            while (i < pageModels.size() && apiPageCount < 50) {
+            while (i < pageModels.size() && apiPageCount < 20) {
                 if (pageModels.get(i).isExternal()) {
                     pageModels.get(i).setMissing(false);
                     externalPageModel.add(pageModels.get(i));
