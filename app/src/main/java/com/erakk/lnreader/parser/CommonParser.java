@@ -570,7 +570,7 @@ public class CommonParser {
         if (images.size() > 0) {
             imageUrl = images.first().attr("src");
             if (!imageUrl.startsWith("http")) {
-                imageUrl = "http://www.baka-tsuki.org" + imageUrl;
+                imageUrl = UIHelper.getBaseUrl(LNReaderApplication.getInstance()) + imageUrl;
             }
 
             // http://www.baka-tsuki.org/project/images/thumb/f/f5/Daimaou_v01_cover.jpg/294px-Daimaou_v01_cover.jpg

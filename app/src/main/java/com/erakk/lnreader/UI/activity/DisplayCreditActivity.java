@@ -20,7 +20,7 @@ public class DisplayCreditActivity extends BaseActivity {
         // limited support on html tag, see: http://stackoverflow.com/a/3150456
         txtCredit.setText(Html.fromHtml("<h1>Credits</h1><h2>UI and Parsers</h2>" +
                 "- erakk<br />" +
-                "- <a href=\"http://nandaka.wordpress.com\">nandaka</a><br />" +
+                "- <a href=\"https://nandaka.devnull.zone/\">nandaka</a><br />" +
                 "- Thatdot7<br />" +
                 "- <a href=\"http://nstranslation.blogspot.com\">freedomofkeima</a><br />" +
                 "<h2>UI Translations</h2>" +
