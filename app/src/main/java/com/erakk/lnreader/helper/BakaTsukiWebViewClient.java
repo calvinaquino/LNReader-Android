@@ -39,6 +39,7 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
+        Log.d(TAG, "Try handling: " + url);
         hasError = false;
         final DisplayLightNovelContentActivity caller = activityRef.get();
         if (caller == null)
@@ -51,12 +52,11 @@ public class BakaTsukiWebViewClient extends WebViewClient {
 
         if (url.contains("title=File:")) {
             handleImageLinkActivity(url, caller);
-        } else if (url.startsWith("wyciwyg://")) {
+        } else if (url.startsWith("wyciwyg://") || url.startsWith("cid:frame-")) {
             // ignore wyciwyg:// protocol
+            // ignore cid:frame-, refer to issue #246
             return true;
-        } else
-
-        {
+        } else {
             boolean isHandled = handleInternalPage(view, url, caller);
 
             if (!isHandled) {
