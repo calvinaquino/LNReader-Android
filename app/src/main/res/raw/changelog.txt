@@ -1,3 +1,8 @@
+1.1.44
+- Fix Issue #244: include web novel in watch list
+- Fix Issue #246: ignore redirection if url started with cid:frame-
+- Update chapter title parser.
+
 1.1.43
 - Fix Issue #240: Limit api for update to 20 per url.
 - Fix Issue #238: Update cover url to handle https.

@@ -98,14 +98,16 @@ public class CommonParser {
         title = title.replaceAll("<.+?>", "") // Strip tags
                 .replaceAll("\\[.+?\\]", "") // Strip [___]s
                 .replaceAll("- PDF", "").replaceAll("\\(PDF\\)", "") // Strip (PDF)
-                        // Strip - (Full Text)
-                .replaceAll("- (Full Text)", "").replaceAll("- \\(.*Full Text.*\\)", "").replace("\\(.*Full Text.*\\)", "");
+                .replaceAll("- \\(.*Full Text.*\\)", "") // Strip - (Full Text)
+                .replaceAll("- (Full Text)", "")
+                .replaceAll("\\(Full Text\\)", "")
+                .replace("\\(.*Full Text.*\\)", "");
         Log.v(TAG, "After: " + title);
         if (isAggresive) {
             if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_AGGRESIVE_TITLE_CLEAN_UP, true)) {
                 // Leaves only the text before brackets (might be a bit too aggressive)
                 title = title.replaceAll("^(.+?)[(\\[].*$", "$1");
-                Log.d(TAG, "After Aggresive: " + title);
+                Log.d(TAG, "After Aggressive: " + title);
             }
         }
         return title.trim();
