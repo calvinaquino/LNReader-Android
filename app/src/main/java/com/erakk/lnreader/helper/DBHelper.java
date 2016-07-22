@@ -435,7 +435,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		parents.add("'" + Constants.ROOT_NOVEL_ENGLISH + "'");
 		parents.add("'" + Constants.ROOT_TEASER + "'");
 		parents.add("'" + Constants.ROOT_ORIGINAL + "'");
-		for (AlternativeLanguageInfo info : AlternativeLanguageInfo.getAlternativeLanguageInfo().values()) {
+        parents.add("'" + Constants.ROOT_WEB + "'");
+        for (AlternativeLanguageInfo info : AlternativeLanguageInfo.getAlternativeLanguageInfo().values()) {
 			parents.add("'" + info.getCategoryInfo() + "'");
 		}
 
