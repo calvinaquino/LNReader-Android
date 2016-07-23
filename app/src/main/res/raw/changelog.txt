@@ -1,7 +1,9 @@
 1.1.44
 - Fix Issue #244: include web novel in watch list
 - Fix Issue #246: ignore redirection if url started with cid:frame-
-- Update chapter title parser.
+- Fix Issue #240: Update chapter title parser.
+- Update gradle to 2.1.2
+- Update missing book query.
 
 1.1.43
 - Fix Issue #240: Limit api for update to 20 per url.
