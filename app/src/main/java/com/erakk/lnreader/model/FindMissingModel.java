@@ -8,6 +8,7 @@ public class FindMissingModel {
     private String page;
     private boolean isDownloaded;
     private PageModel pageModel;
+    private int id;
 
     public boolean isSelected() {
         return isSelected;
@@ -57,4 +58,12 @@ public class FindMissingModel {
         this.pageModel = pageModel;
     }
 
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

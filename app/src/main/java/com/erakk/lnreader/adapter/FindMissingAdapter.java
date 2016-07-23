@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
+import com.erakk.lnreader.helper.Util;
 import com.erakk.lnreader.model.FindMissingModel;
 
 import java.util.ArrayList;
@@ -99,7 +100,10 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel> {
 
         holder.txtDetails = (TextView) convertView.findViewById(R.id.details);
         if (holder.txtDetails != null) {
-            holder.txtDetails.setText(model.getDetails());
+            String details = model.getDetails();
+            if (Util.isStringNullOrEmpty(details))
+                details = "" + model.getId();
+            holder.txtDetails.setText(details);
         }
 
         holder.imgIsDownloaded = (ImageView) convertView.findViewById(R.id.is_downloaded);

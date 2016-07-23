@@ -19,6 +19,7 @@ public class FindMissingModelHelper {
                 ", " + DBHelper.COLUMN_TITLE +
                 ", " + DBHelper.COLUMN_PARENT +
                 ", " + DBHelper.COLUMN_IS_DOWNLOADED +
+                ", " + DBHelper.COLUMN_ID +
                 " FROM " + DBHelper.TABLE_PAGE +
                 " WHERE " + DBHelper.COLUMN_TYPE + " = '" + PageModel.TYPE_CONTENT + "'" +
                 "   AND " + DBHelper.COLUMN_PAGE + " LIKE '%redlink=1' " +
@@ -50,7 +51,8 @@ public class FindMissingModelHelper {
         }
         model.setDetails(details);
 
-        model.setDownloaded(cursor.getInt(3) == 1 ? true : false);
+        model.setDownloaded(cursor.getInt(3) == 1);
+        model.setId(cursor.getInt(4));
 
         return model;
     }
@@ -62,6 +64,7 @@ public class FindMissingModelHelper {
                 ", " + DBHelper.COLUMN_TITLE +
                 ", " + DBHelper.COLUMN_PARENT +
                 ", " + DBHelper.COLUMN_IS_DOWNLOADED +
+                ", " + DBHelper.COLUMN_ID +
                 " FROM " + DBHelper.TABLE_PAGE +
                 " WHERE " + DBHelper.COLUMN_TYPE + " = '" + PageModel.TYPE_CONTENT + "'" +
                 "   AND " + DBHelper.COLUMN_IS_MISSING + " = 1 " +
@@ -87,10 +90,10 @@ public class FindMissingModelHelper {
         ArrayList<FindMissingModel> list = new ArrayList<FindMissingModel>();
 
         String sql = "SELECT b." + DBHelper.COLUMN_PAGE +
-                ", b." + DBHelper.COLUMN_PAGE +
-                ", b." + DBHelper.COLUMN_TITLE +
+                ", ifnull(b." + DBHelper.COLUMN_PAGE + ", b." + DBHelper.COLUMN_TITLE + ") " +
                 ", p." + DBHelper.COLUMN_PAGE +
                 ", p." + DBHelper.COLUMN_IS_DOWNLOADED +
+                ", b." + DBHelper.COLUMN_ID +
                 " FROM " + DBHelper.TABLE_NOVEL_BOOK + " b " +
                 " LEFT JOIN " + DBHelper.TABLE_PAGE + " p on p." + DBHelper.COLUMN_PARENT + " = b." + DBHelper.COLUMN_PAGE + "||'" + Constants.NOVEL_BOOK_DIVIDER + "'||b." + DBHelper.COLUMN_TITLE +
                 " WHERE p." + DBHelper.COLUMN_PAGE + " IS NULL " +
@@ -120,6 +123,7 @@ public class FindMissingModelHelper {
                 ", p." + DBHelper.COLUMN_PARENT +
                 ", case when d." + DBHelper.COLUMN_PAGE + " is null then 0 else 1 end as is_downloaded " +
                 ", b." + DBHelper.COLUMN_TITLE +
+                ", p." + DBHelper.COLUMN_ID +
                 " FROM " + DBHelper.TABLE_PAGE + " p " +
                 " LEFT JOIN " + DBHelper.TABLE_NOVEL_DETAILS + " d ON p." + DBHelper.COLUMN_PAGE + " = d." + DBHelper.COLUMN_PAGE +
                 " LEFT JOIN " + DBHelper.TABLE_NOVEL_BOOK + " b ON p." + DBHelper.COLUMN_PAGE + " = b." + DBHelper.COLUMN_PAGE +
