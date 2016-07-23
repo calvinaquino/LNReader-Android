@@ -6,6 +6,12 @@ function toogleHighlight(element, ev) {
         return;
     }
     var target = event.srcElement || event.target;
+    if(target.nodeName != 'P') {
+        while(target.parentNode != null) {
+            target = target.parentNode;
+            if(target.nodeName == 'P') break;
+        }
+    }
 	toogleHighlightByElement(target);
 }
 
