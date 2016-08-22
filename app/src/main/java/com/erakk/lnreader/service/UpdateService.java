@@ -13,6 +13,7 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ import com.erakk.lnreader.task.GetUpdatedChaptersTask;
 
 import java.util.ArrayList;
 import java.util.Date;
+
 
 public class UpdateService extends Service {
     private final IBinder mBinder = new MyBinder();
@@ -97,154 +99,6 @@ public class UpdateService extends Service {
             Log.d(TAG, "getService");
             return UpdateService.this;
         }
-    }
-
-    public void sendNotification(ArrayList<PageModel> updatedChapters) {
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if (updatedChapters != null && updatedChapters.size() > 0) {
-            Log.d(TAG, "sendNotification");
-
-            // create UpdateInfoModel list
-            int updateCount = 0;
-            int newCount = 0;
-            int newNovel = 0;
-            ArrayList<UpdateInfoModel> updatesInfo = new ArrayList<UpdateInfoModel>();
-            for (PageModel pageModel : updatedChapters) {
-                UpdateInfoModel updateInfo = new UpdateInfoModel();
-
-                if (pageModel.getType().equalsIgnoreCase(PageModel.TYPE_NOVEL)) {
-                    ++newNovel;
-                    updateInfo.setUpdateTitle("New Novel: " + pageModel.getTitle());
-                    updateInfo.setUpdateType(UpdateTypeEnum.NewNovel);
-                } else if (pageModel.getType().equalsIgnoreCase(PageModel.TYPE_TOS)) {
-                    updateInfo.setUpdateTitle("Updated TOS");
-                    updateInfo.setUpdateType(UpdateTypeEnum.UpdateTos);
-                } else {
-                    if (pageModel.isUpdated()) {
-                        updateInfo.setUpdateType(UpdateTypeEnum.Updated);
-                        ++updateCount;
-                    } else {
-                        updateInfo.setUpdateType(UpdateTypeEnum.New);
-                        ++newCount;
-                    }
-
-                    String novelTitle = "";
-                    try {
-                        novelTitle = pageModel.getBook(true).getParent().getPageModel().getTitle() + ": ";
-                    } catch (Exception ex) {
-                        Log.e(TAG, "Error when getting Novel title", ex);
-                    }
-                    novelTitle = novelTitle + pageModel.getTitle() + " (" + pageModel.getBook(true).getTitle() + ")";
-                    if (pageModel.isExternal()) {
-                        // double check
-                        if (pageModel.getPage().startsWith("http://") || pageModel.getPage().startsWith("https://")) {
-                            novelTitle += " - EXTERNAL LINK";
-                            updateInfo.setExternal(true);
-                        }
-                    }
-                    updateInfo.setUpdateTitle(novelTitle);
-                }
-
-                updateInfo.setUpdateDate(pageModel.getLastUpdate());
-                updateInfo.setUpdatePage(pageModel.getPage());
-                updateInfo.setUpdatePageModel(pageModel);
-
-                // insert to db
-                NovelsDao.getInstance().insertUpdateHistory(updateInfo);
-                updatesInfo.add(updateInfo);
-            }
-
-            if (getConsolidateNotificationPref()) {
-                createConsolidatedNotification(mNotificationManager, updateCount, newCount, newNovel);
-            } else {
-                int id = Constants.NOTIFIER_ID;
-                boolean first = true;
-                for (UpdateInfoModel updateInfoModel : updatesInfo) {
-                    final int notifId = ++id;
-                    Log.d(TAG, "set Notification for: " + updateInfoModel.getUpdatePage());
-                    Notification notification = getNotificationTemplate(first);
-                    first = false;
-
-                    prepareNotification(notifId, updateInfoModel, notification);
-                    mNotificationManager.notify(notifId, notification);
-                }
-            }
-        }
-
-        updateStatus("OK");
-        Toast.makeText(this, "Update Service completed", Toast.LENGTH_SHORT).show();
-        LNReaderApplication.getInstance().updateDownload(TAG, 100, getString(R.string.svc_update_complete));
-        if (notifier != null)
-            notifier.onProgressCallback(new CallbackEventData(getString(R.string.svc_update_complete), 100, Constants.PREF_RUN_UPDATES));
-    }
-
-    @SuppressWarnings("deprecation")
-    public void createConsolidatedNotification(NotificationManager mNotificationManager, int updateCount, int newCount, int newNovel) {
-        Log.d(TAG, "set consolidated Notification");
-        Notification notification = getNotificationTemplate(true);
-        CharSequence contentTitle = "BakaReader EX Updates";
-        String contentText = "Found";
-        if (updateCount > 0) {
-            contentText += " " + updateCount + " updated chapter(s)";
-        }
-        if (newCount > 0) {
-            if (updateCount > 0)
-                contentText += " and ";
-            contentText += " " + newCount + " new chapter(s)";
-        }
-        if (newNovel > 0) {
-            if (updateCount > 0 || newCount > 0)
-                contentText += " and ";
-            contentText += " " + newNovel + " new novel(s)";
-        }
-        contentText += ".";
-
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        notificationIntent.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, UpdateInfoFragment.class.toString());
-        notificationIntent.putExtra(Constants.EXTRA_CALLER_ACTIVITY, UpdateService.class.toString());
-        int pendingFlag = PendingIntent.FLAG_CANCEL_CURRENT;
-        PendingIntent contentIntent = PendingIntent.getActivity(this, Constants.CONSOLIDATED_NOTIFIER_ID, notificationIntent, pendingFlag);
-
-        notification.setLatestEventInfo(this, contentTitle, contentText, contentIntent);
-        mNotificationManager.notify(Constants.CONSOLIDATED_NOTIFIER_ID, notification);
-    }
-
-    @SuppressWarnings("deprecation")
-    public void prepareNotification(final int notifId, UpdateInfoModel chapter, Notification notification) {
-        CharSequence contentTitle = chapter.getUpdateType().toString();
-        CharSequence contentText = chapter.getUpdateTitle();
-
-        Intent notificationIntent = new Intent(this, DisplayLightNovelContentActivity.class);
-        notificationIntent.putExtra(Constants.EXTRA_PAGE, chapter.getUpdatePage());
-
-        int pendingFlag = PendingIntent.FLAG_CANCEL_CURRENT;
-        PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, pendingFlag);
-
-        notification.setLatestEventInfo(this, contentTitle, contentText, contentIntent);
-    }
-
-    @SuppressWarnings("deprecation")
-    public Notification getNotificationTemplate(boolean firstNotification) {
-        int icon = android.R.drawable.arrow_up_float; // Just a placeholder
-        CharSequence tickerText = "New Chapters Update";
-        long when = System.currentTimeMillis();
-
-        Notification notification = new Notification(icon, tickerText, when);
-        if (!PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_PERSIST_NOTIFICATION, false)) {
-            notification.flags = Notification.FLAG_AUTO_CANCEL;
-        }
-
-        notification.defaults = 0;
-        if (firstNotification) {
-            if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_UPDATE_RING, false)) {
-                notification.defaults |= Notification.DEFAULT_SOUND;
-            }
-            if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_UPDATE_VIBRATE, false)) {
-                notification.defaults |= Notification.DEFAULT_VIBRATE;
-            }
-        }
-        return notification;
     }
 
     public void updateStatus(String status) {
@@ -340,4 +194,163 @@ public class UpdateService extends Service {
         if (task != null)
             task.setCallbackNotifier(notifier);
     }
+
+
+    public void sendNotification(ArrayList<PageModel> updatedChapters) {
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (updatedChapters != null && updatedChapters.size() > 0) {
+            Log.d(TAG, "sendNotification");
+
+            // create UpdateInfoModel list
+            int updateCount = 0;
+            int newCount = 0;
+            int newNovel = 0;
+            ArrayList<UpdateInfoModel> updatesInfo = new ArrayList<UpdateInfoModel>();
+            for (PageModel pageModel : updatedChapters) {
+                UpdateInfoModel updateInfo = new UpdateInfoModel();
+
+                if (pageModel.getType().equalsIgnoreCase(PageModel.TYPE_NOVEL)) {
+                    ++newNovel;
+                    updateInfo.setUpdateTitle("New Novel: " + pageModel.getTitle());
+                    updateInfo.setUpdateType(UpdateTypeEnum.NewNovel);
+                } else if (pageModel.getType().equalsIgnoreCase(PageModel.TYPE_TOS)) {
+                    updateInfo.setUpdateTitle("Updated TOS");
+                    updateInfo.setUpdateType(UpdateTypeEnum.UpdateTos);
+                } else {
+                    if (pageModel.isUpdated()) {
+                        updateInfo.setUpdateType(UpdateTypeEnum.Updated);
+                        ++updateCount;
+                    } else {
+                        updateInfo.setUpdateType(UpdateTypeEnum.New);
+                        ++newCount;
+                    }
+
+                    String novelTitle = "";
+                    try {
+                        novelTitle = pageModel.getBook(true).getParent().getPageModel().getTitle() + ": ";
+                    } catch (Exception ex) {
+                        Log.e(TAG, "Error when getting Novel title", ex);
+                    }
+                    novelTitle = novelTitle + pageModel.getTitle() + " (" + pageModel.getBook(true).getTitle() + ")";
+                    if (pageModel.isExternal()) {
+                        // double check
+                        if (pageModel.getPage().startsWith("http://") || pageModel.getPage().startsWith("https://")) {
+                            novelTitle += " - EXTERNAL LINK";
+                            updateInfo.setExternal(true);
+                        }
+                    }
+                    updateInfo.setUpdateTitle(novelTitle);
+                }
+
+                updateInfo.setUpdateDate(pageModel.getLastUpdate());
+                updateInfo.setUpdatePage(pageModel.getPage());
+                updateInfo.setUpdatePageModel(pageModel);
+
+                // insert to db
+                NovelsDao.getInstance().insertUpdateHistory(updateInfo);
+                updatesInfo.add(updateInfo);
+            }
+
+            if (getConsolidateNotificationPref()) {
+                createConsolidatedNotification(mNotificationManager, updateCount, newCount, newNovel);
+            } else {
+                int id = Constants.NOTIFIER_ID;
+                boolean first = true;
+                for (UpdateInfoModel updateInfoModel : updatesInfo) {
+                    final int notifId = ++id;
+                    Log.d(TAG, "set Notification for: " + updateInfoModel.getUpdatePage());
+
+                    NotificationCompat.Builder mBuilder = getNotificationTemplate(first);
+                    first = false;
+
+                    prepareNotification(notifId, updateInfoModel, mBuilder);
+                    mNotificationManager.notify(notifId, mBuilder.build());
+                }
+            }
+        }
+
+        updateStatus("OK");
+        Toast.makeText(this, "Update Service completed", Toast.LENGTH_SHORT).show();
+        LNReaderApplication.getInstance().updateDownload(TAG, 100, getString(R.string.svc_update_complete));
+        if (notifier != null)
+            notifier.onProgressCallback(new CallbackEventData(getString(R.string.svc_update_complete), 100, Constants.PREF_RUN_UPDATES));
+    }
+
+    private void prepareNotification(final int notifId, UpdateInfoModel chapter, NotificationCompat.Builder mBuilder) {
+        CharSequence contentTitle = chapter.getUpdateType().toString();
+        CharSequence contentText = chapter.getUpdateTitle();
+
+        Intent notificationIntent = new Intent(this, DisplayLightNovelContentActivity.class);
+        notificationIntent.putExtra(Constants.EXTRA_PAGE, chapter.getUpdatePage());
+
+        int pendingFlag = PendingIntent.FLAG_CANCEL_CURRENT;
+        PendingIntent contentIntent = PendingIntent.getActivity(this, notifId, notificationIntent, pendingFlag);
+
+        mBuilder.setContentTitle(contentTitle)
+                .setContentText(contentText)
+                .setContentIntent(contentIntent);
+    }
+
+    private void createConsolidatedNotification(NotificationManager mNotificationManager, int updateCount, int newCount, int newNovel) {
+        Log.d(TAG, "set consolidated Notification");
+
+        CharSequence contentTitle = "BakaReader EX Updates";
+        String contentText = "Found";
+        if (updateCount > 0) {
+            contentText += " " + updateCount + " updated chapter(s)";
+        }
+        if (newCount > 0) {
+            if (updateCount > 0)
+                contentText += " and ";
+            contentText += " " + newCount + " new chapter(s)";
+        }
+        if (newNovel > 0) {
+            if (updateCount > 0 || newCount > 0)
+                contentText += " and ";
+            contentText += " " + newNovel + " new novel(s)";
+        }
+        contentText += ".";
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        notificationIntent.putExtra(Constants.EXTRA_INITIAL_FRAGMENT, UpdateInfoFragment.class.toString());
+        notificationIntent.putExtra(Constants.EXTRA_CALLER_ACTIVITY, UpdateService.class.toString());
+        int pendingFlag = PendingIntent.FLAG_CANCEL_CURRENT;
+        PendingIntent contentIntent = PendingIntent.getActivity(this, Constants.CONSOLIDATED_NOTIFIER_ID, notificationIntent, pendingFlag);
+
+        NotificationCompat.Builder mBuilder = getNotificationTemplate(true);
+        mBuilder.setContentTitle(contentTitle)
+                .setContentText(contentText)
+                .setContentIntent(contentIntent);
+        mNotificationManager.notify(Constants.CONSOLIDATED_NOTIFIER_ID, mBuilder.build());
+
+    }
+
+    private NotificationCompat.Builder getNotificationTemplate(boolean firstNotification) {
+        int icon = android.R.drawable.arrow_up_float; // Just a placeholder
+        CharSequence tickerText = "New Chapters Update";
+        boolean persist = !PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_PERSIST_NOTIFICATION, false);
+
+        int def = 0;
+        if (firstNotification) {
+            if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_UPDATE_RING, false)) {
+                def |= Notification.DEFAULT_SOUND;
+            }
+            if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Constants.PREF_UPDATE_VIBRATE, false)) {
+                def |= Notification.DEFAULT_VIBRATE;
+            }
+        }
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(icon)
+                        .setWhen(System.currentTimeMillis())
+                        .setTicker(tickerText)
+                        .setDefaults(def)
+                        .setAutoCancel(persist);
+
+        return mBuilder;
+    }
+
+
 }
