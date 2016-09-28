@@ -1020,7 +1020,10 @@ public class NovelsDao {
                     tempBook = BookModelHelper.getBookModel(dbh, db, bookDel.getId());
                 } else if (!Util.isStringNullOrEmpty(bookDel.getPage()) && !Util.isStringNullOrEmpty(bookDel.getTitle())) {
                     tempBook = BookModelHelper.getBookModel(dbh, db, bookDel.getPage(), bookDel.getTitle());
+                } else {
+                    Log.e(TAG, "DELETE BOOK failure: " + bookDel.getId() + " Page:" + bookDel.getPage() + " Title:" + bookDel.getTitle());
                 }
+
                 if (tempBook != null) {
                     return BookModelHelper.deleteBookModel(dbh, db, tempBook);
                 }
@@ -1601,9 +1604,10 @@ public class NovelsDao {
             return deletePage(new PageModel(missing.getPage()));
         } else if (mode.equalsIgnoreCase(Constants.PREF_EMPTY_BOOK)) {
             BookModel book = new BookModel();
+            book.setId(missing.getId());
             book.setPage(missing.getPage());
             book.setTitle(missing.getDetails());
-            // Log.d(TAG, "Delete Book: " + book.getPage() + " " + book.getTitle());
+            //Log.e(TAG, "DELETE BOOK: " + book.getId() + " Page:" + book.getPage() + " Title:" + book.getTitle());
             return deleteBooks(book);
         } else if (mode.equalsIgnoreCase(Constants.PREF_EMPTY_NOVEL)) {
             return deleteNovel(new PageModel(missing.getPage()));
