@@ -100,11 +100,13 @@ public class CommonParser {
         Log.v(TAG, "Before: " + title);
         title = title.replaceAll("<.+?>", "") // Strip tags
                 .replaceAll("\\[.+?\\]", "") // Strip [___]s
-                .replaceAll("- PDF", "").replaceAll("\\(PDF\\)", "") // Strip (PDF)
-                .replaceAll("- \\(.*Full Text.*\\)", "") // Strip - (Full Text)
-                .replaceAll("- (Full Text)", "")
-                .replaceAll("\\(Full Text\\)", "")
-                .replace("\\(.*Full Text.*\\)", "");
+                .replaceAll("\\(PDF\\)", "") // Strip (PDF)
+                .replaceAll("\\(Full Text.*\\)| - Full Text", ""); // strip (Full Text)
+        title = title.trim();
+        if(title.endsWith("-")){
+            title = title.substring(0, title.length()-1);
+            title = title.trim();
+        }
         Log.v(TAG, "After: " + title);
         if (isAggresive) {
             if (PreferenceManager.getDefaultSharedPreferences(LNReaderApplication.getInstance().getApplicationContext()).getBoolean(Constants.PREF_AGGRESIVE_TITLE_CLEAN_UP, true)) {

@@ -1603,7 +1603,8 @@ public class NovelsDao {
             BookModel book = new BookModel();
             book.setPage(missing.getPage());
             book.setTitle(missing.getDetails());
-            // Log.d(TAG, "Delete Book: " + book.getPage() + " " + book.getTitle());
+            book.setId(missing.getId());
+            Log.d(TAG, "Delete Book: " + book.getPage() + " " + book.getTitle());
             return deleteBooks(book);
         } else if (mode.equalsIgnoreCase(Constants.PREF_EMPTY_NOVEL)) {
             return deleteNovel(new PageModel(missing.getPage()));

@@ -90,8 +90,8 @@ public class FindMissingModelHelper {
         ArrayList<FindMissingModel> list = new ArrayList<FindMissingModel>();
 
         String sql = "SELECT b." + DBHelper.COLUMN_PAGE +
-                ", ifnull(b." + DBHelper.COLUMN_PAGE + ", b." + DBHelper.COLUMN_TITLE + ") " +
-                ", p." + DBHelper.COLUMN_PAGE +
+                ", ifnull(b." + DBHelper.COLUMN_TITLE + ", b." + DBHelper.COLUMN_PAGE + ") " +
+                ", p." + DBHelper.COLUMN_TITLE +
                 ", p." + DBHelper.COLUMN_IS_DOWNLOADED +
                 ", b." + DBHelper.COLUMN_ID +
                 " FROM " + DBHelper.TABLE_NOVEL_BOOK + " b " +
