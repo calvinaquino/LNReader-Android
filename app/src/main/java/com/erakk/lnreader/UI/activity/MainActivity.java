@@ -23,10 +23,14 @@ import com.erakk.lnreader.UI.fragment.DownloadFragment;
 import com.erakk.lnreader.UI.fragment.MainFragment;
 import com.erakk.lnreader.UI.fragment.SearchFragment;
 import com.erakk.lnreader.UI.fragment.UpdateInfoFragment;
+import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.CheckDBReadyTask;
+
+import java.io.File;
+import java.io.IOException;
 
 public class MainActivity extends BaseActivity implements IExtendedCallbackNotifier<AsyncTaskResult<Boolean>> {
     private static final String TAG = MainActivity.class.toString();
@@ -84,6 +88,16 @@ public class MainActivity extends BaseActivity implements IExtendedCallbackNotif
             checkDBAccess();
         }
 
+        // create .nomedia file
+        String noMediaFile = UIHelper.getImageRoot(this) + "/" + ".nomedia";
+        File f = new File(noMediaFile);
+        if(!f.exists()) {
+            try {
+                Log.d(TAG, "Creating .nomedia file: " + f.createNewFile());
+            } catch (IOException e) {
+                Log.w(TAG, "Failed to create .nomedia file at " + noMediaFile);
+            }
+        }
     }
 
     @Override
