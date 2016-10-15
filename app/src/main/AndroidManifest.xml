@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.erakk.lnreader"
     android:installLocation="auto"
-    android:versionCode="201607220"
-    android:versionName="1.1.44">
+    android:versionCode="20161015"
+    android:versionName="1.1.45">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

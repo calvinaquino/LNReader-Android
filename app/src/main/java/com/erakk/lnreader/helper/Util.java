@@ -395,7 +395,8 @@ public class Util {
     };
 
     /**
-     * Create a keystore for StartCom Class 1 Intermediate Server CA
+     * Create a keystore used by baka-tsuki
+     * - 2016-10-15 = Let's Encrypt
      *
      * @return
      * @throws IOException
