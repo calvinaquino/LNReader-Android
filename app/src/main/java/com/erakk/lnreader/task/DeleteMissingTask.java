@@ -42,7 +42,7 @@ public class DeleteMissingTask extends AsyncTask<Void, ICallbackEventData, Integ
 			if (items != null) {
 				for (FindMissingModel missing : items) {
 					count += NovelsDao.getInstance().deleteMissingItem(missing, mode);
-					publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.task_delete_progress, count, items.size()), source));
+					publishProgress(new CallbackEventData(ctx.getResources().getString(R.string.task_delete_progress, String.valueOf(count), String.valueOf(items.size())), source));
 				}
 			}
 			return count;
@@ -64,7 +64,7 @@ public class DeleteMissingTask extends AsyncTask<Void, ICallbackEventData, Integ
 	@Override
 	protected void onPostExecute(Integer result) {
 		if (!hasError) {
-			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString(R.string.task_delete_complete, items.size());
+			String message = LNReaderApplication.getInstance().getApplicationContext().getResources().getString( R.string.task_delete_complete, String.valueOf(items.size()));
 			Log.d(TAG, message);
 			callback.onCompleteCallback(new CallbackEventData(message, source), result);
 		}
