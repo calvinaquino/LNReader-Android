@@ -1,3 +1,9 @@
+1.1.45
+- Fix issue #240: Ensure Aggresive Book Title clean up is disabled on Settings -> Update & Notification.
+- Fixed Empty Book deletion(missing Id assignment).
+- Update KeyStore.
+- Update thumbnail handler.
+
 1.1.44
 - Fix Issue #244: include web novel in watch list
 - Fix Issue #246: ignore redirection if url started with cid:frame-

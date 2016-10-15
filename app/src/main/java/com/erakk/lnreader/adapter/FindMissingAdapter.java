@@ -102,7 +102,7 @@ public class FindMissingAdapter extends ArrayAdapter<FindMissingModel> {
         if (holder.txtDetails != null) {
             String details = model.getDetails();
             if (Util.isStringNullOrEmpty(details))
-                details = "" + model.getId();
+                details = String.format("%s (%s)", model.getPage(), model.getId());
             holder.txtDetails.setText(details);
         }
 
