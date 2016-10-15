@@ -46,10 +46,13 @@ public class CommonParser {
         String imagePath = "src=\"file://" + root + "/project/images/";
         content = content.replace("src=\"/project/images/", imagePath);
 
-        // /project/thumb.php?f=Biblia1_011.png&width=300
-        // thumb.php
-        String thumbPath = "src=\"file://" + root + "/project/thumb.php_";
-        content = content.replace("src=\"/project/thumb.php?", thumbPath);
+        // new thumbnail handling
+        // /project/thumb.php?f=Masou_Gakuen_HxH_V09_BW_03.png&amp;width=85
+        // /project/thumbs/M/Masou_Gakuen_HxH_V09_BW_03-85px.png
+        String regex = "src=\"/project/thumb.php.f=(.)([\\w-]*)\\.(\\w*)&amp;width=(\\d+)\"";
+        String replace = "src=\"/project/thumbs/$1/$1$2-$4px.$3\"";
+        content = content.replaceAll(regex, replace);
+        content = content.replace("src=\"/project/thumbs/", "src=\"file://" + root + "/project/thumbs/");
 
         // remove srcset
         content = content.replace("srcset=", "srcset-disabled=");

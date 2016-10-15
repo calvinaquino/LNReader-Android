@@ -16,7 +16,6 @@ import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 
 public class BakaTsukiWebViewClient extends WebViewClient {
@@ -233,37 +232,4 @@ public class BakaTsukiWebViewClient extends WebViewClient {
             }
         }
     }
-
-    @Override
-    public void onLoadResource(WebView view, String url) {
-        if(url.contains("file://")) {
-            // local resources
-            if (url.contains("thumb.php_f=")) {
-                // handle thumbnail
-                File f = new File(url.replace("file://", ""));
-                if (f.exists()) {
-                    try {
-                        // rename and redirect
-                        // file:///storage/emulated/0/.bakareaderex2/project/thumb.php_f=Masou_Gakuen_HxH_V09_Cover.jpg&width=84
-                        // file:///storage/emulated/0/.bakareaderex2/project/thumbs/Masou_Gakuen_HxH_V09_Cover-84px.jpg
-                        String new_url = url.replaceAll("(.*)/thumb.php_f=(.*)(\\..*)&width=(\\d+)", "$1/thumb/$2-$4px$3");
-                        Log.d(TAG, "Rename " + url + " to " + new_url);
-                        File new_f = new File(new_url);
-                        String path = new_f.getAbsolutePath();
-                        File dir = new File(path);
-                        if (!dir.exists()) {
-                            dir.mkdirs();
-                        }
-                        f.renameTo(new_f);
-                        Log.d(TAG, "Rename completed");
-                        url = new_url;
-                    }catch (Exception ex) {
-                        Log.e(TAG, "Failed to redirect file", ex);
-                    }
-                }
-            }
-        }
-        super.onLoadResource(view, url);
-    }
-
 }

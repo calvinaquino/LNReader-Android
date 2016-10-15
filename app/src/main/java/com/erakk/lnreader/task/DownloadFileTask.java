@@ -66,7 +66,16 @@ public class DownloadFileTask extends AsyncTask<Void, Integer, AsyncTaskResult<I
         Log.d(TAG, "Start Downloading: " + imageUrl.toString());
         InputStream input = null;
         OutputStream output = null;
-        String filepath = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + imageUrl.getFile();
+        String filename = imageUrl.getFile();
+
+        // thumbnail handling
+        // thumb.php_f=Masou_Gakuen_HxH_V09_Cover.jpg&width=84
+        // thumbs/M/Masou_Gakuen_HxH_V09_Cover-84px.jpg
+        if(filename.toLowerCase().contains("thumb.php?f=")) {
+            filename = filename.replaceAll("thumb.php.f=(.)(.*)(\\..*)&width=(\\d+)", "thumbs/$1/$1$2-$4px$3");
+        }
+        String filepath = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + filename;
+
         @SuppressWarnings("deprecation")
         String decodedUrl = Util.sanitizeFilename(URLDecoder.decode(filepath));
         Log.d(TAG, "Saving to: " + decodedUrl);
@@ -79,6 +88,19 @@ public class DownloadFileTask extends AsyncTask<Void, Integer, AsyncTaskResult<I
             Log.d(TAG, "Path to: " + path);
         } else {
             Log.e(TAG, "Failed to create Path: " + path);
+        }
+
+        // try to move the old thumbnail if available
+        if(imageUrl.getFile().toLowerCase().contains("thumb.php?")) {
+            // /project/thumb.php?f=Masou_Gakuen_HxH_V09_Cover.jpg&amp;width=84
+            // file:///storage/emulated/0/.bakareaderex2/project/thumb.php_f=Masou_Gakuen_HxH_V09_Cover.jpg&width=84
+            // file:///storage/emulated/0/.bakareaderex2/project/thumbs/Masou_Gakuen_HxH_V09_Cover-84px.jpg
+            String old_filename = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + imageUrl.getFile().replace("thumb.php?", "thumb.php_");
+            File f = new File(old_filename);
+            if(f.exists()) {
+                f.renameTo(new File(decodedUrl));
+                Log.d(TAG, "Moved old thumbnail file from " + old_filename + " to " +  decodedUrl);
+            }
         }
 
         File tempFilename = new File(decodedUrl + ".!tmp");
