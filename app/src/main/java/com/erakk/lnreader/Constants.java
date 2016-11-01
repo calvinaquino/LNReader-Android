@@ -6,8 +6,7 @@ import java.util.Date;
 
 public class Constants {
 
-    public static final String ROOT_URL = "//baka-tsuki.org";
-    public static final String ROOT_HTTP = "http:";
+    public static final String ROOT_URL = "//www.baka-tsuki.org";
     public static final String ROOT_HTTPS = "https:";
 
     // Intent parameter list

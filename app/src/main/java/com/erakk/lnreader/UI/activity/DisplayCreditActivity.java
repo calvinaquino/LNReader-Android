@@ -6,6 +6,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
 
 public class DisplayCreditActivity extends BaseActivity {
@@ -28,7 +29,7 @@ public class DisplayCreditActivity extends BaseActivity {
                 "- Indonesian : freedomofkeima<br />" +
                 "- French : Lery<br />" +
                 "<br />" +
-                "And other people contributing through <a href=\"http://baka-tsuki.org/forums/\">baka-tsuki forum</a> :D<br />"));
+                "And other people contributing through <a href=\""+ Constants.ROOT_HTTPS + Constants.ROOT_URL + "/forums/\">baka-tsuki forum</a> :D<br />"));
         // allow link to be clickable, see: http://stackoverflow.com/a/8722574
         txtCredit.setMovementMethod(LinkMovementMethod.getInstance());
     }

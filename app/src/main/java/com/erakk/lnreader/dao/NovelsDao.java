@@ -1111,7 +1111,7 @@ public class NovelsDao {
                     doc = Jsoup.parse("<div class=\"noarticletext\">" +
                             "<p>There is currently no text in this page." +
                             "You can <a href=\"/project/index.php?title=Special:Search/" + titleClean + "\" title=\"Special:Search/" + titleClean + "\">search for this page title</a> in other pages," +
-                            "or <span class=\"plainlinks\"><a rel=\"nofollow\" class=\"external text\" href=\"https://www.baka-tsuki.org/project/index.php?title=Special:Log&amp;page=" + titleClean + "\">search the related logs</a></span>." +
+                            "or <span class=\"plainlinks\"><a rel=\"nofollow\" class=\"external text\" href=\""+ Constants.ROOT_HTTPS + Constants.ROOT_URL + "/project/index.php?title=Special:Log&amp;page=" + titleClean + "\">search the related logs</a></span>." +
                             "</p>" +
                             "</div>");
                     page.setMissing(true);

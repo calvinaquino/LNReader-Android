@@ -560,7 +560,7 @@ public class CommonParser {
      * @return
      */
     public static String normalizeInternalUrl(String url) {
-        return url.replace("/project/index.php?title=", "").replace(Constants.ROOT_HTTPS, "").replace(Constants.ROOT_HTTP, "").replace(Constants.ROOT_URL, "");
+        return url.replace("/project/index.php?title=", "").replace(Constants.ROOT_HTTPS, "").replace(Constants.ROOT_URL, "");
     }
 
 
