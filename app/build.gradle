@@ -4,31 +4,22 @@ buildscript {
     repositories {
         mavenCentral()
     }
-
-    if (gradle.gradleVersion >= "2.2") {
-        dependencies {
-            classpath 'com.android.tools.build:gradle:1.0.0+'
-        }
-    } else if (gradle.gradleVersion >= "2.1") {
-        dependencies {
-            classpath 'com.android.tools.build:gradle:0.14.0+'
-        }
-    } else {
-        dependencies {
-            classpath 'com.android.tools.build:gradle:0.12.0+'
-            compile 'com.android.support:support-v4:13.0+'
-        }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.2'
     }
+
 }
 
 android {
     compileSdkVersion 22
-    buildToolsVersion '23.0.2'
+    buildToolsVersion '23.0.3'
 
     defaultConfig {
         applicationId "com.erakk.lnreader"
         minSdkVersion 9
         targetSdkVersion 22
+        versionCode 201611010
+        versionName "1.1.46"
     }
 
     buildTypes {
@@ -37,8 +28,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
             applicationVariants.all { variant ->
                 variant.outputs.each { output ->
-                    def manifestParser = new com.android.builder.core.DefaultManifestParser()
-                    output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace("app-release.apk", "BakaReader-EX-" + manifestParser.getVersionName(android.sourceSets.main.manifest.srcFile) + ".apk"))
+                    output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace("app-release.apk", "BakaReader-EX-" + defaultConfig.versionName + ".apk"))
                 }
             }
         }
