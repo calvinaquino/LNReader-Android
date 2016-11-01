@@ -103,8 +103,8 @@ public class CommonParser {
                 .replaceAll("\\(PDF\\)", "") // Strip (PDF)
                 .replaceAll("\\(Full Text.*\\)| - Full Text", ""); // strip (Full Text)
         title = title.trim();
-        if(title.endsWith("-")){
-            title = title.substring(0, title.length()-1);
+        if (title.endsWith("-")) {
+            title = title.substring(0, title.length() - 1);
             title = title.trim();
         }
         Log.v(TAG, "After: " + title);
@@ -338,6 +338,11 @@ public class CommonParser {
         if (imageUrl.contains("/thumb/")) {
             // from thumbnail
             pageUrl = tokens[8];
+        } else if (imageUrl.contains("/thumbs/")) {
+            // from new thumbnail
+            // /storage/emulated/0/.bakareaderex2/project/thumbs/S/Survey_cover-300px.jpg
+            pageUrl = tokens[tokens.length-1];
+            pageUrl = pageUrl.replaceAll("-\\d+px","");
         } else if (imageUrl.contains("/thumb.php?")) {
             String[] temp = imageUrl.split("f=");
             temp = temp[1].split("&");

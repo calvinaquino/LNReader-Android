@@ -211,7 +211,7 @@ public class DownloadFileTask extends AsyncTask<Void, Integer, AsyncTaskResult<I
         }
 
         ImageModel image = new ImageModel();
-        image.setName(imageUrl.getFile());
+        image.setName(filename);
         image.setUrl(imageUrl);
         image.setPath(filepath);
         image.setLastCheck(new Date());

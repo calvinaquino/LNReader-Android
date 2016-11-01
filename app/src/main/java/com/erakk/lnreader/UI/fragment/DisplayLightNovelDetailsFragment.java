@@ -509,7 +509,7 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
         ImageView ImageViewCover = (ImageView) synopsis.findViewById(R.id.cover);
         if (novelCol.getCoverBitmap() == null) {
             // IN app test, is returning empty bitmap
-            Toast.makeText(getActivity(), getResources().getString(R.string.toast_err_bitmap_empty), Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getResources().getString(R.string.toast_err_bitmap_empty, novelCol.getCover()), Toast.LENGTH_LONG).show();
         } else {
             ImageViewCover.setOnClickListener(new OnClickListener() {
 

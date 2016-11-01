@@ -241,7 +241,7 @@
     <string name="toast_download_finish_with_error">%1$s %2$s\'s download finished with error(s)!</string>
     <string name="toast_add_watch">Added to watch list: %1$s</string>
     <string name="toast_remove_watch">Removed from watch list: %1$s</string>
-    <string name="toast_err_bitmap_empty">Bitmap empty</string>
+    <string name="toast_err_bitmap_empty">Bitmap empty: %s</string>
     <string name="error_setting_chapter_list">Error when setting up chapter list: %1$s</string>
     <string name="error_empty_download_array">No item to be added into Download List</string>
     <string name="hide_empty_volume_title">Hide Empty Volume</string>

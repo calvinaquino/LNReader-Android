@@ -77,6 +77,9 @@ public class NovelCollectionModel {
     public URL getCoverUrl() {
         if (this.coverUrl == null && this.cover != null && this.cover.length() > 0) {
             try {
+                if(this.cover.startsWith("/")) {
+                    this.cover = "file://" + this.cover;
+                }
                 this.coverUrl = new URL(this.cover);
             } catch (MalformedURLException e) {
                 Log.e(TAG, "Invalid url: " + this.cover, e);
@@ -94,13 +97,12 @@ public class NovelCollectionModel {
             try {
                 // TODO: maybe it is better to use ImageModel
                 if (getCoverUrl() != null) {
-                    @SuppressWarnings("deprecation")
                     String filepath = UIHelper.getImageRoot(LNReaderApplication.getInstance().getApplicationContext()) + Util.sanitizeFilename(URLDecoder.decode(getCoverUrl().getFile()));
-                    Log.d("GetCover", filepath);
+                    Log.d(TAG, "Cover: " + filepath);
                     this.coverBitmap = BitmapFactory.decodeFile(filepath);
                 }
             } catch (Exception e) {
-                Log.e("GetCover", e.getClass().toString() + ": " + e.getMessage(), e);
+                Log.e(TAG, e.getClass().toString() + ": " + e.getMessage(), e);
             }
         }
         // Redimension image so they all have a constant size

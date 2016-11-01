@@ -239,7 +239,7 @@
     <string name="toast_download_finish_with_error">%1$s %2$s\ Pobierań zakończonych z błędami!</string>
     <string name="toast_add_watch">Dodano do Obserwowanych: %1$s</string>
     <string name="toast_remove_watch">Usunięto z Obserwowanych: %1$s</string>
-    <string name="toast_err_bitmap_empty">Pusta Bitmapa</string>
+    <string name="toast_err_bitmap_empty">Pusta Bitmapa %s</string>
     <string name="error_setting_chapter_list">Błąd przy pobieraniu listy rozdziałów: %1$s</string>
     <string name="error_empty_download_array">Brak materiałów do Pobierania</string>
     <string name="hide_empty_volume_title">Ukryj puste tomy</string>

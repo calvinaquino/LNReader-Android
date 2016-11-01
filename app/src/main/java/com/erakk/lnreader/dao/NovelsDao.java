@@ -931,6 +931,19 @@ public class NovelsDao {
             if (novel != null) {
                 page = updateNovelDetailsPageModel(page, notifier, novel);
 
+                // download cover image
+                if (novel.getCoverUrl() != null) {
+                    if (notifier != null) {
+                        String message = context.getResources().getString(R.string.load_novel_cover_image);
+                        notifier.onProgressCallback(new CallbackEventData(message, TAG));
+                    }
+                    DownloadFileTask task = new DownloadFileTask(novel.getCoverUrl(), page.getPage(), notifier);
+                    ImageModel image = task.downloadImage();
+                    Log.d(TAG, "Cover Image: " + image.toString() + " path: " + image.getPath());
+                    // update cover filepath
+                    novel.setCover(image.getName());
+                }
+
                 synchronized (dbh) {
                     // insert to DB and get saved value
                     SQLiteDatabase db = dbh.getWritableDatabase();
@@ -960,17 +973,6 @@ public class NovelsDao {
                         pageModel.setMissing(true);
                     }
                     pageModel = updatePageModel(pageModel);
-                }
-
-                // download cover image
-                if (novel.getCoverUrl() != null) {
-                    if (notifier != null) {
-                        String message = context.getResources().getString(R.string.load_novel_cover_image);
-                        notifier.onProgressCallback(new CallbackEventData(message, TAG));
-                    }
-                    DownloadFileTask task = new DownloadFileTask(novel.getCoverUrl(), page.getPage(), notifier);
-                    ImageModel image = task.downloadImage();
-                    Log.d(TAG, "Cover Image: " + image.toString());
                 }
 
                 Log.d(TAG, "Complete getting Novel Details from internet: " + page.getPage());
