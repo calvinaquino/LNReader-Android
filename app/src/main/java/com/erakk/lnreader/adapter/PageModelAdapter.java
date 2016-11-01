@@ -102,7 +102,13 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
                 holder.txtNovel.setText("⇒" + holder.txtNovel.getText());
             }
 
+            // set color
             holder.txtNovel.setTextColor(Constants.COLOR_UNREAD);
+            if(!Util.isStringNullOrEmpty(page.getStatus())) {
+                if(page.getStatus().equalsIgnoreCase("abandoned")) {
+                    holder.txtNovel.setTextColor(Constants.COLOR_ABANDONED);
+                }
+            }
             if (page.isMissing()) {
                 holder.txtNovel.setTextColor(Constants.COLOR_MISSING);
             }
