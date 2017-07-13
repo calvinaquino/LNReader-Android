@@ -50,6 +50,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_STATUS = "status";
 	public static final String COLUMN_IS_MISSING = "is_missing";
 	public static final String COLUMN_IS_EXTERNAL = "is_external";
+    public static final String COLUMN_IS_COMPLETED = "is_completed";
 
 	public static final String TABLE_IMAGE = "images";
 	public static final String COLUMN_IMAGE_NAME = "name";
@@ -404,22 +405,34 @@ public class DBHelper extends SQLiteOpenHelper {
 	private String getNovelListQuery(boolean alphOrder, boolean isQuickLoad) {
 		String sql = "";
 		if (isQuickLoad) {
-			sql = "select * from " + TABLE_PAGE + " where " + COLUMN_PARENT + " = ? ";
-		}
+            sql = "SELECT p.*" +
+                    " , CASE WHEN c." + COLUMN_CATEGORY + " IS NULL THEN 0 " +
+                    "      ELSE 1 END as " + COLUMN_IS_COMPLETED +
+                    " FROM " + TABLE_PAGE + " p " +
+                    " LEFT JOIN " + TABLE_PAGE_CATEGORIES + " c ON p." + COLUMN_PAGE + " = c." + COLUMN_PAGE +
+                    "      AND c." + COLUMN_CATEGORY + " = 'Category:Completed Project' " +
+                    " WHERE " + COLUMN_PARENT + " = ? ";
+        }
 		else {
-			sql = "select * from " + TABLE_PAGE +
-					" left join ( select " + COLUMN_PAGE + ", sum(UPDATESCOUNT) " +
-					"             from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE +
-					"                         , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " > " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
-					"                           then 1 else 0 end as UPDATESCOUNT " +
-					"                    from " + TABLE_NOVEL_DETAILS +
-					"                    join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE +
-					"                    join " + TABLE_PAGE + " on " + TABLE_PAGE + "." + COLUMN_PARENT + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE +
-					"                    join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE + " " +
-					"             ) group by " + COLUMN_PAGE +
-					" ) r on " + TABLE_PAGE + "." + COLUMN_PAGE + " = r." + COLUMN_PAGE +
-					" where " + COLUMN_PARENT + " = ? ";
-		}
+            sql = "SELECT p.*" +
+                    " , CASE WHEN c." + COLUMN_CATEGORY + " IS NULL THEN 0 " +
+                    "      ELSE 1 END as " + COLUMN_IS_COMPLETED +
+                    " , r.* " +
+                    " FROM " + TABLE_PAGE + " p " +
+                    " LEFT JOIN " + TABLE_PAGE_CATEGORIES + " c ON p." + COLUMN_PAGE + " = c." + COLUMN_PAGE +
+                    "      AND c." + COLUMN_CATEGORY + " = 'Category:Completed Project' " +
+                    " LEFT JOIN ( SELECT " + COLUMN_PAGE + ", SUM(UPDATESCOUNT) " +
+                    "             FROM ( SELECT d." + COLUMN_PAGE +
+                    "                         , CASE WHEN p2." + COLUMN_LAST_UPDATE + " > ct." + COLUMN_LAST_UPDATE +
+                    "                                THEN 1 ELSE 0 END AS UPDATESCOUNT " +
+                    "                    FROM " + TABLE_NOVEL_DETAILS + " d " +
+                    "                    JOIN " + TABLE_NOVEL_BOOK + " b ON d." + COLUMN_PAGE + " = b." + COLUMN_PAGE +
+                    "                    JOIN " + TABLE_PAGE + " p2 ON p2." + COLUMN_PARENT + " = d." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || b." + COLUMN_TITLE +
+                    "                    JOIN " + TABLE_NOVEL_CONTENT + " ct ON ct." + COLUMN_PAGE + " = p2." + COLUMN_PAGE +
+                    "             ) GROUP BY " + COLUMN_PAGE +
+                    " ) r ON p." + COLUMN_PAGE + " = r." + COLUMN_PAGE +
+                    " WHERE p." + COLUMN_PARENT + " = ? ";
+        }
 		if (alphOrder)
 			sql += " ORDER BY " + COLUMN_TITLE;
 		else
@@ -442,28 +455,35 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		String sql = "";
 		if (isQuickLoad) {
-			sql = "select * from " + TABLE_PAGE +
-					" where " + COLUMN_PARENT + " in (" + Util.join(parents, ", ") + ") " +
-					"   and  " + TABLE_PAGE + "." + COLUMN_IS_WATCHED + " = ? ";
-		}
+            sql = "SELECT p.* " +
+                    " , CASE WHEN c." + COLUMN_CATEGORY + " IS NULL THEN 0 " +
+                    "      ELSE 1 END as " + COLUMN_IS_COMPLETED +
+                    " FROM " + TABLE_PAGE + " p " +
+                    " LEFT JOIN " + TABLE_PAGE_CATEGORIES + " c ON p." + COLUMN_PAGE + " = c." + COLUMN_PAGE +
+                    "      AND c." + COLUMN_CATEGORY + " = 'Category:Completed Project' " +
+                    " WHERE p. " + COLUMN_PARENT + " IN (" + Util.join(parents, ", ") + ") " +
+                    "   AND  p." + COLUMN_IS_WATCHED + " = ? ";
+        }
 		else {
-			sql = "select * " +
-					" from " + TABLE_PAGE +
-					" left join ( select " + COLUMN_PAGE +
-					"                  , sum(UPDATESCOUNT) " +
-					"             from ( select " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE +
-					"                         , case when " + TABLE_PAGE + "." + COLUMN_LAST_UPDATE + " > " + TABLE_NOVEL_CONTENT + "." + COLUMN_LAST_UPDATE +
-					"                           then 1 else 0 end as UPDATESCOUNT " +
-					"                    from " + TABLE_NOVEL_DETAILS +
-					"                    join " + TABLE_NOVEL_BOOK + " on " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " = " + TABLE_NOVEL_BOOK + "." + COLUMN_PAGE +
-					"                    join " + TABLE_PAGE + " on " + TABLE_PAGE + "." + COLUMN_PARENT + " = " + TABLE_NOVEL_DETAILS + "." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || " + TABLE_NOVEL_BOOK + "." + COLUMN_TITLE +
-					"                                           and " + TABLE_PAGE + "." + COLUMN_IS_MISSING + " != 1 " +
-					"                    join " + TABLE_NOVEL_CONTENT + " on " + TABLE_NOVEL_CONTENT + "." + COLUMN_PAGE + " = " + TABLE_PAGE + "." + COLUMN_PAGE + " " +
-					"             ) group by " + COLUMN_PAGE +
-					" ) r on " + TABLE_PAGE + "." + COLUMN_PAGE + " = r." + COLUMN_PAGE +
-					" where " + COLUMN_PARENT + " in (" + Util.join(parents, ", ") + ") " +
-					"   and  " + TABLE_PAGE + "." + COLUMN_IS_WATCHED + " = ? ";
-		}
+            sql = "SELECT p.* " +
+                    " , CASE WHEN c." + COLUMN_CATEGORY + " IS NULL THEN 0 " +
+                    "      ELSE 1 END as " + COLUMN_IS_COMPLETED +
+                    " , r.* " +
+                    " FROM " + TABLE_PAGE + " p " +
+                    " LEFT JOIN ( SELECT " + COLUMN_PAGE + ", SUM(UPDATESCOUNT) " +
+                    "             FROM ( SELECT d." + COLUMN_PAGE +
+                    "                         , case when p2." + COLUMN_LAST_UPDATE + " > ct." + COLUMN_LAST_UPDATE +
+                    "                           then 1 else 0 end as UPDATESCOUNT " +
+                    "                    FROM " + TABLE_NOVEL_DETAILS + " d " +
+                    "                    JOIN " + TABLE_NOVEL_BOOK + " b ON d." + COLUMN_PAGE + " = b." + COLUMN_PAGE +
+                    "                    JOIN " + TABLE_PAGE + " p2 ON p2." + COLUMN_PARENT + " = d." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || b." + COLUMN_TITLE +
+                    "                                           AND p2." + COLUMN_IS_MISSING + " != 1 " +
+                    "                    JOIN " + TABLE_NOVEL_CONTENT + " ct ON ct." + COLUMN_PAGE + " = p2." + COLUMN_PAGE +
+                    "             ) GROUP BY " + COLUMN_PAGE +
+                    " ) r ON p." + COLUMN_PAGE + " = r." + COLUMN_PAGE +
+                    " WHERE " + COLUMN_PARENT + " IN (" + Util.join(parents, ", ") + ") " +
+                    "   AND p." + COLUMN_IS_WATCHED + " = ? ";
+        }
 
 		if (alphOrder)
 			sql += " ORDER BY " + COLUMN_TITLE;

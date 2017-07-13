@@ -38,6 +38,7 @@ public class PageModel {
     private boolean isExternal = false;
     private int wikiId = -1;
     private ArrayList<String> categories;
+    private boolean isCompleted = false;
 
     private String redirectedTo;
 
@@ -349,5 +350,13 @@ public class PageModel {
 
     public void setCategories(ArrayList<String> categories) {
         this.categories = categories;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean completed) {
+        isCompleted = completed;
     }
 }

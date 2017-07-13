@@ -1,3 +1,7 @@
+1.1.47
+- Update build gradle 2.3.3
+- Implement #266: different color for completed novel.
+
 1.1.46
 - Fix Issue #261: update root dir to www.baka-tsuki.org.
 - Fix Issue #259: update cover thumbnail handler.

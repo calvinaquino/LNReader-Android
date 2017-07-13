@@ -118,6 +118,9 @@ public class PageModelAdapter extends ArrayAdapter<PageModel> {
             if (page.isExternal()) {
                 holder.txtNovel.setTextColor(Constants.COLOR_EXTERNAL);
             }
+            if (page.isCompleted()) {
+                holder.txtNovel.setTextColor(Constants.COLOR_COMPLETED);
+            }
         }
 
         if (holder.txtLastUpdate != null) {

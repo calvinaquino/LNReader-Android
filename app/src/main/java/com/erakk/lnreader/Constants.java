@@ -144,6 +144,7 @@ public class Constants {
     public static final int COLOR_EXTERNAL = Color.parseColor("#3333ff");
     public static final int COLOR_REDLINK = Color.parseColor("#ff69b4");
     public static final int COLOR_ABANDONED = Color.parseColor("#BA55D3");
+    public static final int COLOR_COMPLETED = Color.parseColor("#11CC11");
 
     public static final String ROOT_NOVEL_ENGLISH = "Category:Light_novel_(English)";
     public static final String ROOT_ORIGINAL = "Category:Original_novel";

@@ -48,17 +48,21 @@ public class PageModelHelper {
         page.setParent(cursor.getString(4));
         page.setLastUpdate(new Date(cursor.getLong(5) * 1000));
         page.setLastCheck(new Date(cursor.getLong(6) * 1000));
-        page.setWatched(cursor.getInt(7) == 1 ? true : false);
-        page.setFinishedRead(cursor.getInt(8) == 1 ? true : false);
-        page.setDownloaded(cursor.getInt(9) == 1 ? true : false);
+        page.setWatched(cursor.getInt(7) == 1);
+        page.setFinishedRead(cursor.getInt(8) == 1);
+        page.setDownloaded(cursor.getInt(9) == 1);
         page.setOrder(cursor.getInt(10));
         page.setStatus(cursor.getString(11));
-        page.setMissing(cursor.getInt(12) == 1 ? true : false);
-        page.setExternal(cursor.getInt(13) == 1 ? true : false);
+        page.setMissing(cursor.getInt(12) == 1);
+        page.setExternal(cursor.getInt(13) == 1);
         page.setLanguage(cursor.getString(14));
-
-        if (cursor.getColumnCount() > 15) {
-            page.setUpdateCount(cursor.getInt(16));
+        // Is Completed
+        if (cursor.getColumnCount() >= 16) {
+            page.setCompleted(cursor.getInt(15) == 1);
+        }
+        // Update Sums
+        if (cursor.getColumnCount() >= 18) {
+            page.setUpdateCount(cursor.getInt(17));
         }
         return page;
     }
