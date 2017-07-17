@@ -9,9 +9,9 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.model.BookmarkModel;
+import com.erakk.lnreader.ui.activity.DisplayLightNovelContentActivity;
 
 import java.io.File;
 import java.util.ArrayList;

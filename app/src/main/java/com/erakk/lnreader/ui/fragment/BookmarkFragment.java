@@ -1,4 +1,4 @@
-package com.erakk.lnreader.UI.fragment;
+package com.erakk.lnreader.ui.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,7 +16,6 @@ import android.widget.ListView;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.BookmarkModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
@@ -25,6 +24,7 @@ import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookmarkModel;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.LoadBookmarkTask;
+import com.erakk.lnreader.ui.activity.DisplayLightNovelContentActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;

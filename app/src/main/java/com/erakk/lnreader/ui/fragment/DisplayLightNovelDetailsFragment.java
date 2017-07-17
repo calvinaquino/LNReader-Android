@@ -1,4 +1,4 @@
-package com.erakk.lnreader.UI.fragment;
+package com.erakk.lnreader.ui.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -37,8 +37,6 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.activity.DisplayImageActivity;
-import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.BookModelAdapter;
 import com.erakk.lnreader.callback.ICallbackEventData;
@@ -53,6 +51,8 @@ import com.erakk.lnreader.parser.CommonParser;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.DownloadNovelContentTask;
 import com.erakk.lnreader.task.LoadNovelDetailsTask;
+import com.erakk.lnreader.ui.activity.DisplayImageActivity;
+import com.erakk.lnreader.ui.activity.DisplayLightNovelContentActivity;
 
 import java.net.URL;
 import java.util.ArrayList;

@@ -20,7 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
+import com.erakk.lnreader.ui.activity.DisplayLightNovelContentActivity;
 
 import java.lang.reflect.Method;
 

@@ -1,4 +1,4 @@
-package com.erakk.lnreader.UI.activity;
+package com.erakk.lnreader.ui.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -8,11 +8,11 @@ import android.view.MenuItem;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.fragment.DisplayLightNovelDetailsFragment;
-import com.erakk.lnreader.UI.fragment.DisplayLightNovelListFragment;
-import com.erakk.lnreader.UI.fragment.DisplayNovelTabFragment;
-import com.erakk.lnreader.UI.fragment.IFragmentListener;
 import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.ui.fragment.DisplayLightNovelDetailsFragment;
+import com.erakk.lnreader.ui.fragment.DisplayLightNovelListFragment;
+import com.erakk.lnreader.ui.fragment.DisplayNovelTabFragment;
+import com.erakk.lnreader.ui.fragment.IFragmentListener;
 
 public class NovelListContainerActivity extends BaseActivity implements IFragmentListener {
 

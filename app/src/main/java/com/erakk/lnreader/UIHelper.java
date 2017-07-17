@@ -18,9 +18,9 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
-import com.erakk.lnreader.UI.activity.NovelListContainerActivity;
 import com.erakk.lnreader.helper.Util;
+import com.erakk.lnreader.ui.activity.DisplayLightNovelContentActivity;
+import com.erakk.lnreader.ui.activity.NovelListContainerActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;

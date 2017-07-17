@@ -21,7 +21,7 @@
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules">>
         <activity
-            android:name=".UI.activity.MainActivity"
+            android:name=".ui.activity.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop">
             <intent-filter>
@@ -30,33 +30,33 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".UI.activity.NovelListContainerActivity"
+            android:name=".ui.activity.NovelListContainerActivity"
             android:label="@string/title_activity_display_light_novels">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UI.activity.MainActivity" />
+                android:value=".ui.activity.MainActivity" />
         </activity>
         <activity
-            android:name=".UI.activity.DisplaySettingsActivity"
+            android:name=".ui.activity.DisplaySettingsActivity"
             android:label="@string/title_activity_display_settings">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UI.activity.MainActivity" />
+                android:value=".ui.activity.MainActivity" />
         </activity>
         <activity
-            android:name=".UI.activity.DisplayLightNovelContentActivity"
+            android:name=".ui.activity.DisplayLightNovelContentActivity"
             android:configChanges="orientation"
             android:label="@string/title_activity_display_novel_content">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.erakk.lnreader.UI.activity.NovelListContainerActivity" />
+                android:value="com.erakk.lnreader.ui.activity.NovelListContainerActivity" />
         </activity>
         <activity
-            android:name=".UI.activity.DisplayImageActivity"
+            android:name=".ui.activity.DisplayImageActivity"
             android:label="@string/title_activity_display_image">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UI.activity.DisplayLightNovelContentActivity" />
+                android:value=".ui.activity.DisplayLightNovelContentActivity" />
         </activity>
 
         <service
@@ -89,18 +89,18 @@
         <receiver android:name="com.erakk.lnreader.service.AutoBackupStartServiceReceiver" />
 
         <activity
-            android:name=".UI.activity.DisplayCreditActivity"
+            android:name=".ui.activity.DisplayCreditActivity"
             android:label="@string/title_activity_display_credit" />
         <activity
-            android:name=".UI.activity.DisplayChangelogActivity"
+            android:name=".ui.activity.DisplayChangelogActivity"
             android:label="@string/title_activity_display_changelog" />
         <activity
-            android:name=".UI.activity.FindMissingActivity"
+            android:name=".ui.activity.FindMissingActivity"
             android:label="@string/title_activity_find_missing"
-            android:parentActivityName=".UI.activity.DisplaySettingsActivity">
+            android:parentActivityName=".ui.activity.DisplaySettingsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".UI.activity.DisplaySettingsActivity" />
+                android:value=".ui.activity.DisplaySettingsActivity" />
         </activity>
     </application>
 

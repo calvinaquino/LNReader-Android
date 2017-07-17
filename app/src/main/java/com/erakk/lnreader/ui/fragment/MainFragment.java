@@ -1,4 +1,4 @@
-package com.erakk.lnreader.UI.fragment;
+package com.erakk.lnreader.ui.fragment;
 
 import android.content.Intent;
 import android.net.Uri;

@@ -1,4 +1,4 @@
-package com.erakk.lnreader.UI.fragment;
+package com.erakk.lnreader.ui.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -27,12 +27,12 @@ import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
-import com.erakk.lnreader.UI.activity.NovelListContainerActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.adapter.SearchPageModelAdapter;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
+import com.erakk.lnreader.ui.activity.DisplayLightNovelContentActivity;
+import com.erakk.lnreader.ui.activity.NovelListContainerActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;

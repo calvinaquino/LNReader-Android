@@ -1,4 +1,4 @@
-package com.erakk.lnreader.UI.activity;
+package com.erakk.lnreader.ui.activity;
 
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;

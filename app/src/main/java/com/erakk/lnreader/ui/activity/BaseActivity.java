@@ -1,4 +1,4 @@
-package com.erakk.lnreader.UI.activity;
+package com.erakk.lnreader.ui.activity;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -20,11 +20,11 @@ import android.widget.Toast;
 
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.fragment.BookmarkFragment;
-import com.erakk.lnreader.UI.fragment.DownloadFragment;
-import com.erakk.lnreader.UI.fragment.SearchFragment;
-import com.erakk.lnreader.UI.fragment.UpdateInfoFragment;
 import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.ui.fragment.BookmarkFragment;
+import com.erakk.lnreader.ui.fragment.DownloadFragment;
+import com.erakk.lnreader.ui.fragment.SearchFragment;
+import com.erakk.lnreader.ui.fragment.UpdateInfoFragment;
 
 import java.io.BufferedWriter;
 import java.io.File;

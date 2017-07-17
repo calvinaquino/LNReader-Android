@@ -9,10 +9,10 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.BookmarkModel;
+import com.erakk.lnreader.ui.activity.DisplayLightNovelContentActivity;
 
 import java.lang.ref.WeakReference;
 

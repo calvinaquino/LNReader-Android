@@ -1,4 +1,4 @@
-package com.erakk.lnreader.UI.activity;
+package com.erakk.lnreader.ui.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -18,16 +18,16 @@ import android.widget.Toast;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.fragment.BookmarkFragment;
-import com.erakk.lnreader.UI.fragment.DownloadFragment;
-import com.erakk.lnreader.UI.fragment.MainFragment;
-import com.erakk.lnreader.UI.fragment.SearchFragment;
-import com.erakk.lnreader.UI.fragment.UpdateInfoFragment;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.task.AsyncTaskResult;
 import com.erakk.lnreader.task.CheckDBReadyTask;
+import com.erakk.lnreader.ui.fragment.BookmarkFragment;
+import com.erakk.lnreader.ui.fragment.DownloadFragment;
+import com.erakk.lnreader.ui.fragment.MainFragment;
+import com.erakk.lnreader.ui.fragment.SearchFragment;
+import com.erakk.lnreader.ui.fragment.UpdateInfoFragment;
 
 import java.io.File;
 import java.io.IOException;

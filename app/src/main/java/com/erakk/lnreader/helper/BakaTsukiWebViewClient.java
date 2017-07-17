@@ -10,11 +10,11 @@ import android.webkit.WebViewClient;
 import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
-import com.erakk.lnreader.UI.activity.DisplayImageActivity;
-import com.erakk.lnreader.UI.activity.DisplayLightNovelContentActivity;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.model.PageModel;
+import com.erakk.lnreader.ui.activity.DisplayImageActivity;
+import com.erakk.lnreader.ui.activity.DisplayLightNovelContentActivity;
 
 import java.lang.ref.WeakReference;
 
