@@ -87,7 +87,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 31;
 
 	// Use /files/database to standardize with newer android.
-	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files/databases";
+	public static final String DB_ROOT_SD = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + Constants.class.getPackage().getName() + "/files/databases";
 
 	private final Object lock = new Object();
 

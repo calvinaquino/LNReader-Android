@@ -20,7 +20,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * @author Nandaka
@@ -212,8 +211,7 @@ public class BakaTsukiParser {
         boolean oneBookOnly = false;
         try {
             Elements h2s = doc.select("h1,h2");
-            for (Iterator<Element> i = h2s.iterator(); i.hasNext(); ) {
-                Element h2 = i.next();
+            for (Element h2 : h2s) {
                 // Log.d(TAG, "checking h2: " +h2.text() + "\n" + h2.id());
                 Elements spans = h2.select("span");
                 if (spans.size() > 0) {

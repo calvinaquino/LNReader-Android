@@ -769,13 +769,13 @@ public class DisplayLightNovelContentActivity extends BaseActivity implements IE
             }
 
             StringBuilder html = new StringBuilder();
-            html.append("<html><head>");
-            html.append(DisplayNovelContentHtmlHelper.getCSSSheet());
-            html.append(DisplayNovelContentHtmlHelper.getViewPortMeta());
-            html.append(DisplayNovelContentHtmlHelper.prepareJavaScript(lastPos, content.getBookmarks(), getBookmarkPreferences()));
-            html.append("</head><body onclick='toogleHighlight(this, event);' onload='setup();'>");
-            html.append(content.getContent());
-            html.append("</body></html>");
+            html.append("<html><head>")
+                    .append(DisplayNovelContentHtmlHelper.getCSSSheet())
+                    .append(DisplayNovelContentHtmlHelper.getViewPortMeta())
+                    .append(DisplayNovelContentHtmlHelper.prepareJavaScript(lastPos, content.getBookmarks(), getBookmarkPreferences()))
+                    .append("</head><body onclick='toogleHighlight(this, event);' onload='setup();'>")
+                    .append(content.getContent())
+                    .append("</body></html>");
 
             wv.loadDataWithBaseURL(UIHelper.getBaseUrl(this), html.toString(), "text/html", "utf-8", NonLeakingWebView.PREFIX_PAGEMODEL + content.getPage());
             setChapterTitle(pageModel);

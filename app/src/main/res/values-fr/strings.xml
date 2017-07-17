@@ -131,7 +131,7 @@
     <string name="use_volume_to_scroll_summary">Permet d\'utiliser les boutons de r&#233;galge du volume pour faire d&#233;filer le texte d\'une Novel.</string>
     <string name="use_volume_to_scroll_title">Utiliser les boutons de volume</string>
     <string name="scroll_size_summary">D&#233;fini la quantit&#233; de lignes &#224; faire d&#233;filer lors d\'une pression d\'un bouton de volume.</string>
-    <string name="scroll_size_summary2">Nombre de lignes qui d&#233;fileront : (%1$s)</string>
+    <string name="scroll_size_summary2">Nombre de lignes qui d&#233;fileront : (%1$d)</string>
     <string name="scroll_size_title">Vitesse du d&#233;filement</string>
     <string name="invert_scroll_summary">Inverse les directions de d&#233;filement des boutons de volumes.</string>
     <string name="invert_scroll_title">Inverser les directions</string>
@@ -204,7 +204,7 @@
     <string name="agree">J\'accepte</string>
     <string name="disagree">Quitter l\'app</string>
     <string name="watched_light_novels">Light Novels surveill&#233;es</string>
-    <string name="add_novel_main">Ajouter une Novel (Principal)</string>
+    <string name="add_novel_main">Ajouter une Novel (%1$s)</string>
     <string name="last_update">Derni&#232;re M&#224;J</string>
     <string name="last_check">Dernier contrôle</string>
     <string name="updates">M&#224;J</string>
@@ -219,12 +219,12 @@
     <string name="update_preferences">Mise &#224; jour et notification</string>
     <string name="orientation_preferences">Orientation verrouillage</string>
     <string name="orientation_summary">Orientation verrouillage s&#233;lectionn&#233;: %1$s</string>
-    <string name="delete_this_volume">Supprimer ce volume</string>
-    <string name="delete_this_chapter">Supprimer ce chapitre</string>
-    <string name="pref_timeout_summary">Time to wait until download timed out: %1$s second(s)</string>
+    <string name="delete_this_volume">Supprimer ce volume: %1$s</string>
+    <string name="delete_this_chapter">Supprimer ce chapitre: %1$s</string>
+    <string name="pref_timeout_summary">Time to wait until download timed out: %1$d second(s)</string>
     <string name="pref_timeout_title">Time Out</string>
     <string name="pref_retry_title">Download Retry</string>
-    <string name="pref_retry_summary">Times to retry before giving up: %1$s time(s)</string>
+    <string name="pref_retry_summary">Times to retry before giving up: %1$d time(s)</string>
     <string name="increase_retry_title">Increase Timeout if Failed</string>
     <string name="increase_retry_summary">Increase timeout when error occured (doubled for each failure).</string>
     <string name="aggresive_title_clean_up_title">Aggresive Book Title Clean Up</string>

@@ -19,7 +19,6 @@ import com.erakk.lnreader.model.PageModel;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 
 public class NovelCollectionModelHelper {
     // New column should be appended as the last column
@@ -58,8 +57,7 @@ public class NovelCollectionModelHelper {
             ArrayList<BookModel> bookCollection = BookModelHelper.getBookCollectionOnly(helper, db, page, novelDetails);
 
             // get the chapters
-            for (Iterator<BookModel> iBook = bookCollection.iterator(); iBook.hasNext(); ) {
-                BookModel book = iBook.next();
+            for (BookModel book : bookCollection) {
                 ArrayList<PageModel> chapters = getChapterCollection(helper, db, novelDetails.getPage() + Constants.NOVEL_BOOK_DIVIDER + book.getTitle(), book);
                 book.setChapterCollection(chapters);
             }
@@ -147,8 +145,7 @@ public class NovelCollectionModelHelper {
         }
 
         // insert chapter
-        for (Iterator<BookModel> iBooks = novelDetails.getBookCollections().iterator(); iBooks.hasNext(); ) {
-            BookModel book = iBooks.next();
+        for (BookModel book : novelDetails.getBookCollections()) {
             for (PageModel page : book.getChapterCollection()) {
                 PageModelHelper.insertOrUpdatePageModel(helper, db, page, false);
             }

@@ -220,8 +220,7 @@ public class BakaTsukiParserAlternative {
 
         try {
             Elements h2s = doc.select("h1,h2");
-            for (Iterator<Element> i = h2s.iterator(); i.hasNext(); ) {
-                Element h2 = i.next();
+            for (Element h2 : h2s) {
                 // Log.d(TAG, "checking h2: " +h2.text() + "\n" + h2.id());
                 Elements spans = h2.select("span");
                 if (spans.size() > 0) {

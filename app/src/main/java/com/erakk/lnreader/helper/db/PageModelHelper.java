@@ -13,7 +13,6 @@ import com.erakk.lnreader.model.PageModel;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 
 public class PageModelHelper {
 
@@ -202,8 +201,7 @@ public class PageModelHelper {
      */
     public static ArrayList<PageModel> insertAllNovel(DBHelper helper, SQLiteDatabase db, ArrayList<PageModel> list) {
         ArrayList<PageModel> updatedList = new ArrayList<PageModel>();
-        for (Iterator<PageModel> i = list.iterator(); i.hasNext(); ) {
-            PageModel p = i.next();
+        for (PageModel p : list) {
             p = insertOrUpdatePageModel(helper, db, p, false);
             updatedList.add(p);
         }

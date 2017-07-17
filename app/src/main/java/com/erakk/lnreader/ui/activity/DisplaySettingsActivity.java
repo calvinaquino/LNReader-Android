@@ -677,7 +677,7 @@ public class DisplaySettingsActivity extends AppCompatPreferenceActivity impleme
 
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                autoBackupCount.setSummary(getResources().getString(R.string.pref_db_auto_backup_count_summary, newValue));
+                autoBackupCount.setSummary(getResources().getString(R.string.pref_db_auto_backup_count_summary, (int) newValue));
                 return true;
             }
         });

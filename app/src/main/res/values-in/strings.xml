@@ -129,7 +129,7 @@
     <string name="use_volume_to_scroll_summary">Menggunakan volume rocker untuk menggeser ketika membaca isi novel.</string>
     <string name="use_volume_to_scroll_title">Volume Rocker untuk Menggeser</string>
     <string name="scroll_size_summary">Ukuran scrolling untuk volume rocker.</string>
-    <string name="scroll_size_summary2">Ukuran scrolling untuk volume rocker (%1$s)</string>
+    <string name="scroll_size_summary2">Ukuran scrolling untuk volume rocker (%1$d)</string>
     <string name="scroll_size_title">Ukuran Scrolling</string>
     <string name="invert_scroll_summary">Membalikkan arah geser untuk volume rocker.</string>
     <string name="invert_scroll_title">Membalikkan Arah Geser</string>
@@ -202,7 +202,7 @@
     <string name="agree">Saya Setuju</string>
     <string name="disagree">Keluar App</string>
     <string name="watched_light_novels">Light Novel Favorit</string>
-    <string name="add_novel_main">Tambahkan Novel (Utama)</string>
+    <string name="add_novel_main">Tambahkan Novel (%1$s)</string>
     <string name="last_update">Pembaharuan Terakhir</string>
     <string name="last_check">Pengecekan Terakhir</string>
     <string name="updates">Pembaharuan</string>
@@ -217,12 +217,12 @@
     <string name="update_preferences">Pembaharuan dan Notifikasi</string>
     <string name="orientation_preferences">Kunci Orientasi</string>
     <string name="orientation_summary">Pilihan Kunci Orientasi: %1$s</string>
-    <string name="delete_this_volume">Hapus total jilid ini</string>
-    <string name="delete_this_chapter">Hapus total bab ini</string>
-    <string name="pref_timeout_summary">Time to wait until download timed out: %1$s second(s)</string>
+    <string name="delete_this_volume">Hapus total jilid ini: %1$s</string>
+    <string name="delete_this_chapter">Hapus total bab ini: %1$s</string>
+    <string name="pref_timeout_summary">Time to wait until download timed out: %1$d second(s)</string>
     <string name="pref_timeout_title">Time Out</string>
     <string name="pref_retry_title">Download Retry</string>
-    <string name="pref_retry_summary">Times to retry before giving up: %1$s time(s)</string>
+    <string name="pref_retry_summary">Times to retry before giving up: %1$d time(s)</string>
     <string name="increase_retry_title">Increase Timeout if Failed</string>
     <string name="increase_retry_summary">Increase timeout when error occured (doubled for each failure).</string>
     <string name="aggresive_title_clean_up_title">Aggresive Book Title Clean Up</string>

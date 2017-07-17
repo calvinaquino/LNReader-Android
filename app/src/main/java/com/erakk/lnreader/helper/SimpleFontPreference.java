@@ -72,15 +72,16 @@ public class SimpleFontPreference extends DialogPreference implements DialogInte
 				CheckedTextView tv = (CheckedTextView) view.findViewById( android.R.id.text1 );
 				String face = m_fontType.get( position );
 				// Replace the string with the current font name using our typeface
-				if(face.equals("sans-serif")) {
-					tv.setTypeface( Typeface.SANS_SERIF );
-				}
-				else if (face.equals("serif")) {
-					tv.setTypeface( Typeface.SERIF );
-				}
-				else {
-					tv.setTypeface( Typeface.MONOSPACE );
-				}
+                switch (face) {
+                    case "sans-serif":
+                        tv.setTypeface(Typeface.SANS_SERIF);
+                        break;
+                    case "serif":
+                        tv.setTypeface(Typeface.SERIF);
+                        break;
+                    default:
+                        tv.setTypeface(Typeface.MONOSPACE);
+                }
 
 				tv.setText(face);
 			}
@@ -137,8 +138,8 @@ public class SimpleFontPreference extends DialogPreference implements DialogInte
 			String selectedFontPath = m_fontType.get( which );
 			this.callChangeListener(selectedFontPath);
 			Editor editor = getSharedPreferences().edit();
-			editor.putString( getKey(), selectedFontPath.toString() );
-			editor.commit();
+            editor.putString(getKey(), selectedFontPath);
+            editor.commit();
 
 			dialog.dismiss();
 		}

@@ -107,13 +107,11 @@ public class DisplayNovelContentHtmlHelper {
         if (getUseJustifiedPreferences(ctx)) {
             css.append("\nbody { text-align: justify !important; }\n");
         }
-        css.append("\np { line-height:" + getLineSpacingPreferences(ctx) + "% !important; \n");
-        css.append("      font-family:" + getContentFontPreferences(ctx) + "; }\n");
-        css.append("\nbody { margin: " + getMarginPreferences(ctx) + "% !important; }\n");
-
-        css.append("\n.mw-headline{ font-family: " + getHeadingFontPreferences(ctx) + "; }\n");
-
-        css.append("</style>");
+        css.append("\np { line-height:" + getLineSpacingPreferences(ctx) + "% !important; \n")
+                .append("      font-family:" + getContentFontPreferences(ctx) + "; }\n")
+                .append("\nbody { margin: " + getMarginPreferences(ctx) + "% !important; }\n")
+                .append("\n.mw-headline{ font-family: " + getHeadingFontPreferences(ctx) + "; }\n")
+                .append("</style>");
 
         String cssStr = css.toString();
 

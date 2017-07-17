@@ -272,7 +272,7 @@ public class UIHelper {
         String loc = PreferenceManager.getDefaultSharedPreferences(activity).getString(Constants.PREF_IMAGE_SAVE_LOC, "");
         if (Util.isStringNullOrEmpty(loc)) {
             Log.w(TAG, "Empty Path, use default path for image storage.");
-            loc = Environment.getExternalStorageDirectory().getAbsolutePath().toString() + "/Android/data/" + Constants.class.getPackage().getName() + "/files";
+            loc = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + Constants.class.getPackage().getName() + "/files";
         }
         if (loc.endsWith("/"))
             loc = loc.substring(0, loc.length() - 1);

@@ -402,9 +402,9 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
         boolean isAdded = LNReaderApplication.getInstance().addTask(key, addTask);
         if (isAdded) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                addTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new PageModel[]{novel});
+                addTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, novel);
             else
-                addTask.execute(new PageModel[]{novel});
+                addTask.execute(novel);
         } else {
             Log.i(TAG, "Continue Add task: " + key);
             AddNovelTask tempTask = (AddNovelTask) LNReaderApplication.getInstance().getTask(key);

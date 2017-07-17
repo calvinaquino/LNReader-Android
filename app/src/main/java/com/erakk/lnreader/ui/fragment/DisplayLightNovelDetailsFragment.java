@@ -413,9 +413,9 @@ public class DisplayLightNovelDetailsFragment extends Fragment implements IExten
                 if (content != null) {
                     for (BookModel book : novelCol.getBookCollections()) {
                         for (PageModel temp : book.getChapterCollection()) {
-                            for (int i = 0; i < content.length; ++i) {
-                                if (temp.getPage().equalsIgnoreCase(content[i].getPage())) {
-                                    Log.d(TAG, "Page: " + content[i].getPage());
+                            for (NovelContentModel ct : content) {
+                                if (temp.getPage().equalsIgnoreCase(ct.getPage())) {
+                                    Log.d(TAG, "Page: " + ct.getPage());
                                     temp.setDownloaded(true);
                                 }
                             }

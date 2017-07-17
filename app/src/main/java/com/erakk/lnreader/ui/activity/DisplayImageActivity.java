@@ -184,7 +184,7 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
                     if(imageUrl.startsWith("file://")) {
                         String dest = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + filename;
                         try{
-                            Util.copyFile(imageUrl.toString().replace("file://", ""), dest);
+                            Util.copyFile(imageUrl.replace("file://", ""), dest);
                             Toast.makeText(this, "Image saved to: " + dest, Toast.LENGTH_SHORT).show();
                         }
                         catch (Exception ex) {
@@ -244,14 +244,9 @@ public class DisplayImageActivity extends BaseActivity implements IExtendedCallb
                     imageUrl = imageUrl.replace("file:////", "file:///");
                     NonLeakingWebView imgWebView = (NonLeakingWebView) findViewById(R.id.webViewImage);
                     if (imgWebView != null) {
-                        StringBuilder html = new StringBuilder();
-                        html.append("<html><head>");
-                        html.append(DisplayNovelContentHtmlHelper.getViewPortMeta());
-                        html.append("</head><body>");
-                        html.append("<img src=\"" + imageUrl + "\"></img>");
-                        html.append("</body></html>");
-                        //imgWebView.loadUrl(imageUrl);
-                        imgWebView.loadDataWithBaseURL("file://", html.toString(), "text/html", "utf-8", null);
+                        String html = "<html><head>" + DisplayNovelContentHtmlHelper.getViewPortMeta() + "</head><body>" +
+                                "<img src='" + imageUrl + "'></img>" + "</body></html>";
+                        imgWebView.loadDataWithBaseURL("file://", html, "text/html", "utf-8", null);
                     }
 
                     String title = imageModel.getName();
