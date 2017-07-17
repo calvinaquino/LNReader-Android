@@ -11,15 +11,15 @@ buildscript {
 }
 
 android {
-    compileSdkVersion 22
+    compileSdkVersion 23
     buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.erakk.lnreader"
-        minSdkVersion 9
-        targetSdkVersion 22
-        versionCode 201707130
-        versionName "1.1.47"
+        minSdkVersion 11
+        targetSdkVersion 23
+        versionCode 201707170
+        versionName "1.1.48-beta1"
     }
 
     buildTypes {
@@ -42,7 +42,7 @@ android {
 
 dependencies {
     compile files('libs/jsoup.jar')
-    compile 'com.android.support:support-v4:22.2.1'
-    compile 'com.android.support:appcompat-v7:22.2.1'
-    compile 'com.android.support:design:22.2.1'
+    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
 }

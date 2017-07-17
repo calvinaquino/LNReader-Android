@@ -1,3 +1,7 @@
+1.1.48-beta1
+- Update targetSdk to API 23 and minSdk to 11.
+- Enable auto-backup to Google Drive for Settings (API 23 feature).
+
 1.1.47
 - Update build gradle 2.3.3
 - Implement #266: different color for completed novel.

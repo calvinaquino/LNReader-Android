@@ -12,13 +12,14 @@
 
     <application
         android:name="com.erakk.lnreader.LNReaderApplication"
-        android:allowBackup="true"
         android:configChanges="locale"
         android:hardwareAccelerated="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules">>
         <activity
             android:name=".UI.activity.MainActivity"
             android:label="@string/app_name"
