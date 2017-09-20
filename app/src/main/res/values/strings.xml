@@ -253,7 +253,7 @@
     <string name="tts_reading_speed_title">Reading Speed</string>
     <string name="tts_reading_speed_summary">Default value is 1.0, current value %1$f.</string>
     <string name="tts_whitespace_delay_title">Paragraph Delay</string>
-    <string name="tts_whitespace_delay_summary">Delay between paragraph in ms (default is 500 ms), current value %1$d ms</string>
+    <string name="tts_whitespace_delay_summary">Delay between paragraph in ms (default is 500 ms), current value %1$f ms</string>
     <string name="pref_tts_engine_title">TTS Engine</string>
     <string name="pref_tts_engine_summary">Open Android Settings for TTS selection.</string>
     <string name="tts_stop_on_lost_focus_title">Stop on Lost Focus</string>

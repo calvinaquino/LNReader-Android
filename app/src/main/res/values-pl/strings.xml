@@ -250,7 +250,7 @@
     <string name="tts_reading_speed_title">Prędkość czytania</string>
     <string name="tts_reading_speed_summary">Domyślna wartość to 1.0, obecna wartość to %1$f.</string>
     <string name="tts_whitespace_delay_title">Opuźnienie pomiędzy akapitami</string>
-    <string name="tts_whitespace_delay_summary">Opuźnienie pomiędzy akapitami w ms (domyślnie 500 ms), obecna wartość %1$d ms</string>
+    <string name="tts_whitespace_delay_summary">Opuźnienie pomiędzy akapitami w ms (domyślnie 500 ms), obecna wartość %1$f ms</string>
     <string name="pref_tts_engine_title">TTS Engine</string>
     <string name="pref_tts_engine_summary">Otwórz ustawienia Androida by wybrać aplikację TTS.</string>
     <string name="tts_stop_on_lost_focus_title">Zatrzymanie w tle</string>
