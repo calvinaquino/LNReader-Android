@@ -1,4 +1,4 @@
-1.1.48-beta1
+1.1.48
 - Update targetSdk to API 23 and minSdk to 11.
 - Enable auto-backup to Google Drive for Settings (API 23 feature).
 
