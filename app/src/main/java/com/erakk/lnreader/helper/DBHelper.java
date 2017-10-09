@@ -470,6 +470,8 @@ public class DBHelper extends SQLiteOpenHelper {
                     "      ELSE 1 END as " + COLUMN_IS_COMPLETED +
                     " , r.* " +
                     " FROM " + TABLE_PAGE + " p " +
+					" LEFT JOIN " + TABLE_PAGE_CATEGORIES + " c ON p." + COLUMN_PAGE + " = c." + COLUMN_PAGE +
+					"      AND c." + COLUMN_CATEGORY + " = 'Category:Completed Project' " +
                     " LEFT JOIN ( SELECT " + COLUMN_PAGE + ", SUM(UPDATESCOUNT) " +
                     "             FROM ( SELECT d." + COLUMN_PAGE +
                     "                         , case when p2." + COLUMN_LAST_UPDATE + " > ct." + COLUMN_LAST_UPDATE +
