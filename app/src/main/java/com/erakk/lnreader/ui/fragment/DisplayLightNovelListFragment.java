@@ -532,13 +532,8 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
                     adapter.addAll(list);
                     toggleProgressBar(false);
 
-                    // Show message if watch list is empty
-                    if (list.length == 0 && onlyWatched) {
-                        Log.d(TAG, "WatchList result set message empty");
-                        if (loadingText != null) {
-                            loadingText.setVisibility(TextView.VISIBLE);
-                            loadingText.setText("Watch List is empty.");
-                        }
+                    if (loadingText != null) {
+                        loadingText.setVisibility(TextView.GONE);
                     }
                 } else {
                     toggleProgressBar(false);
