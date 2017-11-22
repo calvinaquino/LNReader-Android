@@ -5,30 +5,35 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.1'
     }
 
 }
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '26.0.3'
 
     defaultConfig {
         applicationId "com.erakk.lnreader"
         minSdkVersion 11
         targetSdkVersion 23
-        versionCode 201710090
-        versionName "1.1.49"
+        versionCode 201711220
+        versionName "1.1.50-beta1"
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-            applicationVariants.all { variant ->
-                variant.outputs.each { output ->
-                    output.outputFile = new File(output.outputFile.parent, output.outputFile.name.replace("app-release.apk", "BakaReader-EX-" + defaultConfig.versionName + ".apk"))
+            //applicationVariants.all { variant ->
+            //    variant.outputs.each { output ->
+            //       output.outputFileName = new File(output.outputFile.parent, output.outputFile.name.replace("app-release.apk", "BakaReader-EX-" + defaultConfig.versionName + ".apk"))
+            //    }
+            //}
+            android.applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "${variant.name}-${variant.versionName}.apk"
                 }
             }
         }

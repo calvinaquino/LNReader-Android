@@ -397,6 +397,10 @@ public class Util {
     /**
      * Create a keystore used by baka-tsuki
      * - 2016-10-15 = Let's Encrypt
+     * - 2017-11-22
+     *   - COMODO ECC Certification Authority
+     *   - COMODO ECC Domain Validation Secure Server CA 2
+     *   - The USERTrust Network
      *
      * @return
      * @throws IOException

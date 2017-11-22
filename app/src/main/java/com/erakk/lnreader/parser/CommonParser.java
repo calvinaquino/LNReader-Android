@@ -1,6 +1,7 @@
 package com.erakk.lnreader.parser;
 
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.erakk.lnreader.Constants;
@@ -234,6 +235,7 @@ public class CommonParser {
             }
 
             // get normalized value for this page
+            to = TextUtils.htmlEncode(to);
             Elements nElements = normalized.select("n[from=" + to + "]");
             if (nElements != null && nElements.size() > 0) {
                 Element nElement = nElements.first();
