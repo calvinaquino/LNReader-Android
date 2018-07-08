@@ -3,6 +3,8 @@ package com.erakk.lnreader.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +23,7 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.callback.ICallbackEventData;
 import com.erakk.lnreader.callback.ICallbackNotifier;
+import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.BakaReaderException;
 import com.erakk.lnreader.helper.Util;
@@ -28,6 +32,8 @@ import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
 import com.erakk.lnreader.parser.BakaTsukiParser;
 import com.erakk.lnreader.parser.BakaTsukiParserAlternative;
+import com.erakk.lnreader.task.AsyncTaskResult;
+import com.erakk.lnreader.task.LoadNovelDetailsTask;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -59,41 +65,30 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View row = convertView;
-        NovelCollectionHolder holder = null;
+        NovelCollectionHolder holder;
 
         final PageModel novel = data.get(position);
-        NovelCollectionModel novel_model = null;
-        PageModel novelPage = null;
-        try {
-            novel_model = NovelsDao.getInstance().getNovelDetails(novel,null,true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if(novel_model!=null)
-        {
-            try {
-                novelPage = novel_model.getPageModel();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-
 
         if (null == row) {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
             holder = new NovelCollectionHolder();
             holder.txtNovel = (TextView) row.findViewById(R.id.novel_name);
+            holder.txtLastCheck = (TextView) row.findViewById(R.id.novel_last_check);
             holder.txtLastUpdate = (TextView) row.findViewById(R.id.novel_last_update);
             holder.txtStausVol = (TextView) row.findViewById(R.id.novel_status_volumes);
             holder.chkIsWatched = (CheckBox) row.findViewById(R.id.novel_is_watched);
             holder.ivNovelCover = (ImageView) row.findViewById(R.id.novel_cover);
+            row.setTag(holder);
         } else {
             holder = (NovelCollectionHolder) row.getTag();
         }
+
+        holder.position = position;
+        new NovelLoader(position, holder).execute(novel);
+
 
         if (holder.txtNovel != null) {
             holder.txtNovel.setText(novel.getTitle());
@@ -108,15 +103,8 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
             holder.txtLastUpdate.setText(context.getResources().getString(R.string.last_update) + ": " + Util.formatDateForDisplay(context, novel.getLastUpdate()));
         }
 
-        if (holder.txtStausVol !=null){
-            if(novel_model==null||novelPage==null)
-            {
-                holder.txtStausVol.setText("N/A");
-            }
-            else
-            {
-                holder.txtStausVol.setText(novelPage.getCategories().get(0));
-            }
+        if (holder.txtLastCheck != null) {
+            holder.txtLastCheck.setText(context.getResources().getString(R.string.last_check) + ": " + Util.formatDateForDisplay(context, novel.getLastUpdate()));
         }
 
         if (holder.chkIsWatched != null) {
@@ -139,18 +127,9 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
             });
         }
 
-        if(holder.ivNovelCover != null)
-        {
-            if(novel_model!=null && novel_model.getCoverBitmap()!=null) {
-                holder.ivNovelCover.setImageBitmap(novel_model.getCoverBitmap());
-            }
-            else
-            {
-                holder.ivNovelCover.setImageResource(R.drawable.ic_launcher);
-            }
-        }
+        holder.ivNovelCover.setImageResource(R.drawable.dummy_1);
+        holder.txtStausVol.setText("N/A");
 
-        row.setTag(holder);
         return row;
     }
 
@@ -204,12 +183,81 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
         TextView txtNovel;
         TextView txtLastUpdate;
         TextView txtStausVol;
+        TextView txtLastCheck;
         CheckBox chkIsWatched;
         ImageView ivNovelCover;
+        int position;
     }
 
     public void setResourceId(int id) {
         this.layoutResourceId = id;
     }
+
+    private static class NovelLoader extends AsyncTask<PageModel,Void,NovelCollectionModel>
+    {
+        int position;
+        PageModel p;
+        private NovelCollectionHolder holder;
+        NovelLoader(int position, NovelCollectionHolder holder)
+        {
+            this.position = position;
+            this.holder = holder;
+        }
+
+        @Override
+        protected NovelCollectionModel doInBackground(PageModel... pageModels) {
+            p = pageModels[0];
+            try {
+                return NovelsDao.getInstance().getNovelDetails(p,null,false);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(NovelCollectionModel novelCollectionModel) {
+            super.onPostExecute(novelCollectionModel);
+            if(holder.position == position) {
+                PageModel novelpage = null;
+                try {
+                    novelpage = novelCollectionModel.getPageModel();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if(holder.ivNovelCover != null)
+                {
+                    if(novelCollectionModel!=null&&novelCollectionModel.getCoverBitmap()!=null) {
+                        holder.ivNovelCover.setImageBitmap(novelCollectionModel.getCoverBitmap());
+                    }
+                    else
+                    {
+                        holder.ivNovelCover.setImageResource(R.drawable.dummy_2);
+                    }
+                }
+
+                if (holder.txtStausVol !=null){
+                    if(novelpage==null)
+                    {
+                        holder.txtStausVol.setText("N/A");
+                    }
+                    else
+                    {
+                        ArrayList<String> categories = novelpage.getCategories();
+                        for(String category:categories)
+                        {
+                            if(category.contains("Project"))
+                            {
+                                holder.txtStausVol.setText(category.replace("Category:","").replace("Projects","Project"));
+                                break;
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+
 
 }
