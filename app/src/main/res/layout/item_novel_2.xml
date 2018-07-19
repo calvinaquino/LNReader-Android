@@ -8,6 +8,17 @@
     android:paddingRight="16dp"
     android:paddingStart="16dp">
 
+
+    <ProgressBar
+        android:id="@+id/imgprogressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="72dp"
+        android:layout_height="100dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp" />
+
     <ImageView
         android:id="@+id/novel_cover"
         android:layout_width="72dp"
@@ -17,6 +28,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
         android:scaleType="centerCrop"
+        android:visibility="gone"
         app:srcCompat="@drawable/dummy_1" />
 
     <LinearLayout

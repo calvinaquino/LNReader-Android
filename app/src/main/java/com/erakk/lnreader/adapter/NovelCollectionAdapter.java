@@ -2,10 +2,12 @@ package com.erakk.lnreader.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +45,7 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -55,12 +59,14 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
     private int layoutResourceId;
     public List<PageModel> data;
     private PageModel[] originalData = new PageModel[0];
+    private static SparseArray<NovelCollectionModel> novels;
 
     public NovelCollectionAdapter(Context context, int resourceId, List<PageModel> objects) {
         super(context, resourceId, objects);
         this.layoutResourceId = resourceId;
         this.context = context;
         this.data = objects;
+        novels = new SparseArray<NovelCollectionModel>();
         Log.d(TAG, "created with " + objects.size() + " items");
     }
 
@@ -81,13 +87,11 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
             holder.txtStausVol = (TextView) row.findViewById(R.id.novel_status_volumes);
             holder.chkIsWatched = (CheckBox) row.findViewById(R.id.novel_is_watched);
             holder.ivNovelCover = (ImageView) row.findViewById(R.id.novel_cover);
+            holder.imgprogressBar = (ProgressBar) row.findViewById(R.id.imgprogressBar);
             row.setTag(holder);
         } else {
             holder = (NovelCollectionHolder) row.getTag();
         }
-
-        holder.position = position;
-        new NovelLoader(position, holder).execute(novel);
 
 
         if (holder.txtNovel != null) {
@@ -129,6 +133,18 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
 
         holder.ivNovelCover.setImageResource(R.drawable.dummy_1);
         holder.txtStausVol.setText("N/A");
+
+        holder.ivNovelCover.setVisibility(View.GONE);
+        holder.imgprogressBar.setVisibility(View.VISIBLE);
+
+        holder.position = position;
+        if(novels.get(position)==null) {
+            new NovelLoader(position, holder).execute(novel);
+        }
+        else
+        {
+            populate(novels.get(position),holder);
+        }
 
         return row;
     }
@@ -187,16 +203,62 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
         CheckBox chkIsWatched;
         ImageView ivNovelCover;
         int position;
+        ProgressBar imgprogressBar;
     }
 
     public void setResourceId(int id) {
         this.layoutResourceId = id;
     }
 
+    private static void populate(NovelCollectionModel novelCollectionModel, NovelCollectionHolder holder)
+    {
+        PageModel novelpage = null;
+        try {
+            novelpage = novelCollectionModel.getPageModel();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if(holder.ivNovelCover != null)
+        {
+            holder.ivNovelCover.setVisibility(View.VISIBLE);
+            holder.imgprogressBar.setVisibility(View.GONE);
+            if(novelCollectionModel!=null&&novelCollectionModel.getCoverBitmap()!=null) {
+                holder.ivNovelCover.setImageBitmap(novelCollectionModel.getCoverBitmap());
+            }
+            else
+            {
+                holder.ivNovelCover.setImageResource(R.drawable.dummy_2);
+            }
+        }
+
+        if (holder.txtStausVol !=null){
+            if(novelpage==null)
+            {
+                holder.txtStausVol.setText("N/A");
+            }
+            else
+            {
+                holder.txtStausVol.setText(getCategory(novelpage));
+            }
+        }
+    }
+
+    private static String getCategory(PageModel novelpage)
+    {
+        ArrayList<String> categories = novelpage.getCategories();
+        for(String category:categories)
+        {
+            if(category.contains("Project"))
+            {
+                return category.replace("Category:","").replace("Projects","Project");
+            }
+        }
+        return "";
+    }
+
     private static class NovelLoader extends AsyncTask<PageModel,Void,NovelCollectionModel>
     {
         int position;
-        PageModel p;
         private NovelCollectionHolder holder;
         NovelLoader(int position, NovelCollectionHolder holder)
         {
@@ -206,9 +268,8 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
 
         @Override
         protected NovelCollectionModel doInBackground(PageModel... pageModels) {
-            p = pageModels[0];
             try {
-                return NovelsDao.getInstance().getNovelDetails(p,null,false);
+                return NovelsDao.getInstance().getNovelDetails(pageModels[0],null,false);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -219,42 +280,8 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
         protected void onPostExecute(NovelCollectionModel novelCollectionModel) {
             super.onPostExecute(novelCollectionModel);
             if(holder.position == position) {
-                PageModel novelpage = null;
-                try {
-                    novelpage = novelCollectionModel.getPageModel();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if(holder.ivNovelCover != null)
-                {
-                    if(novelCollectionModel!=null&&novelCollectionModel.getCoverBitmap()!=null) {
-                        holder.ivNovelCover.setImageBitmap(novelCollectionModel.getCoverBitmap());
-                    }
-                    else
-                    {
-                        holder.ivNovelCover.setImageResource(R.drawable.dummy_2);
-                    }
-                }
-
-                if (holder.txtStausVol !=null){
-                    if(novelpage==null)
-                    {
-                        holder.txtStausVol.setText("N/A");
-                    }
-                    else
-                    {
-                        ArrayList<String> categories = novelpage.getCategories();
-                        for(String category:categories)
-                        {
-                            if(category.contains("Project"))
-                            {
-                                holder.txtStausVol.setText(category.replace("Category:","").replace("Projects","Project"));
-                                break;
-                            }
-                        }
-                    }
-                }
-
+                novels.put(position,novelCollectionModel);
+                populate(novelCollectionModel,holder);
             }
         }
     }
