@@ -25,6 +25,7 @@ import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -38,14 +39,14 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
     private int layoutResourceId;
     public List<PageModel> data;
     private PageModel[] originalData = new PageModel[0];
-    private SparseArray<NovelCollectionModel> novels;
+    private HashMap<String,NovelCollectionModel> novels;
 
     public NovelCollectionAdapter(Context context, int resourceId, List<PageModel> objects) {
         super(context, resourceId, objects);
         this.layoutResourceId = resourceId;
         this.context = context;
         this.data = objects;
-        novels = new SparseArray<NovelCollectionModel>();
+        novels = new HashMap<>();
         Log.d(TAG, "created with " + objects.size() + " items");
     }
 
@@ -117,12 +118,12 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
         holder.imgprogressBar.setVisibility(View.VISIBLE);
 
         holder.position = position;
-        if(novels.get(position)==null) {
+        if(novels.get(novel.getTitle())==null) {
             new NovelLoader(position, holder).execute(novel);
         }
         else
         {
-            populate(novels.get(position),holder);
+            populate(novels.get(novel.getTitle()),holder);
         }
 
         return row;
@@ -247,6 +248,7 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
     {
         int position;
         private NovelCollectionHolder holder;
+        PageModel p;
         NovelLoader(int position, NovelCollectionHolder holder)
         {
             this.position = position;
@@ -256,7 +258,8 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
         @Override
         protected NovelCollectionModel doInBackground(PageModel... pageModels) {
             try {
-                return NovelsDao.getInstance().getNovelDetails(pageModels[0],null,false);
+                p = pageModels[0];
+                return NovelsDao.getInstance().getNovelDetails(p,null,false);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -267,7 +270,7 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
         protected void onPostExecute(NovelCollectionModel novelCollectionModel) {
             super.onPostExecute(novelCollectionModel);
             if(holder.position == position) {
-                novels.put(position,novelCollectionModel);
+                novels.put(p.getTitle(),novelCollectionModel);
                 populate(novelCollectionModel,holder);
             }
         }
