@@ -2,10 +2,8 @@ package com.erakk.lnreader.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -15,37 +13,18 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.erakk.lnreader.Constants;
-import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
-import com.erakk.lnreader.callback.ICallbackEventData;
-import com.erakk.lnreader.callback.ICallbackNotifier;
-import com.erakk.lnreader.callback.IExtendedCallbackNotifier;
 import com.erakk.lnreader.dao.NovelsDao;
-import com.erakk.lnreader.helper.BakaReaderException;
 import com.erakk.lnreader.helper.Util;
+import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
-import com.erakk.lnreader.model.NovelContentModel;
 import com.erakk.lnreader.model.PageModel;
-import com.erakk.lnreader.parser.BakaTsukiParser;
-import com.erakk.lnreader.parser.BakaTsukiParserAlternative;
-import com.erakk.lnreader.task.AsyncTaskResult;
-import com.erakk.lnreader.task.LoadNovelDetailsTask;
-
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -59,7 +38,7 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
     private int layoutResourceId;
     public List<PageModel> data;
     private PageModel[] originalData = new PageModel[0];
-    private static SparseArray<NovelCollectionModel> novels;
+    private SparseArray<NovelCollectionModel> novels;
 
     public NovelCollectionAdapter(Context context, int resourceId, List<PageModel> objects) {
         super(context, resourceId, objects);
@@ -210,7 +189,7 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
         this.layoutResourceId = id;
     }
 
-    private static void populate(NovelCollectionModel novelCollectionModel, NovelCollectionHolder holder)
+    private void populate(NovelCollectionModel novelCollectionModel, NovelCollectionHolder holder)
     {
         PageModel novelpage = null;
         try {
@@ -238,25 +217,33 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
             }
             else
             {
-                holder.txtStausVol.setText(getCategory(novelpage));
+                String category = getCategory(novelpage);
+                int volumes = novelCollectionModel.getBookCollections().size();
+                if(category.isEmpty())
+                {
+                    holder.txtStausVol.setText(volumes + " Volume"+(volumes>1?"s":""));
+                }
+                else {
+                    holder.txtStausVol.setText(category + " | " + volumes + " Volume"+(volumes>1?"s":""));
+                }
             }
         }
     }
 
-    private static String getCategory(PageModel novelpage)
+    private String getCategory(PageModel novelpage)
     {
         ArrayList<String> categories = novelpage.getCategories();
         for(String category:categories)
         {
             if(category.contains("Project"))
             {
-                return category.replace("Category:","").replace("Projects","Project");
+                return category.substring(0,category.indexOf("Project")).replace("Category:","");
             }
         }
         return "";
     }
 
-    private static class NovelLoader extends AsyncTask<PageModel,Void,NovelCollectionModel>
+    private class NovelLoader extends AsyncTask<PageModel,Void,NovelCollectionModel>
     {
         int position;
         private NovelCollectionHolder holder;
