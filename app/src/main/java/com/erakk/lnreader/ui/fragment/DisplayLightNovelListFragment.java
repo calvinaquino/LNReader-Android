@@ -30,6 +30,7 @@ import com.erakk.lnreader.Constants;
 import com.erakk.lnreader.LNReaderApplication;
 import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
+import com.erakk.lnreader.adapter.NovelCollectionAdapter;
 import com.erakk.lnreader.adapter.PageModelAdapter;
 import com.erakk.lnreader.callback.CallbackEventData;
 import com.erakk.lnreader.callback.DownloadCallbackEventData;
@@ -57,7 +58,7 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
     private static final String TAG = DisplayLightNovelListFragment.class.toString();
 
     private final ArrayList<PageModel> listItems = new ArrayList<PageModel>();
-    private PageModelAdapter adapter;
+    private NovelCollectionAdapter adapter;
 
     private LoadNovelsTask task = null;
     private LoadAlternativeTask altTask = null;
@@ -286,14 +287,14 @@ public class DisplayLightNovelListFragment extends ListFragment implements IExte
 
         try {
             // Check size
-            int resourceId = R.layout.item_novel;
+            int resourceId = R.layout.item_novel_2;
             if (UIHelper.isSmallScreen(getActivity())) {
-                resourceId = R.layout.item_novel_small;
+                resourceId = R.layout.item_novel_small_2;
             }
             if (adapter != null) {
                 adapter.setResourceId(resourceId);
             } else {
-                adapter = new PageModelAdapter(getActivity(), resourceId, listItems);
+                adapter = new NovelCollectionAdapter(getActivity(), resourceId, listItems);
             }
             boolean alphOrder = UIHelper.isAlphabeticalOrder(getActivity());
 

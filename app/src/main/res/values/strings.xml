@@ -489,6 +489,8 @@
     <string name="auto_download_only_use_wifi_summary">Only automatically updates the list if Wifi is connected.</string>
     <string name="auto_download_only_use_wifi_title">Only Use Wifi for Auto Update</string>
 
+    <string name="novel_status_volumes">Status, Volumes</string>
+
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="reset_zoom_title">Reset Zoom Level</string>
