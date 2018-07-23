@@ -1,3 +1,11 @@
+1.1.51
+- Implement #276: Novel List Layout with Images by SAM10795.
+- Update Gradle 3.1.3
+- Update Android Build Tool 27.0.3
+- Update JSoup 1.11.3
+- Increase minSdkVersion to 14 as required by Google Support Library.
+- Set targetSdkVersion to 27.
+
 1.1.50
 - Update Android Build Tool 26.0.3
 - Update JSoup 1.11.2
