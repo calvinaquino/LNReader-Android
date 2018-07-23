@@ -24,6 +24,7 @@ public class DisplayCreditActivity extends BaseActivity {
                 "- <a href=\"https://nandaka.devnull.zone/\">nandaka</a><br />" +
                 "- Thatdot7<br />" +
                 "- <a href=\"http://nstranslation.blogspot.com\">freedomofkeima</a><br />" +
+                "- <a href=\"https://github.com/SAM10795\">SAM10795</a><br />" +
                 "<h2>UI Translations</h2>" +
                 "- English : erakk & nandaka<br />" +
                 "- Indonesian : freedomofkeima<br />" +
