@@ -3,6 +3,7 @@ package com.erakk.lnreader;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Application;
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +28,7 @@ import com.erakk.lnreader.task.AsyncTaskResult;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 
 /*
  * http://www.devahead.com/blog/2011/06/extending-the-android-application-class-and-dealing-with-singleton/
@@ -98,6 +100,7 @@ public class LNReaderApplication extends Application {
 
     public boolean isOnline() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert cm != null;
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         if (netInfo != null && netInfo.isConnectedOrConnecting()) {
             return true;
@@ -245,7 +248,7 @@ public class LNReaderApplication extends Application {
             doBindService();
         updateService.force = force;
         updateService.setOnCallbackNotifier(notifier);
-        updateService.onStartCommand(null, BIND_AUTO_CREATE, (int) (new Date().getTime() / 1000));
+        updateService.onStartCommand(null, Service.START_FLAG_REDELIVERY | Service.START_FLAG_RETRY, (int) (new Date().getTime() / 1000));
     }
 
     public void cancelUpdateService() {
@@ -314,7 +317,7 @@ public class LNReaderApplication extends Application {
         if (autoBackupService == null)
             doBindAutoBackupService();
         autoBackupService.setOnCallbackNotifier(notifier);
-        autoBackupService.onStartCommand(null, BIND_AUTO_CREATE, (int) (new Date().getTime() / 1000));
+        autoBackupService.onStartCommand(null, Service.START_FLAG_REDELIVERY | Service.START_FLAG_RETRY, (int) (new Date().getTime() / 1000));
     }
     // endregion
 
@@ -328,9 +331,13 @@ public class LNReaderApplication extends Application {
      */
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
+        assert manager != null;
+        List<RunningServiceInfo> services = manager.getRunningServices(Integer.MAX_VALUE);
+        if (services != null) {
+            for (RunningServiceInfo service : services) {
+                if (serviceClass.getName().equals(service.service.getClassName())) {
+                    return true;
+                }
             }
         }
         return false;
@@ -370,4 +377,5 @@ public class LNReaderApplication extends Application {
     }
 
     // endregion
+
 }

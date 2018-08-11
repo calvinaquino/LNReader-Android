@@ -1,12 +1,17 @@
 package com.erakk.lnreader.ui.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.StringRes;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -45,6 +50,8 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestAppPermissions();
 
         //Restore the fragment's instance
         if (savedInstanceState != null) {
@@ -344,4 +351,61 @@ public class BaseActivity extends AppCompatActivity {
             }
         }
     }
+
+
+    // region permission issue #277
+    private int grantResults[];
+
+    private void requestAppPermissions() {
+        int requestId = 101;
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return;
+        }
+
+        if (hasReadPermissions() && hasWritePermissions()) {
+            return;
+        }
+
+        ActivityCompat.requestPermissions(this,
+                new String[]{
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                }, requestId); // your request code
+
+        onRequestPermissionsResult(requestId, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, grantResults);
+    }
+
+    private boolean hasReadPermissions() {
+        return (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+    }
+
+    private boolean hasWritePermissions() {
+        return (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+    }
+
+    @Override // android recommended class to handle permissions
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Log.d(TAG, "Permission granted");
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.uujm
+                    Toast.makeText(this, "Permission denied to read/write your External storage", Toast.LENGTH_SHORT).show();
+
+
+                }
+                break;
+            }
+
+            // other 'case' line to check fosr other
+            // permissions this app might request
+        }
+    }
+    // endregion
 }
