@@ -193,7 +193,7 @@ public class BakaTsukiParser {
      */
     private static boolean validateH2(Element s, NovelCollectionModel novel, String language) {
         if (language.equalsIgnoreCase(Constants.LANG_ENGLISH)) {
-            String rules[] = {novel.getPage(), novel.getRedirectTo(), "_by", "Full_Text", "_Series", "_series", "Side_Stor", "Short_Stor", "Parody_Stor", "Bonus_Track"};
+            String rules[] = {novel.getPage(), novel.getRedirectTo(), "_by", "Full_Text", "_Series", "_series", "Side_Stor", "Short_Stor", "Parody_Stor", "Bonus_Track", "Extra"};
             for (String rule : rules) {
                 if (!Util.isStringNullOrEmpty(rule) && s.id().contains(rule)) {
                     return true;

@@ -1,3 +1,10 @@
+1.1.52
+- Fix Issue #277: ask permission for storage upon loading.
+- Fix Issue #278: ask permission for network upon loading.
+- Experimental #279: folder selector for image save location.
+- Update parser for extra stories.
+- Fallback targetSdkVersion to 25 due to service compatibility issue on android 8.0.
+
 1.1.51
 - Implement #276: Novel List Layout with Images by SAM10795.
 - Update Gradle 3.1.3
