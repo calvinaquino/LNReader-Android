@@ -1,3 +1,6 @@
+1.1.53
+- Implement #280: Add option to disable cover loading in the novel list.
+
 1.1.52
 - Fix Issue #277: ask permission for storage upon loading.
 - Fix Issue #278: ask permission for network upon loading.
