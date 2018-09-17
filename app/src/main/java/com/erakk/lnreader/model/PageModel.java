@@ -39,6 +39,8 @@ public class PageModel {
     private int wikiId = -1;
     private ArrayList<String> categories;
     private boolean isCompleted = false;
+    private int volumes = 0;
+    private String categoriesStr = "";
 
     private String redirectedTo;
 
@@ -358,5 +360,27 @@ public class PageModel {
 
     public void setCompleted(boolean completed) {
         isCompleted = completed;
+    }
+
+    public int getVolumes() {
+        return volumes;
+    }
+
+    public void setVolumes(int volumes) {
+        this.volumes = volumes;
+    }
+
+    public String getCategoriesStr() {
+        return categoriesStr;
+    }
+
+    public void setCategoriesStr(String categoriesStr) {
+        this.categoriesStr = categoriesStr;
+        this.categories = new ArrayList<String>();
+        if(categoriesStr != null) {
+            for (String str : categoriesStr.split(",")) {
+                this.categories.add(str);
+            }
+        }
     }
 }

@@ -117,10 +117,25 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
         holder.imgprogressBar.setVisibility(View.VISIBLE);
 
         holder.position = position;
-        if (novels.get(novel.getTitle()) == null) {
-            new NovelLoader(position, holder).execute(novel);
-        } else {
-            populate(novels.get(novel.getTitle()), holder);
+
+        if(false) {
+            if (novels.get(novel.getTitle()) == null) {
+                new NovelLoader(position, holder).execute(novel);
+            } else {
+                populate(novels.get(novel.getTitle()), holder);
+            }
+        }
+        else {
+            String txtVolume = novel.getVolumes() + " Volume" + (novel.getVolumes() > 1 ? "s" : "");
+            String txtCategories = "";
+            for (String category : novel.getCategories()) {
+                if (category.contains("Project")) {
+                    txtCategories =  " | " + category.substring(0, category.indexOf("Project")).replace("Category:", "");
+                    break;
+                }
+            }
+            holder.txtStatusVol.setText(txtVolume + txtCategories);
+            holder.imgprogressBar.setVisibility(View.INVISIBLE);
         }
 
         return row;

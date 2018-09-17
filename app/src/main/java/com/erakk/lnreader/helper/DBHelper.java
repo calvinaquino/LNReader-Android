@@ -405,22 +405,26 @@ public class DBHelper extends SQLiteOpenHelper {
 	private String getNovelListQuery(boolean alphOrder, boolean isQuickLoad) {
 		String sql = "";
 		if (isQuickLoad) {
-            sql = "SELECT p.*" +
-                    " , CASE WHEN c." + COLUMN_CATEGORY + " IS NULL THEN 0 " +
-                    "      ELSE 1 END as " + COLUMN_IS_COMPLETED +
+            sql = "SELECT p.* " +
+                    " , CASE WHEN instr(group_concat(c.category), 'Category:Completed Project') THEN 1 " +
+                    "   ELSE 0 END as is_completed " +
+                    " , COUNT(b.page) as volumes " +
+                    " , group_concat(c.category) as categories " +
                     " FROM " + TABLE_PAGE + " p " +
                     " LEFT JOIN " + TABLE_PAGE_CATEGORIES + " c ON p." + COLUMN_PAGE + " = c." + COLUMN_PAGE +
-                    "      AND c." + COLUMN_CATEGORY + " = 'Category:Completed Project' " +
+                    " LEFT JOIN novel_books b ON p.page = b.page " +
                     " WHERE " + COLUMN_PARENT + " = ? ";
         }
 		else {
-            sql = "SELECT p.*" +
-                    " , CASE WHEN c." + COLUMN_CATEGORY + " IS NULL THEN 0 " +
-                    "      ELSE 1 END as " + COLUMN_IS_COMPLETED +
+            sql = "SELECT p.* " +
+                    " , CASE WHEN instr(group_concat(c.category), 'Category:Completed Project') THEN 1 " +
+                    "   ELSE 0 END as is_completed " +
+                    " , COUNT(b.page) as volumes " +
+                    " , group_concat(c.category) as categories " +
                     " , r.* " +
                     " FROM " + TABLE_PAGE + " p " +
                     " LEFT JOIN " + TABLE_PAGE_CATEGORIES + " c ON p." + COLUMN_PAGE + " = c." + COLUMN_PAGE +
-                    "      AND c." + COLUMN_CATEGORY + " = 'Category:Completed Project' " +
+                    " LEFT JOIN novel_books b ON p.page = b.page " +
                     " LEFT JOIN ( SELECT " + COLUMN_PAGE + ", SUM(UPDATESCOUNT) " +
                     "             FROM ( SELECT d." + COLUMN_PAGE +
                     "                         , CASE WHEN p2." + COLUMN_LAST_UPDATE + " > ct." + COLUMN_LAST_UPDATE +
@@ -433,10 +437,13 @@ public class DBHelper extends SQLiteOpenHelper {
                     " ) r ON p." + COLUMN_PAGE + " = r." + COLUMN_PAGE +
                     " WHERE p." + COLUMN_PARENT + " = ? ";
         }
+        sql += " GROUP BY p.page ";
 		if (alphOrder)
 			sql += " ORDER BY " + COLUMN_TITLE;
 		else
 			sql += " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE;
+
+		Log.d(TAG, sql);
 
 		return sql;
 	}
@@ -456,22 +463,26 @@ public class DBHelper extends SQLiteOpenHelper {
 		String sql = "";
 		if (isQuickLoad) {
             sql = "SELECT p.* " +
-                    " , CASE WHEN c." + COLUMN_CATEGORY + " IS NULL THEN 0 " +
-                    "      ELSE 1 END as " + COLUMN_IS_COMPLETED +
+                    " , CASE WHEN instr(group_concat(c.category), 'Category:Completed Project') THEN 1 " +
+                    "   ELSE 0 END as is_completed " +
+                    " , COUNT(b.page) as volumes " +
+                    " , group_concat(c.category) as categories " +
                     " FROM " + TABLE_PAGE + " p " +
                     " LEFT JOIN " + TABLE_PAGE_CATEGORIES + " c ON p." + COLUMN_PAGE + " = c." + COLUMN_PAGE +
-                    "      AND c." + COLUMN_CATEGORY + " = 'Category:Completed Project' " +
+                    " LEFT JOIN novel_books b ON p.page = b.page " +
                     " WHERE p. " + COLUMN_PARENT + " IN (" + Util.join(parents, ", ") + ") " +
                     "   AND  p." + COLUMN_IS_WATCHED + " = ? ";
         }
 		else {
             sql = "SELECT p.* " +
-                    " , CASE WHEN c." + COLUMN_CATEGORY + " IS NULL THEN 0 " +
-                    "      ELSE 1 END as " + COLUMN_IS_COMPLETED +
+                    " , CASE WHEN instr(group_concat(c.category), 'Category:Completed Project') THEN 1 " +
+                    "   ELSE 0 END as is_completed " +
+                    " , COUNT(b.page) as volumes " +
+                    " , group_concat(c.category) as categories " +
                     " , r.* " +
                     " FROM " + TABLE_PAGE + " p " +
 					" LEFT JOIN " + TABLE_PAGE_CATEGORIES + " c ON p." + COLUMN_PAGE + " = c." + COLUMN_PAGE +
-					"      AND c." + COLUMN_CATEGORY + " = 'Category:Completed Project' " +
+                    " LEFT JOIN novel_books b ON p.page = b.page " +
                     " LEFT JOIN ( SELECT " + COLUMN_PAGE + ", SUM(UPDATESCOUNT) " +
                     "             FROM ( SELECT d." + COLUMN_PAGE +
                     "                         , case when p2." + COLUMN_LAST_UPDATE + " > ct." + COLUMN_LAST_UPDATE +
@@ -487,10 +498,14 @@ public class DBHelper extends SQLiteOpenHelper {
                     "   AND p." + COLUMN_IS_WATCHED + " = ? ";
         }
 
+        sql += " GROUP BY p.page ";
 		if (alphOrder)
 			sql += " ORDER BY " + COLUMN_TITLE;
 		else
 			sql += " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE;
+
+
+        Log.d(TAG, sql);
 
 		Cursor cursor = rawQuery(db, sql, new String[] { "1" });
 		try {

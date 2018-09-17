@@ -59,9 +59,17 @@ public class PageModelHelper {
         if (cursor.getColumnCount() >= 16) {
             page.setCompleted(cursor.getInt(15) == 1);
         }
-        // Update Sums
+        // volume count
+        if (cursor.getColumnCount() >= 17) {
+            page.setVolumes(cursor.getInt(16));
+        }
+        // categories
         if (cursor.getColumnCount() >= 18) {
-            page.setUpdateCount(cursor.getInt(17));
+            page.setCategoriesStr(cursor.getString(17));
+        }
+        // Update Sums
+        if (cursor.getColumnCount() >= 20) {
+            page.setUpdateCount(cursor.getInt(19));
         }
         return page;
     }
