@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +20,9 @@ import com.erakk.lnreader.R;
 import com.erakk.lnreader.UIHelper;
 import com.erakk.lnreader.dao.NovelsDao;
 import com.erakk.lnreader.helper.Util;
-import com.erakk.lnreader.model.BookModel;
 import com.erakk.lnreader.model.NovelCollectionModel;
 import com.erakk.lnreader.model.PageModel;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +38,7 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
     private int layoutResourceId;
     public List<PageModel> data;
     private PageModel[] originalData = new PageModel[0];
-    private HashMap<String,NovelCollectionModel> novels;
+    private HashMap<String, NovelCollectionModel> novels;
 
     public NovelCollectionAdapter(Context context, int resourceId, List<PageModel> objects) {
         super(context, resourceId, objects);
@@ -64,7 +63,7 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
             holder.txtNovel = (TextView) row.findViewById(R.id.novel_name);
             holder.txtLastCheck = (TextView) row.findViewById(R.id.novel_last_check);
             holder.txtLastUpdate = (TextView) row.findViewById(R.id.novel_last_update);
-            holder.txtStausVol = (TextView) row.findViewById(R.id.novel_status_volumes);
+            holder.txtStatusVol = (TextView) row.findViewById(R.id.novel_status_volumes);
             holder.chkIsWatched = (CheckBox) row.findViewById(R.id.novel_is_watched);
             holder.ivNovelCover = (ImageView) row.findViewById(R.id.novel_cover);
             holder.imgprogressBar = (ProgressBar) row.findViewById(R.id.imgprogressBar);
@@ -112,44 +111,42 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
         }
 
         holder.ivNovelCover.setImageResource(R.drawable.dummy_1);
-        holder.txtStausVol.setText("N/A");
+        holder.txtStatusVol.setText("N/A");
 
         holder.ivNovelCover.setVisibility(View.GONE);
         holder.imgprogressBar.setVisibility(View.VISIBLE);
 
         holder.position = position;
-        if(novels.get(novel.getTitle())==null) {
+        if (novels.get(novel.getTitle()) == null) {
             new NovelLoader(position, holder).execute(novel);
-        }
-        else
-        {
-            populate(novels.get(novel.getTitle()),holder);
+        } else {
+            populate(novels.get(novel.getTitle()), holder);
         }
 
         return row;
     }
 
     public List<PageModel> allData;
+
     public void filterData(String query) {
 
         // keep the original data
-        if(allData == null || allData.size() < data.size()) {
+        if (allData == null || allData.size() < data.size()) {
             allData = new ArrayList<PageModel>();
             allData.addAll(data);
         }
-        if(Util.isStringNullOrEmpty(query)) {
+        if (Util.isStringNullOrEmpty(query)) {
             // restore data
             data.clear();
-            if(allData.size() > data.size()) {
+            if (allData.size() > data.size()) {
                 data.addAll(allData);
             }
-        }
-        else {
+        } else {
             query = query.toLowerCase();
             this.clear();
             data.clear();
-            for(PageModel item : allData) {
-                if(item.getTitle().toLowerCase().contains(query)) data.add(item);
+            for (PageModel item : allData) {
+                if (item.getTitle().toLowerCase().contains(query)) data.add(item);
             }
         }
 
@@ -178,7 +175,7 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
     static class NovelCollectionHolder {
         TextView txtNovel;
         TextView txtLastUpdate;
-        TextView txtStausVol;
+        TextView txtStatusVol;
         TextView txtLastCheck;
         CheckBox chkIsWatched;
         ImageView ivNovelCover;
@@ -190,67 +187,54 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
         this.layoutResourceId = id;
     }
 
-    private void populate(NovelCollectionModel novelCollectionModel, NovelCollectionHolder holder)
-    {
+    private void populate(NovelCollectionModel novelCollectionModel, NovelCollectionHolder holder) {
         PageModel novelpage = null;
         try {
             novelpage = novelCollectionModel.getPageModel();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if(holder.ivNovelCover != null)
-        {
+        if (holder.ivNovelCover != null) {
             holder.ivNovelCover.setVisibility(View.VISIBLE);
             holder.imgprogressBar.setVisibility(View.GONE);
-            if(novelCollectionModel!=null&&novelCollectionModel.getCoverBitmap()!=null) {
+            if (novelCollectionModel != null && novelCollectionModel.getCoverBitmap() != null) {
                 holder.ivNovelCover.setImageBitmap(novelCollectionModel.getCoverBitmap());
-            }
-            else
-            {
+            } else {
                 holder.ivNovelCover.setImageResource(R.drawable.dummy_2);
             }
         }
 
-        if (holder.txtStausVol !=null){
-            if(novelpage==null)
-            {
-                holder.txtStausVol.setText("N/A");
-            }
-            else
-            {
+        if (holder.txtStatusVol != null) {
+            if (novelpage == null) {
+                holder.txtStatusVol.setText("N/A");
+            } else {
                 String category = getCategory(novelpage);
                 int volumes = novelCollectionModel.getBookCollections().size();
-                if(category.isEmpty())
-                {
-                    holder.txtStausVol.setText(volumes + " Volume"+(volumes>1?"s":""));
-                }
-                else {
-                    holder.txtStausVol.setText(category + " | " + volumes + " Volume"+(volumes>1?"s":""));
+                if (category.isEmpty()) {
+                    holder.txtStatusVol.setText(volumes + " Volume" + (volumes > 1 ? "s" : ""));
+                } else {
+                    holder.txtStatusVol.setText(category + " | " + volumes + " Volume" + (volumes > 1 ? "s" : ""));
                 }
             }
         }
     }
 
-    private String getCategory(PageModel novelpage)
-    {
+    private String getCategory(PageModel novelpage) {
         ArrayList<String> categories = novelpage.getCategories();
-        for(String category:categories)
-        {
-            if(category.contains("Project"))
-            {
-                return category.substring(0,category.indexOf("Project")).replace("Category:","");
+        for (String category : categories) {
+            if (category.contains("Project")) {
+                return category.substring(0, category.indexOf("Project")).replace("Category:", "");
             }
         }
         return "";
     }
 
-    private class NovelLoader extends AsyncTask<PageModel,Void,NovelCollectionModel>
-    {
+    private class NovelLoader extends AsyncTask<PageModel, Void, NovelCollectionModel> {
         int position;
         private NovelCollectionHolder holder;
         PageModel p;
-        NovelLoader(int position, NovelCollectionHolder holder)
-        {
+
+        NovelLoader(int position, NovelCollectionHolder holder) {
             this.position = position;
             this.holder = holder;
         }
@@ -259,7 +243,7 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
         protected NovelCollectionModel doInBackground(PageModel... pageModels) {
             try {
                 p = pageModels[0];
-                return NovelsDao.getInstance().getNovelDetails(p,null,false);
+                return NovelsDao.getInstance().getNovelDetails(p, null, false);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -269,9 +253,9 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
         @Override
         protected void onPostExecute(NovelCollectionModel novelCollectionModel) {
             super.onPostExecute(novelCollectionModel);
-            if(holder.position == position) {
-                novels.put(p.getTitle(),novelCollectionModel);
-                populate(novelCollectionModel,holder);
+            if (holder.position == position) {
+                novels.put(p.getTitle(), novelCollectionModel);
+                populate(novelCollectionModel, holder);
             }
         }
     }
