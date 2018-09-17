@@ -188,4 +188,5 @@ public class Constants {
     public static final String EXTRA_INITIAL_FRAGMENT = "initialFragment";
     public static final String PREF_RESET_ZOOM = "reset_zoom";
     public static final int URL_LENGTH_LIMIT = 500;
+    public static final String PREF_LOAD_COVER = "load_cover";
 }

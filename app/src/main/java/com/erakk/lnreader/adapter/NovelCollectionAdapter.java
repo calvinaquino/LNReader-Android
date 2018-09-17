@@ -110,15 +110,24 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
             });
         }
 
-        holder.ivNovelCover.setImageResource(R.drawable.dummy_1);
-        holder.txtStatusVol.setText("N/A");
+        // Set volume and status
+        String txtVolume = novel.getVolumes() + " Volume" + (novel.getVolumes() > 1 ? "s" : "");
+        String txtCategories = "";
+        for (String category : novel.getCategories()) {
+            if (category.contains("Project")) {
+                txtCategories =  " | " + category.substring(0, category.indexOf("Project")).replace("Category:", "");
+                break;
+            }
+        }
+        holder.txtStatusVol.setText(txtVolume + txtCategories);
 
+        // cover related
+        holder.ivNovelCover.setImageResource(R.drawable.dummy_1);
         holder.ivNovelCover.setVisibility(View.GONE);
         holder.imgprogressBar.setVisibility(View.VISIBLE);
-
         holder.position = position;
 
-        if(false) {
+        if(UIHelper.isLoadCover(getContext())) {
             if (novels.get(novel.getTitle()) == null) {
                 new NovelLoader(position, holder).execute(novel);
             } else {
@@ -126,15 +135,6 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
             }
         }
         else {
-            String txtVolume = novel.getVolumes() + " Volume" + (novel.getVolumes() > 1 ? "s" : "");
-            String txtCategories = "";
-            for (String category : novel.getCategories()) {
-                if (category.contains("Project")) {
-                    txtCategories =  " | " + category.substring(0, category.indexOf("Project")).replace("Category:", "");
-                    break;
-                }
-            }
-            holder.txtStatusVol.setText(txtVolume + txtCategories);
             holder.imgprogressBar.setVisibility(View.INVISIBLE);
         }
 
@@ -203,12 +203,12 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
     }
 
     private void populate(NovelCollectionModel novelCollectionModel, NovelCollectionHolder holder) {
-        PageModel novelpage = null;
-        try {
-            novelpage = novelCollectionModel.getPageModel();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        PageModel novelpage = null;
+//        try {
+//            novelpage = novelCollectionModel.getPageModel();
+//        } catch (Exception e) {
+//            Log.e(TAG, e.getMessage(), e);
+//        }
         if (holder.ivNovelCover != null) {
             holder.ivNovelCover.setVisibility(View.VISIBLE);
             holder.imgprogressBar.setVisibility(View.GONE);
@@ -218,31 +218,31 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
                 holder.ivNovelCover.setImageResource(R.drawable.dummy_2);
             }
         }
-
-        if (holder.txtStatusVol != null) {
-            if (novelpage == null) {
-                holder.txtStatusVol.setText("N/A");
-            } else {
-                String category = getCategory(novelpage);
-                int volumes = novelCollectionModel.getBookCollections().size();
-                if (category.isEmpty()) {
-                    holder.txtStatusVol.setText(volumes + " Volume" + (volumes > 1 ? "s" : ""));
-                } else {
-                    holder.txtStatusVol.setText(category + " | " + volumes + " Volume" + (volumes > 1 ? "s" : ""));
-                }
-            }
-        }
+//  moved to query
+//        if (holder.txtStatusVol != null) {
+//            if (novelpage == null) {
+//                holder.txtStatusVol.setText("N/A");
+//            } else {
+//                String category = getCategory(novelpage);
+//                int volumes = novelCollectionModel.getBookCollections().size();
+//                if (category.isEmpty()) {
+//                    holder.txtStatusVol.setText(volumes + " Volume" + (volumes > 1 ? "s" : ""));
+//                } else {
+//                    holder.txtStatusVol.setText(category + " | " + volumes + " Volume" + (volumes > 1 ? "s" : ""));
+//                }
+//            }
+//        }
     }
 
-    private String getCategory(PageModel novelpage) {
-        ArrayList<String> categories = novelpage.getCategories();
-        for (String category : categories) {
-            if (category.contains("Project")) {
-                return category.substring(0, category.indexOf("Project")).replace("Category:", "");
-            }
-        }
-        return "";
-    }
+//    private String getCategory(PageModel novelpage) {
+//        ArrayList<String> categories = novelpage.getCategories();
+//        for (String category : categories) {
+//            if (category.contains("Project")) {
+//                return category.substring(0, category.indexOf("Project")).replace("Category:", "");
+//            }
+//        }
+//        return "";
+//    }
 
     private class NovelLoader extends AsyncTask<PageModel, Void, NovelCollectionModel> {
         int position;
@@ -260,7 +260,7 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
                 p = pageModels[0];
                 return NovelsDao.getInstance().getNovelDetails(p, null, false);
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, e.getMessage(), e);
             }
             return null;
         }
@@ -274,6 +274,4 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
             }
         }
     }
-
-
 }

@@ -18,6 +18,11 @@
                     android:key="invert_colors"
                     android:summary="@string/invert_color_summary"
                     android:title="@string/invert_color_title" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="load_cover"
+                    android:summary="@string/load_cover_summary"
+                    android:title="@string/load_cover_title" />
                 <ListPreference
                     android:defaultValue="0"
                     android:entries="@array/orientationSelection"

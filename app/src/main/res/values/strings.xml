@@ -496,4 +496,6 @@
     <string name="reset_zoom_title">Reset Zoom Level</string>
     <string name="reset_zoom_summary">Reset the zoom level to default value based on screen density.</string>
     <string name="css_use_custom_colors_summary">May need to reload the chapter.</string>
+    <string name="load_cover_summary">Disable for faster loading in the novel list. Might need to reload the activity.</string>
+    <string name="load_cover_title">Load Cover</string>
 </resources>

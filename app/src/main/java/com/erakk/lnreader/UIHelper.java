@@ -404,6 +404,10 @@ public class UIHelper {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_ALPH_ORDER, false);
     }
 
+    public static boolean isLoadCover(Context ctx) {
+        return PreferenceManager.getDefaultSharedPreferences(ctx).getBoolean(Constants.PREF_LOAD_COVER, true);
+    }
+
     public static String getBackgroundColor(Context ctx) {
         return PreferenceManager.getDefaultSharedPreferences(ctx).getString(Constants.PREF_CSS_BACKGROUND, "#000000");
     }
