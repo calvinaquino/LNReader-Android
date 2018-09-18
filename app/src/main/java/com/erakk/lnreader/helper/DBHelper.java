@@ -406,7 +406,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		String sql = "";
 		if (isQuickLoad) {
             sql = "SELECT p.* " +
-                    " , CASE WHEN instr(group_concat(c.category), 'Category:Completed Project') THEN 1 " +
+                    " , CASE WHEN group_concat(c.category) like '%Category:Completed Project%' THEN 1 " +
                     "   ELSE 0 END as is_completed " +
                     " , COUNT(b.page) as volumes " +
                     " , group_concat(c.category) as categories " +
@@ -417,7 +417,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 		else {
             sql = "SELECT p.* " +
-                    " , CASE WHEN instr(group_concat(c.category), 'Category:Completed Project') THEN 1 " +
+                    " , CASE WHEN group_concat(c.category) like '%Category:Completed Project%' THEN 1 " +
                     "   ELSE 0 END as is_completed " +
                     " , COUNT(b.page) as volumes " +
                     " , group_concat(c.category) as categories " +
@@ -463,7 +463,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		String sql = "";
 		if (isQuickLoad) {
             sql = "SELECT p.* " +
-                    " , CASE WHEN instr(group_concat(c.category), 'Category:Completed Project') THEN 1 " +
+                    " , CASE WHEN group_concat(c.category) like '%Category:Completed Project%' THEN 1 " +
                     "   ELSE 0 END as is_completed " +
                     " , COUNT(b.page) as volumes " +
                     " , group_concat(c.category) as categories " +
@@ -475,7 +475,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 		else {
             sql = "SELECT p.* " +
-                    " , CASE WHEN instr(group_concat(c.category), 'Category:Completed Project') THEN 1 " +
+                    " , CASE group_concat(c.category) like '%Category:Completed Project%' THEN 1 " +
                     "   ELSE 0 END as is_completed " +
                     " , COUNT(b.page) as volumes " +
                     " , group_concat(c.category) as categories " +

@@ -20,8 +20,8 @@ android {
         applicationId "com.erakk.lnreader"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 201809170
-        versionName "1.1.53"
+        versionCode 201809180
+        versionName "1.1.54"
     }
 
     buildTypes {
