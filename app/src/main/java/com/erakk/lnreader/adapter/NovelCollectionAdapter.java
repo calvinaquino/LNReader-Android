@@ -119,7 +119,11 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
                 break;
             }
         }
-        holder.txtStatusVol.setText(txtVolume + txtCategories);
+        String updateCount = "";
+        if (novel.getUpdateCount() > 0) {
+            updateCount = String.format(" | Update: %s", novel.getUpdateCount());
+        }
+        holder.txtStatusVol.setText(txtVolume + txtCategories + updateCount);
 
         // cover related
         holder.ivNovelCover.setImageResource(R.drawable.dummy_1);

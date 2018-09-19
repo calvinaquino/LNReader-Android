@@ -300,7 +300,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		try {
 			cursor.moveToFirst();
 			while (!cursor.isAfterLast()) {
-				return cursor.getInt(0) == 1 ? true : false;
+                return cursor.getInt(0) == 1;
 			}
 		} finally {
 			if (cursor != null)
@@ -406,10 +406,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		String sql = "";
 		if (isQuickLoad) {
             sql = "SELECT p.* " +
-                    " , CASE WHEN group_concat(c.category) like '%Category:Completed Project%' THEN 1 " +
-                    "   ELSE 0 END as is_completed " +
-                    " , COUNT(b.page) as volumes " +
-                    " , group_concat(c.category) as categories " +
+                    " , CASE WHEN group_concat(c.category) LIKE '%Category:Completed Project%' THEN 1 " +
+                    "   ELSE 0 END AS is_completed " +
+                    " , COUNT(b.page) AS volumes " +
+                    " , group_concat(c.category) AS categories " +
                     " FROM " + TABLE_PAGE + " p " +
                     " LEFT JOIN " + TABLE_PAGE_CATEGORIES + " c ON p." + COLUMN_PAGE + " = c." + COLUMN_PAGE +
                     " LEFT JOIN novel_books b ON p.page = b.page " +
@@ -417,10 +417,10 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 		else {
             sql = "SELECT p.* " +
-                    " , CASE WHEN group_concat(c.category) like '%Category:Completed Project%' THEN 1 " +
-                    "   ELSE 0 END as is_completed " +
-                    " , COUNT(b.page) as volumes " +
-                    " , group_concat(c.category) as categories " +
+                    " , CASE WHEN group_concat(c.category) LIKE '%Category:Completed Project%' THEN 1 " +
+                    "   ELSE 0 END AS is_completed " +
+                    " , COUNT(b.page) AS volumes " +
+                    " , group_concat(c.category) AS categories " +
                     " , r.* " +
                     " FROM " + TABLE_PAGE + " p " +
                     " LEFT JOIN " + TABLE_PAGE_CATEGORIES + " c ON p." + COLUMN_PAGE + " = c." + COLUMN_PAGE +
@@ -463,10 +463,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		String sql = "";
 		if (isQuickLoad) {
             sql = "SELECT p.* " +
-                    " , CASE WHEN group_concat(c.category) like '%Category:Completed Project%' THEN 1 " +
-                    "   ELSE 0 END as is_completed " +
-                    " , COUNT(b.page) as volumes " +
-                    " , group_concat(c.category) as categories " +
+                    " , CASE WHEN group_concat(c.category) LIKE '%Category:Completed Project%' THEN 1 " +
+                    "   ELSE 0 END AS is_completed " +
+                    " , COUNT(b.page) AS volumes " +
+                    " , group_concat(c.category) AS categories " +
                     " FROM " + TABLE_PAGE + " p " +
                     " LEFT JOIN " + TABLE_PAGE_CATEGORIES + " c ON p." + COLUMN_PAGE + " = c." + COLUMN_PAGE +
                     " LEFT JOIN novel_books b ON p.page = b.page " +
@@ -475,10 +475,10 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 		else {
             sql = "SELECT p.* " +
-                    " , CASE group_concat(c.category) like '%Category:Completed Project%' THEN 1 " +
-                    "   ELSE 0 END as is_completed " +
-                    " , COUNT(b.page) as volumes " +
-                    " , group_concat(c.category) as categories " +
+                    " , CASE WHEN group_concat(c.category) LIKE '%Category:Completed Project%' THEN 1 " +
+                    "   ELSE 0 END AS is_completed " +
+                    " , COUNT(b.page) AS volumes " +
+                    " , group_concat(c.category) AS categories " +
                     " , r.* " +
                     " FROM " + TABLE_PAGE + " p " +
 					" LEFT JOIN " + TABLE_PAGE_CATEGORIES + " c ON p." + COLUMN_PAGE + " = c." + COLUMN_PAGE +
@@ -503,7 +503,6 @@ public class DBHelper extends SQLiteOpenHelper {
 			sql += " ORDER BY " + COLUMN_TITLE;
 		else
 			sql += " ORDER BY " + COLUMN_IS_WATCHED + " DESC, " + COLUMN_TITLE;
-
 
         Log.d(TAG, sql);
 
