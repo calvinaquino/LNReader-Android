@@ -2,6 +2,7 @@ package com.erakk.lnreader.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -110,7 +111,7 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
             });
         }
 
-        // Set volume and status
+        // Set status
         String txtVolume = novel.getVolumes() + " Volume" + (novel.getVolumes() > 1 ? "s" : "");
         String txtCategories = "";
         for (String category : novel.getCategories()) {
@@ -122,6 +123,14 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
         String updateCount = "";
         if (novel.getUpdateCount() > 0) {
             updateCount = String.format(" | Update: %s", novel.getUpdateCount());
+        }
+
+        holder.txtStatusVol.setPaintFlags(0);
+        if(novel.isCompleted()) {
+            holder.txtStatusVol.setPaintFlags(holder.txtStatusVol.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
+        }
+        else if(novel.isAbandoned()) {
+            holder.txtStatusVol.setPaintFlags(holder.txtStatusVol.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
         holder.txtStatusVol.setText(txtVolume + txtCategories + updateCount);
 
