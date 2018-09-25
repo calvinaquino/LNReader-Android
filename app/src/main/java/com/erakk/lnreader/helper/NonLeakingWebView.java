@@ -31,7 +31,6 @@ import com.erakk.lnreader.model.PageModel;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 /**
  * see http://stackoverflow.com/questions/3130654/memory-leak-in-webview and
@@ -69,7 +68,6 @@ public class NonLeakingWebView extends WebView {
     public NonLeakingWebView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context);
-
     }
 
     private void init(Context context) {
@@ -118,19 +116,7 @@ public class NonLeakingWebView extends WebView {
      */
     @SuppressLint("NewApi")
     public void setDisplayZoomControl(boolean show) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            this.getSettings().setDisplayZoomControls(show);
-        } else {
-            // get the control
-            try {
-                Class webview = Class.forName("android.webkit.WebView");
-                Method method = webview.getMethod("getZoomButtonsController");
-                zoom_control = (ZoomButtonsController) method.invoke(this);
-                showZoom = show;
-            } catch (Exception e) {
-                Log.e(TAG, "Error when getting zoom control", e);
-            }
-        }
+        this.getSettings().setDisplayZoomControls(show);
     }
 
     @Override
@@ -141,10 +127,6 @@ public class NonLeakingWebView extends WebView {
         // android.widget.ZoomButtonsController$Container{41c709a0 V.E..... ........ 0,0-540,73} that was originally
         // added here
         super.onTouchEvent(ev);
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && zoom_control != null) {
-            // Hide the control AFTER they where made visible by the default implementation.
-            zoom_control.setVisible(showZoom);
-        }
         try {
             checkZoomEvent(ev);
         } catch (IllegalArgumentException ex) {
@@ -185,6 +167,7 @@ public class NonLeakingWebView extends WebView {
                     activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
             } catch (RuntimeException ignored) {
                 // ignore any url parsing exceptions
+                Log.d(TAG, ignored.getMessage(), ignored);
             }
             return true;
         }
@@ -311,7 +294,6 @@ public class NonLeakingWebView extends WebView {
      *
      * @param page
      */
-    @SuppressLint("NewApi")
     public void saveMyWebArchive(String page) {
         if (page == null) {
             Log.w(TAG, "Empty page name, trying to resolve from current webView url!");
@@ -342,18 +324,24 @@ public class NonLeakingWebView extends WebView {
         }
 
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                String wacName = getWacNameForSaving(Util.SanitizeBaseUrl(page), false);
-                final String p2 = Util.SanitizeBaseUrl(page);
-                this.saveWebArchive(wacName, false, new ValueCallback<String>() {
+            final String wacName = getWacNameForSaving(Util.SanitizeBaseUrl(page), false);
+            final String p2 = Util.SanitizeBaseUrl(page);
+            final ValueCallback<String> callback = new ValueCallback<String>() {
 
-                    @Override
-                    public void onReceiveValue(String value) {
-                        Log.i(TAG, "Saving url: " + p2 + " ==> Saved to: " + value);
+                @Override
+                public void onReceiveValue(String value) {
+                    Log.i(TAG, "Saving url: " + p2 + " ==> Saved to: " + value);
+                    if(value == null) {
+                        // try to resave
+                        Log.w(TAG, "Receive null value callback, trying to re-save...");
+                        saveWebArchive(wacName, false, this);
+                    }
+                    else {
                         Toast.makeText(LNReaderApplication.getInstance().getApplicationContext(), "Page saved to: " + value, Toast.LENGTH_SHORT).show();
                     }
-                });
-            }
+                }
+            };
+            this.saveWebArchive(wacName, false, callback);
         } catch (Exception e) {
             Log.e(TAG, "Failed to save external page: " + page, e);
         }

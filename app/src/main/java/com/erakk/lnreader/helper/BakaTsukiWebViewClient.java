@@ -190,7 +190,8 @@ public class BakaTsukiWebViewClient extends WebViewClient {
                     Log.d(TAG, "Skip auto save for: " + page + " " + !isExternalNeedSave + " " + !getAllowSaveExternal());
                     return;
                 }
-                wv.saveMyWebArchive(url);
+                if(wv.getProgress() >= 100)
+                    wv.saveMyWebArchive(url);
             }
         }
     }
