@@ -405,38 +405,39 @@ public class DBHelper extends SQLiteOpenHelper {
     private String getNovelListQuery(boolean alphOrder, boolean isQuickLoad) {
         String sql = "";
         if (isQuickLoad) {
-            sql = "SELECT p.* " +
-                    " , CASE WHEN group_concat(c.category) LIKE '%Category:Completed Project%' THEN 1 " +
-                    "   ELSE 0 END AS is_completed " +
-                    " , COUNT(b.page) AS volumes " +
-                    " , group_concat(c.category) AS categories " +
-                    " FROM " + TABLE_PAGE + " p " +
-                    " LEFT JOIN " + TABLE_PAGE_CATEGORIES + " c ON p." + COLUMN_PAGE + " = c." + COLUMN_PAGE +
-                    " LEFT JOIN novel_books b ON p.page = b.page " +
-                    " WHERE " + COLUMN_PARENT + " = ? ";
+            sql = "SELECT p.* \n" +
+                    " , CASE WHEN group_concat(c.category) LIKE '%Category:Completed Project%' THEN 1 \n" +
+                    "   ELSE 0 END AS is_completed \n" +
+                    " ,(SELECT COUNT(b.page) from novel_books b WHERE p.page = b.page) AS volumes  \n" +
+                    " , group_concat(c.category) AS categories \n" +
+                    " FROM pages p \n" +
+                    " LEFT JOIN page_categories c ON p.page = c.page \n" +
+                    " WHERE parent = ? \n" +
+                    " GROUP BY p.page \n";
         } else {
-            sql = "SELECT p.* " +
-                    " , CASE WHEN group_concat(c.category) LIKE '%Category:Completed Project%' THEN 1 " +
-                    "   ELSE 0 END AS is_completed " +
-                    " , COUNT(b.page) AS volumes " +
-                    " , group_concat(c.category) AS categories " +
-                    " , r.* " +
-                    " FROM " + TABLE_PAGE + " p " +
-                    " LEFT JOIN " + TABLE_PAGE_CATEGORIES + " c ON p." + COLUMN_PAGE + " = c." + COLUMN_PAGE +
-                    " LEFT JOIN novel_books b ON p.page = b.page " +
-                    " LEFT JOIN ( SELECT " + COLUMN_PAGE + ", SUM(UPDATESCOUNT) " +
-                    "             FROM ( SELECT d." + COLUMN_PAGE +
-                    "                         , CASE WHEN p2." + COLUMN_LAST_UPDATE + " > ct." + COLUMN_LAST_UPDATE +
-                    "                                THEN 1 ELSE 0 END AS UPDATESCOUNT " +
-                    "                    FROM " + TABLE_NOVEL_DETAILS + " d " +
-                    "                    JOIN " + TABLE_NOVEL_BOOK + " b ON d." + COLUMN_PAGE + " = b." + COLUMN_PAGE +
-                    "                    JOIN " + TABLE_PAGE + " p2 ON p2." + COLUMN_PARENT + " = d." + COLUMN_PAGE + " || '" + Constants.NOVEL_BOOK_DIVIDER + "' || b." + COLUMN_TITLE +
-                    "                    JOIN " + TABLE_NOVEL_CONTENT + " ct ON ct." + COLUMN_PAGE + " = p2." + COLUMN_PAGE +
-                    "             ) GROUP BY " + COLUMN_PAGE +
-                    " ) r ON p." + COLUMN_PAGE + " = r." + COLUMN_PAGE +
-                    " WHERE p." + COLUMN_PARENT + " = ? ";
+            sql = "SELECT p.* \n" +
+                    " , CASE WHEN group_concat(c.category) LIKE '%1s' THEN 1 \n" +
+                    "   ELSE 0 END AS is_completed \n" +
+                    " ,(SELECT COUNT(b.page) from novel_books b WHERE p.page = b.page) AS volumes  \n" +
+                    " , group_concat(c.category) AS categories \n" +
+                    " , r.* \n" +
+                    " FROM pages p \n" +
+                    " LEFT JOIN page_categories c ON p.page = c.page \n" +
+                    " LEFT JOIN ( SELECT page, SUM(update_count) \n" +
+                    "              FROM ( SELECT d.page \n" +
+                    "                          , CASE WHEN p2.last_update > ct.last_update \n" +
+                    "                            THEN 1 ELSE 0 END AS update_count \n" +
+                    "                       FROM novel_details d \n" +
+                    "                       JOIN novel_books b ON d.page = b.page\n" +
+                    "                       JOIN pages p2 ON p2.parent = d.page || '%2s' || b.title \n" +
+                    "                                    AND p2.is_missing != 1 \n" +
+                    "                       JOIN novel_books_content ct ON ct.page = p2.page \n" +
+                    "                   ) GROUP BY page\n" +
+                    "           ) r ON p.page = r.page\n" +
+                    " WHERE p.parent = ? \n" +
+                    " GROUP BY p.page \n";
+            sql = String.format(sql, "%Category:Completed Project%", Constants.NOVEL_BOOK_DIVIDER);
         }
-        sql += " GROUP BY p.page ";
         if (alphOrder)
             sql += " ORDER BY " + COLUMN_TITLE;
         else
@@ -465,11 +466,10 @@ public class DBHelper extends SQLiteOpenHelper {
                     " , CASE WHEN group_concat(c.category) LIKE '%1s' \n" +
                     "        THEN 1 \n" +
                     "        ELSE 0 END AS is_completed \n" +
-                    " , COUNT(b.page) AS volumes \n" +
+                    " ,(SELECT COUNT(b.page) from novel_books b WHERE p.page = b.page) AS volumes \n" +
                     " , group_concat(c.category) AS categories \n" +
                     " FROM pages p \n" +
                     " LEFT JOIN page_categories c ON p.page = c.page \n" +
-                    " LEFT JOIN novel_books b ON p.page = b.page " +
                     " WHERE p.parent IN (%2s) \n" +
                     "   AND  p.is_watched = ? \n" +
                     " GROUP BY p.page ";
@@ -479,12 +479,11 @@ public class DBHelper extends SQLiteOpenHelper {
                     "     , CASE WHEN group_concat(c.category) LIKE '%1s' \n" +
                     "            THEN 1 \n" +
                     "            ELSE 0 END AS is_completed \n" +
-                    "     , COUNT(b.page) AS volumes \n" +
+                    "     ,(SELECT COUNT(b.page) from novel_books b WHERE p.page = b.page) AS volumes \n" +
                     "     , group_concat(c.category) AS categories \n" +
                     "     , r.* \n" +
                     " FROM pages p \n" +
                     " LEFT JOIN page_categories c ON p.page = c.page\n" +
-                    " LEFT JOIN novel_books b ON p.page = b.page \n" +
                     " LEFT JOIN ( SELECT page, SUM(update_count) \n" +
                     "              FROM ( SELECT d.page\n" +
                     "                          , CASE WHEN p2.last_update > ct.last_update\n" +
