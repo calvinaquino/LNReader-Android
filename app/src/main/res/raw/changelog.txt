@@ -1,3 +1,8 @@
+1.1.56
+- Fix Issue #286: Update save external chapter logic.
+- Fix Issue #288: Update volume count query.
+- Implement #287: add ▼ indicator for novel with downloaded chapter. Disable Quick Load to enable.
+
 1.1.55
 - Fix Issue #285: Update query for Watch List.
 - Update novel list text status style.
