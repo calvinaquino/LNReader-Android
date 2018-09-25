@@ -423,7 +423,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     " , r.* \n" +
                     " FROM pages p \n" +
                     " LEFT JOIN page_categories c ON p.page = c.page \n" +
-                    " LEFT JOIN ( SELECT page, SUM(update_count) \n" +
+                    " LEFT JOIN ( SELECT page, SUM(update_count), COUNT(page) \n" +
                     "              FROM ( SELECT d.page \n" +
                     "                          , CASE WHEN p2.last_update > ct.last_update \n" +
                     "                            THEN 1 ELSE 0 END AS update_count \n" +
@@ -484,7 +484,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     "     , r.* \n" +
                     " FROM pages p \n" +
                     " LEFT JOIN page_categories c ON p.page = c.page\n" +
-                    " LEFT JOIN ( SELECT page, SUM(update_count) \n" +
+                    " LEFT JOIN ( SELECT page, SUM(update_count), COUNT(page) \n" +
                     "              FROM ( SELECT d.page\n" +
                     "                          , CASE WHEN p2.last_update > ct.last_update\n" +
                     "                            THEN 1 ELSE 0 END AS update_count \n" +

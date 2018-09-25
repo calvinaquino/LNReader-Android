@@ -70,6 +70,7 @@ public class PageModelHelper {
         // Update Sums
         if (cursor.getColumnCount() >= 20) {
             page.setUpdateCount(cursor.getInt(19));
+            page.setDownloadedCount(cursor.getInt(20));
         }
         return page;
     }

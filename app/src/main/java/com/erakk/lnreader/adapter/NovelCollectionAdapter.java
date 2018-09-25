@@ -132,7 +132,13 @@ public class NovelCollectionAdapter extends ArrayAdapter<PageModel> {
         else if(novel.isAbandoned()) {
             holder.txtStatusVol.setPaintFlags(holder.txtStatusVol.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
-        holder.txtStatusVol.setText(txtVolume + txtCategories + updateCount);
+
+        String downloadedCount = "";
+        if (novel.getDownloadedCount() > 0) {
+            downloadedCount = " | ▼";
+        }
+
+        holder.txtStatusVol.setText(txtVolume + txtCategories + updateCount + downloadedCount);
 
         // cover related
         holder.ivNovelCover.setImageResource(R.drawable.dummy_1);

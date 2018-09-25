@@ -41,6 +41,7 @@ public class PageModel {
     private boolean isCompleted = false;
     private int volumes = 0;
     private String categoriesStr = "";
+    private int downloadedCount;
 
     private String redirectedTo;
 
@@ -382,5 +383,13 @@ public class PageModel {
                 this.categories.add(str);
             }
         }
+    }
+
+    public int getDownloadedCount() {
+        return downloadedCount;
+    }
+
+    public void setDownloadedCount(int downloadedCount) {
+        this.downloadedCount = downloadedCount;
     }
 }
